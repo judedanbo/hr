@@ -26,4 +26,9 @@ class Person extends Model
         return strtoupper(substr($this->other_names, 0, 1) . substr($this->surname, 0, 1));
     }
 
+    public function getNumberAttribute()
+    {
+        return Person::count();
+    }
+
 }

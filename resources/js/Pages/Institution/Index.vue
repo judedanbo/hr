@@ -6,12 +6,11 @@ import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
-import format from "date-fns/format";
-import differenceInYears from "date-fns/differenceInYears";
+
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 
 let props = defineProps({
-    people: Object,
+    institutions: Object,
     filters: Object,
 });
 
@@ -21,29 +20,16 @@ watch(
     search,
     debounce(function (value) {
         Inertia.get(
-            route("person.index"),
+            route("institution.index"),
             { search: value },
             { preserveState: true, replace: true }
         );
     }, 300)
 );
 
-let formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return format(date, "EEEE dd MMMM, yyyy");
-    // return new Intl.DateTimeFormat("en-GB", { dateStyle: "full" }).format(date);
-};
-
-let getAge = (dateString) => {
-    const date = new Date(dateString);
-    // console.log(Date);
-
-    return differenceInYears(new Date(), date);
-};
 let BreadCrumpLinks = [
     {
-        name: "Person",
-        url: "",
+        name: "Institutions",
     },
 ];
 </script>
@@ -55,7 +41,7 @@ let BreadCrumpLinks = [
         <template #header>
             <BreadCrumpVue :links="BreadCrumpLinks" />
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                People
+                Institutions
             </h2>
         </template>
 
@@ -74,11 +60,9 @@ let BreadCrumpLinks = [
                                     <div
                                         class="flex flex-col flex-shrink-0 space-y-2"
                                     >
-                                        <span class="text-gray-400"
-                                            >People</span
-                                        >
+                                        <span class="text-gray-400">Staff</span>
                                         <span class="text-lg font-semibold">{{
-                                            people.total.toLocaleString()
+                                            institutions.total
                                         }}</span>
                                     </div>
                                     <div class="relative min-w-0 ml-auto h-14">
@@ -95,14 +79,14 @@ let BreadCrumpLinks = [
                             </a>
                         </div>
                         <div
-                            v-if="people.total > 0"
-                            class="flex justify-between"
+                            v-if="institutions.total > 0"
+                            class="sm:flex justify-between my-6"
                         >
-                            <h3 class="mt-6 text-xl">People</h3>
+                            <h3 class="mb-4 text-xl">Institutions</h3>
                             <BreezeInput
                                 v-model="search"
                                 type="search"
-                                class="w-2/3 md:w-1/2 lg:w-1/3"
+                                class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3"
                                 required
                                 autofocus
                             />
@@ -118,7 +102,7 @@ let BreadCrumpLinks = [
                                         class="overflow-hidden border-b border-gray-200 rounded-md shadow-md"
                                     >
                                         <table
-                                            v-if="people.total > 0"
+                                            v-if="institutions.total > 0"
                                             class="min-w-full overflow-x-scroll divide-y divide-gray-200"
                                         >
                                             <thead class="bg-gray-50">
@@ -129,24 +113,7 @@ let BreadCrumpLinks = [
                                                     >
                                                         Name
                                                     </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                    >
-                                                        Date of Birth
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                    >
-                                                        SSNIT No
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                    >
-                                                        Role
-                                                    </th>
+
                                                     <th
                                                         role="col"
                                                         class="relative px-6 py-3"
@@ -161,8 +128,8 @@ let BreadCrumpLinks = [
                                                 class="bg-white divide-y divide-gray-200"
                                             >
                                                 <tr
-                                                    v-for="person in people.data"
-                                                    :key="person.id"
+                                                    v-for="institution in institutions.data"
+                                                    :key="institution.id"
                                                     class="transition-all hover:bg-gray-100 hover:shadow-lg"
                                                 >
                                                     <td
@@ -173,76 +140,33 @@ let BreadCrumpLinks = [
                                                         >
                                                             <div
                                                                 class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-                                                            >
-                                                                {{
-                                                                    person.initials
-                                                                }}
-                                                            </div>
+                                                            ></div>
 
                                                             <div class="ml-4">
                                                                 <div
                                                                     class="text-sm font-medium text-gray-900"
                                                                 >
                                                                     {{
-                                                                        person.name
+                                                                        institution.name
                                                                     }}
                                                                 </div>
                                                                 <div
                                                                     class="text-sm text-gray-500"
-                                                                >
-                                                                    {{
-                                                                        person.gender
-                                                                    }}
-                                                                </div>
+                                                                ></div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td
-                                                        class="px-6 py-4 whitespace-nowrap"
-                                                    >
-                                                        <div
-                                                            class="text-sm text-gray-900"
-                                                        >
-                                                            {{
-                                                                formatDate(
-                                                                    person.dob
-                                                                )
-                                                            }}
-                                                        </div>
-                                                        <div
-                                                            class="text-sm text-gray-500"
-                                                        >
-                                                            {{
-                                                                getAge(
-                                                                    person.dob
-                                                                )
-                                                            }}
-                                                            Years
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="px-6 py-4 whitespace-nowrap"
-                                                    >
-                                                        <div
-                                                            class="text-sm text-gray-900"
-                                                        >
-                                                            {{ person.ssn }}
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"
-                                                    >
-                                                        Staff
-                                                    </td>
+
                                                     <td
                                                         class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap"
                                                     >
                                                         <Link
                                                             :href="
                                                                 route(
-                                                                    'person.show',
+                                                                    'institution.show',
                                                                     {
-                                                                        person: person.id,
+                                                                        institution:
+                                                                            institution.id,
                                                                     }
                                                                 )
                                                             "
@@ -253,7 +177,7 @@ let BreadCrumpLinks = [
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <Pagination :records="people" />
+                                        <Pagination :records="institutions" />
                                     </div>
                                 </div>
                             </div>

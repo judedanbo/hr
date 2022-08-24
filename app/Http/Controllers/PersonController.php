@@ -36,6 +36,7 @@ class PersonController extends Controller
                     'dob' => $person ->date_of_birth,
                     'ssn' => $person ->social_security_number,
                     'initials' => $person ->initials,
+                    // 'number' => Person::count()
                     // 'department' => $person->departments->count() > 0 ? [
                     //     'id' => $person->departments->first()->id,
                     //     'name' => $person->departments->first()->name
@@ -45,15 +46,6 @@ class PersonController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -72,27 +64,5 @@ class PersonController extends Controller
                 'initials' => $person->initials
             ]
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Person $person)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Person $person)
-    {
-        //
     }
 }

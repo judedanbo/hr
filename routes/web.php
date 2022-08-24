@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\PersonController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -33,7 +34,13 @@ require __DIR__.'/auth.php';
 
 
 // Application Routes
+// person
 Route::controller(PersonController::class)->group(function() {
     Route::get('/person', 'index')->name('person.index');
     Route::get('/person/{person}', 'show')->name('person.show');
+});
+// Institution
+Route::controller(InstitutionController::class)->group(function() {
+    Route::get('/institution', 'index')->name('institution.index');
+    Route::get('/institution/{institution}', 'show')->name('institution.show');
 });
