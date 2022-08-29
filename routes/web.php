@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\UnitController;
+use App\Models\Institution;
+use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -43,4 +46,22 @@ Route::controller(PersonController::class)->group(function() {
 Route::controller(InstitutionController::class)->group(function() {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
+    Route::get('/institution/{institution}/departments', 'department')->name('institution.department');
+});
+// unit
+Route::controller(UnitController::class)->group(function() {
+    Route::get('/unit', 'index')->name('unit.index');
+    Route::get('/unit/{unit}', 'show')->name('unit.show');
+});
+
+// test
+
+Route::get('/test', function(){
+    return Institution::query()
+    ->where('id', 21)
+    ->with(['departments'=> function($q){
+
+        $q->countSubs();
+    }])
+    ->get();
 });

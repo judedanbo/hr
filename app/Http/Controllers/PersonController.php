@@ -20,13 +20,13 @@ class PersonController extends Controller
             'people' => Person::query()
                 ->when(request()->search, function($query, $search){
                     $terms =  explode(" ", $search);
-                    // foreach($term as $terms){
-                        $query->where('surname', 'like', "%{$search}%");
-                        $query->orWhere('other_names', 'like', "%{$search}%");
-                        $query->orWhere('date_of_birth', 'like', "%{$search}%");
-                        $query->orWhere('social_security_number', 'like', "%{$search}%");
-                        $query->orWhereRaw("monthname(date_of_birth) like '%{$search}%'");
-                    // }
+                    foreach($terms as $term){
+                        $query->where('surname', 'like', "%{$term}%");
+                        $query->orWhere('other_names', 'like', "%{$term}%");
+                        $query->orWhere('date_of_birth', 'like', "%{$term}%");
+                        $query->orWhere('social_security_number', 'like', "%{$term}%");
+                        $query->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
+                    }
                 })
                 ->paginate(10)
                 ->through(fn($person) => [
