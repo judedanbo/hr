@@ -35,7 +35,6 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-
 // Application Routes
 // person
 Route::controller(PersonController::class)->group(function() {
@@ -46,13 +45,21 @@ Route::controller(PersonController::class)->group(function() {
 Route::controller(InstitutionController::class)->group(function() {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
-    Route::get('/institution/{institution}/departments', 'department')->name('institution.department');
+    Route::get('/institution/{institution}/staff', 'staff')->name('institution.staff');
 });
 // unit
 Route::controller(UnitController::class)->group(function() {
     Route::get('/unit', 'index')->name('unit.index');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
 });
+
+
+// staff
+Route::controller(UnitController::class)->group(function() {
+    Route::get('/unit', 'index')->name('unit.index');
+    Route::get('/unit/{unit}', 'show')->name('unit.show');
+});
+
 
 // test
 

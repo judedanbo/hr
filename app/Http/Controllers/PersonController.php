@@ -25,7 +25,7 @@ class PersonController extends Controller
                         $query->orWhere('other_names', 'like', "%{$term}%");
                         $query->orWhere('date_of_birth', 'like', "%{$term}%");
                         $query->orWhere('social_security_number', 'like', "%{$term}%");
-                        $query->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
+                        $query->orWhereRaw("monthname(date_of_birth) like ?", [$term]);
                     }
                 })
                 ->paginate(10)

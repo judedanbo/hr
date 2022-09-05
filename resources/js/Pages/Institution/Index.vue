@@ -6,6 +6,7 @@ import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
+import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 
@@ -22,7 +23,7 @@ watch(
         Inertia.get(
             route("institution.index"),
             { search: value },
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true, preserveScroll: true }
         );
     }, 300)
 );
@@ -64,7 +65,7 @@ let BreadCrumpLinks = [
                                             >Institutions</span
                                         >
                                         <span class="text-lg font-semibold">{{
-                                            institutions.total
+                                            institutions.total.toLocaleString()
                                         }}</span>
                                     </div>
                                     <div class="relative min-w-0 ml-auto h-14">
@@ -83,14 +84,23 @@ let BreadCrumpLinks = [
                         <div class="sm:flex justify-between my-6">
                             <h3 class="mb-4 text-xl">Institutions</h3>
 
-                            <BreezeInput
-                                v-model="search"
-                                type="search"
-                                class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 bg-slate-50"
-                                required
-                                autofocus
-                                placeholder="Search institutions..."
-                            />
+                            <div class="mt-1 relative mx-8">
+                                <div
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                >
+                                    <span class="text-gray-500 sm:text-sm">
+                                        <MagnifyingGlassIcon class="w-4 h-4" />
+                                    </span>
+                                </div>
+                                <BreezeInput
+                                    v-model="search"
+                                    type="search"
+                                    class="w-full pl-8 bg-slate-100 border-0"
+                                    required
+                                    autofocus
+                                    placeholder="Search institutions..."
+                                />
+                            </div>
                         </div>
                         <div class="flex flex-col mt-6">
                             <div
@@ -132,6 +142,12 @@ let BreadCrumpLinks = [
                                                     >
                                                         Units
                                                     </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                                    >
+                                                        Staff
+                                                    </th>
 
                                                     <th
                                                         role="col"
@@ -152,7 +168,7 @@ let BreadCrumpLinks = [
                                                     class="transition-all hover:bg-gray-100 hover:shadow-lg"
                                                 >
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap"
+                                                        class="px-6 py-2 whitespace-nowrap"
                                                     >
                                                         <div
                                                             class="flex items-center"
@@ -204,7 +220,18 @@ let BreadCrumpLinks = [
                                                             class="text-sm text-gray-900 text-center"
                                                         >
                                                             {{
-                                                                institution.divisions
+                                                                institution.divisions.toLocaleString()
+                                                            }}
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap"
+                                                    >
+                                                        <div
+                                                            class="text-sm text-gray-900 text-center"
+                                                        >
+                                                            {{
+                                                                institution.staff.toLocaleString()
                                                             }}
                                                         </div>
                                                     </td>

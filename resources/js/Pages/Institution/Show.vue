@@ -3,12 +3,13 @@ import MainLayout from "@/Layouts/HrAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { Inertia } from "@inertiajs/inertia";
-import { BadgeCheckIcon, SearchIcon } from "@heroicons/vue/outline";
+import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
+import InfoCard from "@/Components/InfoCard.vue";
 
 let props = defineProps({
     institution: Object,
@@ -32,7 +33,7 @@ watch(
                 institution: props.institution.id,
             }),
             { search: value },
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true, preserveScroll: true }
         );
     }, 300)
 );
@@ -49,21 +50,36 @@ watch(
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-2">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm">
                     <div class="p-4 md:flex justify-around">
                         <div class="flex flex-col md:flex-row items-center">
                             <h1
-                                class="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold tracking-wider text-gray-700"
+                                class="text-2xl font-bold tracking-wider text-gray-700"
                             >
                                 {{ institution.name }}
                             </h1>
                         </div>
                     </div>
                 </div>
+                <div
+                    class="grid grid-cols-1 gap-6 my-6 md:grid-cols-2 lg:grid-cols-4 bg-w"
+                >
+                    <InfoCard title="Staff" :value="institution.staff" />
+                    <InfoCard
+                        title="Department"
+                        :value="institution.departments"
+                    />
+                    <InfoCard
+                        title="Divisions"
+                        :value="institution.divisions"
+                    />
+                    <InfoCard title="Units" :value="institution.units" />
+                </div>
 
                 <div
+                    v-if="departments"
                     class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-2/5"
                 >
                     <p
@@ -82,7 +98,7 @@ watch(
                             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                         >
                             <span class="text-gray-500 sm:text-sm">
-                                <SearchIcon class="w-4 h-4" />
+                                <MagnifyingGlassIcon class="w-4 h-4" />
                             </span>
                         </div>
                         <BreezeInput
@@ -95,7 +111,7 @@ watch(
                         />
                     </div>
 
-                    <ul class="px-8 pb-6">
+                    <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
                         <li
                             v-for="(department, index) in departments"
                             :key="index"

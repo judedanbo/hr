@@ -2,7 +2,6 @@
 import MainLayout from "@/Layouts/HrAuthenticated.vue";
 import { Head } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
-import { BadgeCheckIcon } from "@heroicons/vue/outline";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 

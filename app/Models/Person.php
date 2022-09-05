@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Person extends Model
@@ -29,6 +30,21 @@ class Person extends Model
     public function getNumberAttribute()
     {
         return Person::count();
+    }
+
+    /**
+     * The departments that belong to the Person
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function departments(): BelongsToMany
+    {
+        return $this->belongsToMany(Department::class)
+            ->withPivot('staff_number','old_staff_number', 'hire_date', 'start_date')
+            ->withTimestamps()
+            ->using(DepartmentPerson::class)
+            ->whereNull('end_date')
+            ->as('staff');
     }
 
 }

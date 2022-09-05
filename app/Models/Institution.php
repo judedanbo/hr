@@ -45,13 +45,13 @@ class Institution extends Model
     }
 
     /**
-     * Get all of the allUnits for the Institution
+     * Get all of the staff for the Institution
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function allUnits(): HasMany
+    public function staff(): HasManyThrough
     {
-        return $this->hasMany(Units::class);
+        return $this->hasManyThrough(PersonUnit::class,  Unit::class);
     }
 
 

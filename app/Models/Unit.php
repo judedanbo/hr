@@ -6,6 +6,7 @@ use App\Enums\UnitType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -79,5 +80,15 @@ class Unit extends Model
     public function scopeUnits($query)
     {
         return $query->where('type', UnitType::Unit);
+    }
+
+     /**
+     * The staff that belong to the Department
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function staff(): BelongsToMany
+    {
+        return $this->belongsToMany(Person::class)->withPivot('staff_number','old_staff_number', 'hire_date', 'start_date');
     }
 }

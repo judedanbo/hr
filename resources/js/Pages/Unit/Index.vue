@@ -6,6 +6,8 @@ import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
+import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
+import InfoCard from "@/Components/InfoCard.vue";
 
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 
@@ -29,8 +31,7 @@ watch(
 
 let BreadCrumpLinks = [
     {
-        name: "Institutions",
-        url: route("institution.index", { institution: 21 }),
+        name: "Units",
     },
     {
         // name: units,
@@ -45,7 +46,7 @@ let BreadCrumpLinks = [
         <template #header>
             <BreadCrumpVue :links="BreadCrumpLinks" />
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Departments
+                All Departments
             </h2>
         </template>
 
@@ -56,44 +57,30 @@ let BreadCrumpLinks = [
                         <div
                             class="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2 lg:grid-cols-4"
                         >
-                            <a
-                                href="#"
-                                class="p-4 transition-shadow border rounded-lg shadow-sm hover:shadow-lg"
-                            >
-                                <div class="flex items-start">
-                                    <div
-                                        class="flex flex-col flex-shrink-0 space-y-2"
-                                    >
-                                        <span class="text-gray-400">Units</span>
-                                        <span class="text-lg font-semibold">{{
-                                            units.total
-                                        }}</span>
-                                    </div>
-                                    <div class="relative min-w-0 ml-auto h-14">
-                                        <canvas id="canvasId"></canvas>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span
-                                        class="inline-block px-2 text-sm text-white bg-green-300 rounded mr-1"
-                                        >25%</span
-                                    >
-                                    <span>from 2021</span>
-                                </div>
-                            </a>
+                            <InfoCard title="Units" :value="units.total" />
                         </div>
                         <div
                             v-if="units.total > 0"
                             class="sm:flex justify-between my-6"
                         >
-                            <h3 class="mb-4 text-xl">Units</h3>
-                            <BreezeInput
-                                v-model="search"
-                                type="search"
-                                class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3"
-                                required
-                                autofocus
-                            />
+                            <h3 class="mb-4 text-xl"></h3>
+                            <div class="mt-1 relative mx-8">
+                                <div
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                >
+                                    <span class="text-gray-500 sm:text-sm">
+                                        <MagnifyingGlassIcon class="w-4 h-4" />
+                                    </span>
+                                </div>
+                                <BreezeInput
+                                    v-model="search"
+                                    type="search"
+                                    class="w-full pl-8 bg-slate-100 border-0"
+                                    required
+                                    autofocus
+                                    placeholder="Search units..."
+                                />
+                            </div>
                         </div>
                         <div class="flex flex-col mt-6">
                             <div
@@ -117,6 +104,12 @@ let BreadCrumpLinks = [
                                                     >
                                                         Name
                                                     </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                                    >
+                                                        Institution
+                                                    </th>
 
                                                     <th
                                                         role="col"
@@ -137,7 +130,7 @@ let BreadCrumpLinks = [
                                                     class="transition-all hover:bg-gray-100 hover:shadow-lg"
                                                 >
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap"
+                                                        class="px-6 py-2 whitespace-nowrap"
                                                     >
                                                         <div
                                                             class="flex items-center"
@@ -161,6 +154,28 @@ let BreadCrumpLinks = [
                                                         </div>
                                                     </td>
 
+                                                    <td
+                                                        class="px-6 py-4 text-sm font-medium whitespace-nowrap"
+                                                    >
+                                                        <Link
+                                                            :href="
+                                                                route(
+                                                                    'institution.show',
+                                                                    {
+                                                                        institution:
+                                                                            unit
+                                                                                .institution
+                                                                                .id,
+                                                                    }
+                                                                )
+                                                            "
+                                                            v-text="
+                                                                unit.institution
+                                                                    .name
+                                                            "
+                                                        >
+                                                        </Link>
+                                                    </td>
                                                     <td
                                                         class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap"
                                                     >

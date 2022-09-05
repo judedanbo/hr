@@ -1,6 +1,4 @@
 <script setup>
-import { BadgeCheckIcon } from "@heroicons/vue/outline";
-
 let buttonClicked = () => {};
 
 defineProps({
