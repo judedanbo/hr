@@ -222,16 +222,14 @@ let BreadcrumbLinks = [
                                 >
                                     <span class="mr-4"> {{ index + 1 }} </span>
                                     <div class="flex flex-col">
-                                        <Link
-                                            :href="
-                                                route('unit.show', {
-                                                    unit: st.id,
-                                                })
-                                            "
-                                            class=""
-                                        >
+                                        <p class="">
                                             {{ st.name }}
-                                        </Link>
+                                            {{
+                                                unit.institution.id
+                                                    ? "yes"
+                                                    : "No"
+                                            }}
+                                        </p>
                                         <div
                                             class="flex justify-start space-x-4"
                                         >
@@ -264,6 +262,7 @@ let BreadcrumbLinks = [
                                                     route('institution.staff', {
                                                         institution:
                                                             unit.institution.id,
+                                                        staff: stf.id,
                                                     })
                                                 "
                                                 class=""

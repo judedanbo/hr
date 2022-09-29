@@ -54,5 +54,15 @@ class Institution extends Model
         return $this->hasManyThrough(PersonUnit::class,  Unit::class);
     }
 
+     /**
+      * Get all of the jobs for the Institution
+      *
+      * @return \Illuminate\Database\Eloquent\Relations\HasMany
+      */
+     public function jobs(): HasMany
+     {
+         return $this->hasMany(Job::class);
+     }
+
 
 }

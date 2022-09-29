@@ -11,13 +11,13 @@ defineProps({
 </script>
 <template>
     <nav class="rounded-md w-full">
-        <ol class="list-reset flex">
+        <ol class="list-reset flex items-center">
             <li>
                 <a
                     href="/"
                     class="text-xs md:text-sm lg:text-md text-green-600 hover:text-green-700"
-                    >Dashboard</a
                 >
+                </a>
             </li>
             <template v-if="links.length > 0">
                 <div
@@ -25,7 +25,7 @@ defineProps({
                     :key="index"
                     class="flex items-center"
                 >
-                    <div v-if="link.name != null" class="flex">
+                    <div v-if="link.name != null" class="flex items-center">
                         <li>
                             <span
                                 class="text-xs md:text-sm lg:text-md text-gray-500 mx-2"

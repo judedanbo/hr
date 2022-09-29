@@ -36,7 +36,7 @@ let BreadCrumpLinks = [
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Institutions" />
 
     <MainLayout>
         <template #header>

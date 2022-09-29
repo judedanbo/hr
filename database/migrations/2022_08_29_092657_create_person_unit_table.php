@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('unit_id')->constrained();
             $table->foreignId('person_id')->constrained();
             $table->string('staff_number', 12);
+            $table->string('email')->nullable();
             $table->string('old_staff_number', 15)->nullable();
             $table->date('hire_date');
             $table->date('start_date')->default(now());

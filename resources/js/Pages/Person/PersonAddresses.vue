@@ -1,0 +1,135 @@
+<script setup>
+import { Link } from "@inertiajs/inertia-vue3";
+import DeleteAddressModal from "./DeleteAddressModal.vue";
+import AddAddressModal from "./AddAddressModal.vue";
+import { format, differenceInYears } from "date-fns";
+
+import {
+    MagnifyingGlassIcon,
+    HomeModernIcon,
+    AtSymbolIcon,
+    PhoneIcon,
+} from "@heroicons/vue/24/outline";
+import { ref } from "vue";
+import { Inertia } from "@inertiajs/inertia";
+defineProps({
+    person: Object,
+});
+
+let addAddress = () => {
+    showAddAddressModal.value = true;
+};
+let showDeleteAddressModal = ref(false);
+let addressToDelete = ref(null);
+let showAddAddressModal = ref(false);
+let deleteAddress = (id) => {
+    addressToDelete.value = id;
+    showDeleteAddressModal.value = true;
+};
+let editAddress = (id) => {
+    console.log("edit Address " + id);
+};
+
+const formattedDob = (dateString) => {
+    const date = new Date(dateString);
+    return format(date, "dd MMMM, yyyy");
+};
+
+let getAge = (dateString) => {
+    const date = new Date(dateString);
+    return differenceInYears(new Date(), date);
+};
+
+let showPerson = (id) => {
+    Inertia.get(route("person.show", { person: id }));
+};
+</script>
+<template>
+    <div
+        class="overflow-hidden bg-white shadow sm:rounded-lg w-full mx-auto"
+    >
+        <div class="px-4 pt-6 sm:px-6">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Address</h3>
+        </div>
+
+        <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+            <div
+                class="flex justify-end items-center px-4 bg-white dark:bg-gray-800"
+            >
+                <button
+                    @click.stop.prevent="addAddress"
+                    type="button"
+                    class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center"
+                >
+                    <HomeModernIcon class="w-5 h-5 mr-2" />
+                    Add new address
+                </button>
+            </div>
+            <table
+                class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+            >
+                <thead
+                    class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+                ></thead>
+                <tbody>
+                    <tr
+                        v-if="person.address"
+                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    >
+                        <td
+                            scope="row"
+                            class="py-4 px-6 text-gray-900 whitespace-nowrap dark:text-white hover:cursor-pointer"
+                        >
+                            <p>{{ person.address.address_line_1 }}</p>
+                            <p>{{ person.address.address_line_2 }}</p>
+                            <p>
+                                {{ person.address.city }},
+                                {{ person.address.region }}
+                            </p>
+                            <p>{{ person.address.country }}</p>
+                            <p>{{ person.address.post_code }}</p>
+                        </td>
+
+                        <td class="py-4 px-6 text-right space-x-3">
+                            <!-- Modal toggle -->
+                            <button
+                                @click.prevent="addAddress"
+                                type="button"
+                                class="font-medium text-green-600 dark:text-green-500 hover:underline"
+                            >
+                                Edit
+                            </button>
+                            <button
+                                @click.prevent="
+                                    deleteAddress(person.address.id)
+                                "
+                                type="button"
+                                class="font-medium text-red-600 dark:text-red-500 hover:underline"
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <tr v-else>
+                        <td
+                            class="text-center py-4 bg-gray-200 text-white text-lg tracking-wide font-bold"
+                        >
+                            No address provided
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <DeleteAddressModal
+                :address="addressToDelete"
+                :person="person.id"
+                @closeModal="showDeleteAddressModal = false"
+                :isVisible="showDeleteAddressModal"
+            />
+            <AddAddressModal
+                :person_id="person.id"
+                @closeModal="showAddAddressModal = false"
+                :isVisible="showAddAddressModal"
+            />
+        </div>
+    </div>
+</template>

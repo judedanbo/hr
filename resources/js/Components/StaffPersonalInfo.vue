@@ -1,0 +1,80 @@
+<script setup>
+defineProps({
+    staff: Object,
+    person: Object,
+});
+</script>
+<template>
+    <div class="overflow-hidden bg-white shadow sm:rounded-lg w-full">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">
+                Personal Information
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                Personal details staff.
+            </p>
+        </div>
+        <div class="border-t border-gray-200">
+            <dl>
+                <div
+                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                >
+                    <dt class="text-sm font-medium text-gray-500">
+                        SNNIT Number
+                    </dt>
+                    <dd
+                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
+                    >
+                        {{ person.ssn }}
+                    </dd>
+                </div>
+                <div
+                    v-if="person.national_id_number"
+                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                >
+                    <dt class="text-sm font-medium text-gray-500">
+                        Ghana Card No
+                    </dt>
+                    <dd
+                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
+                    ></dd>
+                </div>
+
+                <div
+                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                >
+                    <dt class="text-sm font-medium text-gray-500">
+                        Nationality
+                    </dt>
+                    <dd
+                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
+                    >
+                        {{ person.nationality ?? "Ghanaian" }}
+                    </dd>
+                </div>
+                <div
+                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                >
+                    <dt class="text-sm font-medium text-gray-500">Religion</dt>
+                    <dd
+                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
+                    >
+                        {{ person.religion ?? "Not Provided" }}
+                    </dd>
+                </div>
+                <div
+                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                >
+                    <dt class="text-sm font-medium text-gray-500">
+                        Marital Status
+                    </dt>
+                    <dd
+                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
+                    >
+                        {{ person.marital_status ?? "Not Provided" }}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</template>

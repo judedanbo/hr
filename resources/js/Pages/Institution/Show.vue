@@ -40,7 +40,7 @@ watch(
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="institution.name" />
 
     <MainLayout>
         <template #header>
@@ -66,7 +66,15 @@ watch(
                 <div
                     class="grid grid-cols-1 gap-6 my-6 md:grid-cols-2 lg:grid-cols-4 bg-w"
                 >
-                    <InfoCard title="Staff" :value="institution.staff" />
+                    <InfoCard
+                        title="Staff"
+                        :value="institution.staff"
+                        :link="
+                            route('institution.staffs', {
+                                institution: institution.id,
+                            })
+                        "
+                    />
                     <InfoCard
                         title="Department"
                         :value="institution.departments"

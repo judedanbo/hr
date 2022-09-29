@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution;
+use App\Models\Job;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -149,7 +150,7 @@ class InstitutionController extends Controller
         ]);
     }
 
-    public function staff($institution)
+    public function staffs($institution)
     {
         $people = DB::table('people')
             ->select('id')
@@ -171,7 +172,7 @@ class InstitutionController extends Controller
                             $q->orWhereRaw("monthname(person_unit.start_date) like ?",[$searchValue]);
                             $q->orWhereIn('person_unit.person_id', $people);
 
-                            $q->with(['unit', 'person']);
+                            $q->with(['unit', 'person', 'jobs']);
                             $q->paginate();
                         }
                     ]
@@ -190,7 +191,7 @@ class InstitutionController extends Controller
 
             }, function($query) {
                 $query->with(['staff' => function($q) {
-                    $q->with(['person', 'unit']);
+                    $q->with(['person', 'unit', 'jobs']);
                     $q->paginate();
                 }]);
                 $query->withCount('staff');
@@ -200,7 +201,7 @@ class InstitutionController extends Controller
 
         //  dd($institution->total);
 
-        return Inertia::render('Institution/Staff', [
+        return Inertia::render('Institution/Staffs', [
             'staff' =>  $institution->staff ? $institution->staff->map(fn($stf) =>
             [
                 'staff_id' => $stf->id,
@@ -214,6 +215,8 @@ class InstitutionController extends Controller
                 'dob' => $stf->person->date_of_birth,
                 'ssn' => $stf->person->social_security_number,
                 'initials' => $stf->person->initials,
+                'current_job' => $stf->jobs[0]->name,
+                'current_job_id' => $stf->jobs[0]->id,
                 'unit' => $stf->unit? [
                     'id' => $stf->unit->id,
                     'name' => $stf->unit->name
@@ -228,6 +231,101 @@ class InstitutionController extends Controller
                 'search' => request()->search,
                 'page' => request()->page,
             ],
+        ]);
+    }
+    public function staff($institution, $staff)
+    {
+
+       $institution = Institution::query()
+            ->where('id',$institution)
+            ->with(['staff' => function($query) use($staff) {
+                $query->where('person_unit.id', $staff);
+                $query->with(['person.address', 'unit', 'jobs', 'dependents.person']);
+            } ])
+            ->first();
+
+        //  dd($institution->staff);
+        $staff = $institution? $institution->staff->first() : null;
+        return Inertia::render('Institution/Sta', [
+            'person' => [
+                'id' => $staff->person->id,
+                'name' => $staff->person->full_name,
+                'dob' => $staff->person->date_of_birth,
+                'gender' => $staff->person->gender,
+                'ssn' => $staff->person->social_security_number,
+                'initials' => $staff->person->initials,
+                'address' => $staff->person->address->count() ? [
+                    'id' => $staff->person->address->first()->id,
+                    'address_line_1' => $staff->person->address->first()->address_line_1,
+                    'address_line_2' => $staff->person->address->first()->address_line_2,
+                    'city' => $staff->person->address->first()->city,
+                    'region' => $staff->person->address->first()->region,
+                    'country' => $staff->person->address->first()->country,
+                    'post_code' => $staff->person->address->first()->post_code,
+                    'valid_end' => $staff->person->address->first()->valid_end,
+                ] : null
+            ],
+            'staff' =>  $institution->staff ?
+            [
+                'staff_id' => $staff->id,
+                'staff_number' => $staff->staff_number,
+                'old_staff_number' => $staff->old_staff_number,
+                'hire_date' => $staff->hire_date,
+                'start_date' => $staff->start_date,
+                'email' => strtolower(explode(' ', $staff->person->other_names)[0]) . '.'. strtolower(explode(' ', $staff->person->surname)[0]) . '@audit.gov.gh',
+
+                'jobs' => $staff->jobs->count() > 0 ? $staff->jobs->map(fn($job)=> [
+                    'id' => $job->id,
+                    'name' => $job->name,
+                    'start_date' => $job->pivot->start_date,
+                    'end_date' => $job->pivot->end_date,
+                ]) : null,
+
+                'unit' => $staff->unit? [
+                    'id' => $staff->unit->id,
+                    'name' => $staff->unit->name
+                ] : null,
+                'dependents' =>  $staff->dependents? $staff->dependents->map(fn($dep) => [
+                    'id' => $dep->id,
+                    'person_id' => $dep->person_id,
+                    'name' => $dep->person->full_name,
+                    'gender' => $dep->person->gender,
+                    'dob' => $dep->person->date_of_birth,
+                    'relation' => $dep->relation,
+                ] ) : null,
+            ]: null,
+            'institution' => [
+                'id' => $institution->id,
+                'name' => $institution->name,
+            ],
+            'filters' => [
+                'search' => request()->search,
+            ],
+        ]);
+    }
+
+    public function jobs($institution)
+    {
+       $institution = Institution::with(['jobs' => function($query) {
+            $query->when(request()->search, function($q){
+                $q->where('name', 'like', "%" . request()->search . "%");
+            });
+            $query->withCount('staff');
+        }])
+            ->where('id', $institution)
+            ->first();
+
+        return Inertia::render('Institution/Jobs', [
+            'institution' => [
+                'id' => $institution->id,
+                'name' => $institution->name
+            ],
+            'jobs' => $institution->jobs->map(fn($job) => [
+                'id' =>$job->id,
+                'name' =>$job->name,
+                'staff' =>$job->staff_count,
+            ]),
+            'filters' => ['search' => request()->search],
         ]);
     }
 }

@@ -1,18 +1,24 @@
 <script setup>
+import { Inertia } from "@inertiajs/inertia";
 import { Link } from "@inertiajs/inertia-vue3";
 
-defineProps({
+let props = defineProps({
     title: String,
     value: Number,
+    link: {
+        required: false,
+        type: String,
+    },
 });
 
-let details = () => {
-    Inertia.get(route("institution.staff", { institution: 21 }));
+let details = (url = props.link) => {
+    Inertia.get(props.link);
+    // console.log(url);
 };
 </script>
 <template>
     <div
-        @click="details"
+        @click="details()"
         class="p-4 transition-shadow border rounded-lg shadow-sm hover:shadow-lg bg-white cursor-pointer"
     >
         <div class="flex items-start">

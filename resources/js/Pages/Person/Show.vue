@@ -4,6 +4,8 @@ import { Head } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import PersonContacts from "./PersonContacts.vue";
+import PersonAddresses from "./PersonAddresses.vue";
 
 const formattedDob = (dateString) => {
     const date = new Date(dateString);
@@ -17,7 +19,10 @@ let getAge = (dateString) => {
 
 let props = defineProps({
     person: Object,
+    contacts: Object,
+    contact_types: Array,
     filters: Object,
+    address: Object,
 });
 
 let tabs = [
@@ -70,13 +75,23 @@ let BreadcrumbLinks = [
                                     }}
                                     years)
                                 </p>
-                                <p class="text-lg tracking-wide">
+                                <p
+                                    v-if="person.ssn"
+                                    class="text-lg tracking-wide"
+                                >
                                     SSNIT No. {{ person.ssn }}
                                 </p>
                             </div>
-                            <div>Contacts</div>
                         </div>
                     </div>
+                </div>
+                <div class="mt-4 flex justify-start items-start">
+                    <PersonContacts
+                        :person="person"
+                        :contacts="contacts"
+                        :types="contact_types"
+                    />
+                    <PersonAddresses :person="person" :address="address" />
                 </div>
             </div>
         </div>

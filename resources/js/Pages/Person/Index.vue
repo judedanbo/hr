@@ -232,7 +232,40 @@ let BreadCrumpLinks = [
                                                     <td
                                                         class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"
                                                     >
-                                                        Staff
+                                                        <Link
+                                                            :href="
+                                                                route(
+                                                                    'staff.show',
+                                                                    {
+                                                                        staff: person
+                                                                            .unit
+                                                                            .staff_id,
+                                                                    }
+                                                                )
+                                                            "
+                                                            v-if="person.unit"
+                                                            class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-xs px-2 py-1 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                        >
+                                                            Staff
+                                                        </Link>
+                                                        <Link
+                                                            :href="
+                                                                route(
+                                                                    'staff.show',
+                                                                    {
+                                                                        staff: person
+                                                                            .dependent
+                                                                            .staff_id,
+                                                                    }
+                                                                )
+                                                            "
+                                                            v-if="
+                                                                person.dependent
+                                                            "
+                                                            class="text-white bg-orange-700 hover:bg-orange-800 focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-xs px-2 py-1 text-center mr-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800"
+                                                        >
+                                                            Dependent
+                                                        </Link>
                                                     </td>
                                                     <td
                                                         class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap"
