@@ -13,13 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('institutions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 120);
-            $table->string('abbreviation', 6)->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->string('status', 10)->nullable();
+        Schema::create('regions', function (Blueprint $table) {
+            $table->tinyIncrements('id');
+            $table->string('name', 35);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('institutions');
+        Schema::dropIfExists('regions');
     }
 };

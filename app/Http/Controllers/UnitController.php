@@ -19,6 +19,7 @@ class UnitController extends Controller
                     $query-> where('name', 'like', "%{$search}%");
                 })
                 ->paginate(10)
+                ->withQueryString()
                 ->through(fn ($unit) => [
                     'id' => $unit->id,
                     'name' => $unit->name,

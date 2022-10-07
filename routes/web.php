@@ -35,14 +35,15 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return redirect()->route('institution.show', [21]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+// })->name('dashboard');
 
 
 
 // Application Routes
 // person
-Route::controller(PersonController::class)->group(function() {
+Route::controller(PersonController::class)->middleware(['auth'])->group(function() {
     Route::get('/person', 'index')->name('person.index');
     Route::get('/person/{person}', 'show')->name('person.show');
     Route::post('/person/{person}/contact', 'addContact')->name('person.contact.create');
@@ -50,7 +51,7 @@ Route::controller(PersonController::class)->group(function() {
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
 });
 // Institution
-Route::controller(InstitutionController::class)->group(function() {
+Route::controller(InstitutionController::class)->middleware(['auth'])->group(function() {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
     Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
@@ -58,14 +59,14 @@ Route::controller(InstitutionController::class)->group(function() {
     Route::get('/institution/{institution}/jobs', 'jobs')->name('institution.jobs');
 });
 // unit
-Route::controller(UnitController::class)->group(function() {
+Route::controller(UnitController::class)->middleware(['auth'])->group(function() {
     Route::get('/unit', 'index')->name('unit.index');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
 });
 
 
 // staff
-Route::controller(PersonUnitController::class)->group(function() {
+Route::controller(PersonUnitController::class)->middleware(['auth'])->group(function() {
     Route::get('/staff', 'index')->name('staff.index');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
@@ -74,7 +75,7 @@ Route::controller(PersonUnitController::class)->group(function() {
 
 
 // dependent
-Route::controller(DependentController::class)->group(function() {
+Route::controller(DependentController::class)->middleware(['auth'])->group(function() {
     // Route::get('/dependent', 'index')->name('dependent.index');
     // Route::get('/dependent/create', 'create')->name('dependent.create');
     // Route::get('/dependent/{dependent}', 'show')->name('dependent.show');
@@ -82,5 +83,7 @@ Route::controller(DependentController::class)->group(function() {
 });
 
 
-
-Route::get('/jobs/',[JobController::class, 'index']);
+Route::controller(JobController::class)->middleware(['auth'])->group(function() {
+    Route::get('/job', 'index')->name('job.index');
+    Route::get('/job/{job}', 'show')->name('job.show');
+});

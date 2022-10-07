@@ -11,7 +11,7 @@ import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 
 let props = defineProps({
-    institutions: Object,
+    jobs: Object,
     filters: Object,
 });
 
@@ -21,7 +21,7 @@ watch(
     search,
     debounce(function (value) {
         Inertia.get(
-            route("institution.index"),
+            route("job.index"),
             { search: value },
             { preserveState: true, replace: true, preserveScroll: true }
         );
@@ -30,19 +30,19 @@ watch(
 
 let BreadCrumpLinks = [
     {
-        name: "Institutions",
+        name: "Jobs",
     },
 ];
 </script>
 
 <template>
-    <Head title="Institutions" />
+    <Head title="Jobs" />
 
     <MainLayout>
         <template #header>
             <BreadCrumpVue :links="BreadCrumpLinks" />
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Institutions
+                Jobs
             </h2>
         </template>
 
@@ -52,37 +52,9 @@ let BreadCrumpLinks = [
                     <div class="p-6 bg-white border-b border-gray-200">
                         <div
                             class="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2 lg:grid-cols-4"
-                        >
-                            <a
-                                href="#"
-                                class="p-4 transition-shadow border rounded-lg shadow-sm hover:shadow-lg"
-                            >
-                                <div class="flex items-start">
-                                    <div
-                                        class="flex flex-col flex-shrink-0 space-y-2"
-                                    >
-                                        <span class="text-gray-400"
-                                            >Institutions</span
-                                        >
-                                        <span class="text-lg font-semibold">{{
-                                            institutions.total.toLocaleString()
-                                        }}</span>
-                                    </div>
-                                    <div class="relative min-w-0 ml-auto h-14">
-                                        <canvas id="canvasId"></canvas>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span
-                                        class="inline-block px-2 text-sm text-white bg-green-300 rounded mr-1"
-                                        >25%</span
-                                    >
-                                    <span>from 2021</span>
-                                </div>
-                            </a>
-                        </div>
+                        ></div>
                         <div class="sm:flex justify-between my-6">
-                            <h3 class="mb-4 text-xl">Institutions</h3>
+                            <h3 class="mb-4 text-xl">Jobs</h3>
 
                             <div class="mt-1 relative mx-8">
                                 <div
@@ -98,7 +70,7 @@ let BreadCrumpLinks = [
                                     class="w-full pl-8 bg-slate-100 border-0"
                                     required
                                     autofocus
-                                    placeholder="Search institutions..."
+                                    placeholder="Search Jobs..."
                                 />
                             </div>
                         </div>
@@ -113,7 +85,7 @@ let BreadCrumpLinks = [
                                         class="overflow-hidden border-b border-gray-200 rounded-md shadow-md"
                                     >
                                         <table
-                                            v-if="institutions.total > 0"
+                                            v-if="jobs.total > 0"
                                             class="min-w-full overflow-x-scroll divide-y divide-gray-200"
                                         >
                                             <thead class="bg-gray-50">
@@ -124,24 +96,7 @@ let BreadCrumpLinks = [
                                                     >
                                                         Name
                                                     </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                    >
-                                                        Departments
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                    >
-                                                        Divisions
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                    >
-                                                        Units
-                                                    </th>
+
                                                     <th
                                                         scope="col"
                                                         class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
@@ -163,8 +118,8 @@ let BreadCrumpLinks = [
                                                 class="bg-white divide-y divide-gray-200"
                                             >
                                                 <tr
-                                                    v-for="institution in institutions.data"
-                                                    :key="institution.id"
+                                                    v-for="job in jobs.data"
+                                                    :key="job.id"
                                                     class="transition-all hover:bg-gray-100 hover:shadow-lg"
                                                 >
                                                     <td
@@ -182,12 +137,12 @@ let BreadCrumpLinks = [
                                                                     class="text-sm font-medium text-gray-900"
                                                                 >
                                                                     {{
-                                                                        institution.name
+                                                                        job.name
                                                                     }}
                                                                     {{
-                                                                        institution.abbreviation
+                                                                        job.abbreviation
                                                                             ? "(" +
-                                                                              institution.abbreviation +
+                                                                              job.abbreviation +
                                                                               ")"
                                                                             : ""
                                                                     }}
@@ -198,6 +153,7 @@ let BreadCrumpLinks = [
                                                             </div>
                                                         </div>
                                                     </td>
+
                                                     <td
                                                         class="px-6 py-4 whitespace-nowrap"
                                                     >
@@ -205,40 +161,7 @@ let BreadCrumpLinks = [
                                                             class="text-sm text-gray-900 text-center"
                                                         >
                                                             {{
-                                                                institution.departments
-                                                            }}
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="px-6 py-4 whitespace-nowrap"
-                                                    >
-                                                        <div
-                                                            class="text-sm text-gray-900 text-center"
-                                                        >
-                                                            {{
-                                                                institution.units
-                                                            }}
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="px-6 py-4 whitespace-nowrap"
-                                                    >
-                                                        <div
-                                                            class="text-sm text-gray-900 text-center"
-                                                        >
-                                                            {{
-                                                                institution.divisions.toLocaleString()
-                                                            }}
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="px-6 py-4 whitespace-nowrap"
-                                                    >
-                                                        <div
-                                                            class="text-sm text-gray-900 text-center"
-                                                        >
-                                                            {{
-                                                                institution.staff.toLocaleString()
+                                                                job.staff.toLocaleString()
                                                             }}
                                                         </div>
                                                     </td>
@@ -249,10 +172,9 @@ let BreadCrumpLinks = [
                                                         <Link
                                                             :href="
                                                                 route(
-                                                                    'institution.show',
+                                                                    'job.show',
                                                                     {
-                                                                        institution:
-                                                                            institution.id,
+                                                                        job: job.id,
                                                                     }
                                                                 )
                                                             "
@@ -263,7 +185,7 @@ let BreadCrumpLinks = [
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <Pagination :records="institutions" />
+                                        <Pagination :records="jobs" />
                                     </div>
                                 </div>
                             </div>

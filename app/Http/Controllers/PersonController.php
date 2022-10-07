@@ -34,6 +34,7 @@ class PersonController extends Controller
                 })
                 ->with('units', 'dependent')
                 ->paginate(10)
+                ->withQueryString()
                 ->through(fn($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,

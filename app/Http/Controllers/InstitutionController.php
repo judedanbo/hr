@@ -18,12 +18,17 @@ class InstitutionController extends Controller
             'institutions' => Institution::query()
                 ->when(request()->search, function($query, $search){
                     $query->where('name', 'like', "%{$search}%");
+                    $query->orWhere('abbreviation', 'like', "%{$search}%");
                 })
                 ->withCount('departments', 'divisions', 'units', 'staff')
+                ->whereNull('end_date')
                 ->paginate(10)
+                ->withQueryString()
                 ->through(fn($institution) => [
                     'id' => $institution->id,
                     'name' => $institution->name,
+                    'abbreviation' => $institution->abbreviation,
+                    'status' => $institution->status,
                     'departments' =>$institution->departments_count,
                     'divisions' => $institution->divisions_count,
                     'units' => $institution->units_count,
