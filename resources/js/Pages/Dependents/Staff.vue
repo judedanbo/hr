@@ -93,7 +93,7 @@ let getAge = (dateString) => {
                         </div>
                     </Link>
                     <Link
-                        href="/account/campaigns"
+                        :href="route('job.show', { job: staff.current_job_id })"
                         class="px-4 py-2 hover:bg-gray-100 flex"
                     >
                         <div class="text-gray-600">

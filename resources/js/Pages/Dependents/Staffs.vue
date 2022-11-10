@@ -189,7 +189,14 @@ let BreadCrumpLinks = [
                                                             </a>
                                                         </Link>
                                                         <Link
-                                                            href="/account/campaigns"
+                                                            :href="
+                                                                route(
+                                                                    'job.show',
+                                                                    {
+                                                                        job: staff.current_job_id,
+                                                                    }
+                                                                )
+                                                            "
                                                         >
                                                             <a
                                                                 class="px-4 py-2 hover:bg-gray-100 flex"

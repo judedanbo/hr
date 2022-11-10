@@ -40,7 +40,7 @@ watch(
 
 let BreadCrumpLinks = [
     {
-        name: "Institutions",
+        name: "Audit Service",
         url: route("institution.index", { institution: 21 }),
     },
     {
@@ -50,7 +50,7 @@ let BreadCrumpLinks = [
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Staff" />
 
     <MainLayout>
         <template #header>
@@ -189,7 +189,14 @@ let BreadCrumpLinks = [
                                                             </a>
                                                         </Link>
                                                         <Link
-                                                            href="/account/campaigns"
+                                                            :href="
+                                                                route(
+                                                                    'job.show',
+                                                                    {
+                                                                        job: staff.current_job_id,
+                                                                    }
+                                                                )
+                                                            "
                                                         >
                                                             <a
                                                                 class="px-4 py-2 hover:bg-gray-100 flex"

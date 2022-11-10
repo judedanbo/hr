@@ -40,7 +40,6 @@ Route::get('/dashboard', function () {
 // })->name('dashboard');
 
 
-
 // Application Routes
 // person
 Route::controller(PersonController::class)->middleware(['auth'])->group(function() {
