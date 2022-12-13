@@ -5,6 +5,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonUnitController;
+use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -23,7 +24,8 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-require __DIR__.'/auth.php';
+
+require __DIR__ . '/auth.php';
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -42,7 +44,7 @@ Route::get('/dashboard', function () {
 
 // Application Routes
 // person
-Route::controller(PersonController::class)->middleware(['auth'])->group(function() {
+Route::controller(PersonController::class)->middleware(['auth'])->group(function () {
     Route::get('/person', 'index')->name('person.index');
     Route::get('/person/{person}', 'show')->name('person.show');
     Route::post('/person/{person}/contact', 'addContact')->name('person.contact.create');
@@ -50,7 +52,7 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
 });
 // Institution
-Route::controller(InstitutionController::class)->middleware(['auth'])->group(function() {
+Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
     Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
@@ -58,14 +60,14 @@ Route::controller(InstitutionController::class)->middleware(['auth'])->group(fun
     Route::get('/institution/{institution}/jobs', 'jobs')->name('institution.jobs');
 });
 // unit
-Route::controller(UnitController::class)->middleware(['auth'])->group(function() {
+Route::controller(UnitController::class)->middleware(['auth'])->group(function () {
     Route::get('/unit', 'index')->name('unit.index');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
 });
 
 
 // staff
-Route::controller(PersonUnitController::class)->middleware(['auth'])->group(function() {
+Route::controller(PersonUnitController::class)->middleware(['auth'])->group(function () {
     Route::get('/staff', 'index')->name('staff.index');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
@@ -74,7 +76,7 @@ Route::controller(PersonUnitController::class)->middleware(['auth'])->group(func
 
 
 // dependent
-Route::controller(DependentController::class)->middleware(['auth'])->group(function() {
+Route::controller(DependentController::class)->middleware(['auth'])->group(function () {
     // Route::get('/dependent', 'index')->name('dependent.index');
     // Route::get('/dependent/create', 'create')->name('dependent.create');
     // Route::get('/dependent/{dependent}', 'show')->name('dependent.show');
@@ -82,7 +84,16 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
 });
 
 
-Route::controller(JobController::class)->middleware(['auth'])->group(function() {
+Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/job', 'index')->name('job.index');
     Route::get('/job/{job}', 'show')->name('job.show');
 });
+
+// report
+Route::get('/report', [RecruitmentController::class, 'index'])->middleware(['auth'])->name('report.index');
+Route::get('/report/recruitment', [RecruitmentController::class, 'recruitment'])->middleware(['auth'])->name('report.recruitment');
+Route::get('/report/recruitment/chart', [RecruitmentController::class, 'recruitmentChart'])->middleware(['auth'])->name('report.recruitment.chart');
+Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth'])->name('report.recruitment.details');
+
+Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
+Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');

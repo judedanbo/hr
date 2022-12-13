@@ -93,6 +93,6 @@ defineProps({
 });
 
 let openPage = (url) => {
-    Inertia.visit(url, { preserveScroll: true });
+    Inertia.visit(url, {});
 };
 </script>

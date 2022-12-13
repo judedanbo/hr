@@ -48,10 +48,15 @@ let num = 1;
 
 //
 let BreadcrumbLinks = [
-    { name: "Institutions", url: route("institution.index") },
     {
         name: props.unit.institution.name,
         url: route("institution.show", {
+            institution: props.unit.institution.id,
+        }),
+    },
+    {
+        name: "Departments",
+        url: route("unit.index", {
             institution: props.unit.institution.id,
         }),
     },
@@ -70,7 +75,6 @@ let BreadcrumbLinks = [
 
     <MainLayout>
         <template #header>
-            <BreadCrumpVue :links="BreadcrumbLinks" />
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ props.unit.name }}
             </h2>
@@ -78,19 +82,7 @@ let BreadcrumbLinks = [
 
         <div class="py-2">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div
-                        class="px-10 py-4 bg-white border-b border-gray-200 md:flex justify-around"
-                    >
-                        <div class="flex flex-col md:flex-row items-center">
-                            <h1
-                                class="text-3xl font-bold tracking-wider text-gray-700"
-                            >
-                                {{ props.unit.name }}
-                            </h1>
-                        </div>
-                    </div>
-                </div>
+                <BreadCrumpVue :links="BreadcrumbLinks" />
                 <div class="flex space-x-4 items-start">
                     <div
                         v-if="props.unit.type != 'Unit'"

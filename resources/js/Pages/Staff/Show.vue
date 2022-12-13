@@ -5,6 +5,7 @@ import Tab from "@/Components/Tab.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
+import StaffDates from "@/Components/StaffDates.vue";
 import StaffDependents from "@/Components/StaffDependents.vue";
 import {
     BriefcaseIcon,
@@ -40,8 +41,8 @@ let tabs = [
     { name: "Notification" },
 ];
 let BreadcrumbLinks = [
-    { name: "People", url: "/staff" },
-    { name: props.staff.initials, url: "/" },
+    { name: "Staff", url: "/staff" },
+    { name: props.staff.name, url: "/" },
 ];
 </script>
 
@@ -50,13 +51,14 @@ let BreadcrumbLinks = [
 
     <MainLayout>
         <template #header>
-            <BreadCrumpVue :links="BreadcrumbLinks" />
+            <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ staff.name }}
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-2">
+            <BreadCrumpVue :links="BreadcrumbLinks" />
             <div class="max-w-7xl mx-auto md:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm md:rounded-lg">
                     <div
@@ -96,14 +98,14 @@ let BreadcrumbLinks = [
                                         <p class="text-lg md:text-xl">
                                             Gender.: {{ staff.gender }}
                                         </p>
-                                        <p
-                                            class="text-lg md:text-xl"
-                                            :title="
-                                                getAge(staff.dob) + ' years old'
-                                            "
-                                        >
+                                        <p class="text-lg md:text-xl">
                                             Born:
                                             {{ formattedDob(staff.dob) }}
+                                        </p>
+                                        <p class="pl-14 text-sm">
+                                            {{
+                                                getAge(staff.dob) + " years old"
+                                            }}
                                         </p>
                                     </div>
                                     <div>
@@ -164,7 +166,16 @@ let BreadcrumbLinks = [
                 <div
                     class="flex mt-8 flex-wrap justify-center md:justify-between space-y-8 md:space-y-0 items-start"
                 >
-                    <StaffPersonalInfo :staff="staff" :person="person" />
+                    <StaffDates
+                        :staff="staff"
+                        :person="person"
+                        class="w-2/5 mb-2"
+                    />
+                    <StaffPersonalInfo
+                        :staff="staff"
+                        :person="person"
+                        class="w-2/5 mt-4"
+                    />
                     <StaffDependents v-if="staff" :staff="staff" />
                 </div>
             </div>

@@ -198,6 +198,9 @@ return [
 
         // laravel Debugbar
         'Barryvdh\Debugbar\ServiceProvider',
+
+        // Laravel Excel
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -214,6 +217,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Debugbar' => 'Barryvdh\Debugbar\Facade',
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ])->toArray(),
 

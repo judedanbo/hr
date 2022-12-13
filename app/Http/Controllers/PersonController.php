@@ -22,9 +22,9 @@ class PersonController extends Controller
     {
         return Inertia::render('Person/Index', [
             'people' => Person::query()
-                ->when(request()->search, function($query, $search){
+                ->when(request()->search, function ($query, $search) {
                     $terms =  explode(" ", $search);
-                    foreach($terms as $term){
+                    foreach ($terms as $term) {
                         $query->where('surname', 'like', "%{$term}%");
                         $query->orWhere('other_names', 'like', "%{$term}%");
                         $query->orWhere('date_of_birth', 'like', "%{$term}%");
@@ -35,13 +35,13 @@ class PersonController extends Controller
                 ->with('units', 'dependent')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn($person) => [
+                ->through(fn ($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,
-                    'gender' => $person ->gender,
-                    'dob' => $person ->date_of_birth,
-                    'ssn' => $person ->social_security_number,
-                    'initials' => $person ->initials,
+                    'gender' => $person->gender,
+                    'dob' => $person->date_of_birth,
+                    'ssn' => $person->social_security_number,
+                    'initials' => $person->initials,
                     // 'number' => Person::count()
                     'unit' => $person->units->count() > 0 ? [
                         // $person->units->first()
@@ -69,7 +69,7 @@ class PersonController extends Controller
      */
     public function show($person)
     {
-        $person = Person::with(['address','contacts','units', 'dependent'])->whereId($person)->first();
+        $person = Person::with(['address', 'contacts', 'units', 'dependent'])->whereId($person)->first();
 
         return Inertia::render('Person/Show', [
             'person' => [
@@ -80,12 +80,12 @@ class PersonController extends Controller
                 'initials' => $person->initials
             ],
             'contact_types' => ContactType::select(['id', 'name'])->get(),
-            'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn($contact)=>[
+            'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type_id' => $contact->contact_type_id,
                 'valid_end' => $contact->valid_end,
-            ]):null,
+            ]) : null,
             'address' => $person->address->count() > 0 ? [
                 'id' => $person->address->first()->id,
                 'address_line_1' => $person->address->first()->address_line_1,
@@ -95,7 +95,7 @@ class PersonController extends Controller
                 'country' => $person->address->first()->country,
                 'post_code' => $person->address->first()->post_code,
                 'valid_end' => $person->address->first()->valid_end,
-            ]:null,
+            ] : null,
         ]);
     }
 
@@ -103,7 +103,7 @@ class PersonController extends Controller
     {
         $attribute = $request->validate([
             'contact' => "required|min:7|max:30",
-            'contact_type_id' => ['required','exists:contact_types,id'],
+            'contact_type_id' => ['required', 'exists:contact_types,id'],
         ]);
 
         $person->contacts()->create($attribute);

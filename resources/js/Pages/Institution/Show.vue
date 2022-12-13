@@ -10,6 +10,7 @@ import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import InfoCard from "@/Components/InfoCard.vue";
+import NoItem from "@/Components/NoItem.vue";
 
 let props = defineProps({
     institution: Object,
@@ -18,10 +19,10 @@ let props = defineProps({
 });
 
 //
-let BreadcrumbLinks = [
-    { name: "Institutions", url: route("institution.index") },
-    { name: props.institution.name },
-];
+// let BreadcrumbLinks = [
+//     { name: "Institutions", url: route("institution.index") },
+//     { name: props.institution.name },
+// ];
 
 let search = ref(props.filters.search);
 
@@ -40,121 +41,126 @@ watch(
 </script>
 
 <template>
-    <Head :title="institution.name" />
+    <Head v-if="institution" :title="institution.name" />
 
     <MainLayout>
         <template #header>
-            <BreadCrumpVue :links="BreadcrumbLinks" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight pt-2">
+            <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
+            <h2
+                v-if="institution"
+                class="font-semibold text-xl text-gray-800 leading-tight pt-2"
+            >
                 {{ institution.name }}
             </h2>
         </template>
 
-        <div class="py-2">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm">
-                    <div class="p-4 md:flex justify-around">
-                        <div class="flex flex-col md:flex-row items-center">
-                            <h1
-                                class="text-2xl font-bold tracking-wider text-gray-700"
-                            >
-                                {{ institution.name }}
-                            </h1>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    class="grid grid-cols-1 gap-6 my-6 md:grid-cols-2 lg:grid-cols-4 bg-w"
-                >
-                    <InfoCard
-                        title="Staff"
-                        :value="institution.staff"
-                        :link="
-                            route('institution.staffs', {
-                                institution: institution.id,
-                            })
-                        "
-                    />
-                    <InfoCard
-                        title="Department"
-                        :value="institution.departments"
-                    />
-                    <InfoCard
-                        title="Divisions"
-                        :value="institution.divisions"
-                    />
-                    <InfoCard title="Units" :value="institution.units" />
-                </div>
+        <div
+            v-if="institution"
+            class="mx-auto flex flex-wrap gap-4 justify-center"
+        >
+            <InfoCard
+                v-if="institution"
+                title="Staff"
+                :value="institution.staff"
+                :link="
+                    route('institution.staffs', {
+                        institution: institution.id,
+                    })
+                "
+            />
+            <InfoCard
+                v-if="institution"
+                :link="
+                    route('unit.index', {
+                        institution: institution.id,
+                    })
+                "
+                title="Department"
+                :value="institution.departments"
+            />
+            <InfoCard
+                v-if="institution"
+                title="Divisions"
+                :value="institution.divisions"
+            />
+            <InfoCard
+                v-if="institution"
+                title="Units"
+                :value="institution.units"
+            />
 
-                <div
-                    v-if="departments"
-                    class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-2/5"
+            <div
+                v-if="departments"
+                class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-2/5"
+            >
+                <p
+                    class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide"
                 >
-                    <p
-                        class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide"
+                    Departments
+                    <span class="text-lg text-gray-500 dark:text-white ml-2">
+                        ({{ departments.length }})
+                    </span>
+                </p>
+
+                <div class="mt-1 relative mx-8">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                     >
-                        Departments
-                        <span
-                            class="text-lg text-gray-500 dark:text-white ml-2"
-                        >
-                            ({{ departments.length }})
+                        <span class="text-gray-500 sm:text-sm">
+                            <MagnifyingGlassIcon class="w-4 h-4" />
                         </span>
-                    </p>
-
-                    <div class="mt-1 relative mx-8">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                        >
-                            <span class="text-gray-500 sm:text-sm">
-                                <MagnifyingGlassIcon class="w-4 h-4" />
-                            </span>
-                        </div>
-                        <BreezeInput
-                            v-model="search"
-                            type="search"
-                            class="w-full pl-8 bg-slate-100 border-0"
-                            required
-                            autofocus
-                            placeholder="Search departments..."
-                        />
                     </div>
 
-                    <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
-                        <li
-                            v-for="(department, index) in departments"
-                            :key="index"
-                            class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
-                        >
-                            <div
-                                class="flex items-center justify-start text-lg"
-                            >
-                                <span class="mr-4"> {{ index + 1 }} </span>
-                                <div class="flex flex-col">
-                                    <Link
-                                        :href="
-                                            route('unit.show', {
-                                                unit: department.id,
-                                            })
-                                        "
-                                        class="font-semibold"
-                                    >
-                                        {{ department.name }}
-                                    </Link>
-                                    <div class="flex justify-start space-x-4">
-                                        <span class="text-sm">
-                                            Divisions:
-                                            {{ department.divisions }}
-                                        </span>
-                                        <span class="text-sm">
-                                            Units: {{ department.units }}
-                                        </span>
-                                    </div>
+                    <BreezeInput
+                        v-model="search"
+                        type="search"
+                        class="w-full pl-8 bg-slate-100 border-0"
+                        required
+                        autofocus
+                        placeholder="Search departments..."
+                    />
+                </div>
+
+                <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
+                    <li
+                        v-for="(department, index) in departments"
+                        :key="index"
+                        class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
+                    >
+                        <div class="flex items-center justify-start text-lg">
+                            <span class="mr-4"> {{ index + 1 }} </span>
+                            <div class="flex flex-col">
+                                <Link
+                                    :href="
+                                        route('unit.show', {
+                                            unit: department.id,
+                                        })
+                                    "
+                                    class="font-semibold"
+                                >
+                                    {{ department.name }}
+                                </Link>
+                                <div class="flex justify-start space-x-4">
+                                    <span class="text-sm">
+                                        Divisions:
+                                        {{ department.divisions ?? 0 }}
+                                    </span>
+                                    <span class="text-sm">
+                                        Units: {{ department.units ?? 0 }}
+                                    </span>
                                 </div>
                             </div>
-                        </li>
-                    </ul>
-                </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div
+                v-else
+                class="w-1/2 flex justify-center items-center rounded shadow py-10 bg-white"
+            >
+                No Units / Departments
             </div>
         </div>
+        <NoItem v-else name="Institution" />
     </MainLayout>
 </template>
