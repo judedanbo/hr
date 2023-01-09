@@ -19,12 +19,13 @@ return new class extends Migration
             $table->string('surname', 30);
             $table->string('first_name', 60)->nullable();
             $table->string('other_names', 60)->nullable();
-            $table->date('date_of_birth');
-            $table->string('gender', 10);
+            $table->date('date_of_birth')->nullable();
+            $table->string('town_of_birth')->nullable();
+            $table->string('country_of_birth', 3)->nullable();
+            $table->string('gender', 10)->nullable();
             $table->string('marital_status', 12)->nullable();
-            $table->string('social_security_number')->nullable();
-            $table->string('national_id_number')->nullable();
             $table->string('nationality', 40)->nullable();
+            $table->string('religion', 40)->nullable();
             $table->string('image')->nullable();
             $table->text('about')->nullable();
             $table->timestamps();

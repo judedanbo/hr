@@ -34,6 +34,7 @@ watch(
 watch(
     staff,
     debounce(function (value) {
+        console.log(props.unit.id);
         Inertia.get(
             route("unit.show", {
                 unit: props.unit.id,
@@ -213,15 +214,17 @@ let BreadcrumbLinks = [
                                     class="flex items-center justify-start text-lg"
                                 >
                                     <span class="mr-4"> {{ index + 1 }} </span>
-                                    <div class="flex flex-col">
-                                        <p class="">
+                                    <div v-if="st" class="flex flex-col">
+                                        <Link
+                                            :href="
+                                                route('staff.show', {
+                                                    staff: st.id,
+                                                })
+                                            "
+                                            class=""
+                                        >
                                             {{ st.name }}
-                                            {{
-                                                unit.institution.id
-                                                    ? "yes"
-                                                    : "No"
-                                            }}
-                                        </p>
+                                        </Link>
                                         <div
                                             class="flex justify-start space-x-4"
                                         >

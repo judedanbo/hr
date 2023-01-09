@@ -59,7 +59,7 @@ watch(
             class="mx-auto flex flex-wrap gap-4 justify-center"
         >
             <InfoCard
-                v-if="institution"
+                v-if="institution?.staff > 0"
                 title="Staff"
                 :value="institution.staff"
                 :link="
@@ -69,7 +69,7 @@ watch(
                 "
             />
             <InfoCard
-                v-if="institution"
+                v-if="institution?.department > 0"
                 :link="
                     route('unit.index', {
                         institution: institution.id,
@@ -79,12 +79,12 @@ watch(
                 :value="institution.departments"
             />
             <InfoCard
-                v-if="institution"
+                v-if="institution?.divisions > 0"
                 title="Divisions"
                 :value="institution.divisions"
             />
             <InfoCard
-                v-if="institution"
+                v-if="institution?.units > 0"
                 title="Units"
                 :value="institution.units"
             />

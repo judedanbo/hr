@@ -40,7 +40,7 @@ watch(
 
 let BreadCrumpLinks = [
     {
-        name: institution.name,
+        name: props.institution.name,
         url: route("institution.index", { institution: 21 }),
     },
     {
@@ -147,13 +147,17 @@ let BreadCrumpLinks = [
                                                     </div>
                                                     <div class="border-b">
                                                         <Link
+                                                            v-for="sta_unit in stf.units"
+                                                            :key="
+                                                                stf.id +
+                                                                '_' +
+                                                                sta_unit.id
+                                                            "
                                                             :href="
                                                                 route(
                                                                     'unit.show',
                                                                     {
-                                                                        unit: stf
-                                                                            .unit
-                                                                            .id,
+                                                                        unit: sta_unit.id,
                                                                     }
                                                                 )
                                                             "
@@ -180,9 +184,7 @@ let BreadCrumpLinks = [
                                                                         class="text-xs text-gray-500"
                                                                     >
                                                                         {{
-                                                                            stf
-                                                                                .unit
-                                                                                .name
+                                                                            sta_unit.name
                                                                         }}
                                                                     </p>
                                                                 </div>
@@ -193,7 +195,7 @@ let BreadCrumpLinks = [
                                                                 route(
                                                                     'job.show',
                                                                     {
-                                                                        job: staff.current_job_id,
+                                                                        job: stf.current_job_id,
                                                                     }
                                                                 )
                                                             "

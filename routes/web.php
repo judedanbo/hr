@@ -4,7 +4,7 @@ use App\Http\Controllers\DependentController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PersonController;
-use App\Http\Controllers\PersonUnitController;
+use App\Http\Controllers\InstitutionPersonController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Models\Dependent;
@@ -37,7 +37,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return redirect()->route('institution.show', [21]);
+    return redirect()->route('institution.show', [30305]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 // })->name('dashboard');
 
@@ -57,7 +57,7 @@ Route::controller(InstitutionController::class)->middleware(['auth'])->group(fun
     Route::get('/institution/{institution}', 'show')->name('institution.show');
     Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
     Route::get('/institution/{institution}/staff/{staff}', 'staff')->name('institution.staff');
-    Route::get('/institution/{institution}/jobs', 'jobs')->name('institution.jobs');
+    Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');
 });
 // unit
 Route::controller(UnitController::class)->middleware(['auth'])->group(function () {
@@ -67,7 +67,7 @@ Route::controller(UnitController::class)->middleware(['auth'])->group(function (
 
 
 // staff
-Route::controller(PersonUnitController::class)->middleware(['auth'])->group(function () {
+Route::controller(InstitutionPersonController::class)->middleware(['auth'])->group(function () {
     Route::get('/staff', 'index')->name('staff.index');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
@@ -85,8 +85,8 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
 
 
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
-    Route::get('/job', 'index')->name('job.index');
-    Route::get('/job/{job}', 'show')->name('job.show');
+    Route::get('/rank', 'index')->name('job.index');
+    Route::get('/rank/{job}', 'show')->name('job.show');
 });
 
 // report

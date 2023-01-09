@@ -165,9 +165,9 @@ class InstitutionController extends Controller
         $people = DB::table('people')
             ->select('id')
             ->where('surname', 'like', "%" . request()->search . "%")
+            ->orWhere('first_name', 'like', "%" . request()->search . "%")
             ->orWhere('other_names', 'like', "%" . request()->search . "%")
             ->orWhere('date_of_birth', 'like', "%" . request()->search . "%")
-            ->orWhere('social_security_number', 'like', "%" . request()->search . "%")
             ->orWhereRaw("monthname(date_of_birth) like ?", [request()->search]);
         $institution = Institution::query()
             ->where('id', $institution)
@@ -175,14 +175,14 @@ class InstitutionController extends Controller
                 $query->with(
                     [
                         'staff' => function ($q) use ($searchValue, $people) {
-                            $q->where('person_unit.staff_number', 'like', "%{$searchValue}%");
-                            $q->orWhere('person_unit.old_staff_number', 'like', "%{$searchValue}%");
-                            $q->orWhere('person_unit.hire_date', 'like', "%{$searchValue}%");
-                            $q->orWhereRaw("monthname(person_unit.hire_date) like ?", [$searchValue]);
-                            $q->orWhereRaw("monthname(person_unit.start_date) like ?", [$searchValue]);
-                            $q->orWhereIn('person_unit.person_id', $people);
+                            $q->where('institution_person.staff_number', 'like', "%{$searchValue}%");
+                            $q->orWhere('institution_person.old_staff_number', 'like', "%{$searchValue}%");
+                            $q->orWhere('institution_person.hire_date', 'like', "%{$searchValue}%");
+                            $q->orWhereRaw("monthname(institution_person.hire_date) like ?", [$searchValue]);
 
-                            $q->with(['unit', 'person', 'jobs']);
+                            $q->orWhereIn('institution_person.person_id', $people);
+
+                            $q->with(['units', 'person', 'ranks']);
                             $q->paginate();
                         }
                     ]
@@ -190,19 +190,20 @@ class InstitutionController extends Controller
                 $query->withCount(
                     [
                         'staff' => function ($q) use ($searchValue, $people) {
-                            $q->where('person_unit.staff_number', 'like', "%{$searchValue}%");
-                            $q->orWhere('person_unit.old_staff_number', 'like', "%{$searchValue}%");
-                            $q->orWhere('person_unit.hire_date', 'like', "%{$searchValue}%");
-                            $q->orWhereRaw("monthname(person_unit.hire_date) like ?", [$searchValue]);
-                            $q->orWhereRaw("monthname(person_unit.start_date) like ?", [$searchValue]);
-                            $q->orWhereIn('person_unit.person_id', $people);
+                            $q->where('institution_person.staff_number', 'like', "%{$searchValue}%");
+                            $q->orWhere('institution_person.old_staff_number', 'like', "%{$searchValue}%");
+                            $q->orWhere('institution_person.hire_date', 'like', "%{$searchValue}%");
+                            $q->orWhereRaw("monthname(institution_person.hire_date) like ?", [$searchValue]);
+
+
+                            $q->orWhereIn('institution_person.person_id', $people);
                         }
                     ]
                 );
                 $query->paginate();
             }, function ($query) {
                 $query->with(['staff' => function ($q) {
-                    $q->with(['person', 'unit', 'jobs']);
+                    $q->with(['person', 'units', 'ranks']);
                     $q->paginate();
                 }]);
                 $query->withCount('staff');
@@ -210,7 +211,7 @@ class InstitutionController extends Controller
             // ->withCount('staff')
             ->first();
 
-        //  dd($institution->total);
+        // dd($institution);
 
         return Inertia::render('Institution/Staffs', [
             'staff' =>  $institution->staff ? $institution->staff->map(fn ($stf) =>
@@ -219,19 +220,21 @@ class InstitutionController extends Controller
                 'staff_number' => $stf->staff_number,
                 'old_staff_number' => $stf->old_staff_number,
                 'hire_date' => $stf->hire_date,
-                'start_date' => $stf->start_date,
                 'name' => $stf->person->full_name,
-                'email' => strtolower(explode(' ', $stf->person->other_names)[0]) . '.' . strtolower(explode(' ', $stf->person->surname)[0]) . '@audit.gov.gh',
+                'email' => strtolower(explode(' ', $stf->person->first_name)[0]) . '.' . strtolower(explode(' ', $stf->person->surname)[0]) . '@audit.gov.gh',
                 'other_names' => $stf->person->other_names,
                 'dob' => $stf->person->date_of_birth,
-                'ssn' => $stf->person->social_security_number,
+                // 'ssn' => $stf->person->social_security_number,
                 'initials' => $stf->person->initials,
-                'current_job' => $stf->jobs[0]->name,
-                'current_job_id' => $stf->jobs[0]->id,
-                'unit' => $stf->unit ? [
-                    'id' => $stf->unit->id,
-                    'name' => $stf->unit->name
-                ] : null
+                'current_job' => $stf->ranks[0]->name,
+                'current_job_id' => $stf->ranks[0]->id,
+                'units' => $stf->units?->map(fn ($unit) => [
+                    'id' => $unit->id,
+                    'name' => $unit->name,
+                ]), //? [
+                //     'id' => $stf->unit->id,
+                //     'name' => $stf->unit->name
+                // ] : null
             ]) : null,
             'institution' => [
                 'id' => $institution->id,
@@ -250,7 +253,7 @@ class InstitutionController extends Controller
         $institution = Institution::query()
             ->where('id', $institution)
             ->with(['staff' => function ($query) use ($staff) {
-                $query->where('person_unit.id', $staff);
+                $query->where('institution_person.id', $staff);
                 $query->with(['person.address', 'unit', 'jobs', 'dependents.person']);
             }])
             ->first();
@@ -263,7 +266,7 @@ class InstitutionController extends Controller
                 'name' => $staff->person->full_name,
                 'dob' => $staff->person->date_of_birth,
                 'gender' => $staff->person->gender,
-                'ssn' => $staff->person->social_security_number,
+                // 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
                 'address' => $staff->person->address->count() ? [
                     'id' => $staff->person->address->first()->id,
@@ -282,13 +285,13 @@ class InstitutionController extends Controller
                     'staff_number' => $staff->staff_number,
                     'old_staff_number' => $staff->old_staff_number,
                     'hire_date' => $staff->hire_date,
-                    'start_date' => $staff->start_date,
+
                     'email' => strtolower(explode(' ', $staff->person->other_names)[0]) . '.' . strtolower(explode(' ', $staff->person->surname)[0]) . '@audit.gov.gh',
 
                     'jobs' => $staff->jobs->count() > 0 ? $staff->jobs->map(fn ($job) => [
                         'id' => $job->id,
                         'name' => $job->name,
-                        'start_date' => $job->pivot->start_date,
+
                         'end_date' => $job->pivot->end_date,
                     ]) : null,
 

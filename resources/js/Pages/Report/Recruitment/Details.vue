@@ -246,7 +246,12 @@ let BreadCrumpLinks = [
                                                         <th
                                                             class="tracking-wider text-gray-500 text-sm"
                                                         >
-                                                            Current Department
+                                                            Current Unit
+                                                        </th>
+                                                        <th
+                                                            class="tracking-wider text-gray-500 text-sm"
+                                                        >
+                                                            Current Rank
                                                         </th>
                                                     </tr>
                                                 </thead>

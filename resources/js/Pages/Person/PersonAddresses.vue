@@ -14,6 +14,7 @@ import { ref } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 defineProps({
     person: Object,
+    address: Object,
 });
 
 let addAddress = () => {
@@ -45,9 +46,7 @@ let showPerson = (id) => {
 };
 </script>
 <template>
-    <div
-        class="overflow-hidden bg-white shadow sm:rounded-lg w-full mx-auto"
-    >
+    <div class="overflow-hidden bg-white shadow sm:rounded-lg w-full mx-auto">
         <div class="px-4 pt-6 sm:px-6">
             <h3 class="text-lg font-medium leading-6 text-gray-900">Address</h3>
         </div>
@@ -73,21 +72,21 @@ let showPerson = (id) => {
                 ></thead>
                 <tbody>
                     <tr
-                        v-if="person.address"
+                        v-if="address"
                         class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                         <td
                             scope="row"
                             class="py-4 px-6 text-gray-900 whitespace-nowrap dark:text-white hover:cursor-pointer"
                         >
-                            <p>{{ person.address.address_line_1 }}</p>
-                            <p>{{ person.address.address_line_2 }}</p>
+                            <p>{{ address.address_line_1 }}</p>
+                            <p>{{ address.address_line_2 }}</p>
                             <p>
-                                {{ person.address.city }},
-                                {{ person.address.region }}
+                                {{ address.city }},
+                                {{ address.region }}
                             </p>
-                            <p>{{ person.address.country }}</p>
-                            <p>{{ person.address.post_code }}</p>
+                            <p>{{ address.country }}</p>
+                            <p>{{ address.post_code }}</p>
                         </td>
 
                         <td class="py-4 px-6 text-right space-x-3">
@@ -100,9 +99,7 @@ let showPerson = (id) => {
                                 Edit
                             </button>
                             <button
-                                @click.prevent="
-                                    deleteAddress(person.address.id)
-                                "
+                                @click.prevent="deleteAddress(address.id)"
                                 type="button"
                                 class="font-medium text-red-600 dark:text-red-500 hover:underline"
                             >

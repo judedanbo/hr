@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ContactType as EnumsContactType;
 use App\Models\ContactType;
 use App\Http\Requests\StorePersonRequest;
 use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
-use function PHPSTORM_META\type;
 
 class PersonController extends Controller
 {
@@ -20,33 +19,38 @@ class PersonController extends Controller
      */
     public function index()
     {
+        // return Person::with('institution')->first();
         return Inertia::render('Person/Index', [
             'people' => Person::query()
                 ->when(request()->search, function ($query, $search) {
                     $terms =  explode(" ", $search);
                     foreach ($terms as $term) {
                         $query->where('surname', 'like', "%{$term}%");
+                        $query->orWhere('first_name', 'like', "%{$term}%");
                         $query->orWhere('other_names', 'like', "%{$term}%");
                         $query->orWhere('date_of_birth', 'like', "%{$term}%");
-                        $query->orWhere('social_security_number', 'like', "%{$term}%");
+                        // $query->orWhere('social_security_number', 'like', "%{$term}%");
                         $query->orWhereRaw("monthname(date_of_birth) like ?", [$term]);
                     }
                 })
-                ->with('units', 'dependent')
+                ->with('institution', 'dependent', 'identities')
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,
-                    'gender' => $person->gender,
+                    'gender' => $person->gender->name,
                     'dob' => $person->date_of_birth,
-                    'ssn' => $person->social_security_number,
+                    'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
                     // 'number' => Person::count()
-                    'unit' => $person->units->count() > 0 ? [
+                    'institution' => $person->institution ? [
+                        'id' =>  $person->institution->first()->id,
+                        'name' =>  $person->institution->first()->name,
+                        'status' =>  $person->institution->first()->staff->status,
                         // $person->units->first()
                         // 'id' => $person->units->first()->id,
-                        'staff_id' => $person->units->first()->staff->id,
+                        'staff_id' => $person->institution->first()->staff->id,
                         // 'name' => $person->units->first()->staff
                     ] : null,
                     'dependent' => $person->dependent ? [
@@ -69,17 +73,17 @@ class PersonController extends Controller
      */
     public function show($person)
     {
-        $person = Person::with(['address', 'contacts', 'units', 'dependent'])->whereId($person)->first();
+        $person = Person::with(['address', 'contacts', 'dependent'])->whereId($person)->first();
 
         return Inertia::render('Person/Show', [
             'person' => [
                 'id' => $person->id,
                 'name' => $person->full_name,
                 'dob' => $person->date_of_birth,
-                'ssn' => $person->social_security_number,
+                // 'ssn' => $person->social_security_number,
                 'initials' => $person->initials
             ],
-            'contact_types' => ContactType::select(['id', 'name'])->get(),
+            'contact_types' => EnumsContactType::cases(),
             'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,

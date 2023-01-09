@@ -20,12 +20,17 @@ defineProps({
                     class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
                 >
                     <dt class="text-sm font-medium text-gray-500">
-                        SNNIT Number
+                        Identifications
                     </dt>
                     <dd
+                        v-for="ids in person.identities"
+                        :key="ids.number"
                         class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
                     >
-                        {{ person.ssn }}
+                        <span class="">{{ ids.type }}: </span>
+                        <span class="font-semibold tracking-wider">{{
+                            ids.number
+                        }}</span>
                     </dd>
                 </div>
                 <div

@@ -209,19 +209,22 @@ let BreadCrumpLinks = [
                                                     class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"
                                                 >
                                                     <Link
-                                                        :href="
-                                                            route(
-                                                                'staff.show',
-                                                                {
-                                                                    staff: person
-                                                                        .unit
-                                                                        .staff_id,
-                                                                }
-                                                            )
+                                                        v-if="
+                                                            person.institution
                                                         "
-                                                        v-if="person.unit"
-                                                        class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-xs px-2 py-1 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                        :class="
+                                                            person.institution
+                                                                .status ==
+                                                            'Active'
+                                                                ? 'bg-green-300 hover:bg-gray-400'
+                                                                : 'bg-gray-300 hover:bg-gray-400'
+                                                        "
+                                                        class="text-gray-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-xs px-2 py-1 text-center mr-2 mb-2"
                                                     >
+                                                        {{
+                                                            person.institution
+                                                                .status
+                                                        }}
                                                         Staff
                                                     </Link>
                                                     <Link

@@ -57,16 +57,16 @@ class Unit extends Model
 
     public function scopeCountSubs($query)
     {
-        $subQuery = DB::table('units as subUnits' )
+        $subQuery = DB::table('units as subUnits')
             ->selectRaw('count(*)')
             ->whereRaw("subUnits.unit_id = units.id");
 
         // return $query->select('units.*')->selectSub($subQuery, 'sub_number')->withCount('subs');
         return $query->select('units.*')
-                    ->withCount('subs')
-                    ->with(['subs' => function($q){
-            $q->withCount('subs');
-        }]);
+            ->withCount('subs')
+            ->with(['subs' => function ($q) {
+                $q->withCount('subs');
+            }]);
     }
 
     public function scopeDepartments($query)
@@ -82,13 +82,17 @@ class Unit extends Model
         return $query->where('type', UnitType::Unit);
     }
 
-     /**
+    /**
      * The staff that belong to the Department
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class)->withPivot('staff_number','old_staff_number', 'hire_date', 'start_date');
+        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit',  'unit_id', 'staff_id')
+            ->using(StaffUnit::class)
+            ->withPivot('start_date', 'end_date')
+            ->wherePivot('end_date', '>=', now());
+        // ->where('status', 'Active');
     }
 }

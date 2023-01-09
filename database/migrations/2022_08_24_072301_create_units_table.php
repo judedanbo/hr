@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name', 150);
             $table->foreignId('institution_id')->constrained();
             $table->foreignId('unit_id')->nullable()->constrained();
-            $table->unsignedSmallInteger('type');
+            $table->string('type', 4);
             $table->timestamps();
             $table->softDeletes();
         });

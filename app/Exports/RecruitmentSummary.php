@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\PersonUnit;
+use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 // use Illuminate\Contracts\Support\Responsable;
@@ -43,10 +43,10 @@ class RecruitmentSummary implements
     }
     public function query()
     {
-        return PersonUnit::query()
-            ->join('people', 'people.id', '=', 'person_unit.person_id')
+        return InstitutionPerson::query()
+            ->join('people', 'people.id', '=', 'institution_person.person_id')
             ->select(DB::raw(
-                "year(person_unit.hire_date) as year,
+                "year(institution_person.hire_date) as year,
                 SUM(CASE WHEN people.gender = 'Male' THEN 1 ELSE NULL END) as male,
                 SUM(CASE WHEN people.gender = 'Female' THEN 1 ELSE NULL END) as female,
                 count(*) as total"

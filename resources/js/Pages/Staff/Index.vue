@@ -173,6 +173,17 @@ let BreadCrumpLinks = [
                                                                 {{
                                                                     person.gender
                                                                 }}
+                                                                |
+                                                                {{
+                                                                    person.staff_number
+                                                                }}
+
+                                                                {{
+                                                                    person.file_number
+                                                                        ? " / " +
+                                                                          person.file_number
+                                                                        : ""
+                                                                }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -188,7 +199,10 @@ let BreadCrumpLinks = [
                                                                 person.dob
                                                             )
                                                         }}
-
+                                                    </div>
+                                                    <div
+                                                        class="text-sm text-gray-500"
+                                                    >
                                                         ({{
                                                             getAge(person.dob)
                                                         }}
@@ -203,53 +217,86 @@ let BreadCrumpLinks = [
                                                     >
                                                         <div
                                                             class="text-sm text-gray-500"
-                                                        >
-                                                            {{
-                                                                formatDate(
-                                                                    person.hire_date
-                                                                ) +
-                                                                " (" +
-                                                                getAge(
-                                                                    person.hire_date
-                                                                ) +
-                                                                " years) "
-                                                            }}
-                                                        </div>
-
-                                                        {{ person.file_number }}
-                                                        /
+                                                        ></div>
                                                         {{
-                                                            person.staff_number
+                                                            formatDate(
+                                                                person.hire_date
+                                                            )
+                                                        }}
+                                                    </div>
+                                                    <div
+                                                        class="text-sm text-gray-500"
+                                                    >
+                                                        {{
+                                                            getAge(
+                                                                person.hire_date
+                                                            ) + " years) "
                                                         }}
                                                     </div>
                                                 </td>
                                                 <td
                                                     class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"
+                                                    :title="
+                                                        getAge(
+                                                            person.current_rank
+                                                                ?.start_date
+                                                        ) + ' years'
+                                                    "
                                                 >
-                                                    {{ person.rank.name }}
-                                                    <p>
-                                                        {{
-                                                            formatDate(
-                                                                person.rank
-                                                                    .start_date
-                                                            )
-                                                        }}
-                                                        ({{
-                                                            getAge(
-                                                                person.rank
-                                                                    .start_date
-                                                            ) + " years"
-                                                        }})
-                                                    </p>
+                                                    <div
+                                                        v-if="
+                                                            person.current_rank
+                                                        "
+                                                    >
+                                                        <div>
+                                                            {{
+                                                                person
+                                                                    .current_rank
+                                                                    .name
+                                                            }}
+                                                        </div>
+                                                        <p>
+                                                            {{
+                                                                formatDate(
+                                                                    person
+                                                                        .current_rank
+                                                                        .start_date
+                                                                )
+                                                            }}
+                                                        </p>
+                                                    </div>
                                                 </td>
                                                 <td
                                                     class="px-6 py-4 text-sm font-medium whitespace-nowrap"
+                                                    :title="
+                                                        getAge(
+                                                            person.current_unit
+                                                                ?.start_date
+                                                        ) + ' years'
+                                                    "
                                                 >
-                                                    {{
-                                                        person.unit.name.substring(
-                                                            20
-                                                        )
-                                                    }}
+                                                    <div
+                                                        v-if="
+                                                            person.current_unit
+                                                        "
+                                                    >
+                                                        <div>
+                                                            {{
+                                                                person.current_unit?.name.substring(
+                                                                    20
+                                                                )
+                                                            }}
+                                                        </div>
+                                                        <div>
+                                                            {{
+                                                                formatDate(
+                                                                    person
+                                                                        .current_unit
+                                                                        .start_date
+                                                                )
+                                                            }}
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>

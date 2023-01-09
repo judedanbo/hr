@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -10,11 +11,13 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
+        // return Unit::withCount('staff')->paginate(5);
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
-                ->departments()
+                // ->departments()
                 ->with('institution')
-                ->countSubs()
+                ->withCount('staff')
+                // ->countSubs()
                 ->when(request()->institution, function ($query, $search) {
                     $query->where('institution_id',  request()->institution);
                 })
@@ -27,6 +30,7 @@ class UnitController extends Controller
                     fn ($unit) => [
                         'id' => $unit->id,
                         'name' => $unit->name,
+                        'staff' => $unit->staff_count,
                         'institution' => $unit->institution ? [
                             'id' => $unit->institution->id,
                             'name' => $unit->institution->name,
@@ -45,46 +49,57 @@ class UnitController extends Controller
 
     public function show($unit)
     {
+
         $unit = Unit::query()
+            // ->when(request()->dept, function ($query, $search) {
+            //     $query->with('subs', function ($q) use ($search) {
+            //         $q->withCount(['staff']);
+            //         $q->where('name', 'like', "%{$search}%");
+            //     });
+            // }, function ($query) {
+            //     $query->with(['subs' => function ($query) {
+            //         $query->withCount('staff', 'subs');
+            //         $query->with('staff');
+            //     }]);
+            // })
 
-            ->when(request()->dept, function ($query, $search) {
-                $query->with('subs', function ($q) use ($search) {
-                    $q->withCount(['staff']);
-                    $q->where('name', 'like', "%{$search}%");
-                });
-            }, function ($query) {
-                $query->with(['subs' => function ($query) {
-                    $query->withCount('staff', 'subs');
-                    $query->with('staff');
-                }]);
-            })
-
-            ->with(['institution', 'parent', 'staff'])
+            ->with([
+                'institution', 'parent',
+                'staff.person'
+            ])
             ->when(request()->staff, function ($query, $search) {
-                $query->with('staff', function ($q) use ($search) {
-                    $terms = explode(" ", $search);
-                    foreach ($terms as $term) {
-                        $q->where('surname', 'like', "%{$search}%");
-                        $q->orWhere('other_names', 'like', "%{$term}%");
-                        $q->orWhere('date_of_birth', 'like', "%{$term}%");
-                        $q->orWhere('social_security_number', 'like', "%{$term}%");
-                        $q->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
-                    }
+                $query->whereHas('staff', function ($q) use ($search) {
+                    $q->whereHas('person', function ($per) use ($search) {
+                        $terms = explode(" ", $search);
+                        foreach ($terms as $term) {
+                            $per->where('surname', 'like', "%{$search}%");
+                            $per->orWhere('first_name', 'like', "%{$term}%");
+                            $per->orWhere('other_names', 'like', "%{$term}%");
+                            $per->orWhere('date_of_birth', 'like', "%{$term}%");
+                            $per->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
+                        }
+                    });
                 });
                 $query->withCount(['staff' => function ($q) use ($search) {
-                    $q->where('surname', 'like', "%{$search}%");
-                    $q->orWhere('other_names', 'like', "%{$search}%");
-                    $q->orWhere('date_of_birth', 'like', "%{$search}%");
-                    $q->orWhere('social_security_number', 'like', "%{$search}%");
-                    $q->orWhereRaw("monthname(date_of_birth) like '%{$search}%'");
+                    $q->withCount(['person' => function ($per) use ($search) {
+                        $per->where('surname', 'like', "%{$search}%");
+                        $per->orWhere('first_name', 'like', "%{$search}%");
+                        $per->orWhere('other_names', 'like', "%{$search}%");
+                        $per->orWhere('date_of_birth', 'like', "%{$search}%");
+                        $per->orWhereRaw("monthname(date_of_birth) like '%{$search}%'");
+                    }]);
                 }]);
             }, function ($query) {
                 $query->withCount('staff');
             })
-            ->where('id', $unit)
+
+            ->whereId($unit)
             ->first();
 
-        // return $unit;
+        $filtered = $unit->staff->filter(function ($value) {
+            return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
+        });
+        // return $filtered;
 
         return Inertia::render('Unit/Show', [
             'unit' => [
@@ -99,27 +114,26 @@ class UnitController extends Controller
                     'name' => $unit->parent->name,
                     'id' => $unit->parent->id,
                 ] : null,
-                'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
-                    'id' => $sub->id,
-                    'name' => $sub->name,
-                    'subs' => $sub->subs_count,
-                    'staff_count' => $sub->staff_count,
-                    'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
-                        'id' => $stf->id,
-                        'name' => $stf->full_name,
-                        'dob' => $stf->date_of_birth,
-                        'ssn' => $stf->social_security_number,
-                        'initials' => $stf->initials
-                    ]) : null,
-                ]) : null,
+                // 'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
+                //     'id' => $sub->id,
+                //     'name' => $sub->name,
+                //     'subs' => $sub->subs_count,
+                //     'staff_count' => $sub->staff_count,
+                //     'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
+                //         'id' => $stf->id,
+                //         'name' => $stf->full_name,
+                //         'dob' => $stf->date_of_birth,
+                //         'ssn' => $stf->social_security_number,
+                //         'initials' => $stf->initials
+                //     ]) : null,
+                // ]) : null,
                 'type' => $unit->type->name,
-                'staff' => $unit->staff ? $unit->staff->map(fn ($st) => [
-                    'id' => $st->id,
-                    'name' => $st->full_name,
-                    'dob' => $st->date_of_birth,
-                    'ssn' => $st->social_security_number,
-                    'initials' => $st->initials
-                ]) : null
+                'staff' => $unit->staff->map(fn ($st) => [
+                    'id' => $st->person->id,
+                    'name' => $st->person->full_name,
+                    'dob' => $st->person->date_of_birth,
+                    'initials' => $st->person->initials
+                ])
                 // 'subs' =>
             ],
             'filters' => [

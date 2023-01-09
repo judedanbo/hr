@@ -2,7 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\PersonUnit;
+use App\Models\InstitutionPerson;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 // use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -25,51 +26,52 @@ class RecruitmentExport implements
     function headings(): array
     {
         return [
-            'Title',
-            'Surname',
-            'Other Names',
-            'First Name',
-            'gender',
+            'Full Name',
+            'Gender',
             'Date of Birth',
             'Date Hired',
             'Years Employed',
             'Staff Number',
             'Old Staff Number',
-            'Status',
+            'Employment Status',
             'Current Rank',
-            // 'Current Start Date',
+            'Current Rank Start',
+            'Current Unit',
+            'Current Unit Start',
         ];
     }
     public function map($staff): array
     {
         return [
-            $staff->title,
-            $staff->surname,
-            $staff->other_names,
-            $staff->first_name,
-            $staff->gender,
-            $staff->date_of_birth->format('d F, Y'),
+            $staff->person->full_name,
+            $staff->person->gender->name,
+            $staff->person->date_of_birth->format('d F, Y'),
             $staff->hire_date->format('d F, Y'),
             $staff->years_employed,
             $staff->staff_number,
             $staff->old_staff_number,
             $staff->status,
-            $staff->jobs ? $staff->jobs->first()->name : null,
-            $staff->jobs ? $staff->jobs->first()->pivot->start_date : null,
+            $staff->ranks->count() > 0 ? $staff->ranks->first()->name : null,
+            $staff->ranks->count() > 0 ? $staff->ranks->first()->pivot->start_date->format('d F, Y') : null,
+            $staff->units->count() > 0 ? $staff->units->first()->name : null,
+            $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date->format('d F, Y') : null,
         ];
     }
     public function query()
     {
-        return PersonUnit::query()
-            ->with(['jobs', 'person'])
-            ->join('people', function ($join) {
-                $join->on('people.id', '=', 'person_unit.person_id');
-            })
+        return InstitutionPerson::query()
+            ->with(['person', 'ranks', 'units'])
             ->when(request()->active, function ($query) {
                 $query->active();
             })
             ->when(request()->retired, function ($query) {
                 $query->retired();
+            })
+            ->when(request()->ranks, function ($query) {
+                $ranks = explode('|', request()->ranks);
+                foreach ($ranks as $rank) {
+                    $query->orWhere('jobs.name', $rank);
+                }
             });
     }
 }

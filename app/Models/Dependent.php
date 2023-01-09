@@ -35,6 +35,6 @@ class Dependent extends Model
      */
     public function staff(): HasOne
     {
-        return $this->hasOne(PersonUnit::class,'staff_id');
+        return $this->hasOne(InstitutionPerson::class, 'staff_id');
     }
 }

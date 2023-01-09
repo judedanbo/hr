@@ -85,7 +85,7 @@ let BreadcrumbLinks = [
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 flex justify-start items-start">
+                <div class="mt-4 flex justify-start items-start space-x-2">
                     <PersonContacts
                         :person="person"
                         :contacts="contacts"

@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Reports;
 use App\Exports\RecruitmentExport;
 use App\Exports\RecruitmentSummary;
 use App\Http\Controllers\Controller;
+use App\Models\InstitutionPerson;
 use App\Models\Job;
-use App\Models\PersonUnit;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -21,12 +22,12 @@ class RecruitmentController extends Controller
 
     public function recruitment()
     {
-        $recruitment = PersonUnit::query()
-            ->join('people', 'people.id', '=', 'person_unit.person_id')
+        $recruitment = InstitutionPerson::query()
+            ->join('people', 'people.id', '=', 'institution_person.person_id')
             ->select(DB::raw(
-                "year(person_unit.hire_date) as year,
-                SUM(CASE WHEN people.gender = 'Male' THEN 1 ELSE NULL END) as male,
-                SUM(CASE WHEN people.gender = 'Female' THEN 1 ELSE NULL END) as female,
+                "year(institution_person.hire_date) as year,
+                SUM(CASE WHEN people.gender = 'M' THEN 1 ELSE NULL END) as male,
+                SUM(CASE WHEN people.gender = 'F' THEN 1 ELSE NULL END) as female,
                 count(*) as total"
             ))
             ->when(request()->retired, function ($query) {
@@ -47,12 +48,12 @@ class RecruitmentController extends Controller
     }
     public function recruitmentChart()
     {
-        $recruitment = PersonUnit::query()
-            ->join('people', 'people.id', '=', 'person_unit.person_id')
+        $recruitment = InstitutionPerson::query()
+            ->join('people', 'people.id', '=', 'institution_person.person_id')
             ->select(DB::raw(
-                "year(person_unit.hire_date) as year,
-                SUM(CASE WHEN people.gender = 'Male' THEN 1 ELSE NULL END) as male,
-                SUM(CASE WHEN people.gender = 'Female' THEN 1 ELSE NULL END) as female,
+                "year(institution_person.hire_date) as year,
+                SUM(CASE WHEN people.gender = 'M' THEN 1 ELSE NULL END) as male,
+                SUM(CASE WHEN people.gender = 'F' THEN 1 ELSE NULL END) as female,
                 count(*) as total"
             ))
             ->when(request()->retired, function ($query) {
@@ -74,57 +75,50 @@ class RecruitmentController extends Controller
 
     function detail()
     {
-        $staff = PersonUnit::query()
-            ->with(['jobs', 'person'])
-            ->join('people', function ($join) {
-                $join->on('people.id', '=', 'person_unit.person_id');
-            })
-            ->join('job_staff', function ($join) {
-                $join->on('job_staff.staff_id', '=', 'person_unit.id');
-            })
-            ->join('jobs', function ($join) {
-                $join->on('job_staff.job_id', '=', 'jobs.id');
-            })
+        $staff = InstitutionPerson::query()
+            ->with(['person', 'ranks', 'units'])
             ->when(request()->active, function ($query) {
-                $query->active();
+                $query->whereHas('person', function ($q) {
+                    $q->whereDate('date_of_birth', '>', Carbon::now()->subYears(60));
+                });
+                // $query->where('people.');
             })
             ->when(request()->retired, function ($query) {
-                $query->retired();
+                $query->whereHas('person', function ($q) {
+                    $q->whereDate('date_of_birth', '<', Carbon::now()->subYears(60));
+                });
             })
             ->when(request()->ranks, function ($query) {
                 $ranks = explode('|', request()->ranks);
                 foreach ($ranks as $rank) {
                     $query->orWhere('jobs.name', $rank);
                 }
-                // $query->retired();
             })
             ->paginate(10)
             ->withQueryString()
-            ->through(
-                fn ($staff) => [
-                    'staff_id' => $staff->id,
-                    'person_id' => $staff->person_id,
-                    'title' => $staff->title,
-                    'surname' => $staff->surname,
-                    'other_names' => $staff->other_names,
-                    'first_name' => $staff->first_name,
-                    'gender' => $staff->gender,
-                    'date_of_birth' => $staff->date_of_birth,
-                    'hire_date' => $staff->hire_date,
-                    'years_employed' => $staff->years_employed,
-                    'staff_number' => $staff->staff_number,
-                    'old_staff_number' => $staff->old_staff_number,
-                    'status' => $staff->status,
-                    'current_job' => $staff->jobs ? [
-                        'id' => $staff->job_id,
-                        'institution_id' => $staff->institution_id,
-                        'name' => $staff->name,
-                        'start_date' => $staff->start_date,
-                    ] : null
-                ]
-            );
-        // return $staff;
-        // dd(request()->ranks);
+            ->through(fn ($staff) => [
+                'staff_id' => $staff->id,
+                'person_id' => $staff->person_id,
+                'date_of_birth' => $staff->person->date_of_birth,
+                'name' => $staff->person->full_name,
+                'gender' => $staff->person->gender->name,
+                'hire_date' => $staff->hire_date,
+                'years_employed' => $staff->years_employed,
+                'staff_number' => $staff->staff_number,
+                'old_staff_number' => $staff->old_staff_number,
+                'status' => $staff->status,
+                'current_rank' => $staff->ranks->count() > 0 ? [
+                    'id' => $staff->ranks->first()->id,
+                    'name' => $staff->ranks->first()->name,
+                    'start_date' => $staff->ranks()->first()->pivot->start_date,
+                ] : null,
+                'current_unit' => $staff->units->count() > 0 ? [
+                    'id' => $staff->units->first()->id,
+                    'name' => $staff->units->first()->name,
+                    'start_date' => $staff->units->first()->pivot->start_date,
+                ] : null
+            ]);
+
         return Inertia::render('Report/Recruitment/Details', [
             'staff' => $staff,
             'jobs' => Job::select('id', 'name')->orderBy('name')->get(),
@@ -133,7 +127,6 @@ class RecruitmentController extends Controller
                 'ranks' => request()->ranks,
                 'active' => request()->active,
                 'retired' => request()->retired,
-
             ],
         ]);
     }

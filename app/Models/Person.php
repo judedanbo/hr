@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\Gender;
+use App\Enums\MaritalStatus;
+use App\Enums\Nationality;
 
 class Person extends Model
 {
@@ -17,6 +19,7 @@ class Person extends Model
     protected $fillable = [
         'title',
         'surname',
+        'first_name',
         'other_names',
         'date_of_birth',
         'gender',
@@ -30,12 +33,14 @@ class Person extends Model
     protected $casts = [
         'gender' => Gender::class,
         'date_of_birth' => 'date',
+        'marital_status' => MaritalStatus::class,
+        'nationality' => Nationality::class
     ];
 
     /// get full name of person
     public function getFullNameAttribute()
     {
-        return "{$this->title} {$this->other_names} {$this->surname}";
+        return ucwords(strtolower("{$this->title} {$this->first_name} {$this->other_names} {$this->surname}"));
     }
 
     public function scopeOrderDob($query)
@@ -45,7 +50,7 @@ class Person extends Model
 
     function getInitialsAttribute()
     {
-        return strtoupper(substr($this->other_names, 0, 1) . substr($this->surname, 0, 1));
+        return strtoupper(substr($this->first_name, 0, 1) . substr($this->surname, 0, 1));
     }
 
     public function getNumberAttribute()
@@ -58,13 +63,18 @@ class Person extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function units(): BelongsToMany
+    public function institution(): BelongsToMany
     {
-        return $this->belongsToMany(Unit::class)
-            ->withPivot('id', 'staff_number', 'old_staff_number', 'hire_date', 'start_date')
-            ->withTimestamps()
-            ->using(PersonUnit::class)
-            ->whereNull('end_date')
+        return $this->belongsToMany(Institution::class)
+            ->using(InstitutionPerson::class)
+            ->withPivot(
+                'file_number',
+                'staff_number',
+                'old_staff_number',
+                'hire_date',
+                'end_date',
+                'id'
+            )
             ->as('staff');
     }
 
@@ -90,11 +100,31 @@ class Person extends Model
     }
 
     /**
-     * Get all all persons's addressed
+     * Get all all persons's address
      */
 
     public function address()
     {
-        return $this->morphMany(Address::class, 'addressable')->latest();
+        return $this->morphMany(Address::class, 'addressable');
     }
+
+    /**
+     * Get all of the identities for the Person
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function identities(): HasMany
+    {
+        return $this->hasMany(PersonIdentity::class);
+    }
+
+    // /**
+    //  * Get all of the identity for the Person
+    //  *
+    //  * @return \Illuminate\Database\Eloquent\Relations\HasMany
+    //  */
+    // public function identity(): HasMany
+    // {
+    //     return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
+    // }
 }

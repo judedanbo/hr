@@ -105,7 +105,7 @@ let BreadCrumpLinks = [
                                                 scope="col"
                                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                                             >
-                                                Institution
+                                                Staff
                                             </th>
                                         </tr>
                                     </thead>
@@ -142,23 +142,7 @@ let BreadCrumpLinks = [
                                             <td
                                                 class="px-6 py-4 text-sm font-medium whitespace-nowrap"
                                             >
-                                                <Link
-                                                    :href="
-                                                        route(
-                                                            'institution.show',
-                                                            {
-                                                                institution:
-                                                                    unit
-                                                                        .institution
-                                                                        .id,
-                                                            }
-                                                        )
-                                                    "
-                                                    v-text="
-                                                        unit.institution.name
-                                                    "
-                                                >
-                                                </Link>
+                                                {{ unit.staff }}
                                             </td>
                                         </tr>
                                     </tbody>

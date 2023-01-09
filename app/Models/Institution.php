@@ -49,20 +49,18 @@ class Institution extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function staff(): HasManyThrough
+    public function staff(): HasMany
     {
-        return $this->hasManyThrough(PersonUnit::class,  Unit::class);
+        return $this->hasMany(InstitutionPerson::class);
     }
 
-     /**
-      * Get all of the jobs for the Institution
-      *
-      * @return \Illuminate\Database\Eloquent\Relations\HasMany
-      */
-     public function jobs(): HasMany
-     {
-         return $this->hasMany(Job::class);
-     }
-
-
+    /**
+     * Get all of the jobs for the Institution
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ranks(): HasMany
+    {
+        return $this->hasMany(Job::class);
+    }
 }

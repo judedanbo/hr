@@ -16,21 +16,11 @@ class AdminUserSeeder extends Seeder
     public function run()
     {
         User::create(
-        [
-            'name' => 'System Administrator',
-            'email' => 'admin@audit.gov.gh',
-            'password' => bcrypt('adminpassword'),
-        ],
-        [
-            'name' => 'System Administrator',
-            'email' => 'admin@audit.gov.gh',
-            'password' => bcrypt('adminpassword'),
-        ],
-        [
-            'name' => 'System Administrator',
-            'email' => 'admin@audit.gov.gh',
-            'password' => bcrypt('adminpassword'),
-        ],
-    );
+            [
+                'name' => 'System Administrator',
+                'email' => 'admin@audit.gov.gh',
+                'password' => bcrypt('gbqdF4b6zxF7G87ihvA'),
+            ],
+        );
     }
 }

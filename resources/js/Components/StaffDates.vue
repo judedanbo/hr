@@ -9,6 +9,7 @@ import {
     differenceInMonths,
     addYears,
     differenceInDays,
+    isDate,
 } from "date-fns";
 
 defineProps({
@@ -23,6 +24,9 @@ const getDate = (dateString) => {
 
 const getDifference = (dateString, now = new Date()) => {
     const date = new Date(dateString);
+    if (!isDate(now)) {
+        now = new Date(now);
+    }
     let years = Math.abs(differenceInYears(date, now));
     let months = Math.abs(differenceInMonths(date, now)) - years * 12;
     return { years, months };
@@ -54,7 +58,7 @@ let getRetirementDate = (dateString) => {
     <div class="overflow-hidden bg-white shadow sm:rounded-lg w-full">
         <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg font-medium leading-6 text-gray-900">
-                Important Dates
+                Important Information
             </h3>
             <p class="mt-1 max-w-2xl text-sm text-gray-500">
                 Important dates of staff.
@@ -71,7 +75,6 @@ let getRetirementDate = (dateString) => {
                     <dd class="mt-1 text-gray-900 sm:col-span-2 sm:mt-0">
                         {{ formatDate(getDate(person.dob)) }}
                         <div class="text-sm">
-                            (
                             {{ getDifference(person.dob).years }}
                             years
                             {{
@@ -79,7 +82,7 @@ let getRetirementDate = (dateString) => {
                                     ? getDifference(person.dob).months +
                                       " months"
                                     : ""
-                            }})
+                            }}
                         </div>
                     </dd>
                 </div>
@@ -95,7 +98,6 @@ let getRetirementDate = (dateString) => {
                     >
                         {{ formatDate(getDate(staff.hire_date)) }}
                         <div class="text-sm">
-                            (
                             {{ getDifference(staff.hire_date).years }}
                             years
                             {{
@@ -103,31 +105,7 @@ let getRetirementDate = (dateString) => {
                                     ? getDifference(staff.hire_date).months +
                                       " months"
                                     : ""
-                            }})
-                        </div>
-                    </dd>
-                </div>
-
-                <div
-                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-                >
-                    <dt class="text-sm font-medium text-gray-500">
-                        Current Rank / Since
-                    </dt>
-                    <dd
-                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
-                    >
-                        {{ staff.current_job }}
-                        <div class="text-sm">
-                            (
-                            {{ getDifference(staff.start_date).years }}
-                            years
-                            {{
-                                getDifference(staff.start_date).months
-                                    ? getDifference(staff.start_date).months +
-                                      " months"
-                                    : ""
-                            }})
+                            }}
                         </div>
                     </dd>
                 </div>
@@ -143,12 +121,19 @@ let getRetirementDate = (dateString) => {
                         <!-- {{ getRetired(person.dob) }} -->
                         {{ formatDate(getRetirementDate(person.dob)) }}
                         <div class="text-sm">
-                            (
-                            {{
-                                getDifference(getRetirementDate(person.dob))
-                                    .years
-                            }}
-                            years
+                            in
+                            <span
+                                v-if="
+                                    getDifference(getRetirementDate(person.dob))
+                                        .years
+                                "
+                            >
+                                {{
+                                    getDifference(getRetirementDate(person.dob))
+                                        .years
+                                }}
+                                years and
+                            </span>
                             {{
                                 getDifference(getRetirementDate(person.dob))
                                     .months
@@ -156,20 +141,63 @@ let getRetirementDate = (dateString) => {
                                           getRetirementDate(person.dob)
                                       ).months + " months"
                                     : ""
-                            }})
+                            }}
                         </div>
                     </dd>
                 </div>
-                <div
-                    class="odd:bg-white even:bg-slate-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-                >
-                    <dt class="text-sm font-medium text-gray-500">
-                        Current Unit
-                    </dt>
+
+                <div class="odd:bg-white even:bg-slate-50 px-4 py-5">
+                    <dt class="text-sm font-medium text-gray-500">Ranks</dt>
                     <dd
                         class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"
                     >
-                        {{ staff.unit.name }}
+                        <div
+                            v-for="rank in staff.ranks"
+                            class="even:bg-white pl-4 py-2 hover:bg-gray-100"
+                        >
+                            {{ rank.name }}
+                            <div class="text-xs text-gray-400">
+                                {{ formatDate(getDate(rank.start_date)) }}
+                                -
+                                {{ formatDate(getDate(rank.end_date)) }}
+                            </div>
+                            <!-- <div class="text-xs">
+                                {{
+                                    getDifference(
+                                        rank.start_date,
+                                        rank.end_date
+                                    ).years
+                                }}
+                                years
+                                {{
+                                    getDifference(
+                                        rank.start_date,
+                                        rank.end_date
+                                    ).months
+                                        ? getDifference(
+                                              rank.start_date,
+                                              rank.end_date
+                                          ).months + " months"
+                                        : ""
+                                }}
+                            </div> -->
+                        </div>
+                    </dd>
+                </div>
+
+                <div class="odd:bg-white even:bg-slate-50 px-4 py-5">
+                    <dt class="text-sm font-medium text-gray-500">Units</dt>
+                    <dd
+                        class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 space-x-y space-y-2"
+                    >
+                        <div v-for="unit in staff.units" class="py-2">
+                            {{ unit.name }}
+                            <div class="text-xs text-gray-400">
+                                {{ formatDate(getDate(unit.start_date)) }}
+                                -
+                                {{ formatDate(getDate(unit.end_date)) }}
+                            </div>
+                        </div>
                     </dd>
                 </div>
             </dl>

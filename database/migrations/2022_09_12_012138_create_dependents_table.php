@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('dependents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('staff_id')->constrained('person_unit');
+            $table->foreignId('staff_id')->constrained('id')->on('institution_person');
             $table->foreignId('person_id')->constrained();
             $table->string('relation', 40);
             $table->timestamps();

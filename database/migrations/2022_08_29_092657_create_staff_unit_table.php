@@ -13,16 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('person_unit', function (Blueprint $table) {
+        Schema::create('staff_unit', function (Blueprint $table) {
             $table->id();
             $table->foreignId('unit_id')->constrained();
-            $table->foreignId('person_id')->constrained();
-            $table->string('file_number', 12);
-            $table->string('staff_number', 12);
-            $table->string('email')->nullable();
-            $table->string('old_staff_number', 15)->nullable();
-            // $table->string('status', 20);
-            $table->date('hire_date');
+            $table->foreignId('staff_id')->constrained('id')->on('institution_person');
             $table->date('start_date')->default(now());
             $table->date('end_date')->nullable();
             $table->timestamps();

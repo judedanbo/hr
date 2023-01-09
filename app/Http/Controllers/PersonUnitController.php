@@ -29,7 +29,7 @@ class PersonUnitController extends Controller
         //     ->paginate();
         // return $staff;
 
-        $person  = DB::table('people');
+        // $person  = DB::table('people');
         return Inertia::render('Staff/Index', [
             'staff' =>  PersonUnit::query()
                 ->when(request()->search, function ($query, $search) {
@@ -46,7 +46,7 @@ class PersonUnitController extends Controller
                     $query->orWhere('people.surname', 'like', "%{$search}%");
                     $query->orWhere('people.first_name', 'like', "%{$search}%");
                     $query->orWhere('people.other_names', 'like', "%{$search}%");
-                    $query->orWhere('people.social_security_number', 'like', "%{$search}%");
+                    // $query->orWhere('people.social_security_number', 'like', "%{$search}%");
                     // $query->orWhere('start_date', 'like', "%{$search}%");
                     // $query->orWhere('end_date', 'like', "%{$search}%");
                     // $query->with(['person' => function ($q) {
@@ -63,7 +63,7 @@ class PersonUnitController extends Controller
                 //     $query
                 // })
 
-                ->with(['person', 'jobs', 'unit'])
+                ->with(['person', 'jobs', 'units'])
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($staff) => [
@@ -77,6 +77,7 @@ class PersonUnitController extends Controller
                     'initials' => $staff->person->initials,
                     'name' => $staff->person->full_name,
                     'gender' => $staff->person->gender,
+                    'status' => $staff->status,
                     'dob' => $staff->person->date_of_birth,
                     'rank' => $staff->jobs->count() > 0 ? [
                         'id' => $staff->jobs->first()->id,
@@ -121,7 +122,6 @@ class PersonUnitController extends Controller
      */
     public function show($staff)
     {
-
         $staff =  PersonUnit::query()
             ->with(['person.address', 'person.contacts', 'unit.institution', 'jobs', 'dependents.person'])
             ->whereId($staff)

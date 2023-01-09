@@ -29,7 +29,6 @@ class Job extends Model
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(PersonUnit::class, 'job_staff', 'job_id', 'staff_id');
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id');
     }
-
 }

@@ -30,8 +30,6 @@ class PersonUnit extends Pivot
         return $this->belongsTo(Person::class);
     }
 
-
-
     /**
      * Get the unit that owns the PersonUnit
      *

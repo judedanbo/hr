@@ -32,6 +32,9 @@ let getAge = (dateString) => {
 let props = defineProps({
     person: Object,
     staff: Object,
+    contact_types: Array,
+    address: Object,
+    contacts: Array,
     filters: Object,
 });
 
@@ -84,7 +87,7 @@ let BreadcrumbLinks = [
                                 </h1>
 
                                 <p class="text-sm md:text-lg font-bold">
-                                    {{ staff.unit.name }}
+                                    <!-- {{ staff.unit.name }} -->
                                 </p>
                                 <p
                                     class="text-lg md:text-xl text-gray-500 py-4"
@@ -96,7 +99,7 @@ let BreadcrumbLinks = [
                                 >
                                     <div>
                                         <p class="text-lg md:text-xl">
-                                            Gender.: {{ staff.gender }}
+                                            {{ staff.gender }}
                                         </p>
                                         <p class="text-lg md:text-xl">
                                             Born:
@@ -171,12 +174,18 @@ let BreadcrumbLinks = [
                         :person="person"
                         class="w-2/5 mb-2"
                     />
-                    <StaffPersonalInfo
-                        :staff="staff"
-                        :person="person"
-                        class="w-2/5 mt-4"
-                    />
-                    <StaffDependents v-if="staff" :staff="staff" />
+                    <div class="w-1/2">
+                        <StaffPersonalInfo
+                            :staff="staff"
+                            :person="person"
+                            class="w-full mt-4"
+                        />
+                        <StaffDependents
+                            v-if="staff"
+                            :staff="staff"
+                            class="mt-4"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

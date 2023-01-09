@@ -32,10 +32,10 @@ let details = (url = props.link) => {
                 <canvas class="w-20" id="canvasId"></canvas>
             </div>
         </div>
-        <span
+        <!-- <span
             class="inline-block px-2 text-sm text-white bg-green-300 rounded mr-1"
             >25%</span
         >
-        <span>from 2021</span>
+        <span>from 2021</span> -->
     </div>
 </template>

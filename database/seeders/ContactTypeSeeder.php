@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ContactType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,6 +15,11 @@ class ContactTypeSeeder extends Seeder
      */
     public function run()
     {
-        //
+        ContactType::create(
+            [
+                'name' => '',
+
+            ],
+        );
     }
 }

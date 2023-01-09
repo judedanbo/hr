@@ -6,11 +6,6 @@ import StaffTableData from "./StaffTableData.vue";
 let props = defineProps({
     staff: Object,
 });
-let full_name = computed(() => {
-    return `${props.staff.title ?? ""} ${props.staff.other_names} ${
-        props.staff.first_name ?? ""
-    } ${props.staff.surname}`;
-});
 
 let dob = computed(() => {
     return formatDate(props.staff.date_of_birth);
@@ -39,7 +34,7 @@ let getAge = (dateString, now = new Date()) => {
         <StaffTableData>
             <div class="flex flex-col ml-2 text-gray-600 py-2 space-y-1">
                 <p class="leading-none">
-                    {{ full_name }}
+                    {{ staff.name }}
                 </p>
                 <p
                     class="text-xs"
@@ -75,10 +70,20 @@ let getAge = (dateString, now = new Date()) => {
         <StaffTableData>
             <div class="flex flex-col ml-2 py-2 space-y-1">
                 <p class="leading-none text-gray-600">
-                    {{ staff.current_job.name }}
+                    {{ staff.current_unit?.name }}
                 </p>
                 <p class="text-sm">
-                    {{ getAge(staff.current_job.start_date) }} years
+                    {{ getAge(staff.current_unit?.start_date) }} years
+                </p>
+            </div>
+        </StaffTableData>
+        <StaffTableData>
+            <div class="flex flex-col ml-2 py-2 space-y-1">
+                <p class="leading-none text-gray-600">
+                    {{ staff.current_rank?.name }}
+                </p>
+                <p class="text-sm">
+                    {{ getAge(staff.current_rank?.start_date) }} years
                 </p>
             </div>
         </StaffTableData>
