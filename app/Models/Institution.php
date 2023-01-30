@@ -13,6 +13,7 @@ class Institution extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'abbreviation', 'start_date', 'end_date', 'status'];
     /**
      * Get all of the departments for the Institution
      *

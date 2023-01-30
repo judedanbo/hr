@@ -19,12 +19,13 @@ return new class extends Migration
             $table->foreignId('person_id')->constrained();
             $table->string('file_number', 12)->nullable();
             $table->string('staff_number', 12);
-            $table->string('email')->nullable();
+            // $table->string('email')->nullable();
             $table->string('old_staff_number', 15)->nullable();
             // $table->string('status', 20);
             $table->date('hire_date');
             $table->date('end_date')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

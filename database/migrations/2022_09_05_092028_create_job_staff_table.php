@@ -18,8 +18,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('job_id')->constrained();
             $table->foreignId('staff_id')->references('id')->on('institution_person');
-            $table->date('start_date')->default(Date('Y-m-d'));
+            $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->string('remarks', 100)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

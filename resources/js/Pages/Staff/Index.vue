@@ -6,8 +6,7 @@ import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
-import format from "date-fns/format";
-import differenceInYears from "date-fns/differenceInYears";
+import { format, differenceInYears, formatDistanceStrict } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
@@ -168,7 +167,7 @@ let BreadCrumpLinks = [
                                                                 }}
                                                             </div>
                                                             <div
-                                                                class="text-sm text-gray-500"
+                                                                class="text-xs text-gray-500"
                                                             >
                                                                 {{
                                                                     person.gender
@@ -201,12 +200,16 @@ let BreadCrumpLinks = [
                                                         }}
                                                     </div>
                                                     <div
-                                                        class="text-sm text-gray-500"
+                                                        class="text-xs text-gray-500"
                                                     >
-                                                        ({{
-                                                            getAge(person.dob)
+                                                        {{
+                                                            formatDistanceStrict(
+                                                                new Date(
+                                                                    person.dob
+                                                                ),
+                                                                new Date()
+                                                            )
                                                         }}
-                                                        Years )
                                                     </div>
                                                 </td>
                                                 <td
@@ -215,9 +218,6 @@ let BreadCrumpLinks = [
                                                     <div
                                                         class="text-sm text-gray-900"
                                                     >
-                                                        <div
-                                                            class="text-sm text-gray-500"
-                                                        ></div>
                                                         {{
                                                             formatDate(
                                                                 person.hire_date
@@ -225,12 +225,18 @@ let BreadCrumpLinks = [
                                                         }}
                                                     </div>
                                                     <div
-                                                        class="text-sm text-gray-500"
+                                                        class="text-xs text-gray-500"
                                                     >
                                                         {{
-                                                            getAge(
-                                                                person.hire_date
-                                                            ) + " years) "
+                                                            formatDistanceStrict(
+                                                                new Date(
+                                                                    person.hire_date
+                                                                ),
+                                                                new Date(),
+                                                                {
+                                                                    addSuffix: true,
+                                                                }
+                                                            )
                                                         }}
                                                     </div>
                                                 </td>
@@ -248,14 +254,18 @@ let BreadCrumpLinks = [
                                                             person.current_rank
                                                         "
                                                     >
-                                                        <div>
+                                                        <div
+                                                            class="text-sm text-gray-900"
+                                                        >
                                                             {{
                                                                 person
                                                                     .current_rank
                                                                     .name
                                                             }}
                                                         </div>
-                                                        <p>
+                                                        <p
+                                                            class="text-xs text-gray-500"
+                                                        >
                                                             {{
                                                                 formatDate(
                                                                     person

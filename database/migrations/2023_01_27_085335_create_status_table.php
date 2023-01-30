@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('staff_unit', function (Blueprint $table) {
+        Schema::create('status', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('unit_id')->constrained();
-            $table->foreignId('staff_id')->constrained('id')->on('institution_person');
-            $table->date('start_date')->default(now());
+            $table->foreignId('staff_id')->references('id')->on('institution_person');
+            $table->string('status', 3);
+            $table->string('description', 100)->nullable();
+            $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->string('remarks', 100)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('person_unit');
+        Schema::dropIfExists('status');
     }
 };

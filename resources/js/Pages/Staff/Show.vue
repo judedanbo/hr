@@ -2,10 +2,11 @@
 import MainLayout from "@/Layouts/HrAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
+import StaffRanks from "./StaffRanks.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
-import StaffDates from "@/Components/StaffDates.vue";
+import StaffDates from "@/Pages/Staff/StaffDates.vue";
 import StaffDependents from "@/Components/StaffDependents.vue";
 import {
     BriefcaseIcon,
@@ -99,15 +100,16 @@ let BreadcrumbLinks = [
                                 >
                                     <div>
                                         <p class="text-lg md:text-xl">
-                                            {{ staff.gender }}
+                                            {{ person.gender }}
                                         </p>
                                         <p class="text-lg md:text-xl">
                                             Born:
-                                            {{ formattedDob(staff.dob) }}
+                                            {{ formattedDob(person.dob) }}
                                         </p>
                                         <p class="pl-14 text-sm">
                                             {{
-                                                getAge(staff.dob) + " years old"
+                                                getAge(person.dob) +
+                                                " years old"
                                             }}
                                         </p>
                                     </div>
@@ -128,7 +130,7 @@ let BreadcrumbLinks = [
                                     </div>
                                 </div>
 
-                                <Link
+                                <!-- <Link
                                     as="button"
                                     :href="'mailto:' + staff.email"
                                     :title="staff.email"
@@ -136,7 +138,7 @@ let BreadcrumbLinks = [
                                 >
                                     <EnvelopeIcon class="w-5 h-5 mr-2" />
                                     Email
-                                </Link>
+                                </Link> -->
 
                                 <div class="flex items-center justify-around">
                                     <!-- <p
@@ -169,12 +171,12 @@ let BreadcrumbLinks = [
                 <div
                     class="flex mt-8 flex-wrap justify-center md:justify-between space-y-8 md:space-y-0 items-start"
                 >
-                    <StaffDates
-                        :staff="staff"
-                        :person="person"
-                        class="w-2/5 mb-2"
-                    />
-                    <div class="w-1/2">
+                    <div
+                        class="grid grid-cols-2 flex-wrap overflow-hidden bg-white shadow sm:rounded-lg w-full"
+                    >
+                        <StaffDates :staff="staff" :person="person" />
+                        <StaffRanks :ranks="staff.ranks" />
+                        <StaffUnits :ranks="staff.units" />
                         <StaffPersonalInfo
                             :staff="staff"
                             :person="person"

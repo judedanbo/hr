@@ -117,6 +117,7 @@ let BreadcrumbLinks = [
                                             {{ sta.staff_number }}
                                         </span>
                                         <Link
+                                            v-if="sta.unit_id"
                                             :href="
                                                 route('unit.show', {
                                                     unit: sta.unit_id,

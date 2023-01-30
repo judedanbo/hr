@@ -1,8 +1,11 @@
 <?php
+
 namespace App\Enums;
 
-enum EmployeeStatus: String {
-    case Active = "Active";
-    case Suspended = "Suspended";
-    case Left = "Left";
+enum EmployeeStatus: String
+{
+    case Active = "A";
+    case Inactive = "I";
+    case Suspended = "S";
+    case Left = "L";
 }

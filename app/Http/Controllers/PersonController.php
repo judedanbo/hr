@@ -47,7 +47,7 @@ class PersonController extends Controller
                     'institution' => $person->institution ? [
                         'id' =>  $person->institution->first()->id,
                         'name' =>  $person->institution->first()->name,
-                        'status' =>  $person->institution->first()->staff->status,
+                        'status' =>  $person->institution->first()->staff->statuses->first()->status->name,
                         // $person->units->first()
                         // 'id' => $person->units->first()->id,
                         'staff_id' => $person->institution->first()->staff->id,

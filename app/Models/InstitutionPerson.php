@@ -60,7 +60,8 @@ class InstitutionPerson extends Pivot
         return $this->belongsToMany(Unit::class, 'staff_unit', 'staff_id', 'unit_id')
             ->withPivot('start_date', 'end_date')
             ->using(StaffUnit::class)
-            ->orderByPivot('start_date', 'desc');
+            ->orderByPivot('start_date', 'desc')
+            ->latest();
     }
 
     /**
@@ -80,7 +81,8 @@ class InstitutionPerson extends Pivot
             'end_date'
         )
             ->using(JobStaff::class)
-            ->orderByPivot('start_date', 'desc');
+            ->orderByPivot('start_date', 'desc')
+            ->latest();
     }
     public function dependents(): HasMany
     {
@@ -89,19 +91,35 @@ class InstitutionPerson extends Pivot
 
     public function scopeActive($query)
     {
-        return $query->whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) < 60");
+        return $query->with(['person' => function ($query) {
+            $query->whereRaw("(DATEDIFF(NOW(), date_of_birth)/365) < 60");
+        }]); //whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) < 60");
     }
     public function scopeRetired($query)
     {
         return $query->whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) > 60");
     }
-
-    public function getStatusAttribute()
+    public function scopeCurrentStatus($query)
     {
-        // return $this->person->date_of_birth->diffInYears(Carbon::now());
-        if ($this->person->date_of_birth->diffInYears(Carbon::now()) > 59) {
-            return 'Retired';
-        };
-        return 'Active';
+        return $query->whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) > 60");
+    }
+
+
+    // public function getCurrentStatusAttribute()
+    // {
+    //     // if ($this->person->age > 59) {
+    //     //     return 'Retired';
+    //     // };
+    //     return $this->statuses()->first()->status->name;
+    // }
+
+    /**
+     * Get all of the statuses for the InstitutionPerson
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function statuses(): HasMany
+    {
+        return $this->hasMany(Status::class, 'staff_id', 'id')->latest();
     }
 }

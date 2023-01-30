@@ -17,9 +17,13 @@ class JobController extends Controller
         return Inertia::render('Job/Index', [
             'jobs' =>  Job::withCount('staff')
                 ->when(request()->search, function ($query, $search) {
+
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->with('institution')
+                ->with(['institution', 'staff' => function ($query) {
+                    $query->active();
+                }])
+
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($job) => [
@@ -40,7 +44,9 @@ class JobController extends Controller
     {
         $job = Job::with('staff.person', 'staff.units', 'institution')
             ->withCount('staff')
+            ->active()
             ->find($job);
+        // dd($job);
         return Inertia::render('Job/Show', [
             'job' => [
                 'id' => $job->id,
@@ -50,8 +56,8 @@ class JobController extends Controller
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'staff_number' => $staff->staff_number,
-                    'unit' => $staff->units->first()->name,
-                    'unit_id' => $staff->units->first()->id,
+                    'unit' => $staff->units?->first()?->name,
+                    'unit_id' => $staff->units?->first()?->id,
                 ]),
             ],
         ]);

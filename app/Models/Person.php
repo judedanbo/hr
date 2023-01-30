@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
 use App\Enums\Nationality;
+use Carbon\Carbon;
 
 class Person extends Model
 {
@@ -51,6 +52,11 @@ class Person extends Model
     function getInitialsAttribute()
     {
         return strtoupper(substr($this->first_name, 0, 1) . substr($this->surname, 0, 1));
+    }
+
+    public function getAgeAttribute()
+    {
+        return $this->date_of_birth->diffInYears(new Carbon());
     }
 
     public function getNumberAttribute()
