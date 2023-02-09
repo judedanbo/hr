@@ -96,10 +96,10 @@ class UnitController extends Controller
             ->whereId($unit)
             ->first();
 
-        $filtered = $unit->staff->filter(function ($value) {
-            return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
-        });
-        // return $filtered;
+        // $filtered = $unit->staff->filter(function ($value) {
+        //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
+        // });
+        // return $unit;
 
         return Inertia::render('Unit/Show', [
             'unit' => [

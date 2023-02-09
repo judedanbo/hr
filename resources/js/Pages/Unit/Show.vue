@@ -7,10 +7,11 @@ import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
+import NoItem from "@/Components/NoItem.vue";
 
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
-
+import SubUnits from "./SubUnits.vue";
 let props = defineProps({
     unit: Object,
     filters: Object,
@@ -34,7 +35,6 @@ watch(
 watch(
     staff,
     debounce(function (value) {
-        console.log(props.unit.id);
         Inertia.get(
             route("unit.show", {
                 unit: props.unit.id,
@@ -84,206 +84,17 @@ let BreadcrumbLinks = [
         <div class="py-2">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <BreadCrumpVue :links="BreadcrumbLinks" />
-                <div class="flex space-x-4 items-start">
-                    <div
-                        v-if="props.unit.type != 'Unit'"
-                        class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-2/5"
-                    >
-                        <p
-                            class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide"
-                        >
-                            <span v-if="props.unit.type == 'Department'">
-                                Divisions
-                            </span>
-                            <!-- <span v-else-if="props.unit.type == 'Division'">Units</span> -->
-                            <span v-else>Units</span>
-
-                            <span
-                                class="text-lg text-gray-500 dark:text-white ml-2"
-                            >
-                                ({{ props.unit.subs.length }})
-                            </span>
-                        </p>
-
-                        <div class="mt-1 relative mx-8">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                            >
-                                <span class="text-gray-500 sm:text-sm">
-                                    <MagnifyingGlassIcon class="w-4 h-4" />
-                                </span>
-                            </div>
-                            <BreezeInput
-                                v-model="dept"
-                                type="search"
-                                class="w-full pl-8 bg-slate-100 border-0"
-                                required
-                                autofocus
-                                :placeholder="
-                                    props.unit.type == 'Department'
-                                        ? 'Search divisions...'
-                                        : 'Search units...'
-                                "
-                            />
-                        </div>
-
-                        <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
-                            <li
-                                v-for="(subUnit, index) in props.unit.subs"
-                                :key="index"
-                                class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
-                            >
-                                <div
-                                    class="flex items-center justify-start text-lg"
-                                >
-                                    <span class="mr-4"> {{ index + 1 }} </span>
-                                    <div class="flex flex-col">
-                                        <Link
-                                            :href="
-                                                route('unit.show', {
-                                                    unit: subUnit.id,
-                                                })
-                                            "
-                                            class=""
-                                        >
-                                            {{ subUnit.name }}
-                                        </Link>
-                                        <div
-                                            class="flex justify-start space-x-4"
-                                        >
-                                            <span
-                                                v-if="
-                                                    props.unit.type ==
-                                                    'Department'
-                                                "
-                                                class="text-sm"
-                                            >
-                                                Units:
-                                                {{ subUnit.subs }}
-                                            </span>
-                                            <span class="text-sm">
-                                                Staff:
-                                                {{ subUnit.staff_count }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div
-                        class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-2/5"
-                    >
-                        <p
-                            class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide"
-                        >
-                            <span>Staff</span>
-
-                            <span
-                                class="text-lg text-gray-500 dark:text-white ml-2"
-                            >
-                                ({{ props.unit.staff_number }})
-                            </span>
-                        </p>
-
-                        <div class="mt-1 relative mx-8">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                            >
-                                <span class="text-gray-500 sm:text-sm">
-                                    <MagnifyingGlassIcon class="w-4 h-4" />
-                                </span>
-                            </div>
-                            <BreezeInput
-                                v-model="staff"
-                                type="search"
-                                class="w-full pl-8 bg-slate-100 border-0"
-                                required
-                                autofocus
-                                placeholder="Search staff..."
-                            />
-                        </div>
-
-                        <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
-                            <li
-                                v-for="(st, index) in props.unit.staff"
-                                :key="index"
-                                class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
-                            >
-                                <div
-                                    class="flex items-center justify-start text-lg"
-                                >
-                                    <span class="mr-4"> {{ index + 1 }} </span>
-                                    <div v-if="st" class="flex flex-col">
-                                        <Link
-                                            :href="
-                                                route('staff.show', {
-                                                    staff: st.id,
-                                                })
-                                            "
-                                            class=""
-                                        >
-                                            {{ st.name }}
-                                        </Link>
-                                        <div
-                                            class="flex justify-start space-x-4"
-                                        >
-                                            <span
-                                                v-if="
-                                                    props.unit.type ==
-                                                    'Department'
-                                                "
-                                                class="text-sm"
-                                            >
-                                                Units:
-                                                {{ st.subs }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <div v-for="sub in props.unit.subs" :key="sub.id">
-                                <li
-                                    v-for="stf in sub.staff"
-                                    :key="stf.id"
-                                    class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
-                                >
-                                    <div
-                                        class="flex items-center justify-start text-lg"
-                                    >
-                                        <div class="flex flex-col">
-                                            <Link
-                                                :href="
-                                                    route('institution.staff', {
-                                                        institution:
-                                                            unit.institution.id,
-                                                        staff: stf.id,
-                                                    })
-                                                "
-                                                class=""
-                                            >
-                                                {{ stf.name }}
-                                            </Link>
-                                            <div
-                                                class="flex justify-start space-x-4"
-                                            >
-                                                <span
-                                                    v-if="
-                                                        props.unit.type ==
-                                                        'Department'
-                                                    "
-                                                    class="text-sm"
-                                                >
-                                                    Units:
-                                                    {{ st.subs }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            </div>
-                        </ul>
-                    </div>
+                <div class="flex space-x-4 items-start justify-center py-4">
+                    <SubUnits
+                        v-model="dept"
+                        type="Divisions"
+                        :subs="props.unit"
+                    />
+                    <SubUnits
+                        v-model="staff"
+                        type="Staff"
+                        :subs="props.unit.staff"
+                    />
                 </div>
             </div>
         </div>

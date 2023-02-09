@@ -78,7 +78,8 @@ class InstitutionPerson extends Pivot
             'job_id'
         )->withPivot(
             'start_date',
-            'end_date'
+            'end_date',
+            'remarks'
         )
             ->using(JobStaff::class)
             ->orderByPivot('start_date', 'desc')
@@ -91,9 +92,13 @@ class InstitutionPerson extends Pivot
 
     public function scopeActive($query)
     {
-        return $query->with(['person' => function ($query) {
-            $query->whereRaw("(DATEDIFF(NOW(), date_of_birth)/365) < 60");
-        }]); //whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) < 60");
+        return $query->with(['statuses' => function ($query) {
+            $query->whereNull('end_date');
+            $query->where('status', 'A');
+        }]);
+        // return $query->with(['person' => function ($query) {
+        //     $query->whereRaw("(DATEDIFF(NOW(), date_of_birth)/365) < 60");
+        // }]); //whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) < 60");
     }
     public function scopeRetired($query)
     {

@@ -37,7 +37,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return redirect()->route('institution.show', [30305]);
+    return redirect()->route('institution.show', [1]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 // })->name('dashboard');
 

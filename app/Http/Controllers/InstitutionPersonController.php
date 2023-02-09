@@ -16,29 +16,94 @@ class InstitutionPersonController extends Controller
      */
     public function index()
     {
+        // $staff = InstitutionPerson::query()
+        //     ->join('status', function ($join) {
+        //         $join->on('institution_person.id', '=', 'status.staff_id');
+        //     })
+        //     ->join('people', function ($join) {
+        //         $join->on('institution_person.person_id', '=', 'people.id');
+        //     })
+        //     ->join('job_staff', function ($join) {
+        //         $join->on('institution_person.id', '=', 'job_staff.staff_id');
+        //     })
+        //     ->join('jobs', function ($join) {
+        //         $join->on('jobs.id', '=', 'job_staff.job_id');
+        //     })
+        //     ->where('status.status', 'A')
+        //     ->whereNull('job_staff.end_date')
+        //     ->with([
+        //         'person.identities', 'statuses',
+        //         'ranks',
+        //         'units' => function ($query) {
+        //             $query->whereDate('end_date', '>=', now());
+        //             $query->orWhereDate('end_date', '>=', now());
+        //         }
+        //     ])
+        //     ->when(request()->search, function ($query, $search) {
+        //         $query->where(function ($whereQry) use ($search) {
+        //             $whereQry->where('staff_number', 'like', "%{$search}%");
+        //             $whereQry->orWhere('file_number', 'like', "%{$search}%");
+        //             $whereQry->orWhere('old_staff_number', 'like', "%{$search}%");
+        //             $whereQry->orWhereYear('hire_date', $search);
+        //             $whereQry->orWhereRaw("monthname(hire_date) like ?", ['%' . $search . '%']);
+        //             $whereQry->orWhere('people.surname', 'like', "%{$search}%");
+        //             $whereQry->orWhere('people.first_name', 'like', "%{$search}%");
+        //             $whereQry->orWhere('people.other_names', 'like', "%{$search}%");
+        //             $whereQry->orWhereYear('people.date_of_birth', $search);
+        //             $whereQry->orWhereRaw("monthname(people.date_of_birth) like ?", ['%' . $search . '%']);
+        //             $whereQry->orWhere('status', 'like', "%{$search}%");
+        //             $whereQry->orWhere('jobs.name', 'like', "%{$search}%");
+        //         });
+        //     })
+
+        //     ->paginate()
+        //     ->withQueryString()
+        //     ->through(fn ($staff) => [
+        //         'id' => $staff->id,
+        //         'file_number' => $staff->file_number,
+        //         'staff_number' => $staff->staff_number,
+        //         'old_staff_number' => $staff->old_staff_number,
+        //         'email' => $staff->email,
+        //         'hire_date' => $staff->hire_date,
+        //         'initials' => $staff->person->initials,
+        //         'name' => $staff->person->full_name,
+        //         'gender' => $staff->person->gender->name,
+        //         'status' => $staff->statuses->first()->status->name,
+        //         'dob' => $staff->person->date_of_birth,
+        //         'identities' => $staff->person->identities,
+        //         'current_rank' => [
+        //             'id' => $staff->job_id,
+        //             'name' => $staff->name,
+        //             'start_date' => $staff->start_date,
+        //             'end_date' => $staff->end_date
+        //         ] //->ranks //->count() ? [
+        //         //     'id' => $staff->ranks->first()->id,
+        //         //     'name' => $staff->ranks->first()->name,
+        //         //     'start_date' => $staff->ranks->first()->pivot->start_date,
+        //         //     'start_date' => $staff->ranks->first()->pivot->start_date,
+        //         //     'end_date' => $staff->ranks->first()->pivot->end_date,
+        //         // ] : null,
+        //         , 'current_unit' => $staff->units->count() ? [
+        //             'id' => $staff->units->first()->id,
+        //             'name' => $staff->units->first()->name,
+        //             'start_date' => $staff->units->first()->pivot->start_date,
+        //             'end_date' => $staff->units->first()->pivot->end_date,
+        //         ] : null,
+        //     ]);
         $staff = InstitutionPerson::query()
-            ->join('status', function ($join) {
-                $join->on('institution_person.id', '=', 'status.staff_id');
-            })
-            ->join('people', function ($join) {
-                $join->on('institution_person.person_id', '=', 'people.id');
-            })
-            ->join('job_staff', function ($join) {
-                $join->on('institution_person.id', '=', 'job_staff.staff_id');
-            })
-            ->join('jobs', function ($join) {
-                $join->on('jobs.id', '=', 'job_staff.job_id');
-            })
-            ->where('status.status', 'A')
-            ->whereNull('job_staff.end_date')
             ->with([
-                'person.identities', 'statuses',
-                'ranks',
+                'person',
+                'ranks' => function ($query) {
+                    $query->whereNull('end_date');
+                },
                 'units' => function ($query) {
-                    $query->whereDate('end_date', '>=', now());
-                    $query->orWhereDate('end_date', '>=', now());
-                }
+                    $query->whereNull('end_date');
+                },
+
             ])
+            ->whereHas('statuses', function ($query) {
+                $query->where('status', 'A');
+            })
             ->when(request()->search, function ($query, $search) {
                 $query->where(function ($whereQry) use ($search) {
                     $whereQry->where('staff_number', 'like', "%{$search}%");
@@ -46,21 +111,19 @@ class InstitutionPersonController extends Controller
                     $whereQry->orWhere('old_staff_number', 'like', "%{$search}%");
                     $whereQry->orWhereYear('hire_date', $search);
                     $whereQry->orWhereRaw("monthname(hire_date) like ?", ['%' . $search . '%']);
-                    $whereQry->orWhere('people.surname', 'like', "%{$search}%");
-                    $whereQry->orWhere('people.first_name', 'like', "%{$search}%");
-                    $whereQry->orWhere('people.other_names', 'like', "%{$search}%");
-                    $whereQry->orWhereYear('people.date_of_birth', $search);
-                    $whereQry->orWhereRaw("monthname(people.date_of_birth) like ?", ['%' . $search . '%']);
-                    $whereQry->orWhere('status', 'like', "%{$search}%");
-                    $whereQry->orWhere('jobs.name', 'like', "%{$search}%");
+                    $whereQry->orWhereHas('person', function ($perQuery) use ($search) {
+                        $perQuery->where('first_name', 'like', "%{$search}%");
+                        $perQuery->orWhere('other_names', 'like', "%{$search}%");
+                        $perQuery->orWhere('date_of_birth', 'like', "%{$search}%");
+                    });
+                    $whereQry->orWhereHas('ranks', function ($rankQuery) use ($search) {
+                        $rankQuery->where('name', 'like', "%{$search}%");
+                    });
+                    // $whereQry->orWhere('jobs.name', 'like', "%{$search}%");
                 });
             })
-
-            // ->with([
-            //     'person.identities',
-            //
-            // ])
-
+            ->active()
+            // ->withCount()
             ->paginate()
             ->withQueryString()
             ->through(fn ($staff) => [
@@ -68,38 +131,34 @@ class InstitutionPersonController extends Controller
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
                 'old_staff_number' => $staff->old_staff_number,
-                'email' => $staff->email,
                 'hire_date' => $staff->hire_date,
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->name,
                 'status' => $staff->statuses->first()->status->name,
                 'dob' => $staff->person->date_of_birth,
-                'identities' => $staff->person->identities,
-                'current_rank' => [
-                    'id' => $staff->job_id,
-                    'name' => $staff->name,
-                    'start_date' => $staff->start_date,
-                    'end_date' => $staff->end_date
-                ] //->ranks //->count() ? [
-                //     'id' => $staff->ranks->first()->id,
-                //     'name' => $staff->ranks->first()->name,
-                //     'start_date' => $staff->ranks->first()->pivot->start_date,
-                //     'start_date' => $staff->ranks->first()->pivot->start_date,
-                //     'end_date' => $staff->ranks->first()->pivot->end_date,
-                // ] : null,
-                , 'current_unit' => $staff->units->count() ? [
+                'current_rank' =>  $staff->ranks->count() ? [
+                    'id' => $staff->ranks->first()->id,
+                    'name' => $staff->ranks->first()->name,
+                    'job_id' => $staff->ranks->first()->pivot->job_id,
+                    'start_date' => $staff->ranks->first()->pivot->start_date,
+                    'end_date' => $staff->ranks->first()->pivot->end_date,
+                    'remarks' => $staff->ranks->first()->pivot->remarks
+                ] : null,
+                'current_unit' => $staff->units->count() ? [
                     'id' => $staff->units->first()->id,
                     'name' => $staff->units->first()->name,
+                    'start_date' => $staff->units->first()->pivot->unit_id,
                     'start_date' => $staff->units->first()->pivot->start_date,
                     'end_date' => $staff->units->first()->pivot->end_date,
                 ] : null,
             ]);
+
+        // return $staff;
         return Inertia::render('Staff/Index', [
             'staff' => $staff,
             'filters' => ['search' => request()->search]
         ]);
-        return $staff;
     }
 
     /**
@@ -139,8 +198,12 @@ class InstitutionPersonController extends Controller
                     'dependents.person'
                 ]
             )
+            ->whereHas('statuses', function ($query) {
+                $query->where('status', 'A');
+            })
+            ->active()
             ->whereId($staff)
-            ->first();
+            ->firstOrFail();
         // return $staff;
         return Inertia::render('Staff/Show', [
             'person' => [
@@ -151,13 +214,12 @@ class InstitutionPersonController extends Controller
                 'initials' => $staff->person->initials,
                 'nationality' => $staff->person->nationality->name,
                 'religion' => $staff->person->religion,
-                'marital_status' => $staff->person->marital_status->name,
+                'marital_status' => $staff->person->marital_status?->name,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name,),
                     'number' => $id->id_number,
                 ]) : null
             ],
-            // 'identification' => $staff->identities,
             'contacts' => $staff->person->contacts->count() > 0 ?  $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
@@ -194,6 +256,7 @@ class InstitutionPersonController extends Controller
                     'name' => $rank->name,
                     'start_date' => $rank->pivot->start_date,
                     'end_date' => $rank->pivot->end_date,
+                    'remarks' => $rank->pivot->remarks,
                 ]),
 
                 'units' => $staff->units->map(fn ($unit) => [
@@ -249,7 +312,7 @@ class InstitutionPersonController extends Controller
      * @param  \App\Models\InstitutionPerson  $institutionPerson
      * @return \Illuminate\Http\Response
      */
-    public function dtroy(InstitutionPerson $institutionPerson)
+    public function destroy(InstitutionPerson $institutionPerson)
     {
         //
     }

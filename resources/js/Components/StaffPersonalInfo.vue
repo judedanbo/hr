@@ -5,15 +5,13 @@ defineProps({
 });
 </script>
 <template>
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg w-full">
-        <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">
-                Personal Information
-            </h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                Personal details staff.
-            </p>
-        </div>
+    <div class="px-4 py-5 sm:px-6 bg-white">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">
+            Personal Information
+        </h3>
+        <p class="my-2 max-w-2xl text-sm text-gray-500">
+            Personal details staff.
+        </p>
         <div class="border-t border-gray-200">
             <dl>
                 <div

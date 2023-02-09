@@ -3,6 +3,7 @@ import MainLayout from "@/Layouts/HrAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import StaffRanks from "./StaffRanks.vue";
+import StaffUnits from "./StaffUnits.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
@@ -46,7 +47,7 @@ let tabs = [
 ];
 let BreadcrumbLinks = [
     { name: "Staff", url: "/staff" },
-    { name: props.staff.name, url: "/" },
+    { name: props.person.name, url: "/" },
 ];
 </script>
 
@@ -55,10 +56,7 @@ let BreadcrumbLinks = [
 
     <MainLayout>
         <template #header>
-            <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ staff.name }}
-            </h2>
+            <BreadCrumpVue :links="BreadcrumbLinks" />
         </template>
 
         <div class="py-2">
@@ -77,14 +75,14 @@ let BreadcrumbLinks = [
                                 <h1
                                     class="text-white font-semibold text-6xl md:text-7xl tracking-widest"
                                 >
-                                    {{ staff.initials }}
+                                    {{ person.initials }}
                                 </h1>
                             </div>
                             <div class="pt-8 w-full md:p-8">
                                 <h1
                                     class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wider text-gray-700"
                                 >
-                                    {{ staff.name }}
+                                    {{ person.name }}
                                 </h1>
 
                                 <p class="text-sm md:text-lg font-bold">
@@ -172,20 +170,33 @@ let BreadcrumbLinks = [
                     class="flex mt-8 flex-wrap justify-center md:justify-between space-y-8 md:space-y-0 items-start"
                 >
                     <div
-                        class="grid grid-cols-2 flex-wrap overflow-hidden bg-white shadow sm:rounded-lg w-full"
+                        class="flex gap-x-8 gap-y-4 flex-wrap shadow sm:rounded-lg w-full justify-center items-start"
                     >
-                        <StaffDates :staff="staff" :person="person" />
-                        <StaffRanks :ranks="staff.ranks" />
-                        <StaffUnits :ranks="staff.units" />
+                        <StaffDates
+                            :staff="staff"
+                            :person="person"
+                            class="w-1/2"
+                        />
                         <StaffPersonalInfo
                             :staff="staff"
                             :person="person"
-                            class="w-full mt-4"
+                            class="w-1/3"
                         />
+                        <StaffRanks
+                            v-if="staff.ranks.length"
+                            :ranks="staff.ranks"
+                            class="w-1/3"
+                        />
+                        <StaffUnits
+                            v-if="staff.units.length"
+                            :ranks="staff.units"
+                            class="w-1/3"
+                        />
+
                         <StaffDependents
                             v-if="staff"
                             :staff="staff"
-                            class="mt-4"
+                            class="w-1/2"
                         />
                     </div>
                 </div>

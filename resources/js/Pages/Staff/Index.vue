@@ -273,6 +273,22 @@ let BreadCrumpLinks = [
                                                                         .start_date
                                                                 )
                                                             }}
+
+                                                            <span
+                                                                v-if="
+                                                                    person
+                                                                        .current_rank
+                                                                        .remarks
+                                                                "
+                                                                class="text-green-800 font-semibold"
+                                                            >
+                                                                -
+                                                                {{
+                                                                    person
+                                                                        .current_rank
+                                                                        .remarks
+                                                                }}
+                                                            </span>
                                                         </p>
                                                     </div>
                                                 </td>

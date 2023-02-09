@@ -56,42 +56,44 @@ watch(
 
         <div
             v-if="institution"
-            class="mx-auto flex flex-wrap gap-4 justify-center"
+            class="mx-auto flex flex-wrap gap-4 justify-center mt-2"
         >
-            <InfoCard
-                v-if="institution?.staff > 0"
-                title="Staff"
-                :value="institution.staff"
-                :link="
-                    route('institution.staffs', {
-                        institution: institution.id,
-                    })
-                "
-            />
-            <InfoCard
-                v-if="institution?.department > 0"
-                :link="
-                    route('unit.index', {
-                        institution: institution.id,
-                    })
-                "
-                title="Department"
-                :value="institution.departments"
-            />
-            <InfoCard
-                v-if="institution?.divisions > 0"
-                title="Divisions"
-                :value="institution.divisions"
-            />
-            <InfoCard
-                v-if="institution?.units > 0"
-                title="Units"
-                :value="institution.units"
-            />
+            <div class="flex gap-4 w-full justify-center">
+                <InfoCard
+                    v-if="institution?.staff > 0"
+                    title="Staff"
+                    :value="institution.staff"
+                    :link="
+                        route('institution.staffs', {
+                            institution: institution.id,
+                        })
+                    "
+                />
+                <InfoCard
+                    v-if="institution?.department > 0"
+                    :link="
+                        route('unit.index', {
+                            institution: institution.id,
+                        })
+                    "
+                    title="Department"
+                    :value="institution.departments"
+                />
+                <InfoCard
+                    v-if="institution?.divisions > 0"
+                    title="Divisions"
+                    :value="institution.divisions"
+                />
+                <InfoCard
+                    v-if="institution?.units > 0"
+                    title="Units"
+                    :value="institution.units"
+                />
+            </div>
 
             <div
                 v-if="departments"
-                class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-2/5"
+                class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-1/2"
             >
                 <p
                     class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide"
