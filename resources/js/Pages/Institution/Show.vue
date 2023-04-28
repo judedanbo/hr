@@ -11,6 +11,7 @@ import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import InfoCard from "@/Components/InfoCard.vue";
 import NoItem from "@/Components/NoItem.vue";
+import PageHeader from "@/Components/PageHeader.vue";
 
 let props = defineProps({
     institution: Object,
@@ -45,13 +46,11 @@ watch(
 
     <NewLayout>
         <template #header>
-            <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
-            <h2 v-if="institution" class="font-semibold text-2xl text-gray-800 dark:text-gray-50 leading-tight pt-2">
-                {{ institution.name }}
-            </h2>
+            <PageHeader v-if="institution" :name="institution.name" />
+
         </template>
 
-        <!-- <div v-if="institution" class="mx-auto flex flex-wrap gap-4 justify-center mt-2">
+        <div v-if="institution" class="mx-auto flex flex-wrap gap-4 justify-center mt-2">
             <div class="flex gap-4 w-full justify-center">
                 <InfoCard v-if="institution?.staff > 0" title="Staff" :value="institution.staff" :link="route('institution.staffs', {
                         institution: institution.id,
@@ -113,7 +112,7 @@ watch(
             <div v-else class="w-1/2 flex justify-center items-center rounded shadow py-10 bg-white">
                 No Units / Departments
             </div>
-        </div> -->
-        <!-- <NoItem v-else name="Institution" /> -->
+        </div>
+        <NoItem v-else name="Institution" />
     </NewLayout>
 </template>

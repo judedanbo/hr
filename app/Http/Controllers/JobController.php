@@ -44,7 +44,7 @@ class JobController extends Controller
     {
         $job = Job::with('staff.person', 'staff.units', 'institution')
             ->withCount('staff')
-            ->active()
+            // ->active()
             ->find($job);
         // dd($job);
         return Inertia::render('Job/Show', [

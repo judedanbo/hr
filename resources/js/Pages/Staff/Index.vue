@@ -11,6 +11,7 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 
 let props = defineProps({
     staff: Object,
@@ -60,9 +61,7 @@ let BreadCrumpLinks = [
 
     <MainLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50">
-                Staff
-            </h2>
+            <PageHeader name="Staff" />
         </template>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <BreadCrumpVue :links="BreadCrumpLinks" />

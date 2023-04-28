@@ -1,11 +1,12 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import PersonContacts from "./PersonContacts.vue";
 import PersonAddresses from "./PersonAddresses.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 
 const formattedDob = (dateString) => {
     const date = new Date(dateString);
@@ -41,32 +42,21 @@ let BreadcrumbLinks = [
 
     <MainLayout>
         <template #header>
-            <BreadCrumpVue :links="BreadcrumbLinks" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Person
-            </h2>
+            <PageHeader name="Person" />
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div
-                        class="p-10 bg-white border-b border-gray-200 md:flex justify-around"
-                    >
+                    <div class="p-10 bg-white border-b border-gray-200 md:flex justify-around">
                         <div class="flex flex-col md:flex-row items-center">
-                            <div
-                                class="w-48 h-48 rounded-full bg-gray-400 flex justify-center items-center"
-                            >
-                                <h1
-                                    class="text-white font-semibold text-6xl tracking-widest"
-                                >
+                            <div class="w-48 h-48 rounded-full bg-gray-400 flex justify-center items-center">
+                                <h1 class="text-white font-semibold text-6xl tracking-widest">
                                     {{ person.initials }}
                                 </h1>
                             </div>
                             <div class="p-8 ml-6">
-                                <h1
-                                    class="text-3xl lg:text-4xl font-bold tracking-wider text-gray-700"
-                                >
+                                <h1 class="text-3xl lg:text-4xl font-bold tracking-wider text-gray-700">
                                     {{ person.name }}
                                 </h1>
                                 <p class="text-lg tracking-wide py-2">
@@ -75,10 +65,7 @@ let BreadcrumbLinks = [
                                     }}
                                     years)
                                 </p>
-                                <p
-                                    v-if="person.ssn"
-                                    class="text-lg tracking-wide"
-                                >
+                                <p v-if="person.ssn" class="text-lg tracking-wide">
                                     SSNIT No. {{ person.ssn }}
                                 </p>
                             </div>
@@ -86,11 +73,7 @@ let BreadcrumbLinks = [
                     </div>
                 </div>
                 <div class="mt-4 flex justify-start items-start space-x-2">
-                    <PersonContacts
-                        :person="person"
-                        :contacts="contacts"
-                        :types="contact_types"
-                    />
+                    <PersonContacts v-if="person" :person="person" :contacts="contacts" :types="contact_types" />
                     <PersonAddresses :person="person" :address="address" />
                 </div>
             </div>

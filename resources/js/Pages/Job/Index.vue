@@ -9,6 +9,7 @@ import Pagination from "../../Components/Pagination.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 
 let props = defineProps({
     jobs: Object,
@@ -40,9 +41,7 @@ watch(
 
     <MainLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50">
-                Ranks
-            </h2>
+            <PageHeader name="Ranks" />
         </template>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="overflow-hidden shadow-sm sm:rounded-lg">

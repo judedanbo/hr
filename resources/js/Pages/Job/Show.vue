@@ -44,10 +44,8 @@ let BreadcrumbLinks = [
 
     <MainLayout>
         <template #header>
-            <BreadCrumpVue :links="BreadcrumbLinks" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight pt-2 dark:text-gray-50">
-                {{ job.name }}
-            </h2>
+            <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
+            <PageHeader v-if="job" :name="job.name" />
         </template>
 
         <div class="py-2">

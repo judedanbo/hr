@@ -8,6 +8,7 @@ import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
 import StaffDates from "@/Pages/Staff/StaffDates.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 import StaffDependents from "@/Components/StaffDependents.vue";
 import {
     BriefcaseIcon,
@@ -56,9 +57,7 @@ let BreadcrumbLinks = [
 
     <MainLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight pt-2 dark:text-gray-50">
-                Staff
-            </h2>
+            <PageHeader name="PageHeader" />
         </template>
 
         <div class="py-2">

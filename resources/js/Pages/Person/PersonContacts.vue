@@ -56,40 +56,26 @@ let showPerson = (id) => {
         </div>
 
         <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
-            <div
-                class="flex justify-end items-center px-4 bg-white dark:bg-gray-800"
-            >
-                <button
-                    @click.stop.prevent="addContact"
-                    type="button"
-                    class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center"
-                >
+            <div class="flex justify-end items-center px-4 bg-white dark:bg-gray-800">
+                <button @click.stop.prevent="addContact" type="button"
+                    class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center">
                     <MegaphoneIcon class="w-5 h-5 mr-2" />
                     Add Contact
                 </button>
             </div>
-            <table
-                class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
-            >
-                <thead
-                    class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="py-3 px-6">Contact</th>
                         <th scope="col" class="py-3 px-6 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr
-                        v-for="contact in contacts"
-                        :key="contact.id"
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                    >
-                        <th
-                            scope="row"
-                            class="flex items-center py-4 px-6 text-gray-900 whitespace-nowrap dark:text-white hover:cursor-pointer"
-                        >
-                            <AtSymbolIcon
+                    <tr v-for="contact in contacts" :key="contact.id"
+                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <th scope="row"
+                            class="flex items-center py-4 px-6 text-gray-900 whitespace-nowrap dark:text-white hover:cursor-pointer">
+                            <!-- <AtSymbolIcon
                                 v-if="
                                     types[contact.contact_type_id - 1].name ==
                                     'Email'
@@ -102,30 +88,22 @@ let showPerson = (id) => {
                                     'Phone'
                                 "
                                 class="w-8 h-8 p-1.5 mr-2 bg-gray-100 rounded-full"
-                            />
+                            /> -->
                             {{ contact.contact }}
                         </th>
 
                         <td class="py-4 px-6 text-right space-x-3">
                             <!-- Modal toggle -->
-                            <button
-                                @click.prevent="addContact"
-                                type="button"
-                                class="font-medium text-green-600 dark:text-green-500 hover:underline"
-                            >
+                            <button @click.prevent="addContact" type="button"
+                                class="font-medium text-green-600 dark:text-green-500 hover:underline">
                                 Edit
                             </button>
-                            <button
-                                @click.prevent="
-                                    deleteDependents({
-                                        id: person.id,
-                                        name: person.name,
-                                        staff: staff.name,
-                                    })
-                                "
-                                type="button"
-                                class="font-medium text-red-600 dark:text-red-500 hover:underline"
-                            >
+                            <button @click.prevent="deleteDependents({
+                                    id: person.id,
+                                    name: person.name,
+                                    staff: staff.name,
+                                })
+                                " type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline">
                                 Delete
                             </button>
                         </td>
@@ -137,12 +115,8 @@ let showPerson = (id) => {
                 @closeModal="showDeleteDepModal = false"
                 :isVisible="showDeleteDepModal"
             /> -->
-            <AddContactsModal
-                :types="types"
-                :person_id="person.id"
-                @closeModal="showAddContactModal = false"
-                :isVisible="showAddContactModal"
-            />
+            <AddContactsModal :types="types" :person_id="person.id" @closeModal="showAddContactModal = false"
+                :isVisible="showAddContactModal" />
         </div>
     </div>
 </template>
