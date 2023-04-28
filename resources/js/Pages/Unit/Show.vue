@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
@@ -85,16 +85,8 @@ let BreadcrumbLinks = [
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <BreadCrumpVue :links="BreadcrumbLinks" />
                 <div class="flex space-x-4 items-start justify-center py-4">
-                    <SubUnits
-                        v-model="dept"
-                        type="Divisions"
-                        :subs="props.unit"
-                    />
-                    <SubUnits
-                        v-model="staff"
-                        type="Staff"
-                        :subs="props.unit.staff"
-                    />
+                    <SubUnits v-model="dept" type="Divisions" :subs="props.unit" />
+                    <SubUnits v-model="staff" type="Staff" :subs="props.unit.staff" />
                 </div>
             </div>
         </div>

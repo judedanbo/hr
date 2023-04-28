@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
@@ -60,7 +60,7 @@ let BreadCrumpLinks = [
 
     <MainLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50">
                 Staff
             </h2>
         </template>
@@ -71,104 +71,65 @@ let BreadCrumpLinks = [
                     <div class="sm:flex items-center justify-between my-2">
                         <InfoCard title="Staff" :value="staff.total" link="#" />
                         <div class="mt-1 relative mx-8">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                            >
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 sm:text-sm">
                                     <MagnifyingGlassIcon class="w-4 h-4" />
                                 </span>
                             </div>
-                            <BreezeInput
-                                v-model="search"
-                                type="search"
-                                class="w-full pl-8 bg-white border-0"
-                                required
-                                autofocus
-                                placeholder="Search staff..."
-                            />
+                            <BreezeInput v-model="search" type="search" class="w-full pl-8 bg-white border-0" required
+                                autofocus placeholder="Search staff..." />
                         </div>
                     </div>
 
                     <div class="flex flex-col mt-6">
                         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div
-                                class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
-                            >
-                                <div
-                                    v-if="staff.total > 0"
-                                    class="overflow-hidden border-b border-gray-200 rounded-md shadow-md"
-                                >
-                                    <table
-                                        class="min-w-full overflow-x-scroll divide-y divide-gray-200"
-                                    >
+                            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                <div v-if="staff.total > 0"
+                                    class="overflow-hidden border-b border-gray-200 rounded-md shadow-md">
+                                    <table class="min-w-full overflow-x-scroll divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th
-                                                    scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                >
+                                                <th scope="col"
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                     Name
                                                 </th>
-                                                <th
-                                                    scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                >
+                                                <th scope="col"
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                     Date of Birth
                                                 </th>
-                                                <th
-                                                    scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                >
+                                                <th scope="col"
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                     Employment
                                                 </th>
-                                                <th
-                                                    scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                >
+                                                <th scope="col"
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                     Rank
                                                 </th>
-                                                <th
-                                                    scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                                >
+                                                <th scope="col"
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                     Current Unit
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody
-                                            class="bg-white divide-y divide-gray-200"
-                                        >
-                                            <tr
-                                                v-for="person in staff.data"
-                                                :key="person.id"
-                                                @click="openStaff(person.id)"
-                                                class="cursor-pointer transition-all hover:bg-gray-100 hover:shadow-lg"
-                                            >
-                                                <td
-                                                    class="px-6 py-4 whitespace-nowrap"
-                                                >
-                                                    <div
-                                                        class="flex items-center"
-                                                    >
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr v-for="person in staff.data" :key="person.id" @click="openStaff(person.id)"
+                                                class="cursor-pointer transition-all hover:bg-gray-100 hover:shadow-lg">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
                                                         <div
-                                                            class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-                                                        >
+                                                            class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center">
                                                             {{
                                                                 person.initials
                                                             }}
                                                         </div>
 
                                                         <div class="ml-4">
-                                                            <div
-                                                                class="text-sm font-medium text-gray-900"
-                                                            >
+                                                            <div class="text-sm font-medium text-gray-900">
                                                                 {{
                                                                     person.name
                                                                 }}
                                                             </div>
-                                                            <div
-                                                                class="text-xs text-gray-500"
-                                                            >
+                                                            <div class="text-xs text-gray-500">
                                                                 {{
                                                                     person.gender
                                                                 }}
@@ -179,29 +140,23 @@ let BreadCrumpLinks = [
 
                                                                 {{
                                                                     person.file_number
-                                                                        ? " / " +
-                                                                          person.file_number
-                                                                        : ""
+                                                                    ? " / " +
+                                                                    person.file_number
+                                                                    : ""
                                                                 }}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td
-                                                    class="px-6 py-4 whitespace-nowrap"
-                                                >
-                                                    <div
-                                                        class="text-sm text-gray-900"
-                                                    >
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">
                                                         {{
                                                             formatDate(
                                                                 person.dob
                                                             )
                                                         }}
                                                     </div>
-                                                    <div
-                                                        class="text-xs text-gray-500"
-                                                    >
+                                                    <div class="text-xs text-gray-500">
                                                         {{
                                                             formatDistanceStrict(
                                                                 new Date(
@@ -212,21 +167,15 @@ let BreadCrumpLinks = [
                                                         }}
                                                     </div>
                                                 </td>
-                                                <td
-                                                    class="px-6 py-4 whitespace-nowrap"
-                                                >
-                                                    <div
-                                                        class="text-sm text-gray-900"
-                                                    >
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">
                                                         {{
                                                             formatDate(
                                                                 person.hire_date
                                                             )
                                                         }}
                                                     </div>
-                                                    <div
-                                                        class="text-xs text-gray-500"
-                                                    >
+                                                    <div class="text-xs text-gray-500">
                                                         {{
                                                             formatDistanceStrict(
                                                                 new Date(
@@ -240,32 +189,21 @@ let BreadCrumpLinks = [
                                                         }}
                                                     </div>
                                                 </td>
-                                                <td
-                                                    class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"
-                                                    :title="
-                                                        getAge(
+                                                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap" :title="getAge(
                                                             person.current_rank
                                                                 ?.start_date
                                                         ) + ' years'
-                                                    "
-                                                >
-                                                    <div
-                                                        v-if="
-                                                            person.current_rank
-                                                        "
-                                                    >
-                                                        <div
-                                                            class="text-sm text-gray-900"
-                                                        >
+                                                        ">
+                                                    <div v-if="person.current_rank
+                                                            ">
+                                                        <div class="text-sm text-gray-900">
                                                             {{
                                                                 person
                                                                     .current_rank
                                                                     .name
                                                             }}
                                                         </div>
-                                                        <p
-                                                            class="text-xs text-gray-500"
-                                                        >
+                                                        <p class="text-xs text-gray-500">
                                                             {{
                                                                 formatDate(
                                                                     person
@@ -274,14 +212,10 @@ let BreadCrumpLinks = [
                                                                 )
                                                             }}
 
-                                                            <span
-                                                                v-if="
-                                                                    person
+                                                            <span v-if="person
                                                                         .current_rank
                                                                         .remarks
-                                                                "
-                                                                class="text-green-800 font-semibold"
-                                                            >
+                                                                    " class="text-green-800 font-semibold">
                                                                 -
                                                                 {{
                                                                     person
@@ -292,20 +226,13 @@ let BreadCrumpLinks = [
                                                         </p>
                                                     </div>
                                                 </td>
-                                                <td
-                                                    class="px-6 py-4 text-sm font-medium whitespace-nowrap"
-                                                    :title="
-                                                        getAge(
+                                                <td class="px-6 py-4 text-sm font-medium whitespace-nowrap" :title="getAge(
                                                             person.current_unit
                                                                 ?.start_date
                                                         ) + ' years'
-                                                    "
-                                                >
-                                                    <div
-                                                        v-if="
-                                                            person.current_unit
-                                                        "
-                                                    >
+                                                        ">
+                                                    <div v-if="person.current_unit
+                                                            ">
                                                         <div>
                                                             {{
                                                                 person.current_unit?.name.substring(

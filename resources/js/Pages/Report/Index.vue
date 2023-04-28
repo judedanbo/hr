@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
@@ -25,7 +25,7 @@ let BreadCrumpLinks = [
 
     <MainLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50">
                 Reports
             </h2>
         </template>
@@ -35,16 +35,9 @@ let BreadCrumpLinks = [
                 <div class="px-6 border-b border-gray-200">
                     <div class="flex flex-col mt-6">
                         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div
-                                class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
-                            >
-                                <div
-                                    class="flex gap-4 flex-wrap justify-center"
-                                >
-                                    <ReportCard
-                                        :href="route('report.recruitment')"
-                                        text="By Recruitment"
-                                    />
+                            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                <div class="flex gap-4 flex-wrap justify-center">
+                                    <ReportCard :href="route('report.recruitment')" text="By Recruitment" />
                                     <ReportCard href="#" text="By Department" />
                                     <ReportCard href="#" text="By Unit" />
                                     <ReportCard href="#" text="By Ranks" />

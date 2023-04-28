@@ -17,11 +17,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('addressable_id');
             $table->string('addressable_type');
-            $table->string('address_line_1', 150);
+            $table->string('address_line_1', 150)->nullable();
             $table->string('address_line_2', 150)->nullable();
             $table->string('city', 35)->nullable();
             $table->string('region', 35)->nullable();
-            $table->string('country', 20);
+            $table->string('country', 20)->nullable();
             $table->string('post_code', 20)->nullable();
             $table->date('valid_end')->nullable();
             $table->timestamps();

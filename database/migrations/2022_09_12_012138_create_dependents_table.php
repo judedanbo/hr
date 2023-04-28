@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('staff_id')->constrained('id')->on('institution_person');
             $table->foreignId('person_id')->constrained();
-            $table->string('relation', 40);
+            $table->string('relation', 40)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

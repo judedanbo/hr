@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import NewLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { Inertia } from "@inertiajs/inertia";
@@ -43,61 +43,30 @@ watch(
 <template>
     <Head v-if="institution" :title="institution.name" />
 
-    <MainLayout>
+    <NewLayout>
         <template #header>
             <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
-            <h2
-                v-if="institution"
-                class="font-semibold text-xl text-gray-800 leading-tight pt-2"
-            >
+            <h2 v-if="institution" class="font-semibold text-2xl text-gray-800 dark:text-gray-50 leading-tight pt-2">
                 {{ institution.name }}
             </h2>
         </template>
 
-        <div
-            v-if="institution"
-            class="mx-auto flex flex-wrap gap-4 justify-center mt-2"
-        >
+        <!-- <div v-if="institution" class="mx-auto flex flex-wrap gap-4 justify-center mt-2">
             <div class="flex gap-4 w-full justify-center">
-                <InfoCard
-                    v-if="institution?.staff > 0"
-                    title="Staff"
-                    :value="institution.staff"
-                    :link="
-                        route('institution.staffs', {
-                            institution: institution.id,
-                        })
-                    "
-                />
-                <InfoCard
-                    v-if="institution?.department > 0"
-                    :link="
-                        route('unit.index', {
-                            institution: institution.id,
-                        })
-                    "
-                    title="Department"
-                    :value="institution.departments"
-                />
-                <InfoCard
-                    v-if="institution?.divisions > 0"
-                    title="Divisions"
-                    :value="institution.divisions"
-                />
-                <InfoCard
-                    v-if="institution?.units > 0"
-                    title="Units"
-                    :value="institution.units"
-                />
+                <InfoCard v-if="institution?.staff > 0" title="Staff" :value="institution.staff" :link="route('institution.staffs', {
+                        institution: institution.id,
+                    })
+                    " />
+                <InfoCard v-if="institution?.department > 0" :link="route('unit.index', {
+                        institution: institution.id,
+                    })
+                    " title="Department" :value="institution.departments" />
+                <InfoCard v-if="institution?.divisions > 0" title="Divisions" :value="institution.divisions" />
+                <InfoCard v-if="institution?.units > 0" title="Units" :value="institution.units" />
             </div>
 
-            <div
-                v-if="departments"
-                class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-1/2"
-            >
-                <p
-                    class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide"
-                >
+            <div v-if="departments" class="shadow-lg rounded-2xl bg-white dark:bg-gray-700 mt-4 w-full lg:w-1/2">
+                <p class="font-bold text-xl px-8 pt-8 text-gray-700 dark:text-white tracking-wide">
                     Departments
                     <span class="text-lg text-gray-500 dark:text-white ml-2">
                         ({{ departments.length }})
@@ -105,42 +74,27 @@ watch(
                 </p>
 
                 <div class="mt-1 relative mx-8">
-                    <div
-                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <span class="text-gray-500 sm:text-sm">
                             <MagnifyingGlassIcon class="w-4 h-4" />
                         </span>
                     </div>
 
-                    <BreezeInput
-                        v-model="search"
-                        type="search"
-                        class="w-full pl-8 bg-slate-100 border-0"
-                        required
-                        autofocus
-                        placeholder="Search departments..."
-                    />
+                    <BreezeInput v-model="search" type="search" class="w-full pl-8 bg-slate-100 border-0" required autofocus
+                        placeholder="Search departments..." />
                 </div>
 
                 <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
-                    <li
-                        v-for="(department, index) in departments"
-                        :key="index"
-                        class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
-                    >
+                    <li v-for="(department, index) in departments" :key="index"
+                        class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200">
                         <div class="flex items-center justify-start text-lg">
                             <span class="mr-4"> {{ index + 1 }} </span>
                             <div class="flex flex-col">
-                                <Link
-                                    :href="
-                                        route('unit.show', {
-                                            unit: department.id,
-                                        })
-                                    "
-                                    class="font-semibold"
-                                >
-                                    {{ department.name }}
+                                <Link :href="route('unit.show', {
+                                    unit: department.id,
+                                })
+                                    " class="font-semibold">
+                                {{ department.name }}
                                 </Link>
                                 <div class="flex justify-start space-x-4">
                                     <span class="text-sm">
@@ -156,13 +110,10 @@ watch(
                     </li>
                 </ul>
             </div>
-            <div
-                v-else
-                class="w-1/2 flex justify-center items-center rounded shadow py-10 bg-white"
-            >
+            <div v-else class="w-1/2 flex justify-center items-center rounded shadow py-10 bg-white">
                 No Units / Departments
             </div>
-        </div>
-        <NoItem v-else name="Institution" />
-    </MainLayout>
+        </div> -->
+        <!-- <NoItem v-else name="Institution" /> -->
+    </NewLayout>
 </template>
