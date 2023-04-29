@@ -6,12 +6,13 @@ use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\StoreUnitRequest;
 
 class UnitController extends Controller
 {
     public function index($institution = null)
     {
-        // return Unit::withCount('staff')->paginate(5);
+        
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 // ->departments()
@@ -43,6 +44,7 @@ class UnitController extends Controller
                         ] : null,
                     ]
                 ),
+           
             'filters' => ['search' => request()->search],
         ]);
     }
@@ -99,7 +101,6 @@ class UnitController extends Controller
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
-        // return $unit;
 
         return Inertia::render('Unit/Show', [
             'unit' => [
@@ -136,10 +137,17 @@ class UnitController extends Controller
                 ])
                 // 'subs' =>
             ],
+            
             'filters' => [
                 'dept' => request()->dept,
                 'staff' => request()->staff
             ],
         ]);
+    }
+
+    public function store (StoreUnitRequest $request){
+        Unit::create($request->validated());
+
+        return redirect()->route('institution.show', $request->institution_id)->with('success', 'Unit created successfully');
     }
 }

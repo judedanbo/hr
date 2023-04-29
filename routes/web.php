@@ -55,6 +55,7 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
+    Route::post('/institution/store', 'store')->name('institution.store');
     Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
     Route::get('/institution/{institution}/staff/{staff}', 'staff')->name('institution.staff');
     Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');
@@ -62,6 +63,7 @@ Route::controller(InstitutionController::class)->middleware(['auth'])->group(fun
 // unit
 Route::controller(UnitController::class)->middleware(['auth'])->group(function () {
     Route::get('/unit', 'index')->name('unit.index');
+    Route::post('/unit', 'store')->name('unit.store');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
 });
 

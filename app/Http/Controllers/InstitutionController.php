@@ -8,6 +8,8 @@ use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Enums\UnitType;
+use App\Http\Requests\StoreInstitutionRequest;
 
 class InstitutionController extends Controller
 {
@@ -70,6 +72,14 @@ class InstitutionController extends Controller
 
     public function show($institution)
     {
+        // $types = [];
+        // $obj = (object) array('name' => '', 'value' => '');
+        // foreach(UnitType::cases() as $type){
+        //     $obj->name = $type->name;
+        //     $obj->value = $type->value;
+        //     array_push($types, $obj);
+        // }
+        // return $types;
         // return Institution::with('staff')->where('id', $institution)->get();
         // $institution = Institution::query()
         //     ->where('id', $institution)
@@ -159,6 +169,14 @@ class InstitutionController extends Controller
             'filters' => ['search' => request()->search],
         ]);
     }
+    
+    public function store(StoreInstitutionRequest $request)
+    {
+        Institution::create($request->validated());
+
+        return redirect()->route('institution.index');
+    }
+    
 
     public function staffs($institution)
     {

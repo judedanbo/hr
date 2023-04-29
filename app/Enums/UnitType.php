@@ -10,4 +10,5 @@ enum UnitType: string
     case Section = 'SEC';
     case Ministry = 'MIN';
     case Business_Unit = 'BU';
+    case Branch = 'BRH';
 }

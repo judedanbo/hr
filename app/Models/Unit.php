@@ -19,6 +19,15 @@ class Unit extends Model
         'type' => UnitType::class,
     ];
 
+    protected $fillable = [
+        'name',
+        'type',
+        'unit_id',
+        'institution_id',
+        'start_date',
+        'end_date',
+    ];
+
     /**
      * Get the institution that owns the Unit
      *
