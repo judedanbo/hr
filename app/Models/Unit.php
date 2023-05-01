@@ -55,7 +55,7 @@ class Unit extends Model
      */
     public function subs(): HasMany
     {
-        return $this->hasMany(Unit::class);
+        return $this->hasMany(Unit::class, 'unit_id', 'id');
     }
 
     // public function scopeDepartments($query)

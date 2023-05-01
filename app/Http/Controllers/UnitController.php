@@ -66,7 +66,7 @@ class UnitController extends Controller
             // })
 
             ->with([
-                'institution', 'parent',
+                'institution', 'parent','subs',
                 'staff.person'
             ])
             ->when(request()->staff, function ($query, $search) {
@@ -97,7 +97,7 @@ class UnitController extends Controller
 
             ->whereId($unit)
             ->first();
-
+            // return $unit;
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
@@ -134,8 +134,20 @@ class UnitController extends Controller
                     'name' => $st->person->full_name,
                     'dob' => $st->person->date_of_birth,
                     'initials' => $st->person->initials
-                ])
-                // 'subs' =>
+                ]),
+                'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
+                    'id' => $sub->id,
+                    'name' => $sub->name,
+                    'subs' => $sub->subs_count,
+                    'staff_count' => $sub->staff_count,
+                    'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
+                        'id' => $stf->id,
+                        'name' => $stf->full_name,
+                        'dob' => $stf->date_of_birth,
+                        'ssn' => $stf->social_security_number,
+                        'initials' => $stf->initials
+                    ]) : null,
+                ]) : null,
             ],
             
             'filters' => [
@@ -146,6 +158,7 @@ class UnitController extends Controller
     }
 
     public function store (StoreUnitRequest $request){
+        // dd($request->validated());
         Unit::create($request->validated());
 
         return redirect()->route('institution.show', $request->institution_id)->with('success', 'Unit created successfully');

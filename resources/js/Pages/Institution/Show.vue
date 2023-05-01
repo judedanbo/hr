@@ -3,7 +3,7 @@ import NewLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { Inertia } from "@inertiajs/inertia";
-import { EllipsisVerticalIcon, ExclamationTriangleIcon, PlusIcon } from "@heroicons/vue/24/outline";
+import { PlusIcon } from "@heroicons/vue/24/outline";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
@@ -32,6 +32,7 @@ const form = useForm({
     name: null,
     abbreviation: null,
     type: null,
+    unit_id: null,
     start_date: format(new Date(), 'yyyy-MM-dd'),
     institution_id: props.institution.id,
 });
@@ -50,6 +51,16 @@ const submitForm = () => {
     });
 };
 
+const newDepartment = () => {
+    form.reset();
+    toggle()
+}
+
+const closeModal = () => {
+    form.reset();
+    toggle()
+}
+
 
 //
 // let BreadcrumbLinks = [
@@ -59,9 +70,13 @@ const submitForm = () => {
 
 let editDepartment = (id) => {
     // console.log("edit department" + id);
+    const dept = props.departments.find((department) => department.id === id);
     form.reset();
-    form.name =
-        toggle()
+    form.name = dept.name;
+    form.type = dept.type;
+    form.unit_id = dept.unit_id;
+    form.start_date = dept.start_date;
+    toggle()
 }
 
 let search = ref(props.filters.search);
@@ -105,7 +120,7 @@ watch(
                             <a class="text-gray-700 dark:text-gray-50">Staff</a>
                             <a class="text-gray-700 dark:text-gray-50">Heads</a>
                         </div>
-                        <a @click.prevent="toggle()" href="#"
+                        <a @click.prevent="newDepartment" href="#"
                             class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
                             <PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
                             New Department
@@ -168,7 +183,7 @@ watch(
 
             <div class="space-y-16 py-16 xl:space-y-20">
 
-                <!-- Recent department list-->
+                <!-- department list-->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
                         <div class="flex items-center justify-between">
@@ -184,7 +199,7 @@ watch(
                     </div>
                 </div>
             </div>
-            <Modal @close-modal="toggle" :open="open" title="Create Department">
+            <Modal @close-modal="closeModal" :open="open" title="Create Department">
 
                 <form @submit.prevent="submitForm" action="#">
                     <div class="grid gap-4 mb-4 sm:grid-cols-2">
@@ -206,14 +221,14 @@ watch(
                         </div>
                         <div>
                             <label for="parent" class="block text-sm font-medium leading-6 text-gray-900">Parent</label>
-                            <select id="parent" name="parent"
+                            <select v-model="form.unit_id" id="parent" name="parent"
                                 class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6">
                                 <option>None</option>
                                 <option v-for="department in props.departments" :key="department.id" :value="department.id">
                                     {{
                                         department.name }}</option>
                             </select>
-                            <InputError :message="form.errors.parent" />
+                            <InputError :message="form.errors.unit_id" />
                         </div>
                         <div>
                             <label for="type" class="block text-sm font-medium leading-6 text-gray-900">Type</label>
@@ -240,8 +255,8 @@ watch(
                         </div>
                     </div>
                     <div class="flex items-center justify-between space-x-4">
-                        <button type="submit"
-                            class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                        <button type="submit" :disabled="form.processing"
+                            class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:opacity-50">
                             Add department
                         </button>
                         <button @click.prevent="form.reset()" type="button"
@@ -258,6 +273,5 @@ watch(
                 </form>
             </Modal>
         </main>
-
     </NewLayout>
 </template>
