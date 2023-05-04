@@ -27,7 +27,7 @@ const navigation = [
     { name: 'Staff', href: route('staff.index'), icon: UsersIcon, current: false },
     { name: 'Departments', href: route('unit.index'), icon: FolderIcon, current: false },
     { name: 'Ranks', href: route('job.index'), icon: CalendarIcon, current: false },
-    { name: 'Promotions', href: '#', icon: DocumentDuplicateIcon, current: false },
+    { name: 'Promotions', href: route('promotion.index'), icon: DocumentDuplicateIcon, current: false },
     { name: 'Reports', href: route('report.index'), icon: ChartPieIcon, current: false },
 ]
 const teams = [
@@ -110,7 +110,7 @@ const sidebarOpen = ref(false)
                 <TopMenu :userNavigation="userNavigation" />
             </div>
 
-            <main class="py-10 bg-white dark:bg-gray-800">
+            <main class="pb-6 bg-white dark:bg-gray-800">
                 <div class="px-4 sm:px-6 lg:px-8">
                     <slot />
                 </div>

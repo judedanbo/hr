@@ -6,6 +6,8 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\InstitutionPersonController;
 use App\Http\Controllers\Reports\RecruitmentController;
+use App\Http\Controllers\PromotionBatchController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\UnitController;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -99,3 +101,14 @@ Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail
 
 Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');
+
+Route::controller(PromotionController::class)->middleware(['auth'])->group(function () {
+    Route::get('/promotion', 'index')->name('promotion.index');
+    Route::get('/promotion/{promotion}', 'show')->name('promotion.show');
+    Route::get('/promotion/{promotion}/export', 'export')->name('promotion.export');
+});
+
+Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function(){
+    Route::get('/next', 'index')->name('promotion.batch.index');
+    Route::get('/promotion/batch/{date}', 'show')->name('promotion.batch.show');
+}) ;

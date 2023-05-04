@@ -16,7 +16,7 @@ defineProps({
 })
 </script>
 <template>
-    <li class="overflow-hidden rounded-xl border border-gray-200">
+    <li class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
         <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-green-50 dark:bg-gray-700 p-6">
 
             <div class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">{{ unit.name }}</div>
@@ -48,7 +48,7 @@ defineProps({
                 </transition>
             </Menu>
         </div>
-        <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+        <dl class="-my-3 divide-y divide-gray-100 dark:divide-gray-700 px-6 py-4 text-sm leading-6">
             <div class="flex justify-between gap-x-4 py-3">
                 <dt class="text-gray-500 dark:text-gray-50">Divisions</dt>
                 <dd class="flex items-start gap-x-2">

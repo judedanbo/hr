@@ -96,20 +96,20 @@ class InstitutionController extends Controller
         //     ->withCount('departments', 'divisions', 'units')
         //     ->first();
         // dd($institution);
-        $divisionUnits = DB::table('units as finalUnits')
-            ->join('units as divisions', 'divisions.id', '=', 'finalUnits.unit_id')
-            ->select('divisions.id', 'divisions.unit_id', DB::raw('count(finalUnits.id) as units_count'))
-            ->where('finalUnits.type', 3)
-            ->groupBy('divisions.id', 'divisions.unit_id');
-        // return $divisionUnits->toSql();
-        $finalSub =  DB::table('units as departments')
-            // ->where('id',$institution )
-            ->select('departments.institution_id', 'departments.id', 'departments.name', DB::raw('count(division_units.units_count) as total_divisions, sum(division_units.units_count) as total_units'))
-            ->leftJoinSub($divisionUnits, 'division_units', function ($join) {
-                $join->on('division_units.unit_id', '=', 'departments.id');
-            })
-            ->groupBy('departments.institution_id', 'departments.id', 'departments.name');
-        // return $finalSub->toSql();
+        // $divisionUnits = DB::table('units as finalUnits')
+        //     ->join('units as divisions', 'divisions.id', '=', 'finalUnits.unit_id')
+        //     ->select('divisions.id', 'divisions.unit_id', DB::raw('count(finalUnits.id) as units_count'))
+        //     ->where('finalUnits.type', 3)
+        //     ->groupBy('divisions.id', 'divisions.unit_id');
+        // // return $divisionUnits->toSql();
+        // $finalSub =  DB::table('units as departments')
+        //     // ->where('id',$institution )
+        //     ->select('departments.institution_id', 'departments.id', 'departments.name', DB::raw('count(division_units.units_count) as total_divisions, sum(division_units.units_count) as total_units'))
+        //     ->leftJoinSub($divisionUnits, 'division_units', function ($join) {
+        //         $join->on('division_units.unit_id', '=', 'departments.id');
+        //     })
+        //     ->groupBy('departments.institution_id', 'departments.id', 'departments.name');
+        // // return $finalSub->toSql();
 
         $institution =  Institution::query()
             ->where('id', $institution)
@@ -173,7 +173,7 @@ class InstitutionController extends Controller
             'institution' => $institution != null ? [
                 'id' => $institution->id,
                 'name' => $institution->name,
-                // 'departments' => $institution->departments_count,
+                'departments' => $institution->departments_count,
                 'divisions' => $institution->divisions_count,
                 'units' => $institution->units_count,
                 'staff' => $institution->staff_count
@@ -187,9 +187,9 @@ class InstitutionController extends Controller
                     'start_date' => $department->start_date,
                     'end_date' => $department->end_date,
                     'unit_id' => $department->unit_id, 
-                    'divisions' => $department->subs_count + $department->subs->sum('subs_count'),
+                    'units' => $department->subs_count,// + $department->subs->sum('subs_count'),
                     'staff' => $department->staff_count + $department->subs->sum('staff_count'),
-                    'units' => $department->subs->sum('units_count'),
+                    // 'units' => $department->subs->sum('subs_count'),
                 ])
                 : null,
             'filters' => ['search' => request()->search],
