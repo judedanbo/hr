@@ -28,34 +28,6 @@ const promos = computed(() => {
 const $dateFormat = (date) => {
     return new Date(date)
 }
-// let search = ref(props.filters.search);
-
-// watch(
-//     search,
-//     debounce(function (value) {
-//         Inertia.get(
-//             route("unit.index"),
-//             { search: value },
-//             { preserveState: true, replace: true }
-//         );
-//     }, 300)
-// );
-
-// let openUnit = (unit) => {
-//     Inertia.visit(route("unit.show", { unit: unit }));
-// };
-
-// let BreadCrumpLinks = [
-//     {
-//         name: props.units.data[0].institution.name,
-//         url: route("institution.show", {
-//             institution: props.units.data[0].institution.id,
-//         }),
-//     },
-//     {
-//         name: "Departments",
-//     },
-// ];
 
 </script>
 
@@ -71,10 +43,11 @@ const $dateFormat = (date) => {
 
         <div>
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none">
+                <h2
+                    class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark:text-gray-50 lg:mx-0 lg:max-w-none">
                     Promotion History</h2>
             </div>
-            <div class="mt-6 overflow-hidden border-t border-gray-100">
+            <div class="mt-6 overflow-hidden border-t border-gray-100 dark:border-gray-800">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
                         <table class="w-full text-left">
@@ -87,15 +60,16 @@ const $dateFormat = (date) => {
                             </thead>
                             <tbody>
                                 <template v-for="(promotion, index) in promotions" :key="index">
-                                    <tr class="text-sm leading-6 text-gray-900">
+                                    <tr
+                                        class="text-sm leading-6 text-gray-900 bg-gray-50 dark:bg=gray-800 dark:text-gray-50">
                                         <th scope="colgroup" colspan="3" class="relative isolate py-2 font-semibold">
-                                            <time :datetime="promotion.index">{{ new
+                                            <time :datetime="promotion.effective_date">{{ new
                                                 Date(promotion.effective_date).toLocaleDateString('en-US', { month: long })
                                             }}</time>
                                             <div
-                                                class="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 bg-gray-50" />
+                                                class="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800" />
                                             <div
-                                                class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 bg-gray-50" />
+                                                class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800" />
                                         </th>
                                     </tr>
 
@@ -107,8 +81,10 @@ const $dateFormat = (date) => {
                                                     aria-hidden="true" /> -->
                                                 <div class="flex-auto">
                                                     <div class="flex items-start gap-x-3">
-                                                        <div class="text-sm font-medium leading-6 text-gray-900">{{
-                                                            promo.job_name }}</div>
+                                                        <div
+                                                            class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">
+                                                            {{
+                                                                promo.job_name }}</div>
 
                                                     </div>
                                                     <div v-if="promo.tax" class="mt-1 text-xs leading-5 text-gray-500">{{
@@ -116,17 +92,20 @@ const $dateFormat = (date) => {
                                                         tax</div>
                                                 </div>
                                             </div>
-                                            <div class="absolute bottom-0 right-full h-px w-screen bg-gray-100" />
-                                            <div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
+                                            <div
+                                                class="absolute bottom-0 right-full h-px w-screen bg-gray-100 dark:bg-gray-700" />
+                                            <div
+                                                class="absolute bottom-0 left-0 h-px w-screen bg-gray-100 dark:bg-gray-700" />
                                         </td>
                                         <td class="hidden py-5 pr-6 sm:table-cell">
-                                            <div class="text-sm leading-6 text-gray-900">{{ promo.staff }}</div>
+                                            <div class="text-sm leading-6 text-gray-900 dark:text-gray-50">{{ promo.staff }}
+                                            </div>
 
                                         </td>
                                         <td class="py-5 text-right">
                                             <div class="flex justify-end">
                                                 <a :href="promo.href"
-                                                    class="text-sm font-medium leading-6 text-indigo-600 hover:text-indigo-500">View<span
+                                                    class="text-sm font-medium leading-6 text-green-600 hover:text-green-500 dark:text-gray-50 dark:hover:text-gray-200">View<span
                                                         class="hidden sm:inline"> Details</span><span class="sr-only">,
                                                         invoice #{{ promo.invoiceNumber }}, {{ promo.client
                                                         }}</span></a>
