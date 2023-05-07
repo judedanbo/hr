@@ -1,33 +1,13 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import BreezeInput from "@/Components/Input.vue";
-import { ref, watch, computed } from "vue";
-import debounce from "lodash/debounce";
-import { Inertia } from "@inertiajs/inertia";
-import Pagination from "../../Components/Pagination.vue";
-import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
-import InfoCard from "@/Components/InfoCard.vue";
-import NoItem from "@/Components/NoItem.vue";
-
+import Pagination from "@/Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 
-let props = defineProps({
-    promotions: Array,
+defineProps({
+    promotions: Object,
     filters: Object,
 });
-
-const promos = computed(() => {
-    $list = {}
-    props.promotions.map((promo) => {
-        $list[promo.effective_date] = promo
-    })
-    // return props.promotions.;
-});
-
-const $dateFormat = (date) => {
-    return new Date(date)
-}
 
 </script>
 
@@ -51,6 +31,7 @@ const $dateFormat = (date) => {
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
                         <table class="w-full text-left">
+                            {{ $field = '' }}
                             <thead class="sr-only">
                                 <tr>
                                     <th>Position</th>
@@ -59,21 +40,28 @@ const $dateFormat = (date) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <template v-for="(promotion, index) in promotions" :key="index">
-                                    <tr
-                                        class="text-sm leading-6 text-gray-900 bg-gray-50 dark:bg=gray-800 dark:text-gray-50">
-                                        <th scope="colgroup" colspan="3" class="relative isolate py-2 font-semibold">
-                                            <time :datetime="promotion.effective_date">{{ new
-                                                Date(promotion.effective_date).toLocaleDateString('en-US', { month: long })
-                                            }}</time>
+                                <template v-for="(promotion, index) in  promotions.data " :key="index">
+
+                                    <tr v-if="promotion.year != $field" class="text-sm leading-6 text-gray-900 bg-gray-50 dark:bg=gray-800
+                                        dark:text-gray-50">
+                                        <th scope="col" class="relative isolate py-2 font-semibold">
+
+                                            <p>{{ promotion.year }}</p>
                                             <div
                                                 class="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800" />
                                             <div
                                                 class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800" />
                                         </th>
+                                        <th scope="col" class="relative isolate py-2 font-semibold cursor-pointer">
+                                            <Link :href="route('promotion.show', { year: promotion.year })">April</Link>
+                                        </th>
+                                        <th scope="col" class="relative isolate py-2 font-semibold cursor-pointer">
+                                            <Link :href="route('promotion.show', { year: promotion.year })">October</Link>
+                                        </th>
+                                        {{ $field = promotion.year }}
                                     </tr>
 
-                                    <tr v-for="(promo, index) in promotion.promos" :key="index">
+                                    <tr>
                                         <td class="relative py-5 pr-6">
                                             <div class="flex gap-x-6">
                                                 <!-- <component :is="transaction.icon"
@@ -84,11 +72,12 @@ const $dateFormat = (date) => {
                                                         <div
                                                             class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">
                                                             {{
-                                                                promo.job_name }}</div>
+                                                                promotion.job_name }}</div>
 
                                                     </div>
-                                                    <div v-if="promo.tax" class="mt-1 text-xs leading-5 text-gray-500">{{
-                                                        promo.tax }}
+                                                    <div v-if="promotion.tax" class="mt-1 text-xs leading-5 text-gray-500">
+                                                        {{
+                                                            promotion.tax }}
                                                         tax</div>
                                                 </div>
                                             </div>
@@ -98,16 +87,23 @@ const $dateFormat = (date) => {
                                                 class="absolute bottom-0 left-0 h-px w-screen bg-gray-100 dark:bg-gray-700" />
                                         </td>
                                         <td class="hidden py-5 pr-6 sm:table-cell">
-                                            <div class="text-sm leading-6 text-gray-900 dark:text-gray-50">{{ promo.staff }}
+                                            <div class="text-sm leading-6 text-gray-900 dark:text-gray-50">{{
+                                                promotion.april }}
+                                            </div>
+
+                                        </td>
+                                        <td class="hidden py-5 pr-6 sm:table-cell">
+                                            <div class="text-sm leading-6 text-gray-900 dark:text-gray-50">{{
+                                                promotion.october }}
                                             </div>
 
                                         </td>
                                         <td class="py-5 text-right">
                                             <div class="flex justify-end">
-                                                <a :href="promo.href"
+                                                <a :href="promotion.href"
                                                     class="text-sm font-medium leading-6 text-green-600 hover:text-green-500 dark:text-gray-50 dark:hover:text-gray-200">View<span
                                                         class="hidden sm:inline"> Details</span><span class="sr-only">,
-                                                        invoice #{{ promo.invoiceNumber }}, {{ promo.client
+                                                        invoice #{{ promotion.invoiceNumber }}, {{ promotion.client
                                                         }}</span></a>
                                             </div>
                                         </td>
@@ -115,6 +111,7 @@ const $dateFormat = (date) => {
                                 </template>
                             </tbody>
                         </table>
+                        <Pagination :records="promotions" />
                     </div>
                 </div>
             </div>

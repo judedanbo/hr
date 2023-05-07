@@ -102,13 +102,16 @@ Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail
 Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');
 
+Route::get('/report/promotion', [PromotionController::class, 'index'])->middleware(['auth'])->name('report.promotion');
+Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth'])->name('report.promotion.year');
+
 Route::controller(PromotionController::class)->middleware(['auth'])->group(function () {
     Route::get('/promotion', 'index')->name('promotion.index');
-    Route::get('/promotion/{promotion}', 'show')->name('promotion.show');
+    Route::get('/promotion/{year}', 'show')->name('promotion.show');
     Route::get('/promotion/{promotion}/export', 'export')->name('promotion.export');
 });
 
 Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function(){
     Route::get('/next', 'index')->name('promotion.batch.index');
-    Route::get('/promotion/batch/{date}', 'show')->name('promotion.batch.show');
+    Route::get('/promotion/batch', 'show')->name('promotion.batch.show');
 }) ;

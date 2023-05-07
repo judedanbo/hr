@@ -27,15 +27,14 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
     <div class="px-4 sm:px-6 lg:px-8">
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50">Users</h1>
-                <p class="mt-2 text-sm text-gray-700 dark:text-gray-50">A list of all the users in your account including
-                    their name, title,
-                    staff_number and role.</p>
+                <!-- <h1 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50">April 2022 </h1> -->
+                <!-- <p class="mt-2 text-sm text-gray-700 dark:text-gray-50">A list of all who were last promoted at least 3 -->
+                <!-- years ago. Ordered by last promotion date</p> -->
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                 <button type="button"
                     class="block rounded-md bg-green-600 dark:bg-gray-700 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                    Add user
+                    Export Data
                 </button>
             </div>
         </div>
