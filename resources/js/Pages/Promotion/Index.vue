@@ -2,12 +2,20 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Pagination.vue";
+import { watch, ref } from "vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import { Inertia } from "@inertiajs/inertia";
 
-defineProps({
+let props = defineProps({
     promotions: Object,
     filters: Object,
 });
+
+let search = ref(props.filters.search);
+
+watch(search, (value) => {
+    Inertia.get(route('promotion.index'), { search: value }, { preserveState: true, replace: true, preserveScroll: true })
+})
 
 </script>
 
@@ -26,6 +34,7 @@ defineProps({
                 <h2
                     class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark:text-gray-50 lg:mx-0 lg:max-w-none">
                     Promotion History</h2>
+                <input v-model="search" type="search" />
             </div>
             <div class="mt-6 overflow-hidden border-t border-gray-100 dark:border-gray-800">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

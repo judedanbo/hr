@@ -59,4 +59,3 @@ import { CalendarDaysIcon, CreditCardIcon, UserCircleIcon } from '@heroicons/vue
         </div>
     </div>
 </template>
-  

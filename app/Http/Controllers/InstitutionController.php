@@ -15,7 +15,6 @@ class InstitutionController extends Controller
 {
     public function index()
     {
-        // return Institution::query()->where('id', 21)->with('divisions')->get();
         return Inertia::render('Institution/Index', [
             'institutions' => Institution::query()
                 ->when(request()->search, function ($query, $search) {
@@ -54,7 +53,6 @@ class InstitutionController extends Controller
             })
             ->get();
         $institution = $institution->first();
-        // dd($institution);
         return Inertia::render('Institution/Dept', [
             'institution' => [
                 'id' => $institution->id,
@@ -72,45 +70,6 @@ class InstitutionController extends Controller
 
     public function show($institution)
     {
-        // $types = [];
-        // $obj = (object) array('name' => '', 'value' => '');
-        // foreach(UnitType::cases() as $type){
-        //     $obj->name = $type->name;
-        //     $obj->value = $type->value;
-        //     array_push($types, $obj);
-        // }
-        // return $types;
-        // return Institution::with('staff')->where('id', $institution)->get();
-        // $institution = Institution::query()
-        //     ->where('id', $institution)
-        //     ->when(request()->search, function($query, $search){
-        //         $query->with(['departments' =>  function($q) use ($search){
-        //             $q->where('name', 'like', "%{$search}%");
-        //             // $q->withCount('divisions');
-        //         }, ]);
-
-        //     }, function($query){
-        //         $query->with('departments');
-        //     })
-        //     ->with('departments.subs')
-        //     ->withCount('departments', 'divisions', 'units')
-        //     ->first();
-        // dd($institution);
-        // $divisionUnits = DB::table('units as finalUnits')
-        //     ->join('units as divisions', 'divisions.id', '=', 'finalUnits.unit_id')
-        //     ->select('divisions.id', 'divisions.unit_id', DB::raw('count(finalUnits.id) as units_count'))
-        //     ->where('finalUnits.type', 3)
-        //     ->groupBy('divisions.id', 'divisions.unit_id');
-        // // return $divisionUnits->toSql();
-        // $finalSub =  DB::table('units as departments')
-        //     // ->where('id',$institution )
-        //     ->select('departments.institution_id', 'departments.id', 'departments.name', DB::raw('count(division_units.units_count) as total_divisions, sum(division_units.units_count) as total_units'))
-        //     ->leftJoinSub($divisionUnits, 'division_units', function ($join) {
-        //         $join->on('division_units.unit_id', '=', 'departments.id');
-        //     })
-        //     ->groupBy('departments.institution_id', 'departments.id', 'departments.name');
-        // // return $finalSub->toSql();
-
         $institution =  Institution::query()
             ->where('id', $institution)
             ->withCount([
@@ -121,44 +80,7 @@ class InstitutionController extends Controller
             ])
             ->first();
 
-        // $institution =  Institution::query()
-        //     ->where('institutions.id', $institution)
-        //     // ->with('departments')
-        //     // ->joinSub($finalSub, 'final_sub', function($finalJoin) {
-        //     //     $finalJoin->on('final_sub.institution_id', '=' , 'institutions.id');
-        //     // })
-        //     ->when(request()->search, function ($query, $search) use ($finalSub) {
-        //         $query->with(['departments' =>  function ($q) use ($search, $finalSub) {
-        //             $q->leftJoinSub(
-        //                 $finalSub,
-        //                 'final_sub',
-        //                 function ($finalJoin) {
-        //                     $finalJoin->on('final_sub.id', '=', 'units.id');
-        //                 }
-        //             );
-        //             $q->where('units.name', 'like', "%{$search}%");
-        //         }]);
-        //     }, function ($query) use ($finalSub) {
-        //         $query->with(
-        //             [
-        //                 'departments' => function ($deptQuery)  use ($finalSub) {
-        //                     $deptQuery->leftJoinSub(
-        //                         $finalSub,
-        //                         'final_sub',
-        //                         function ($finalJoin) {
-        //                             $finalJoin->on('final_sub.id', '=', 'units.id');
-        //                         }
-        //                     );
-        //                 }
-        //             ]
-        //         );
-        //     })
-        //     ->withCount('departments', 'divisions', 'units', 'staff')
-        //     ->first();
-        // // if ($institution == null){
-        // //     return abort('404');
-        // // }
-        // return $institution;
+        
         $departments = Unit::query()
             ->with(['subs' => function ($query) {
                 

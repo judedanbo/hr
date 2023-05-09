@@ -11,102 +11,81 @@ use Illuminate\Support\Facades\DB;
 
 class PromotionController extends Controller
 {
-    protected $year;
-    protected $month;
-    public function __construct(int $year = null, String $month = null)
-    {
-        if (!$year) {
-            $this->year = (int) date('Y');
-        }
-        $this->year = $year;
+    // protected $year;
+    // protected $month;
+    // public function __construct( $year = null,   $month = null)
+    // {
+    //     if ($year == null) {
+    //         $this->year = date('Y');
+    //     }
+    //     $this->year = $year;
 
-        if (!$month) {
-            $this->month = 'april';
-        }
-        $this->month = $month;
-    }
+    //     if ($month == null) {
+    //         $this->month = 'april';
+    //     }
+    //     $this->month = $month;
+    // }
     
     public function index()
-    {
-        // $promotions = JobStaff::query()
-        // ->with(['job', 'staff'])
-        // ->select('start_date', 'job_id', DB::raw('count(staff_id) as Staff'))
-        // ->groupBy('start_date', 'job_id')
-        // ->orderBy('start_date' , 'desc')
-        // ->where('remarks', '<>' ,'1st Appointment')
-        // ->whereYear('start_date','>=', date('Y')-2)
-        // ->get();
+    {   
         return Inertia::render('Promotion/Index', [
             'promotions' => JobStaff::query()
-            ->with(['job'])
-            ->selectRaw('Year(start_date) year, count(case when month(start_date) <= 6 then 1 end) as april, count(case when month(start_date) > 6 then 1 end) as october')
-            ->groupByRaw('year')
-            ->orderByRaw('year desc')
-            // ->havingRaw("year <= " . $this->year - 3 )
-            ->where('remarks', '<>' ,'1st Appointment')
-            // ->whereYear('start_date','<=', $this->year - 3)
-            ->paginate()
-            ->through(fn($promotion) => [
-                'year' => $promotion->year,
-                'job_id' => $promotion->job_id,
-                // 'job_name' => $promotion->job->name,
-                'april' => $promotion->april,
-                'october' => $promotion->october,
-            ])
+                ->with(['job'])
+                ->selectRaw('Year(start_date) year, job_id, count(case when month   (start_date) <= 6 then 1 end) as april, count(case when month(start_date) > 6 then 1 end) as october')
+                ->whereHas('staff',function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                } )
+                ->when(request()->search, function($query, $search) {
+                    $query->whereHas('job', function ($query) use ($search) {
+                        $query->where('name', 'like', '%'.$search.'%');
+                    });
+                })
+                ->groupByRaw('year, job_id')
+                ->orderByRaw('year desc')
+                ->whereNull('end_date')
+                ->whereNotIn('job_id', [16,35,49, 65,71])
+                ->paginate()
+                ->withQueryString()
+                ->through(fn($promotion) => [
+                    'year' => $promotion->year,
+                    'job_id' => $promotion->job_id,
+                    'job_name' => $promotion->job->name,
+                    'april' => $promotion->april,
+                    'october' => $promotion->october,
+                ]),
+            'filters' => ['search' => request()->search]
         ]);
-        // return $promotions;
-        // $promotionsByEffectiveDates = $promotions->groupBy('start_date');
-        // // return $promotionsByEffectiveDates;
-        // return Inertia::render('Promotion/Index', [
-        //     'promotions' => $promotionsByEffectiveDates->map(function ($promotions, $start_date) {
-        //         return [
-        //             'effective_date' => $start_date,
-        //             'promos' => $promotions->map(function ($promotion) {
-        //                 return [
-        //                     'job_id' => $promotion->job_id,
-        //                     'job_name' => $promotion->job->name,
-        //                     'staff' => $promotion->Staff,
-        //                 ];
-        //             }),
-        //         ];
-        //     }),
-        // ]);
     }
 
-    public function show( int $year)
+    public function show(int $year =null, $month = null)
     {
-        // return $year;
-        // $promotion->load(['job', 'staff.person']);
-        // return Inertia::render('Promotion/Show', [
-        //     'promotion' => [
-        //         'id' => $promotion->id,
-        //         'job_id' => $promotion->job_id,
-        //         'job_name' => $promotion->job->name,
-        //         'staff_id' => $promotion->staff_id,
-        //         'surname' => $promotion->staff->person->surname,
-        //         'first_names' => $promotion->staff->person->first_name,
-        //         'other_names' => $promotion->staff->person->other_name,
-        //         'start_date' => $promotion->start_date,
-        //         'end_date' => $promotion->end_date,
-        //         'remarks' => $promotion->remarks,
-        //     ],
-        // ]);
-        // return $year;
+        if($year == null){
+            $year = date('Y');
+        }
+        if($month == null){
+            $month = 'april';
+        }
         $promotions = InstitutionPerson::query()
-        ->active()
-        ->whereHas('ranks', function($query) use ($year){
+        ->whereHas('ranks', function($query) use ($year, $month ){
             $query->whereNull('end_date');
             $query->whereYear('start_date', $year);
             $query->whereNotIn('job_id', [16,35,49, 65,71]);
             $query->whereMonth('start_date', '<=', '06');
-            $query->whereRaw("remarks != '1st Appointment'");
+            $query->when(request()->search, function($whenQuery, $search) {
+                $whenQuery->where('name', 'like', '%'.$search.'%');
+            });
+        })
+        ->whereHas('statuses', function($query){
+            $query->where('status', 'A');
         })
         ->with(['person', 'institution', 'units', 'ranks' => function($query)use ($year){
             $query->whereNull('end_date');
             $query->whereYear('start_date','<=', $year);
-            $query->whereRaw("remarks != '1st Appointment'");
         }])
         ->paginate()
+        ->withQueryString()
         ->through(fn ($staff) => [
             'id' => $staff->id,
             'staff_number' => $staff->staff_number,
@@ -121,12 +100,11 @@ class PromotionController extends Controller
             'remarks' => $staff->ranks->first()->pivot->remarks,
             'start_date' => $staff->ranks->first()->pivot->start_date,
             'now' => date('Y-m-d'),
-            
         ]);
 
         return Inertia::render('PromotionRank/Index', [
             'promotions' => $promotions,
-            'filter' => ['search' => Request()->search]
+            'filters' => ['search' => request()->search]
         ]
         );
         

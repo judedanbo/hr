@@ -1,10 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { watch, ref, computed } from 'vue'
 import { format, formatDistanceStrict } from 'date-fns'
+import { Inertia } from "@inertiajs/inertia";
 
-const props = defineProps({
+let props = defineProps({
     promotions: Array,
 })
+
+
 
 const formatDate = (date) => {
     return format(new Date(date), 'dd MMM, yyyy')
@@ -31,7 +34,8 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
                 <!-- <p class="mt-2 text-sm text-gray-700 dark:text-gray-50">A list of all who were last promoted at least 3 -->
                 <!-- years ago. Ordered by last promotion date</p> -->
             </div>
-            <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <div class="mt-4 sm:ml-16 sm:mt-0  sm:flex-none">
+
                 <button type="button"
                     class="block rounded-md bg-green-600 dark:bg-gray-700 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
                     Export Data
