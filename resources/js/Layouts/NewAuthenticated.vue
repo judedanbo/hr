@@ -27,7 +27,8 @@ const navigation = [
     { name: 'Staff', href: route('staff.index'), icon: UsersIcon, current: false },
     { name: 'Departments', href: route('unit.index'), icon: FolderIcon, current: false },
     { name: 'Ranks', href: route('job.index'), icon: CalendarIcon, current: false },
-    { name: 'Promotions', href: route('promotion.index'), icon: DocumentDuplicateIcon, current: false },
+    { name: 'Next Promotions', href: route('promotion.batch.show', { year: 2023, month: 'april' }), icon: DocumentDuplicateIcon, current: false },
+    { name: 'Past Promotions', href: route('promotion.index'), icon: DocumentDuplicateIcon, current: false },
     { name: 'Reports', href: route('report.index'), icon: ChartPieIcon, current: false },
 ]
 const teams = [

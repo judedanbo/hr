@@ -61,18 +61,22 @@ class PromotionController extends Controller
 
     public function show(int $year =null, $month = null)
     {
+
         if($year == null){
             $year = date('Y');
         }
-        if($month == null){
-            $month = 'april';
-        }
+       
         $promotions = InstitutionPerson::query()
         ->whereHas('ranks', function($query) use ($year, $month ){
             $query->whereNull('end_date');
             $query->whereYear('start_date', $year);
             $query->whereNotIn('job_id', [16,35,49, 65,71]);
-            $query->whereMonth('start_date', '<=', '06');
+            if($month == 'april'){
+                $query->whereMonth('start_date', '<=', 6);
+            }elseif($month == 'october'){
+                $query->whereMonth('start_date', '>', 6);
+            }
+            // $query->whereMonth('start_date', '<=', $month == 'april' ? 6 : 12);
             $query->when(request()->search, function($whenQuery, $search) {
                 $whenQuery->where('name', 'like', '%'.$search.'%');
             });

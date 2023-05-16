@@ -62,10 +62,18 @@ watch(search, (value) => {
                                                 class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800" />
                                         </th>
                                         <th scope="col" class="relative isolate py-2 font-semibold cursor-pointer">
-                                            <Link :href="route('promotion.show', { year: promotion.year })">April</Link>
+                                            <Link :href="route('promotion.show', {
+                                                year: promotion.year,
+                                                month: 'april'
+
+                                            })">April</Link>
                                         </th>
                                         <th scope="col" class="relative isolate py-2 font-semibold cursor-pointer">
-                                            <Link :href="route('promotion.show', { year: promotion.year })">October</Link>
+                                            <Link :href="route('promotion.show', {
+                                                year: promotion.year,
+                                                month: 'october',
+
+                                            })">October</Link>
                                         </th>
                                         {{ $field = promotion.year }}
                                     </tr>

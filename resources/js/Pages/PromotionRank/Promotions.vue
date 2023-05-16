@@ -2,9 +2,14 @@
 import { watch, ref, computed } from 'vue'
 import { format, formatDistanceStrict } from 'date-fns'
 import { Inertia } from "@inertiajs/inertia";
+import BreezeInput from "@/Components/Input.vue";
+import { Link } from '@inertiajs/inertia-vue3';
+
+defineEmits(["update:modelValue"]);
 
 let props = defineProps({
     promotions: Array,
+
 })
 
 
@@ -34,10 +39,11 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
                 <!-- <p class="mt-2 text-sm text-gray-700 dark:text-gray-50">A list of all who were last promoted at least 3 -->
                 <!-- years ago. Ordered by last promotion date</p> -->
             </div>
-            <div class="mt-4 sm:ml-16 sm:mt-0  sm:flex-none">
-
+            <div class="mt-4 sm:ml-16 sm:mt-0  flex space-x-4">
+                <BreezeInput @input="$emit('update:modelValue', $event.target.value)" type="search"
+                    class="w-full pl-8 bg-white border-0" required autofocus placeholder="Search Staff..." />
                 <button type="button"
-                    class="block rounded-md bg-green-600 dark:bg-gray-700 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+                    class="block rounded-md bg-green-600 dark:bg-gray-700 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 w-48">
                     Export Data
                 </button>
             </div>
@@ -96,7 +102,10 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
 
                                     <td
                                         :class="['whitespace-nowrap py-4 pr-3 text-sm font-medium', selectedStaff.includes(promotion.staff_number) ? 'text-green-600' : 'text-gray-900 dark:text-gray-50']">
-                                        <div class="font-medium text-gray-900 dark:text-gray-50">{{ fullName(promotion) }}
+                                        <div class="font-medium text-gray-900 dark:text-gray-50">
+                                            <Link :href="route('staff.show', { staff: promotion.id })">
+                                            {{ fullName(promotion) }}
+                                            </Link>
                                         </div>
                                         <div class="mt-1 text-gray-500 dark:text-gray-200">
                                             {{ promotion.staff_number }} | {{ promotion.file_number }}
@@ -129,7 +138,7 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
                                     <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                         <a href="#"
                                             class="text-green-600 dark:text-gray-100 hover:text-green-900 dark:hover:text-gray-50">
-                                            Edit<span class="sr-only">, {{ promotion.name }}</span>
+                                            Show history<span class="sr-only">, {{ promotion.name }}</span>
                                         </a>
                                     </td>
                                 </tr>

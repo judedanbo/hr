@@ -106,12 +106,12 @@ Route::get('/report/promotion', [PromotionController::class, 'index'])->middlewa
 Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth'])->name('report.promotion.year');
 
 Route::controller(PromotionController::class)->middleware(['auth'])->group(function () {
-    Route::get('/promotion', 'index')->name('promotion.index');
-    Route::get('/promotion/{year}', 'show')->name('promotion.show');
-    Route::get('/promotion/{promotion}/export', 'export')->name('promotion.export');
+    Route::get('/past-promotion', 'index')->name('promotion.index');
+    Route::get('/past-promotion/{year}/{month?}', 'show')->name('promotion.show');
+    Route::get('/past-promotion/{promotion}/export', 'export')->name('promotion.export');
 });
 
 Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function(){
-    Route::get('/next', 'index')->name('promotion.batch.index');
-    Route::get('/promotion/batch', 'show')->name('promotion.batch.show');
+    Route::get('/next-promotions', 'index')->name('promotion.batch.index');
+    Route::get('/next-promotions/{year}/{month?}', 'show')->name('promotion.batch.show');
 }) ;

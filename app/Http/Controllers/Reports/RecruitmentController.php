@@ -57,10 +57,10 @@ class RecruitmentController extends Controller
                 count(*) as total"
             ))
             ->when(request()->retired, function ($query) {
-                $query->whereRaw("(DATEDIFF(NOW(), PEOPLE.DATE_OF_BIRTH)/365) > 60");
+                $query->retired();
             })
             ->when(request()->active, function ($query) {
-                $query->whereRaw("(DATEDIFF(NOW(), PEOPLE.DATE_OF_BIRTH)/365) < 60");
+                $query->active();
             })
             ->groupByRaw('year')
             ->orderBy('year', 'desc')
