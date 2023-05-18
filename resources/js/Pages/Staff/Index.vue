@@ -12,11 +12,21 @@ import InfoCard from "@/Components/InfoCard.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
 import PageHeader from '@/Components/PageHeader.vue'
+import BreezeButton from '@/Components/Button.vue';
+import Overlay from "@/Components/Overlay.vue";
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import AddStaff from './AddStaff.vue'
+
+
+
 
 let props = defineProps({
     staff: Object,
     filters: Object,
 });
+
+let openDialog = ref(false);
 
 let search = ref(props.filters.search);
 
@@ -78,6 +88,7 @@ let BreadCrumpLinks = [
                             <BreezeInput v-model="search" type="search" class="w-full pl-8 bg-white border-0" required
                                 autofocus placeholder="Search staff..." />
                         </div>
+                        <Link :href="route('staff.create')" as="button" >Add New Staff</Link>
                     </div>
 
                     <div class="flex flex-col mt-6">
@@ -194,7 +205,7 @@ let BreadCrumpLinks = [
                                                         ) + ' years'
                                                         ">
                                                     <div v-if="person.current_rank
-                                                            ">
+                                                        ">
                                                         <div class="text-sm text-gray-900">
                                                             {{
                                                                 person
@@ -231,7 +242,7 @@ let BreadCrumpLinks = [
                                                         ) + ' years'
                                                         ">
                                                     <div v-if="person.current_unit
-                                                            ">
+                                                        ">
                                                         <div>
                                                             {{
                                                                 person.current_unit?.name.substring(
@@ -264,4 +275,5 @@ let BreadCrumpLinks = [
             </div>
         </div>
     </MainLayout>
+    <AddStaff @closeDialog="openDialog = false" :open="openDialog" />
 </template>

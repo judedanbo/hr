@@ -39,18 +39,18 @@ class PersonController extends Controller
                 ->through(fn ($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,
-                    'gender' => $person->gender->name,
+                    'gender' => $person->gender?->name,
                     'dob' => $person->date_of_birth,
                     'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
                     // 'number' => Person::count()
                     'institution' => $person->institution ? [
-                        'id' =>  $person->institution->first()->id,
-                        'name' =>  $person->institution->first()->name,
-                        'status' =>  $person->institution->first()->staff->statuses->first()->status->name,
+                        'id' =>  $person->institution->first()?->id,
+                        'name' =>  $person->institution->first()?->name,
+                        'status' =>  $person->institution->first()?->staff->statuses->first()?->status->name,
                         // $person->units->first()
                         // 'id' => $person->units->first()->id,
-                        'staff_id' => $person->institution->first()->staff->id,
+                        'staff_id' => $person->institution->first()?->staff->id,
                         // 'name' => $person->units->first()->staff
                     ] : null,
                     'dependent' => $person->dependent ? [

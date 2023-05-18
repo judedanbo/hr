@@ -11,7 +11,7 @@ class Status extends Pivot
 {
     use SoftDeletes;
 
-    protected $fillable = ['staff_id', 'status', 'type', 'start_date', 'end_date'];
+    protected $fillable = ['staff_id', 'status', 'description', 'start_date', 'end_date'];
 
     protected $casts = [
         'start_date' => 'date',

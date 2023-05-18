@@ -73,6 +73,8 @@ Route::controller(UnitController::class)->middleware(['auth'])->group(function (
 // staff
 Route::controller(InstitutionPersonController::class)->middleware(['auth'])->group(function () {
     Route::get('/staff', 'index')->name('staff.index');
+    Route::get('/staff/create', 'create')->name('staff.create');
+    Route::post('/staff', 'store')->name('staff.store');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');

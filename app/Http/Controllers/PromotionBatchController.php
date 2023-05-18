@@ -20,7 +20,7 @@ class PromotionBatchController extends Controller
                 ->groupByRaw('year, job_id')
                 ->orderByRaw('year desc')
                 
-                ->where('remarks', '<>' ,'1st Appointment')
+                // ->where('remarks', '<>' ,'1st Appointment')
                 
                 ->paginate()
                 ->withQueryString(),

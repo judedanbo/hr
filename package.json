@@ -20,6 +20,10 @@
         "vue": "^3.2.31"
     },
     "dependencies": {
+        "@formkit/addons": "^0.17.2",
+        "@formkit/icons": "^0.17.2",
+        "@formkit/themes": "^0.18.0-065ebab",
+        "@formkit/vue": "^0.17.1",
         "@headlessui/vue": "^1.7.0",
         "@heroicons/vue": "^2.0.8",
         "@vueuse/core": "^10.1.0",

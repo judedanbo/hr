@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactType;
 use App\Models\InstitutionPerson;
+use App\Models\Institution;
+use App\Models\Person;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+use App\Http\Requests\StorePersonRequest;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 class InstitutionPersonController extends Controller
 {
     /**
@@ -40,6 +44,7 @@ class InstitutionPersonController extends Controller
                     $whereQry->orWhereHas('person', function ($perQuery) use ($search) {
                         $perQuery->where('first_name', 'like', "%{$search}%");
                         $perQuery->orWhere('other_names', 'like', "%{$search}%");
+                        $perQuery->orWhere('surname', 'like', "%{$search}%");
                         $perQuery->orWhere('date_of_birth', 'like', "%{$search}%");
                     });
                     $whereQry->orWhereHas('ranks', function ($rankQuery) use ($search) {
@@ -93,7 +98,7 @@ class InstitutionPersonController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Staff/Create');
     }
 
     /**
@@ -102,8 +107,27 @@ class InstitutionPersonController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    // public function store(StorePersonRequest $request)
+    public function store(StorePersonRequest $request)
     {
+        // dd($request->employmentInformation);
+        DB::transaction(function () use($request) {
+            $person = Person::create($request->personalInformation);
+            
+            $institution =  Institution::find(1);
+
+            // $institution->staff()->attach($person->id, $request->employmentInformation);
+
+             $person->institution()->attach( $institution->id, $request->employmentInformation);
+             $staff = InstitutionPerson::where('person_id', $person->id)->first();
+            $staff->statuses()->create([
+                'status' => 'A',
+                 'description' => 'Active',
+                 'start_date' => Carbon::now() ,
+            ]);
+        });
+
+        return redirect()->route('staff.index')->with('success', 'Staff created successfully');
     }
 
     /**
@@ -137,7 +161,7 @@ class InstitutionPersonController extends Controller
                 'dob' => $staff->person->date_of_birth,
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
-                'nationality' => $staff->person->nationality->name,
+                'nationality' => $staff->person->nationality?->name,
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->name,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
