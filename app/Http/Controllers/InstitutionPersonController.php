@@ -110,7 +110,7 @@ class InstitutionPersonController extends Controller
     // public function store(StorePersonRequest $request)
     public function store(StorePersonRequest $request)
     {
-        // dd($request->employmentInformation);
+        // dd($request->validated());
         DB::transaction(function () use($request) {
             $person = Person::create($request->personalInformation);
             
@@ -120,6 +120,7 @@ class InstitutionPersonController extends Controller
 
              $person->institution()->attach( $institution->id, $request->employmentInformation);
              $staff = InstitutionPerson::where('person_id', $person->id)->first();
+             $person->contacts()->create($request->contactInformation);
             $staff->statuses()->create([
                 'status' => 'A',
                  'description' => 'Active',
@@ -190,6 +191,7 @@ class InstitutionPersonController extends Controller
             'staff' => [
                 'staff_id' => $staff->id,
                 'staff_number' => $staff->staff_number,
+                'file_number' => $staff->file_number,
                 'old_staff_number' => $staff->old_staff_number,
                 'hire_date' => $staff->hire_date,
                 'start_date' => $staff->start_date,

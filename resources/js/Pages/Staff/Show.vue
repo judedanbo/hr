@@ -10,15 +10,7 @@ import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
 import StaffDates from "@/Pages/Staff/StaffDates.vue";
 import PageHeader from '@/Components/PageHeader.vue'
 import StaffDependents from "@/Components/StaffDependents.vue";
-import {
-    BriefcaseIcon,
-    BuildingOffice2Icon,
-    MagnifyingGlassIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    EnvelopeIcon,
-    PaperClipIcon,
-} from "@heroicons/vue/24/outline";
+
 
 // import { PaperClipIcon } from '@heroicons/vue/20/solid'
 
@@ -105,6 +97,9 @@ let BreadcrumbLinks = [
                                                 ">
                                             Employed:
                                             {{ formattedDob(staff.hire_date) }}
+                                        </p>
+                                        <p class="text-lg md:text-xl">
+                                            File No.: {{ staff.file_number }}
                                         </p>
                                         <p class="text-lg md:text-xl">
                                             Staff No.: {{ staff.staff_number }}

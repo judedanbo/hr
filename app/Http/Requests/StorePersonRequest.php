@@ -35,15 +35,20 @@ class StorePersonRequest extends FormRequest
                 'required',
                 'date',
                 'before:' . Carbon::now()->subYears(18)->format('Y-m-d'),
-                'after:' . Carbon::now()->addYears(100)->format('Y-m-d')
+                'after:' . Carbon::now()->subYears(100)->format('Y-m-d')
             ],
             'personalInformation.gender' => ['required', new Enum(Gender::class)],
             'personalInformation.marital_status' => ['required', new Enum(MaritalStatus::class)],
-            'contactInformation.contact_type_id' => 'required|integer',
+            'contactInformation.contact_type' => 'required|integer',
             'contactInformation.contact' => 'required|string|max:100|unique:contacts,contact',
-            'employmentInformation.staff_number' => 'required|string|max:10|unique:institution_person,staff_number',
-            'employmentInformation.file_number' => 'required|string|max:10|unique:institution_person,file_number',
-            'employmentInformation.hire_date' => 'required|date',
+            'employmentInformation.staff_number' => 'required|string|max:10|unique:institution_person,staff_number|different:employmentInformation.file_number',
+            'employmentInformation.file_number' => 'required|string|max:10|unique:institution_person,file_number|different:employmentInformation.file_number',
+            'employmentInformation.hire_date' => [
+                'required',
+                'date',
+                'after:' . Carbon::now()->subYears(5)->format('Y-m-d'),
+                'before_or_equal:today'
+            ],
         ];
     }
 }

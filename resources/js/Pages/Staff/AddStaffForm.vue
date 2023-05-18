@@ -16,7 +16,7 @@ let formData = ref(null)
 
 const submitHandler = (data) => {
   Inertia.post(route('staff.store'), data.staffData);
-  console.log(data);
+  // console.log(data);
 };
 </script>
 <template>
@@ -98,10 +98,12 @@ const submitHandler = (data) => {
               <FormKit
                 type="date"
                 name="date_of_birth"
-                id="date_of_birth"
-                value="2011-01-01"
+                id="Date_of_birth"
+                value="2005-01-01"
+                min="1923-01-01"
+                max="2006-01-01"
                 label="date of birth"
-                validation="required|date_after:1923-01-01"
+                validation="required|date_after:1923-01-01|date_before:2005-01-01"
                 validation-visibility="submit"
               
               />
@@ -141,8 +143,8 @@ const submitHandler = (data) => {
           <FormKit type="step" name="contactInformation">
             <FormKit
               type="select"
-              name="contact_type_id"
-              id="contact_type_id"
+              name="contact_type"
+              id="contact_type"
               label="Contact type"
               placeholder="Contact type"
               validation="required"
@@ -170,6 +172,8 @@ const submitHandler = (data) => {
                 name="hire_date"
                 id="hire_date"
                 value="2022-01-01"
+                min="2021-01-01"
+                max="2022-01-01"
                 label="Date of Employment"
                 validation="required|date_after:2021-01-01"
                 validation-visibility="submit"

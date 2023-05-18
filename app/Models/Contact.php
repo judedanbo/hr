@@ -12,9 +12,8 @@ class Contact extends Model
 
     protected $fillable = [
         'person_id',
-        'contact_type_id',
+        'contact_type',
         'contact',
         'valid_end',
-        'contact_type_id',
     ];
 }
