@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ContactType;
-use App\Models\InstitutionPerson;
-use App\Models\Institution;
-use App\Models\Person;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use App\Http\Requests\StorePersonRequest;
-use Illuminate\Support\Facades\DB;
+use App\Models\ContactType;
+use App\Models\Institution;
+use App\Models\InstitutionPerson;
+use App\Models\Person;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+
 class InstitutionPersonController extends Controller
 {
     /**
@@ -40,7 +41,7 @@ class InstitutionPersonController extends Controller
                     $whereQry->orWhere('file_number', 'like', "%{$search}%");
                     $whereQry->orWhere('old_staff_number', 'like', "%{$search}%");
                     $whereQry->orWhereYear('hire_date', $search);
-                    $whereQry->orWhereRaw("monthname(hire_date) like ?", ['%' . $search . '%']);
+                    $whereQry->orWhereRaw('monthname(hire_date) like ?', ['%' . $search . '%']);
                     $whereQry->orWhereHas('person', function ($perQuery) use ($search) {
                         $perQuery->where('first_name', 'like', "%{$search}%");
                         $perQuery->orWhere('other_names', 'like', "%{$search}%");
@@ -68,13 +69,13 @@ class InstitutionPersonController extends Controller
                 'gender' => $staff->person->gender->name,
                 'status' => $staff->statuses->first()->status->name,
                 'dob' => $staff->person->date_of_birth,
-                'current_rank' =>  $staff->ranks->count() ? [
+                'current_rank' => $staff->ranks->count() ? [
                     'id' => $staff->ranks->first()->id,
                     'name' => $staff->ranks->first()->name,
                     'job_id' => $staff->ranks->first()->pivot->job_id,
                     'start_date' => $staff->ranks->first()->pivot->start_date,
                     'end_date' => $staff->ranks->first()->pivot->end_date,
-                    'remarks' => $staff->ranks->first()->pivot->remarks
+                    'remarks' => $staff->ranks->first()->pivot->remarks,
                 ] : null,
                 'current_unit' => $staff->units->count() ? [
                     'id' => $staff->units->first()->id,
@@ -87,7 +88,7 @@ class InstitutionPersonController extends Controller
 
         return Inertia::render('Staff/Index', [
             'staff' => $staff,
-            'filters' => ['search' => request()->search]
+            'filters' => ['search' => request()->search],
         ]);
     }
 
@@ -111,20 +112,20 @@ class InstitutionPersonController extends Controller
     public function store(StorePersonRequest $request)
     {
         // dd($request->validated());
-        DB::transaction(function () use($request) {
+        DB::transaction(function () use ($request) {
             $person = Person::create($request->personalInformation);
-            
-            $institution =  Institution::find(1);
+
+            $institution = Institution::find(1);
 
             // $institution->staff()->attach($person->id, $request->employmentInformation);
 
-             $person->institution()->attach( $institution->id, $request->employmentInformation);
-             $staff = InstitutionPerson::where('person_id', $person->id)->first();
-             $person->contacts()->create($request->contactInformation);
+            $person->institution()->attach($institution->id, $request->employmentInformation);
+            $staff = InstitutionPerson::where('person_id', $person->id)->first();
+            $person->contacts()->create($request->contactInformation);
             $staff->statuses()->create([
                 'status' => 'A',
-                 'description' => 'Active',
-                 'start_date' => Carbon::now() ,
+                'description' => 'Active',
+                'start_date' => Carbon::now(),
             ]);
         });
 
@@ -139,13 +140,13 @@ class InstitutionPersonController extends Controller
      */
     public function show($staff)
     {
-        $staff =  InstitutionPerson::query()
+        $staff = InstitutionPerson::query()
             ->with(
                 [
                     'person.address', 'person.contacts',
                     'units.institution',
                     'ranks',
-                    'dependents.person'
+                    'dependents.person',
                 ]
             )
             ->whereHas('statuses', function ($query) {
@@ -166,11 +167,11 @@ class InstitutionPersonController extends Controller
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->name,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
-                    'type' => str_replace('_', ' ', $id->id_type->name,),
+                    'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
-                ]) : null
+                ]) : null,
             ],
-            'contacts' => $staff->person->contacts->count() > 0 ?  $staff->person->contacts->map(fn ($contact) => [
+            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type_id' => $contact->contact_type_id,
@@ -222,7 +223,7 @@ class InstitutionPersonController extends Controller
                 //     'institution_id' => $staff->unit->institution->id,
                 //     'institution_name' => $staff->unit->institution->name,
                 // ] : null,
-                'dependents' =>  $staff->dependents ? $staff->dependents->map(fn ($dep) => [
+                'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'name' => $dep->person->full_name,
@@ -237,7 +238,6 @@ class InstitutionPersonController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\InstitutionPerson  $institutionPerson
      * @return \Illuminate\Http\Response
      */
     public function edit(InstitutionPerson $institutionPerson)
@@ -248,8 +248,6 @@ class InstitutionPersonController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\InstitutionPerson  $institutionPerson
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, InstitutionPerson $institutionPerson)
@@ -260,7 +258,6 @@ class InstitutionPersonController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\InstitutionPerson  $institutionPerson
      * @return \Illuminate\Http\Response
      */
     public function destroy(InstitutionPerson $institutionPerson)

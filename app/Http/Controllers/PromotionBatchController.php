@@ -2,58 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use App\Models\InstitutionPerson;
 use App\Models\JobStaff;
 use Inertia\Inertia;
 
 class PromotionBatchController extends Controller
-{   
-    
+{
     public function index()
     {
-        return Inertia::render('PromotionRank/Index',[
+        return Inertia::render('PromotionRank/Index', [
             'promotions' => JobStaff::query()
                 ->with(['job'])
                 ->selectRaw('Year(start_date) year, job_id, count(case when month(start_date) <= 6 then 1 end) as april, count(case when month(start_date) > 6 then 1 end) as october')
                 ->groupByRaw('year, job_id')
                 ->orderByRaw('year desc')
-                
+
                 // ->where('remarks', '<>' ,'1st Appointment')
-                
+
                 ->paginate()
                 ->withQueryString(),
-            'filters' => ['search' => Request()->search]
+            'filters' => ['search' => Request()->search],
         ]);
     }
+
     public function show($year, $month)
     {
         return Inertia::render('PromotionRank/Index', [
             'promotions' => InstitutionPerson::query()
-                ->when(request()->search, function($query, $search){
-                    $query->where('staff_number', 'LIKE', '%'.$search.'%');
-                        // ->orWhere('file_number', 'LIKE', '%'.$search.'%');
+                ->when(request()->search, function ($query, $search) {
+                    $query->where('staff_number', 'LIKE', '%' . $search . '%');
+                    // ->orWhere('file_number', 'LIKE', '%'.$search.'%');
                 })
-                ->whereHas('statuses', function($query){
+                ->whereHas('statuses', function ($query) {
                     $query->where('status', 'A');
                 })
-                ->whereHas('ranks', function($query) use ($year, $month) {
+                ->whereHas('ranks', function ($query) use ($year, $month) {
                     $query->whereNull('end_date');
-                    $query->whereYear('start_date','<', $year-3);
-                 ;
-                    $query->whereNotIn('job_id', [16,35,49, 65,71]);
-                    if($month == 'april'){
+                    $query->whereYear('start_date', '<', $year - 3);
+
+                    $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
+                    if ($month == 'april') {
                         $query->whereMonth('start_date', '<=', 6);
-                    }elseif($month == 'october'){
+                    } elseif ($month == 'october') {
                         $query->whereMonth('start_date', '>', 6);
                     }
                 })
-                ->with(['person', 'institution', 'units', 'ranks' => function($query) use ($year){
+                ->with(['person', 'institution', 'units', 'ranks' => function ($query) use ($year) {
                     $searchYear = $year - 3;
-                  
+
                     $query->whereNull('end_date');
-                    $query->whereYear('start_date','<', $searchYear);
+                    $query->whereYear('start_date', '<', $searchYear);
                 }])
                 ->orderBy(
                     JobStaff::select('start_date')
@@ -81,8 +79,8 @@ class PromotionBatchController extends Controller
             'filters' => [
                 'search' => Request()->search,
                 'year' => $year,
-                'month' => $month
-            ]
+                'month' => $month,
+            ],
         ]
         );
     }

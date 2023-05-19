@@ -15,15 +15,11 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class RecruitmentSummary implements
     // FromCollection,
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue
+    ShouldAutoSize, WithHeadings, FromQuery, WithMapping, ShouldQueue
 {
     use Exportable;
 
-    function headings(): array
+    public function headings(): array
     {
         return [
             'Year of Recruitment',
@@ -32,6 +28,7 @@ class RecruitmentSummary implements
             'Total Recruitment',
         ];
     }
+
     public function map($recruitment): array
     {
         return [
@@ -41,6 +38,7 @@ class RecruitmentSummary implements
             $recruitment->total,
         ];
     }
+
     public function query()
     {
         return InstitutionPerson::query()
@@ -62,7 +60,6 @@ class RecruitmentSummary implements
             ->take(10);
     }
 }
-
 
 // $recruitment = PersonUnit::query()
 // ->join('people', 'people.id', '=', 'person_unit.person_id')

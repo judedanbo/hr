@@ -14,8 +14,6 @@ class Job extends Model
 
     /**
      * Get the institution that owns the Job
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function institution(): BelongsTo
     {
@@ -24,8 +22,6 @@ class Job extends Model
 
     /**
      * The staff that belong to the Job
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function staff(): BelongsToMany
     {

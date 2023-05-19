@@ -17,8 +17,6 @@ class PersonIdentity extends Model
 
     /**
      * Get the person that owns the PersonIdentity
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function person(): BelongsTo
     {

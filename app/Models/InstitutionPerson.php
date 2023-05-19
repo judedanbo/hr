@@ -2,13 +2,9 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class InstitutionPerson extends Pivot
@@ -32,8 +28,6 @@ class InstitutionPerson extends Pivot
 
     /**
      * Get the person that owns the InstitutionPerson
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function person(): BelongsTo
     {
@@ -42,8 +36,6 @@ class InstitutionPerson extends Pivot
 
     /**
      * Get the institution that owns the InstitutionPerson
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function institution(): BelongsTo
     {
@@ -66,8 +58,6 @@ class InstitutionPerson extends Pivot
 
     /**
      * The ranks that belong to the InstitutionPerson
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function ranks(): BelongsToMany
     {
@@ -85,6 +75,7 @@ class InstitutionPerson extends Pivot
             ->orderByPivot('start_date', 'desc')
             ->latest();
     }
+
     public function dependents(): HasMany
     {
         return $this->hasMany(Dependent::class, 'staff_id');
@@ -100,15 +91,16 @@ class InstitutionPerson extends Pivot
         //     $query->whereRaw("(DATEDIFF(NOW(), date_of_birth)/365) < 60");
         // }]); //whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) < 60");
     }
+
     public function scopeRetired($query)
     {
-        return $query->whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) > 60");
-    }
-    public function scopeCurrentStatus($query)
-    {
-        return $query->whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) > 60");
+        return $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 60');
     }
 
+    public function scopeCurrentStatus($query)
+    {
+        return $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 60');
+    }
 
     // public function getCurrentStatusAttribute()
     // {
@@ -120,8 +112,6 @@ class InstitutionPerson extends Pivot
 
     /**
      * Get all of the statuses for the InstitutionPerson
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function statuses(): HasMany
     {

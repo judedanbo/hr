@@ -17,21 +17,22 @@ class ContactFactory extends Factory
      */
     public function definition()
     {
-        $type = fake()->randomElements([1,2,3]);
+        $type = fake()->randomElements([1, 2, 3]);
         $contact = '';
-        if($type == 1){
+        if ($type == 1) {
             $contact = fake()->phoneNumber();
         }
-        if($type == 2){
+        if ($type == 2) {
             $contact = fake()->safeEmail();
         }
-        if($type == 3){
+        if ($type == 3) {
             $contact = fake()->address();
         }
+
         return [
-            'person_id' => Person::factory() ,
-            'type' => $type ,
-            'contact' => $contact
+            'person_id' => Person::factory(),
+            'type' => $type,
+            'contact' => $contact,
         ];
     }
 }

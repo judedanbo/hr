@@ -34,7 +34,6 @@ class DependentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreDependentRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreDependentRequest $request)
@@ -45,7 +44,6 @@ class DependentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Dependent  $dependent
      * @return \Illuminate\Http\Response
      */
     public function show(Dependent $dependent)
@@ -56,7 +54,6 @@ class DependentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Dependent  $dependent
      * @return \Illuminate\Http\Response
      */
     public function edit(Dependent $dependent)
@@ -67,8 +64,6 @@ class DependentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateDependentRequest  $request
-     * @param  \App\Models\Dependent  $dependent
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateDependentRequest $request, Dependent $dependent)
@@ -79,12 +74,12 @@ class DependentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Dependent  $dependent
      * @return \Illuminate\Http\Response
      */
     public function destroy(Dependent $dependent)
     {
         $dependent->delete();
+
         return redirect()->back();
     }
 }

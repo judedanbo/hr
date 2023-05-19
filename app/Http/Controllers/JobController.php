@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class JobController extends Controller
@@ -14,8 +13,9 @@ class JobController extends Controller
             // ->where('institution_id', $institution)
             // ->where('name', 'like', 'Prin.Auditor%')
             ->get();
+
         return Inertia::render('Job/Index', [
-            'jobs' =>  Job::withCount('staff')
+            'jobs' => Job::withCount('staff')
                 ->when(request()->search, function ($query, $search) {
 
                     $query->where('name', 'like', "%{$search}%");
@@ -33,12 +33,11 @@ class JobController extends Controller
                     'institution' => [
                         'id' => $job->institution->id,
                         'name' => $job->institution->name,
-                    ]
+                    ],
                 ]),
             'filters' => ['search' => request()->search],
         ]);
     }
-
 
     public function show($job)
     {

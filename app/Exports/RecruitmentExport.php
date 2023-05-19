@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
-use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 // use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -15,15 +14,11 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class RecruitmentExport implements
     // FromCollection,
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue
+    ShouldAutoSize, WithHeadings, FromQuery, WithMapping, ShouldQueue
 {
     use Exportable;
 
-    function headings(): array
+    public function headings(): array
     {
         return [
             'Full Name',
@@ -40,6 +35,7 @@ class RecruitmentExport implements
             'Current Unit Start',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -57,6 +53,7 @@ class RecruitmentExport implements
             $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date->format('d F, Y') : null,
         ];
     }
+
     public function query()
     {
         return InstitutionPerson::query()

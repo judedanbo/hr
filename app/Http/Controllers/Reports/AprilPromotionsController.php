@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Reports;
 
 use App\Exports\AprilPromotionsExport;
 use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Excel as Excel;
-use Illuminate\Http\Request;
 use App\Models\JobStaff;
 use Inertia\Inertia;
 
@@ -13,7 +11,7 @@ class AprilPromotionsController extends Controller
 {
     public function __construct(int $year = null)
     {
-        if (!$year) {
+        if (! $year) {
             $this->year = (int) date('Y');
         }
         $this->year = $year;
@@ -31,21 +29,21 @@ class AprilPromotionsController extends Controller
         //     ->where('remarks', '<>' ,'1st Appointment')
         //     // ->whereYear('start_date','<=', $this->year - 3)
         //     ->get()
-            
-    //    return Inertia::render()
+
+        //    return Inertia::render()
         // return $excel->download(new AprilPromotionsExport($year), `April Promotions-${year}.xlsx`);
 
         return InstitutionPerson::query()
             ->active()
-            ->whereHas('ranks', function($query){
+            ->whereHas('ranks', function ($query) {
                 $query->whereNull('end_date');
-                $query->whereYear('start_date','<=', $this->year - 3);
-                $query->whereNotIn('job_id', [16,35,49, 65,71]);
+                $query->whereYear('start_date', '<=', $this->year - 3);
+                $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
                 $query->whereMonth('start_date', '<=', '07');
             })
-            ->with(['person', 'institution', 'units', 'ranks' => function($query){
+            ->with(['person', 'institution', 'units', 'ranks' => function ($query) {
                 $query->whereNull('end_date');
-                $query->whereYear('start_date','<=', $this->year - 3);
+                $query->whereYear('start_date', '<=', $this->year - 3);
             }])
             ->orderBy(
                 JobStaff::select('start_date')

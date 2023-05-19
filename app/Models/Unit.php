@@ -40,8 +40,6 @@ class Unit extends Model
 
     /**
      * Get the parent that owns the Unit
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function parent(): BelongsTo
     {
@@ -50,8 +48,6 @@ class Unit extends Model
 
     /**
      * Get all of the subs for the Unit
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function subs(): HasMany
     {
@@ -63,12 +59,11 @@ class Unit extends Model
     //     $query->whereNull('unit_id');
     // }
 
-
     public function scopeCountSubs($query)
     {
         $subQuery = DB::table('units as subUnits')
             ->selectRaw('count(*)')
-            ->whereRaw("subUnits.unit_id = units.id");
+            ->whereRaw('subUnits.unit_id = units.id');
 
         // return $query->select('units.*')->selectSub($subQuery, 'sub_number')->withCount('subs');
         return $query->select('units.*')
@@ -82,10 +77,12 @@ class Unit extends Model
     {
         return $query->where('type', UnitType::Department);
     }
+
     public function scopeDivisions($query)
     {
         return $query->where('type', UnitType::Division);
     }
+
     public function scopeUnits($query)
     {
         return $query->where('type', UnitType::Unit);
@@ -93,12 +90,10 @@ class Unit extends Model
 
     /**
      * The staff that belong to the Department
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit',  'unit_id', 'staff_id')
+        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit', 'unit_id', 'staff_id')
             ->using(StaffUnit::class)
             ->withPivot('start_date', 'end_date')
             ->wherePivot('end_date', '>=', now());

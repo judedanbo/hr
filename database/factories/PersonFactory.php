@@ -17,17 +17,18 @@ class PersonFactory extends Factory
     public function definition()
     {
         $gender = fake()->randomElements(['male', 'female']);
+
         return [
-            'title' =>fake()->title($gender) ,
-            'surname' =>fake()->lastName() ,
-            'other_names' =>fake()->firstName($gender) ,
-            'gender' =>$gender ,
-            'nationality' => 'Ghanaian' ,
+            'title' => fake()->title($gender),
+            'surname' => fake()->lastName(),
+            'other_names' => fake()->firstName($gender),
+            'gender' => $gender,
+            'nationality' => 'Ghanaian',
             // 'image' =>fake()-> ,
-            'date_of_birth' =>fake()->dateTimeBetween('now', '-20 years'),
-            'social_security_number' =>fake()->phoneNumber(),
-            'national_id_number' =>fake()->phoneNumber() ,
-            'about' =>fake()->paragraph() ,
+            'date_of_birth' => fake()->dateTimeBetween('now', '-20 years'),
+            'social_security_number' => fake()->phoneNumber(),
+            'national_id_number' => fake()->phoneNumber(),
+            'about' => fake()->paragraph(),
         ];
     }
 }

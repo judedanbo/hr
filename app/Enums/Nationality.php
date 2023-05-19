@@ -4,5 +4,5 @@ namespace App\Enums;
 
 enum Nationality: String
 {
-    case Ghanaian = "GH";
+    case Ghanaian = 'GH';
 }

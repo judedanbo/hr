@@ -13,8 +13,6 @@ class Region extends Model
 
     /**
      * Get all of the districts for the Region
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function districts(): HasMany
     {

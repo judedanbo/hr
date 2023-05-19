@@ -16,13 +16,11 @@ class Status extends Pivot
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'status' => EmployeeStatus::class
+        'status' => EmployeeStatus::class,
     ];
 
     /**
      * Get the staff that owns the Status
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function staff(): BelongsTo
     {

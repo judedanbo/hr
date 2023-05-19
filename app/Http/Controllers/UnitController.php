@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUnitRequest;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Requests\StoreUnitRequest;
 
 class UnitController extends Controller
 {
     public function index($institution = null)
     {
-        
+
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 // ->departments()
@@ -20,7 +20,7 @@ class UnitController extends Controller
                 ->withCount('staff')
                 // ->countSubs()
                 ->when(request()->institution, function ($query, $search) {
-                    $query->where('institution_id',  request()->institution);
+                    $query->where('institution_id', request()->institution);
                 })
                 ->when(request()->search, function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
@@ -39,12 +39,12 @@ class UnitController extends Controller
                         'subs' => $unit->subs->count() > 0 ? [
                             $unit->subs->map(fn ($sub) => [
                                 'id' => $sub->id,
-                                'name' => $sub->name
-                            ])
+                                'name' => $sub->name,
+                            ]),
                         ] : null,
                     ]
                 ),
-           
+
             'filters' => ['search' => request()->search],
         ]);
     }
@@ -66,13 +66,13 @@ class UnitController extends Controller
             // })
 
             ->with([
-                'institution', 'parent','subs',
-                'staff.person'
+                'institution', 'parent', 'subs',
+                'staff.person',
             ])
             ->when(request()->staff, function ($query, $search) {
                 $query->whereHas('staff', function ($q) use ($search) {
                     $q->whereHas('person', function ($per) use ($search) {
-                        $terms = explode(" ", $search);
+                        $terms = explode(' ', $search);
                         foreach ($terms as $term) {
                             $per->where('surname', 'like', "%{$search}%");
                             $per->orWhere('first_name', 'like', "%{$term}%");
@@ -97,7 +97,7 @@ class UnitController extends Controller
 
             ->whereId($unit)
             ->first();
-            // return $unit;
+        // return $unit;
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
@@ -133,7 +133,7 @@ class UnitController extends Controller
                     'id' => $st->person->id,
                     'name' => $st->person->full_name,
                     'dob' => $st->person->date_of_birth,
-                    'initials' => $st->person->initials
+                    'initials' => $st->person->initials,
                 ]),
                 'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
                     'id' => $sub->id,
@@ -145,19 +145,20 @@ class UnitController extends Controller
                         'name' => $stf->full_name,
                         'dob' => $stf->date_of_birth,
                         'ssn' => $stf->social_security_number,
-                        'initials' => $stf->initials
+                        'initials' => $stf->initials,
                     ]) : null,
                 ]) : null,
             ],
-            
+
             'filters' => [
                 'dept' => request()->dept,
-                'staff' => request()->staff
+                'staff' => request()->staff,
             ],
         ]);
     }
 
-    public function store (StoreUnitRequest $request){
+    public function store(StoreUnitRequest $request)
+    {
         // dd($request->validated());
         Unit::create($request->validated());
 

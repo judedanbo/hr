@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ContactType as EnumsContactType;
-use App\Models\ContactType;
-use App\Http\Requests\StorePersonRequest;
-use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,14 +20,14 @@ class PersonController extends Controller
         return Inertia::render('Person/Index', [
             'people' => Person::query()
                 ->when(request()->search, function ($query, $search) {
-                    $terms =  explode(" ", $search);
+                    $terms = explode(' ', $search);
                     foreach ($terms as $term) {
                         $query->where('surname', 'like', "%{$term}%");
                         $query->orWhere('first_name', 'like', "%{$term}%");
                         $query->orWhere('other_names', 'like', "%{$term}%");
                         $query->orWhere('date_of_birth', 'like', "%{$term}%");
                         // $query->orWhere('social_security_number', 'like', "%{$term}%");
-                        $query->orWhereRaw("monthname(date_of_birth) like ?", [$term]);
+                        $query->orWhereRaw('monthname(date_of_birth) like ?', [$term]);
                     }
                 })
                 ->with('institution', 'dependent', 'identities')
@@ -45,9 +42,9 @@ class PersonController extends Controller
                     'initials' => $person->initials,
                     // 'number' => Person::count()
                     'institution' => $person->institution ? [
-                        'id' =>  $person->institution->first()?->id,
-                        'name' =>  $person->institution->first()?->name,
-                        'status' =>  $person->institution->first()?->staff->statuses->first()?->status->name,
+                        'id' => $person->institution->first()?->id,
+                        'name' => $person->institution->first()?->name,
+                        'status' => $person->institution->first()?->staff->statuses->first()?->status->name,
                         // $person->units->first()
                         // 'id' => $person->units->first()->id,
                         'staff_id' => $person->institution->first()?->staff->id,
@@ -63,7 +60,6 @@ class PersonController extends Controller
             'filters' => ['search' => request()->search],
         ]);
     }
-
 
     /**
      * Display the specified resource.
@@ -81,7 +77,7 @@ class PersonController extends Controller
                 'name' => $person->full_name,
                 'dob' => $person->date_of_birth,
                 // 'ssn' => $person->social_security_number,
-                'initials' => $person->initials
+                'initials' => $person->initials,
             ],
             'contact_types' => EnumsContactType::cases(),
             'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
@@ -106,13 +102,15 @@ class PersonController extends Controller
     public function addContact(Request $request, Person $person)
     {
         $attribute = $request->validate([
-            'contact' => "required|min:7|max:30",
+            'contact' => 'required|min:7|max:30',
             'contact_type_id' => ['required', 'exists:contact_types,id'],
         ]);
 
         $person->contacts()->create($attribute);
+
         return redirect()->back();
     }
+
     public function addAddress(Request $request, Person $person)
     {
         $attribute = $request->validate([
@@ -125,12 +123,14 @@ class PersonController extends Controller
         ]);
 
         $person->address()->create($attribute);
+
         return redirect()->back();
     }
 
     public function deleteAddress(Person $person, $address)
     {
         $person->address()->delete($address);
+
         return redirect()->back();
     }
 }

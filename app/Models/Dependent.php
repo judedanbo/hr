@@ -30,8 +30,6 @@ class Dependent extends Model
 
     /**
      * Get the staff associated with the Dependent
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function staff(): HasOne
     {

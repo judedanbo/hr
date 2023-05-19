@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
-use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 // use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -15,11 +14,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class AprilPromotions implements
     // FromCollection,
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue
+    ShouldAutoSize, WithHeadings, FromQuery, WithMapping, ShouldQueue
 {
     use Exportable;
 
@@ -60,22 +55,22 @@ class AprilPromotions implements
     public function query()
     {
         return InstitutionPerson::query()
-        ->active()
-        ->whereHas('ranks', function($query){
-            $query->whereNull('end_date');
-            $query->whereYear('start_date','<=', date('Y')-3);
-            $query->whereNotIn('job_id', [16,35,49, 65,71]);
-            $query->whereMonth('start_date', '<=', '07');
-        })
-        ->with(['person', 'institution', 'units', 'ranks' => function($query){
-            $query->whereNull('end_date');
-            $query->whereYear('start_date','<=', date('Y')-3);
-        }])
-        ->orderBy(
-            JobStaff::select('start_date')
-                ->whereColumn('staff_id', 'institution_person.id')
-                ->orderBy('start_date', 'desc')
-                ->limit(1)
-        );
+            ->active()
+            ->whereHas('ranks', function ($query) {
+                $query->whereNull('end_date');
+                $query->whereYear('start_date', '<=', date('Y') - 3);
+                $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
+                $query->whereMonth('start_date', '<=', '07');
+            })
+            ->with(['person', 'institution', 'units', 'ranks' => function ($query) {
+                $query->whereNull('end_date');
+                $query->whereYear('start_date', '<=', date('Y') - 3);
+            }])
+            ->orderBy(
+                JobStaff::select('start_date')
+                    ->whereColumn('staff_id', 'institution_person.id')
+                    ->orderBy('start_date', 'desc')
+                    ->limit(1)
+            );
     }
 }

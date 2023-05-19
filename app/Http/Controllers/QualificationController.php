@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreContactRequest;
-use App\Http\Requests\UpdateContactRequest;
-use App\Models\Contact;
+use App\Http\Requests\StoreQualificationRequest;
+use App\Http\Requests\UpdateQualificationRequest;
+use App\Models\Qualification;
 
-class ContactController extends Controller
+class QualificationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -33,7 +33,7 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreContactRequest $request)
+    public function store(StoreQualificationRequest $request)
     {
         //
     }
@@ -43,7 +43,7 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Contact $contact)
+    public function show(Qualification $qualification)
     {
         //
     }
@@ -53,7 +53,7 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Contact $contact)
+    public function edit(Qualification $qualification)
     {
         //
     }
@@ -63,7 +63,7 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateContactRequest $request, Contact $contact)
+    public function update(UpdateQualificationRequest $request, Qualification $qualification)
     {
         //
     }
@@ -73,7 +73,7 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contact $contact)
+    public function destroy(Qualification $qualification)
     {
         //
     }

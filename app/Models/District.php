@@ -13,8 +13,6 @@ class District extends Model
 
     /**
      * Get the Region that owns the District
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function region(): BelongsTo
     {

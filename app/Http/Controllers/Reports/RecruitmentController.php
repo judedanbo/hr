@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Excel as Excel;
@@ -46,6 +45,7 @@ class RecruitmentController extends Controller
             'filters' => ['search' => request()->search],
         ]);
     }
+
     public function recruitmentChart()
     {
         $recruitment = InstitutionPerson::query()
@@ -66,14 +66,13 @@ class RecruitmentController extends Controller
             ->orderBy('year', 'desc')
             ->get();
 
-
         return Inertia::render('Report/Recruitment/History', [
-            'recruitment' =>  $recruitment,
+            'recruitment' => $recruitment,
             'filters' => ['search' => request()->search],
         ]);
     }
 
-    function detail()
+    public function detail()
     {
         $staff = InstitutionPerson::query()
             ->with(['person', 'ranks', 'units'])
@@ -116,7 +115,7 @@ class RecruitmentController extends Controller
                     'id' => $staff->units->first()->id,
                     'name' => $staff->units->first()->name,
                     'start_date' => $staff->units->first()->pivot->start_date,
-                ] : null
+                ] : null,
             ]);
 
         return Inertia::render('Report/Recruitment/Details', [

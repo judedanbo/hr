@@ -18,7 +18,6 @@ class PersonUnitController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-
     {
         // return PersonUnit::query()
         //     ->with(['person', 'unit', 'jobs'])
@@ -31,9 +30,9 @@ class PersonUnitController extends Controller
 
         // $person  = DB::table('people');
         return Inertia::render('Staff/Index', [
-            'staff' =>  PersonUnit::query()
+            'staff' => PersonUnit::query()
                 ->when(request()->search, function ($query, $search) {
-                    $query->join('people', function ($join) use ($search) {
+                    $query->join('people', function ($join) {
                         $join->on('person_unit.person_id', '=', 'people.id');
                     });
                     $query->where('staff_number', 'like', "%{$search}%");
@@ -42,7 +41,7 @@ class PersonUnitController extends Controller
                     $query->orWhere('status', 'like', "%{$search}%");
                     $query->orWhere('email', 'like', "%{$search}%");
                     $query->orWhereYear('hire_date', $search);
-                    $query->orWhereRaw("monthname(hire_date) like ?", ['%' . $search . '%']);
+                    $query->orWhereRaw('monthname(hire_date) like ?', ['%' . $search . '%']);
                     $query->orWhere('people.surname', 'like', "%{$search}%");
                     $query->orWhere('people.first_name', 'like', "%{$search}%");
                     $query->orWhere('people.other_names', 'like', "%{$search}%");
@@ -87,7 +86,7 @@ class PersonUnitController extends Controller
                     'unit' => $staff->unit ? [
                         'id' => $staff->unit->id,
                         'name' => $staff->unit->name,
-                    ] : null
+                    ] : null,
                 ]),
             'filters' => ['search' => request()->search],
         ]);
@@ -106,7 +105,6 @@ class PersonUnitController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -122,7 +120,7 @@ class PersonUnitController extends Controller
      */
     public function show($staff)
     {
-        $staff =  PersonUnit::query()
+        $staff = PersonUnit::query()
             ->with(['person.address', 'person.contacts', 'unit.institution', 'jobs', 'dependents.person'])
             ->whereId($staff)
             ->first();
@@ -134,9 +132,9 @@ class PersonUnitController extends Controller
                 'dob' => $staff->person->date_of_birth,
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
-                'nationality' => $staff->person->nationality
+                'nationality' => $staff->person->nationality,
             ],
-            'contacts' => $staff->person->contacts->count() > 0 ?  $staff->person->contacts->map(fn ($contact) => [
+            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type_id' => $contact->contact_type_id,
@@ -175,7 +173,7 @@ class PersonUnitController extends Controller
                     'institution_id' => $staff->unit->institution->id,
                     'institution_name' => $staff->unit->institution->name,
                 ] : null,
-                'dependents' =>  $staff->dependents ? $staff->dependents->map(fn ($dep) => [
+                'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'name' => $dep->person->full_name,
@@ -190,7 +188,6 @@ class PersonUnitController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PersonUnit  $personUnit
      * @return \Illuminate\Http\Response
      */
     public function edit(PersonUnit $personUnit)
@@ -201,8 +198,6 @@ class PersonUnitController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PersonUnit  $personUnit
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, PersonUnit $personUnit)
@@ -213,7 +208,6 @@ class PersonUnitController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PersonUnit  $personUnit
      * @return \Illuminate\Http\Response
      */
     public function destroy(PersonUnit $personUnit)
@@ -232,16 +226,16 @@ class PersonUnitController extends Controller
 
         // Validate
         $attribute = $request->validate([
-            'surname' => "required|max:30",
-            'other_names' => "required|max:60",
-            'date_of_birth' => "required|date|before_or_equal:now",
+            'surname' => 'required|max:30',
+            'other_names' => 'required|max:60',
+            'date_of_birth' => 'required|date|before_or_equal:now',
             'gender' => 'required|max:10', //[new Enum(Gender::class)],
-            'nationality' => "nullable|max:40",
-            'relation' => "required|max:40",
+            'nationality' => 'nullable|max:40',
+            'relation' => 'required|max:40',
         ]);
         // create person
         DB::transaction(function () use ($attribute, $staff) {
-            $person  = Person::create($attribute);
+            $person = Person::create($attribute);
             Dependent::create([
                 'person_id' => $person->id,
                 'staff_id' => $staff,
@@ -253,12 +247,9 @@ class PersonUnitController extends Controller
         return redirect()->back();
     }
 
-
-
     /**
      * delete the staff dependent resource from storage.
      *
-     * @param  \App\Models\PersonUnit  $personUnit
      * @return \Illuminate\Http\Response
      */
     public function deleteDependent(PersonUnit $personUnit, $dependent)

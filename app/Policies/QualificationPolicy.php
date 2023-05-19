@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Contact;
+use App\Models\Qualification;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ContactPolicy
+class QualificationPolicy
 {
     use HandlesAuthorization;
 
@@ -25,7 +25,7 @@ class ContactPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Contact $contact)
+    public function view(User $user, Qualification $qualification)
     {
         //
     }
@@ -45,7 +45,7 @@ class ContactPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Contact $contact)
+    public function update(User $user, Qualification $qualification)
     {
         //
     }
@@ -55,7 +55,7 @@ class ContactPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Contact $contact)
+    public function delete(User $user, Qualification $qualification)
     {
         //
     }
@@ -65,7 +65,7 @@ class ContactPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Contact $contact)
+    public function restore(User $user, Qualification $qualification)
     {
         //
     }
@@ -75,7 +75,7 @@ class ContactPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Contact $contact)
+    public function forceDelete(User $user, Qualification $qualification)
     {
         //
     }

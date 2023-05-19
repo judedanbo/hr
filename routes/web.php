@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\InstitutionPersonController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PersonController;
-use App\Http\Controllers\InstitutionPersonController;
-use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -33,8 +33,8 @@ Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'year' => Date('Y'),
-        'logo' => asset('images/inner-logo.png')
+        'year' => date('Y'),
+        'logo' => asset('images/inner-logo.png'),
     ]);
 });
 
@@ -42,7 +42,6 @@ Route::get('/dashboard', function () {
     return redirect()->route('institution.show', [1]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 // })->name('dashboard');
-
 
 // Application Routes
 // person
@@ -69,7 +68,6 @@ Route::controller(UnitController::class)->middleware(['auth'])->group(function (
     Route::get('/unit/{unit}', 'show')->name('unit.show');
 });
 
-
 // staff
 Route::controller(InstitutionPersonController::class)->middleware(['auth'])->group(function () {
     Route::get('/staff', 'index')->name('staff.index');
@@ -80,7 +78,6 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
 });
 
-
 // dependent
 Route::controller(DependentController::class)->middleware(['auth'])->group(function () {
     // Route::get('/dependent', 'index')->name('dependent.index');
@@ -88,7 +85,6 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
     // Route::get('/dependent/{dependent}', 'show')->name('dependent.show');
     Route::delete('/dependent/{dependent}', 'destroy')->name('dependent.delete');
 });
-
 
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
@@ -113,7 +109,7 @@ Route::controller(PromotionController::class)->middleware(['auth'])->group(funct
     Route::get('/past-promotion/{promotion}/export', 'export')->name('promotion.export');
 });
 
-Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function(){
+Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
     Route::get('/next-promotions/{year}/{month?}', 'show')->name('promotion.batch.show');
-}) ;
+});

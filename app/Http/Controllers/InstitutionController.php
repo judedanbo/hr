@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreInstitutionRequest;
 use App\Models\Institution;
-use App\Models\Job;
 use App\Models\Unit;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use App\Enums\UnitType;
-use App\Http\Requests\StoreInstitutionRequest;
 
 class InstitutionController extends Controller
 {
@@ -53,6 +50,7 @@ class InstitutionController extends Controller
             })
             ->get();
         $institution = $institution->first();
+
         return Inertia::render('Institution/Dept', [
             'institution' => [
                 'id' => $institution->id,
@@ -70,23 +68,22 @@ class InstitutionController extends Controller
 
     public function show($institution)
     {
-        $institution =  Institution::query()
+        $institution = Institution::query()
             ->where('id', $institution)
             ->withCount([
-                'departments', 
-                'divisions', 
+                'departments',
+                'divisions',
                 'units',
-                'staff'
+                'staff',
             ])
             ->first();
 
-        
         $departments = Unit::query()
             ->with(['subs' => function ($query) {
-                
+
                 $query->withCount('subs');
                 $query->withCount('staff');
-            } ])
+            }])
             ->withCount('subs', 'staff')
             ->where('units.type', 'DEP')
             ->get();
@@ -98,7 +95,7 @@ class InstitutionController extends Controller
                 'departments' => $institution->departments_count,
                 'divisions' => $institution->divisions_count,
                 'units' => $institution->units_count,
-                'staff' => $institution->staff_count
+                'staff' => $institution->staff_count,
             ] : null,
             // 'departments' => [],
             'departments' => $departments != null && $departments->count() > 0 ?
@@ -108,8 +105,8 @@ class InstitutionController extends Controller
                     'type' => $department->type,
                     'start_date' => $department->start_date,
                     'end_date' => $department->end_date,
-                    'unit_id' => $department->unit_id, 
-                    'units' => $department->subs_count,// + $department->subs->sum('subs_count'),
+                    'unit_id' => $department->unit_id,
+                    'units' => $department->subs_count, // + $department->subs->sum('subs_count'),
                     'staff' => $department->staff_count + $department->subs->sum('staff_count'),
                     // 'units' => $department->subs->sum('subs_count'),
                 ])
@@ -117,24 +114,23 @@ class InstitutionController extends Controller
             'filters' => ['search' => request()->search],
         ]);
     }
-    
+
     public function store(StoreInstitutionRequest $request)
     {
         Institution::create($request->validated());
 
         return redirect()->route('institution.index');
     }
-    
 
     public function staffs($institution)
     {
         $people = DB::table('people')
             ->select('id')
-            ->where('surname', 'like', "%" . request()->search . "%")
-            ->orWhere('first_name', 'like', "%" . request()->search . "%")
-            ->orWhere('other_names', 'like', "%" . request()->search . "%")
-            ->orWhere('date_of_birth', 'like', "%" . request()->search . "%")
-            ->orWhereRaw("monthname(date_of_birth) like ?", [request()->search]);
+            ->where('surname', 'like', '%' . request()->search . '%')
+            ->orWhere('first_name', 'like', '%' . request()->search . '%')
+            ->orWhere('other_names', 'like', '%' . request()->search . '%')
+            ->orWhere('date_of_birth', 'like', '%' . request()->search . '%')
+            ->orWhereRaw('monthname(date_of_birth) like ?', [request()->search]);
         $institution = Institution::query()
             ->where('id', $institution)
             ->when(request()->search, function ($query, $searchValue) use ($people) {
@@ -144,13 +140,13 @@ class InstitutionController extends Controller
                             $q->where('institution_person.staff_number', 'like', "%{$searchValue}%");
                             $q->orWhere('institution_person.old_staff_number', 'like', "%{$searchValue}%");
                             $q->orWhere('institution_person.hire_date', 'like', "%{$searchValue}%");
-                            $q->orWhereRaw("monthname(institution_person.hire_date) like ?", [$searchValue]);
+                            $q->orWhereRaw('monthname(institution_person.hire_date) like ?', [$searchValue]);
 
                             $q->orWhereIn('institution_person.person_id', $people);
 
                             $q->with(['units', 'person', 'ranks']);
                             $q->paginate();
-                        }
+                        },
                     ]
                 );
                 $query->withCount(
@@ -159,11 +155,10 @@ class InstitutionController extends Controller
                             $q->where('institution_person.staff_number', 'like', "%{$searchValue}%");
                             $q->orWhere('institution_person.old_staff_number', 'like', "%{$searchValue}%");
                             $q->orWhere('institution_person.hire_date', 'like', "%{$searchValue}%");
-                            $q->orWhereRaw("monthname(institution_person.hire_date) like ?", [$searchValue]);
-
+                            $q->orWhereRaw('monthname(institution_person.hire_date) like ?', [$searchValue]);
 
                             $q->orWhereIn('institution_person.person_id', $people);
-                        }
+                        },
                     ]
                 );
                 $query->paginate();
@@ -180,8 +175,7 @@ class InstitutionController extends Controller
         // dd($institution);
 
         return Inertia::render('Institution/Staffs', [
-            'staff' =>  $institution->staff ? $institution->staff->map(fn ($stf) =>
-            [
+            'staff' => $institution->staff ? $institution->staff->map(fn ($stf) => [
                 'staff_id' => $stf->id,
                 'staff_number' => $stf->staff_number,
                 'old_staff_number' => $stf->old_staff_number,
@@ -213,6 +207,7 @@ class InstitutionController extends Controller
             ],
         ]);
     }
+
     public function staff($institution, $staff)
     {
 
@@ -226,6 +221,7 @@ class InstitutionController extends Controller
 
         //  dd($institution->staff);
         $staff = $institution ? $institution->staff->first() : null;
+
         return Inertia::render('Institution/Sta', [
             'person' => [
                 'id' => $staff->person->id,
@@ -243,9 +239,9 @@ class InstitutionController extends Controller
                     'country' => $staff->person->address->first()->country,
                     'post_code' => $staff->person->address->first()->post_code,
                     'valid_end' => $staff->person->address->first()->valid_end,
-                ] : null
+                ] : null,
             ],
-            'staff' =>  $institution->staff ?
+            'staff' => $institution->staff ?
                 [
                     'staff_id' => $staff->id,
                     'staff_number' => $staff->staff_number,
@@ -263,9 +259,9 @@ class InstitutionController extends Controller
 
                     'unit' => $staff->unit ? [
                         'id' => $staff->unit->id,
-                        'name' => $staff->unit->name
+                        'name' => $staff->unit->name,
                     ] : null,
-                    'dependents' =>  $staff->dependents ? $staff->dependents->map(fn ($dep) => [
+                    'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                         'id' => $dep->id,
                         'person_id' => $dep->person_id,
                         'name' => $dep->person->full_name,
@@ -288,7 +284,7 @@ class InstitutionController extends Controller
     {
         $institution = Institution::with(['jobs' => function ($query) {
             $query->when(request()->search, function ($q) {
-                $q->where('name', 'like', "%" . request()->search . "%");
+                $q->where('name', 'like', '%' . request()->search . '%');
             });
             $query->withCount('staff');
         }])
@@ -298,7 +294,7 @@ class InstitutionController extends Controller
         return Inertia::render('Institution/Jobs', [
             'institution' => [
                 'id' => $institution->id,
-                'name' => $institution->name
+                'name' => $institution->name,
             ],
             'jobs' => $institution->jobs->map(fn ($job) => [
                 'id' => $job->id,
