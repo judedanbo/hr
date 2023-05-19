@@ -9,23 +9,13 @@ use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\QualificationController;
 use App\Models\Dependent;
 use App\Models\Institution;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 require __DIR__ . '/auth.php';
 
@@ -112,4 +102,8 @@ Route::controller(PromotionController::class)->middleware(['auth'])->group(funct
 Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
     Route::get('/next-promotions/{year}/{month?}', 'show')->name('promotion.batch.show');
+});
+
+Route::controller(QualificationController::class)->middleware(['auth'])->group(function () {
+    Route::get('/qualification', 'index')->name('promotion.batch.index');
 });

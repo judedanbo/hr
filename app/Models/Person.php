@@ -106,21 +106,13 @@ class Person extends Model
         return $this->morphMany(Address::class, 'addressable');
     }
 
-    /**
-     * Get all of the identities for the Person
-     */
     public function identities(): HasMany
     {
         return $this->hasMany(PersonIdentity::class);
     }
 
-    // /**
-    //  * Get all of the identity for the Person
-    //  *
-    //  * @return \Illuminate\Database\Eloquent\Relations\HasMany
-    //  */
-    // public function identity(): HasMany
-    // {
-    //     return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
-    // }
+    public function qualifications(): HasMany
+    {
+        return $this->hasMany(Qualification::class);
+    }
 }

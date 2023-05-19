@@ -24,7 +24,14 @@ class UpdateQualificationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "person_id" => "required|integer|exists:people,id",
+            "course" => "string|max:100",
+            "institution" => "string|max:100",
+            "qualification" => "string|max:100",
+            "qualification_number" => "string|max:10",
+            "level" => "string|max:50",
+            "pk" => "string|max:6",
+            "year" => "string|max:4"
         ];
     }
 }
