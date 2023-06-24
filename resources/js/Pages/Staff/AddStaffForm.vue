@@ -14,25 +14,31 @@ const stepNames = [
 let formData = ref(null)
 
 
-const submitHandler = (data) => {
-  Inertia.post(route('staff.store'), data.staffData);
+const submitHandler = (data, node) => {
+  Inertia.post(route('staff.store'), data.staffData, {
+    onSuccess: () => {
+      node.reset();
+
+    },
+    onError: (errors) => {
+      node.setErrors(errors);
+    }
+  });
   // console.log(data);
 };
 </script>
 <template>
+    <h1 class="text-2xl pt-8 pl-16">Add new Staff</h1>
     <FormKit
       type="form"
+      name="staffForm"
+      id="staffForm"
       value="formData"
       @submit="submitHandler"
       submit-label="Add Staff"
       #default="{ value }"
       :actions="false"
-      :submit-attrs="{
-        inputClass:
-          'bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline',
-        wrapperClass: 'bg-white px-8 pt-4 ',
-        ignore: false,
-      }"
+      wrapper-class="mx-auto"
     >
       <!-- <Staff :steps="stepNames" /> -->
     
@@ -214,38 +220,22 @@ const submitHandler = (data) => {
               <FormKit type="submit" label="Add staff"/>
             </template>
           </FormKit>
-          {{ $page.props.errors }}
       </FormKit>
     </FormKit>
     
 </template>
 
-<!-- 
 <style>
-.formkit-outer {
-  @apply mb-5 w-full
-}
-
-
-
-
-.formkit-input {
-  @apply  block h-10 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6
-}
-
-.formkit-label{
-  @apply block mb-1 font-bold text-sm;
-}
-
-::placeholder {
-  @apply text-gray-400;
-}
-
-.formkit-message{
-  @apply text-red-500 text-sm;
-}
-/* #title{
-  @apply w-1/2
-} */
-
-</style> -->
+  .formkit-form {
+    @apply mx-8 mb-4;
+  }
+  .formkit-wrapper {
+    @apply mx-auto;
+  }
+  .formkit-step {
+    @apply border-0 shadow-none;
+  }
+  .formkit-outer[data-type="multi-step"] > [data-tab-style="progress"] > .formkit-steps {
+    @apply border-0 shadow-none;
+  }
+</style>

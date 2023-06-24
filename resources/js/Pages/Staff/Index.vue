@@ -13,12 +13,10 @@ import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
 import PageHeader from '@/Components/PageHeader.vue'
 import BreezeButton from '@/Components/Button.vue';
-import Overlay from "@/Components/Overlay.vue";
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
-import AddStaff from './AddStaff.vue'
-
-
+import Modal from "@/Components/Modal.vue";
+import AddStaff from './AddStaff.vue';
+import AddStaffForm from './AddStaffForm.vue';
+import { useToggle } from "@vueuse/core";
 
 
 let props = defineProps({
@@ -27,6 +25,8 @@ let props = defineProps({
 });
 
 let openDialog = ref(false);
+
+let toggle = useToggle(openDialog)
 
 let search = ref(props.filters.search);
 
@@ -88,7 +88,7 @@ let BreadCrumpLinks = [
                             <BreezeInput v-model="search" type="search" class="w-full pl-8 bg-white border-0" required
                                 autofocus placeholder="Search staff..." />
                         </div>
-                        <Link :href="route('staff.create')" as="button" >Add New Staff</Link>
+                        <BreezeButton @click="toggle" >Add New Staff</BreezeButton>
                     </div>
 
                     <div class="flex flex-col mt-6">
@@ -275,5 +275,8 @@ let BreadCrumpLinks = [
             </div>
         </div>
     </MainLayout>
-    <AddStaff @closeDialog="openDialog = false" :open="openDialog" />
+    <Modal @close="toggle" :show="openDialog" >
+        <AddStaffForm />
+    </Modal>
+    <!-- <AddStaff @closeDialog="openDialog = false" :open="openDialog" /> -->
 </template>

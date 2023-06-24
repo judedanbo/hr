@@ -45,11 +45,11 @@ let BreadcrumbLinks = [
 </script>
 
 <template>
-    <Head title="Staff" />
+    <Head :title="person.name" />
 
     <MainLayout>
         <template #header>
-            <PageHeader name="PageHeader" />
+            <PageHeader :name="person.initials" />
         </template>
 
         <div class="py-2">

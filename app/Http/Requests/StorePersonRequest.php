@@ -31,7 +31,7 @@ class StorePersonRequest extends FormRequest
             'personalInformation.title' => 'string|min:1|max:10',
             'personalInformation.surname' => 'required|string|max:100',
             'personalInformation.first_name' => 'required|string|max:100',
-            'personalInformation.other_names' => 'required|string|max:100',
+            'personalInformation.other_names' => 'string|max:100|nullable',
             'personalInformation.date_of_birth' => [
                 'required',
                 'date',
@@ -43,7 +43,7 @@ class StorePersonRequest extends FormRequest
             'contactInformation.contact_type' => 'required|integer',
             'contactInformation.contact' => 'required|string|max:100|unique:contacts,contact',
             'employmentInformation.staff_number' => 'required|string|max:10|unique:institution_person,staff_number|different:employmentInformation.file_number',
-            'employmentInformation.file_number' => 'required|string|max:10|unique:institution_person,file_number|different:employmentInformation.file_number',
+            'employmentInformation.file_number' => 'required|string|max:10|unique:institution_person,file_number|different:employmentInformation.staff_number',
             'employmentInformation.hire_date' => [
                 'required',
                 'date',
