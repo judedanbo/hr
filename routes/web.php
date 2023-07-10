@@ -46,7 +46,9 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
-    Route::post('/institution/store', 'store')->name('institution.store');
+    Route::post('/institution', 'store')->name('institution.store');
+    Route::patch('/institution/{institution}', 'update')->name('institution.update');
+    Route::delete('/institution/{institution}', 'delete')->name('institution.delete');
     Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
     Route::get('/institution/{institution}/staff/{staff}', 'staff')->name('institution.staff');
     Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');
