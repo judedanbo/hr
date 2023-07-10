@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInstitutionRequest;
+use App\Http\Requests\UpdateInstitutionRequest;
 use App\Models\Institution;
 use App\Models\Unit;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,8 @@ class InstitutionController extends Controller
                 ->through(fn ($institution) => [
                     'id' => $institution->id,
                     'name' => $institution->name,
+                    'start_date' => $institution->start_date,
+                    'end_date' => $institution->end_date,
                     'abbreviation' => $institution->abbreviation,
                     'status' => $institution->status,
                     'departments' => $institution->departments_count,
@@ -92,6 +95,8 @@ class InstitutionController extends Controller
             'institution' => $institution != null ? [
                 'id' => $institution->id,
                 'name' => $institution->name,
+                'start_date' => $institution->start_date,
+                'end_date' => $institution->end_date,
                 'departments' => $institution->departments_count,
                 'divisions' => $institution->divisions_count,
                 'units' => $institution->units_count,
@@ -117,7 +122,23 @@ class InstitutionController extends Controller
 
     public function store(StoreInstitutionRequest $request)
     {
-        Institution::create($request->validated());
+        $institution = Institution::create($request->validated());
+
+        return redirect()->route('institution.show', ['institution' => $institution->id]);
+    }
+
+    public function update(UpdateInstitutionRequest $request)
+    {
+        // return $request;
+        Institution::whereId($request->id)->update($request->validated());
+
+        return redirect()->route('institution.show', ['institution' => $request->id]);
+    }
+
+    public function delete(Institution $institution)
+    {
+        // return $institution;
+        $institution->delete();
 
         return redirect()->route('institution.index');
     }

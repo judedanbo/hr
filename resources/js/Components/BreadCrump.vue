@@ -28,13 +28,13 @@ defineProps({
                     <div v-if="link.name != null" class="flex items-center">
                         <li>
                             <span
-                                class="text-xs md:text-sm lg:text-md text-gray-500 mx-2"
+                                class="text-xs md:text-sm lg:text-md text-gray-500 dark:text-gray-50 mx-2"
                                 >/</span
                             >
                         </li>
                         <li
                             v-if="links.length - 1 == index"
-                            class="text-gray-500 text-xs md:text-sm lg:text-md"
+                            class="text-gray-500 dark:text-gray-50 text-xs md:text-sm lg:text-md"
                         >
                             {{ link.name }}
                         </li>
