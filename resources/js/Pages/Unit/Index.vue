@@ -64,7 +64,7 @@ let BreadCrumpLinks = [
                     <InfoCard title="Units" :value="units.total" />
                     <div class="mt-1 relative mx-8">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">
+                            <span class="text-gray-500 dark:text-gray-100 sm:text-sm">
                                 <MagnifyingGlassIcon class="w-4 h-4" />
                             </span>
                         </div>
@@ -77,19 +77,19 @@ let BreadCrumpLinks = [
                         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                             <div class="overflow-hidden border-b border-gray-200 rounded-md shadow-md">
                                 <table class="min-w-full overflow-x-scroll divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
                                             <th scope="col"
-                                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase">
                                                 Name
                                             </th>
                                             <th scope="col"
-                                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase">
                                                 Staff
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
+                                    <tbody class="bg-white dark:bg-gray-600 divide-y divide-gray-200">
                                         <tr @click="openUnit(unit.id)" v-for="unit in units.data" :key="unit.id"
                                             class="cursor-pointer transition-all hover:bg-gray-100 hover:shadow-lg">
                                             <td class="px-6 py-2 whitespace-nowrap">
@@ -99,15 +99,15 @@ let BreadCrumpLinks = [
                                                     </div>
 
                                                     <div class="ml-4">
-                                                        <div class="text-sm font-medium text-gray-900">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                             {{ unit.name }}
                                                         </div>
-                                                        <div class="text-sm text-gray-500"></div>
+                                                        <div class="text-sm text-gray-500 dark:text-gray-100"></div>
                                                     </div>
                                                 </div>
                                             </td>
 
-                                            <td class="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                                            <td class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50">
                                                 {{ unit.staff }}
                                             </td>
                                         </tr>

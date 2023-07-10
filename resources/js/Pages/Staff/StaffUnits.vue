@@ -13,8 +13,8 @@ defineProps({
 </script>
 
 <template>
-    <div class="odd:bg-white even:bg-slate-50 px-4 py-5">
-        <dt class="text-sm font-medium text-gray-500">Transfer History</dt>
+    <div class="odd:bg-white dark:bg-gray-600 px-4 py-5">
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-50">Transfer History</dt>
         <dd
             class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 space-x-y space-y-2"
         >

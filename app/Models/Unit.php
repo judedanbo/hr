@@ -53,6 +53,10 @@ class Unit extends Model
     {
         return $this->hasMany(Unit::class, 'unit_id', 'id');
     }
+    public function divisions(): HasMany
+    {
+        return $this->hasMany(Unit::class, 'unit_id', 'id')->where('units.type', UnitType::Division);
+    }
 
     // public function scopeDepartments($query)
     // {

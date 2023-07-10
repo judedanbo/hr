@@ -38,18 +38,20 @@ const submitHandler = (data, node) => {
   <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
     <h1 class="text-2xl pb-4 dark:text-gray-100">Edit Institution</h1>
     <FormKit @submit="submitHandler" type="form" submit-label="Save Institution">
-      <div class="flex gap-4">
-      <FormKit
-        type="text"
-        name="id"
-        id="id"
-        :value="selectedModel.id"
-        validation="required|number|between:2,120"
-        label="Institution id"
-        placeholder="institution id"
-        error-visibility="submit"
-        
-      />
+      <div class="sm:flex gap-4 flex-row">
+        <div>
+          <FormKit
+            type="text"
+            name="id"
+            id="id"
+            :value="selectedModel.id"
+            validation="required|number|between:2,120"
+            label="Institution id"
+            placeholder="institution id"
+            error-visibility="submit"
+            :disabled="true"
+          />
+        </div>
       <FormKit
         type="text"
         name="name"
@@ -59,9 +61,10 @@ const submitHandler = (data, node) => {
         label="Institution name"
         placeholder="institution name"
         error-visibility="submit"
+        
       />
     </div>
-      <div class="flex gap-4">
+      <div class="sm:flex gap-4">
         <FormKit
           type="text"
           name="abbreviation"
@@ -83,7 +86,7 @@ const submitHandler = (data, node) => {
           error-visibility="submit"
         />
       </div>
-        <div class="flex gap-4">
+        <div class="sm:flex gap-4">
         <FormKit
           type="date"
           name="start_date"

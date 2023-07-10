@@ -40,7 +40,7 @@ const submitHandler = (data, node) => {
         placeholder="institution name"
         error-visibility="submit"
       />
-      <div class="flex gap-4">
+      <div class="sm:flex gap-4">
         <FormKit
           type="text"
           name="abbreviation"

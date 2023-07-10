@@ -97,22 +97,22 @@ let BreadCrumpLinks = [
                                 <div v-if="staff.total > 0"
                                     class="overflow-hidden border-b border-gray-200 rounded-md shadow-md">
                                     <table class="min-w-full overflow-x-scroll divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
                                             <tr>
                                                 <th scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase">
                                                     Name
                                                 </th>
                                                 <th scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase">
                                                     Date of Birth
                                                 </th>
                                                 <th scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase">
                                                     Employment
                                                 </th>
                                                 <th scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase">
                                                     Rank
                                                 </th>
                                                 <th scope="col"
@@ -121,7 +121,7 @@ let BreadCrumpLinks = [
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
+                                        <tbody class="bg-white dark:bg-gray-500 divide-y divide-gray-200">
                                             <tr v-for="person in staff.data" :key="person.id" @click="openStaff(person.id)"
                                                 class="cursor-pointer transition-all hover:bg-gray-100 hover:shadow-lg">
                                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -134,7 +134,7 @@ let BreadCrumpLinks = [
                                                         </div>
 
                                                         <div class="ml-4">
-                                                            <div class="text-sm font-medium text-gray-900">
+                                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {{
                                                                     person.name
                                                                 }}
@@ -159,7 +159,7 @@ let BreadCrumpLinks = [
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900">
+                                                    <div class="text-sm text-gray-900 dark:text-gray-100">
                                                         {{
                                                             formatDate(
                                                                 person.dob
@@ -178,7 +178,7 @@ let BreadCrumpLinks = [
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900">
+                                                    <div class="text-sm text-gray-900 dark:text-gray-100">
                                                         {{
                                                             formatDate(
                                                                 person.hire_date
@@ -206,7 +206,7 @@ let BreadCrumpLinks = [
                                                         ">
                                                     <div v-if="person.current_rank
                                                         ">
-                                                        <div class="text-sm text-gray-900">
+                                                        <div class="text-sm text-gray-900 dark:text-gray-100">
                                                             {{
                                                                 person
                                                                     .current_rank

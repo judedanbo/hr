@@ -84,10 +84,11 @@ class InstitutionController extends Controller
         $departments = Unit::query()
             ->with(['subs' => function ($query) {
 
+
                 $query->withCount('subs');
                 $query->withCount('staff');
             }])
-            ->withCount('subs', 'staff')
+            ->withCount('subs', 'staff', 'divisions')
             ->where('units.type', 'DEP')
             ->get();
         // return $departments;
@@ -107,6 +108,7 @@ class InstitutionController extends Controller
                 $departments->map(fn ($department) => [
                     'id' => $department->id,
                     'name' => $department->name,
+                    'divisions' => $department->divisions_count,
                     'type' => $department->type,
                     'start_date' => $department->start_date,
                     'end_date' => $department->end_date,

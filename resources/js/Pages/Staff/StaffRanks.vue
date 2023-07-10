@@ -13,14 +13,14 @@ defineProps({
 </script>
 
 <template>
-    <div class="odd:bg-white even:bg-slate-50 px-4 py-5">
-        <dt class="text-sm font-medium text-gray-500">Ranks History</dt>
+    <div class="odd:bg-white dark:bg-gray-600 even:bg-slate-50 px-4 py-5">
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-50">Ranks History</dt>
         <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
             <div
                 v-for="rank in ranks"
                 class="even:bg-white pl-4 py-2 hover:bg-gray-100"
             >
-                <p class="text-md font-semibold tracking-wider">
+                <p class="text-md font-semibold tracking-wider dark:text-gray-50">
                     {{ rank.name }}
                 </p>
                 <p>{{ rank.remarks }}</p>

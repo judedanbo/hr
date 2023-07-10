@@ -31,16 +31,17 @@ defineEmits(["update:modelValue"]);
                 ({{ subs.length }})
             </span>
         </p>
-        <div v-if="subs.length">
+    
+        <div v-if="subs">
             <div class="mt-2 relative mx-8">
-                <div
+                <!-- <div
                     class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                 >
                     <span class="text-gray-500 sm:text-sm">
                         <MagnifyingGlassIcon class="w-4 h-4" />
                     </span>
-                </div>
-                <BreezeInput
+                </div> -->
+                <!-- <BreezeInput
                     :modelValue="searchText"
                     @input="$emit('update:modelValue', $event.target.value)"
                     type="search"
@@ -52,13 +53,13 @@ defineEmits(["update:modelValue"]);
                             ? 'Search divisions...'
                             : 'Search units...'
                     "
-                />
+                /> -->
             </div>
             <ul class="px-8 pb-6 max-h-96 overflow-y-auto">
                 <li
-                    v-for="(subUnit, index) in subs"
+                    v-for="(subUnit, index) in subs.subs"
                     :key="index"
-                    class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200"
+                    class="flex items-center text-gray-600 dark:text-gray-200 justify-between py-4 px-4 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer"
                 >
                     <div class="flex items-center justify-start text-lg">
                         <span class="mr-4">
@@ -77,15 +78,15 @@ defineEmits(["update:modelValue"]);
                             </Link>
                             <div class="flex justify-start space-x-4">
                                 <span
-                                    v-if="type == 'Department'"
+                                   
                                     class="text-sm"
                                 >
-                                    Units:
-                                    {{ subUnit.subs }}
+                                    Subs:
+                                    {{ subUnit.subs ?? 0 }}
                                 </span>
                                 <span class="text-sm">
                                     Staff:
-                                    {{ subUnit.staff_count }}
+                                    {{ subUnit.staff_count ?? 0 }}
                                 </span>
                             </div>
                         </div>
