@@ -116,14 +116,14 @@ let BreadCrumpLinks = [
                                                     Rank
                                                 </th>
                                                 <th scope="col"
-                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase">
                                                     Current Unit
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white dark:bg-gray-500 divide-y divide-gray-200">
                                             <tr v-for="person in staff.data" :key="person.id" @click="openStaff(person.id)"
-                                                class="cursor-pointer transition-all hover:bg-gray-100 hover:shadow-lg">
+                                                class="cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-lg">
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     <div class="flex items-center">
                                                         <div
@@ -139,7 +139,7 @@ let BreadCrumpLinks = [
                                                                     person.name
                                                                 }}
                                                             </div>
-                                                            <div class="text-xs text-gray-500">
+                                                            <div class="text-xs text-gray-500 dark:text-gray-100">
                                                                 {{
                                                                     person.gender
                                                                 }}
@@ -166,7 +166,7 @@ let BreadCrumpLinks = [
                                                             )
                                                         }}
                                                     </div>
-                                                    <div class="text-xs text-gray-500">
+                                                    <div class="text-xs text-gray-500 dark:text-gray-100">
                                                         {{
                                                             formatDistanceStrict(
                                                                 new Date(
@@ -185,7 +185,7 @@ let BreadCrumpLinks = [
                                                             )
                                                         }}
                                                     </div>
-                                                    <div class="text-xs text-gray-500">
+                                                    <div class="text-xs text-gray-500 dark:text-gray-100">
                                                         {{
                                                             formatDistanceStrict(
                                                                 new Date(
@@ -199,7 +199,7 @@ let BreadCrumpLinks = [
                                                         }}
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap" :title="getAge(
+                                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-100 whitespace-nowrap" :title="getAge(
                                                             person.current_rank
                                                                 ?.start_date
                                                         ) + ' years'
@@ -213,7 +213,7 @@ let BreadCrumpLinks = [
                                                                     .name
                                                             }}
                                                         </div>
-                                                        <p class="text-xs text-gray-500">
+                                                        <p class="text-xs text-gray-500 dark:text-gray-100">
                                                             {{
                                                                 formatDate(
                                                                     person
@@ -225,7 +225,7 @@ let BreadCrumpLinks = [
                                                             <span v-if="person
                                                                         .current_rank
                                                                         .remarks
-                                                                    " class="text-green-800 font-semibold">
+                                                                    " class="text-green-800 dark:text-gray-100 font-semibold">
                                                                 -
                                                                 {{
                                                                     person

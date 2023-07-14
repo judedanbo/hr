@@ -156,11 +156,13 @@ class InstitutionPersonController extends Controller
             ->whereId($staff)
             ->firstOrFail();
         // return $staff;
-        return Inertia::render('Staff/Show', [
+        // return Inertia::render('Staff/Show', [
+        return Inertia::render('Staff/NewShow', [
             'person' => [
                 'id' => $staff->person->id,
                 'name' => $staff->person->full_name,
                 'dob' => $staff->person->date_of_birth,
+                'gender' => $staff->person->gender?->name,
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
                 'nationality' => $staff->person->nationality?->name,
@@ -174,7 +176,7 @@ class InstitutionPersonController extends Controller
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
-                'contact_type_id' => $contact->contact_type_id,
+                'contact_type' => $contact->contact_type->name,
                 'valid_end' => $contact->valid_end,
             ]) : null,
             'contact_types' => ContactType::select(['id', 'name'])->get(),
@@ -195,6 +197,7 @@ class InstitutionPersonController extends Controller
                 'file_number' => $staff->file_number,
                 'old_staff_number' => $staff->old_staff_number,
                 'hire_date' => $staff->hire_date,
+                'retirement_date' => $staff->person->date_of_birth->addYears(60),
                 'start_date' => $staff->start_date,
                 'statuses' => $staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
@@ -209,6 +212,7 @@ class InstitutionPersonController extends Controller
                     'start_date' => $rank->pivot->start_date,
                     'end_date' => $rank->pivot->end_date,
                     'remarks' => $rank->pivot->remarks,
+                    'distance' => $rank->pivot->start_date->diffInYears(),
                 ]),
 
                 'units' => $staff->units->map(fn ($unit) => [
@@ -216,6 +220,7 @@ class InstitutionPersonController extends Controller
                     'name' => $unit->name,
                     'start_date' => $unit->pivot->start_date,
                     'end_date' => $unit->pivot->end_date,
+                    'distance' => $unit->pivot->start_date->diffInYears(),
                 ]),
                 // ? [
                 //     'id' => $staff->unit->id,

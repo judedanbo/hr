@@ -1,122 +1,94 @@
 <script setup>
 import {
-    format,
-    differenceInYears,
-    differenceInMonths,
-    addYears,
-    isDate,
-    formatDistance
+  format,
+  differenceInYears,
+  
 } from "date-fns";
-import { addSeconds } from "date-fns/esm";
 
 defineProps({
-    staff: Object,
-    person: Object,
+  staff: Object,
+  person: Object,
 });
-
-const getDate = (dateString) => {
-    return new Date(dateString);
-    // return formatRelative(date, new Date(), { addSuffix: true });
+const formattedDob = (dateString) => {
+  const date = new Date(dateString);
+  return format(date, "dd MMMM, yyyy");
 };
 
-const getDifference = (dateString, now = new Date()) => {
-    const date = new Date(dateString);
-    if (!isDate(now)) {
-        now = new Date(now);
-    }
-    let years = Math.abs(differenceInYears(date, now));
-    let months = Math.abs(differenceInMonths(date, now)) - years * 12;
-    return { years, months };
-};
-const formatDate = (date) => {
-    return format(date, "dd MMMM, yyyy");
-};
-
-// const getRetired = computed((dateString) => {
-//     const date = new Date(dateString);
-//     return differenceInDays(date, new Date());
-// });
 
 let getAge = (dateString) => {
-    const date = new Date(dateString);
-    return differenceInYears(new Date(), date);
-};
-let getMonth = (dateString) => {
-    const date = new Date(dateString);
-    return differenceInMonths(new Date(), date);
-};
-let getRetirementDate = (dateString) => {
-    const date = new Date(dateString);
-    const retirement_date = addYears(date, 60);
-    return retirement_date;
+  const date = new Date(dateString);
+  return differenceInYears(new Date(), date);
 };
 </script>
 <template>
-    <div class="px-4 py-5 sm:px-6 bg-white dark:bg-gray-600">
-        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-            Important Information
-        </h3>
-        <p class="my-2 max-w-2xl text-sm text-gray-500 dark:text-gray-200">
-            Important dates of staff.
-        </p>
-        <div class="border-t border-gray-200">
-            <dl>
-                <div
-                    class= "px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-                >
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-200">Status</dt>
-                    <dd class="mt-1 text-gray-900 dark:text-gray-200 sm:col-span-2 sm:mt-0">
-                        {{ staff.statuses[0].status }}
-                        <dd v-if="staff.statuses[0].end_date" class="mt-1 text-gray-900 dark:text-gray-200 sm:col-span-2 sm:mt-0">
-                            {{ staff.statuses[0].start_date }} - {{ staff.statuses[0].end_date }}
-                        </dd>
-                        <dd class="mt-1 text-gray-900 dark:text-gray-200 sm:col-span-2 sm:mt-0">
-                            {{ staff.statuses[0].description }}
-                        </dd>
-                    </dd>
-                </div>
-                <div
-                    class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-                >
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-200">
-                        Date of Birth / Age
-                    </dt>
-                    <dd class="mt-1 text-gray-900 dark:text-gray-200 sm:col-span-2 sm:mt-0">
-                        {{ formatDate(getDate(person.dob)) }}
-                        <div class="text-sm">
+  <main
+    class="-mx-4 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16 xl:pb-20 xl:pt-16 bg-gray-50 dark:bg-gray-500"
+  >
+    <h2 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+      Important dates
+    </h2>
+    <dl class="mt-6 grid grid-cols-1 gap-y-6 text-sm leading-6 sm:grid-cols-2">
+      <div class="sm:pr-4">
+        <dt class="text-gray-500 dark:text-gray-300">Date Employed:</dt>
+        {{ " " }}
+        <dd class="px-4 text-gray-700 dark:text-gray-100">
+          <time :datetime="staff.hire_date">{{
+            formattedDob(staff.hire_date)
+          }}</time>
+          <div class="text-xs">{{ getAge(staff.hire_date) }}</div>
+        </dd>
+      </div>
+      <div class="mt-2 sm:mt-0 sm:pl-4">
+        <dt class="text-gray-500 dark:text-gray-300">Retirement Date:</dt>
+        {{ " " }}
+        <dd class="px-4 text-gray-700 dark:text-gray-100">
+          <time :datetime="staff.retirement_date">{{
+            formattedDob(staff.retirement_date)
+          }}</time>
+          <div class="text-xs">{{ getAge(staff.retirement_date) }}</div>
+        </dd>
+      </div>
 
-                            {{ getDifference(person.dob).years }}
-                            years old
-
-                        </div>
-                    </dd>
-                </div>
-                <div
-                    v-if="staff.hire_date"
-                    class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-                >
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-200">Date Employed</dt>
-                    <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:col-span-2 sm:mt-0">
-                        {{ formatDate(getDate(staff.hire_date)) }}
-                        <div class="text-sm">
-                            {{ formatDistance(new Date(staff.hire_date), new Date(), {addSuffix: true}) }}
-
-                        </div>
-                    </dd>
-                </div>
-                <div
-                    class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-                >
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-200">Retirement</dt>
-                    <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:col-span-2 sm:mt-0">
-                        <!-- {{ getRetired(person.dob) }} -->
-                        {{ formatDate(getRetirementDate(person.dob)) }}
-                        <div class="text-sm">
-                            {{ formatDistance(new Date(getRetirementDate(person.dob)), new Date(), {addSuffix: true}) }}
-                        </div>
-                    </dd>
-                </div>
-            </dl>
-        </div>
-    </div>
+      <div
+        v-if="staff.ranks.length > 0"
+        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/95 pt-6 sm:pr-4"
+      >
+        <dt class="font-semibold text-gray-900 dark:text-white">
+          Current Rank
+        </dt>
+        <dd class="mt-2 text-gray-500 dark:text-gray-300">
+          <span class="font-medium text-gray-900 dark:text-white">{{
+            staff.ranks[0]?.name
+          }}</span
+          ><br />{{ staff.ranks[0]?.start_date }}<br />{{ staff[0]?.remarks }}
+        </dd>
+      </div>
+      <div
+        v-else
+        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/95 pt-6 sm:pr-4 text-gray-900 dark:text-white"
+      >
+        No Rank rank available
+      </div>
+      <div
+        v-if="staff.units.length > 0"
+        class="mt-8 sm:mt-6 sm:border-t sm:border-gray-900/5 dark:border-gray-200/95 sm:pl-4 sm:pt-6"
+      >
+        <dt class="font-semibold text-gray-900 dark:text-white">
+          Current Posting
+        </dt>
+        <dd class="mt-2 text-gray-500 dark:text-gray-300">
+          <span class="font-medium text-gray-900 dark:text-white">{{
+            staff.units[0]?.name
+          }}</span
+          ><br />{{ staff.units[0]?.start_date }}<br />
+        </dd>
+      </div>
+      <div
+        v-else
+        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/95 pt-6 sm:pr-4 text-gray-900 dark:text-white"
+      >
+        No Posting posting available
+      </div>
+    </dl>
+  </main>
 </template>

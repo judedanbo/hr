@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\ContactType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Contact extends Model
 {
@@ -15,5 +16,11 @@ class Contact extends Model
         'contact_type',
         'contact',
         'valid_end',
+    ];
+
+    protected $casts = [
+        'contact_type' => ContactType::class,
+        'valid_end' => 'date',
+
     ];
 }
