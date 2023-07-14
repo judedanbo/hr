@@ -6,6 +6,7 @@ use App\Http\Requests\StorePersonRequest;
 use App\Models\ContactType;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
+use App\Models\Job;
 use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -180,6 +181,7 @@ class InstitutionPersonController extends Controller
                 'valid_end' => $contact->valid_end,
             ]) : null,
             'contact_types' => ContactType::select(['id', 'name'])->get(),
+            'all_ranks' => Job::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
 
             'address' => $staff->person->address->count() > 0 ? [
                 'id' => $staff->person->address->first()->id,

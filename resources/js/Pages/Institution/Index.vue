@@ -3,7 +3,7 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
+import debounce from "lodash/debounce"; 
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";

@@ -7,14 +7,21 @@ import StaffUnits from "./StaffUnits.vue";
 import { format, formatDistance, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
-import StaffDates from "@/Pages/Staff/StaffDates.vue";
+import StaffDates from "./StaffDates.vue";
 import PageHeader from "@/Components/PageHeader.vue";
 import StaffDependents from "@/Components/StaffDependents.vue";
 import Summary from "@/Pages/Person/Summary.vue";
-import PromotionHistory from "@/Pages/Staff/PromotionHistory.vue";
-import TransferHistory from "@/Pages/Staff/TransferHistory.vue";
-import Dependents from "@/Pages/Staff/Dependents.vue";
-import Address from "@/Pages/Staff/Address.vue";
+import PromotionHistory from "./PromotionHistory.vue";
+import TransferHistory from "./TransferHistory.vue";
+import Dependents from "./Dependents.vue";
+import Address from "./Address.vue";
+
+
+import { ref } from "vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
+
+
 
 let getAge = (dateString) => {
   const date = new Date(dateString);
@@ -28,6 +35,7 @@ let props = defineProps({
   address: Object,
   contacts: Array,
   filters: Object,
+  all_ranks: Array,
 });
 
 let tabs = [
@@ -40,9 +48,7 @@ let BreadcrumbLinks = [
   { name: props.person.name, url: "/" },
 ];
 
-import { ref } from "vue";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
+
 </script>
 <template>
   <Head :title="person.name" />
@@ -183,7 +189,7 @@ import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
           />
 
           <!-- Employment History -->
-          <PromotionHistory class="lg:col-start-1" :promotions="staff.ranks" />
+          <PromotionHistory class="lg:col-start-1" :promotions="staff.ranks" :ranks="all_ranks" />
           <!-- Posting History -->
           <TransferHistory class="lg:col-start-2" :transfers="staff.units" />
 
@@ -193,5 +199,7 @@ import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
         </div>
       </div>
     </main>
+
+    
   </MainLayout>
 </template>

@@ -46,7 +46,7 @@ let getAge = (dateString) => {
         <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
           
           <div
-          v-if="address.address_line_1"
+          v-if="address"
           >
             <dd
               class="text-sm leading-6 text-gray-500 dark:text-gray-50"

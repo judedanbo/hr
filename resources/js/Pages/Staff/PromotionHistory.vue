@@ -1,14 +1,16 @@
 <script setup>
 import { format, differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
-import {
-  CalendarDaysIcon,
-  UserPlusIcon,
-  FlagIcon,
-  IdentificationIcon
-} from "@heroicons/vue/20/solid";
+import { ref } from "vue";
+import { useToggle } from "@vueuse/core";
+import Modal from "@/Components/Modal.vue";
+import Promote  from "./partials/Promote.vue";
+
+let openPromoteModal = ref(false);
+let togglePromoteModal = useToggle(openPromoteModal);
 defineProps({
   promotions: Array,
+  ranks: Array,
 });
 const formattedDob = (dob) => {
   return new Date(dob).toLocaleDateString("en-GB", {
@@ -38,12 +40,12 @@ let getAge = (dateString) => {
         </div>
         <div class="flex-none self-end px-6 pt-4">
          
-         <Link
-           :href="route('staff.index')"
+         <button
+            @click="togglePromoteModal()"
            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
          >
-           Promote
-         </Link>
+           {{ promotions.length > 0 ? 'Promote' : 'Assign rank'}}
+         </button>
        </div>
         
         <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
@@ -80,5 +82,9 @@ let getAge = (dateString) => {
       </dl>
      
     </div>
+    <Modal @close="togglePromoteModal()" :show="openPromoteModal">
+      <Promote :ranks="ranks"/>
+    </Modal>
   </main>
+
 </template>

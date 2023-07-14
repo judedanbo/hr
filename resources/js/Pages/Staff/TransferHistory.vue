@@ -42,7 +42,7 @@ let getAge = (dateString) => {
            :href="route('staff.index')"
            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
          >
-           Transfer
+           {{transfers.length > 0 ? 'Transfer' : 'First Posting'}}
          </Link>
        </div>
         
