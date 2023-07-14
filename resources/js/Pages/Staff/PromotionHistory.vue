@@ -13,6 +13,7 @@ defineProps({
   ranks: Array,
 });
 const formattedDob = (dob) => {
+  if (!dob) return "";
   return new Date(dob).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
@@ -56,22 +57,22 @@ let getAge = (dateString) => {
           <col class="sm:w-1/6" />
           <col class="sm:w-1/6" />
         </colgroup>
-        <thead class="border-b border-gray-300 text-gray-900">
+        <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-100">
           <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Position</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Start</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">End</th>
-            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Duration</th>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 sm:pl-0">Position</th>
+            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell">Start</th>
+            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell">End</th>
+            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 dark:text-gray-100 sm:pr-0">Duration</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="promotion in promotions" :key="promotion.id" class="border-b border-gray-200">
             <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
-              <div class="font-medium text-gray-900">{{ promotion.name }}</div>
+              <div class="font-medium text-gray-900 dark:text-gray-100">{{ promotion.name }}</div>
               <div class="mt-1 truncate text-gray-500">{{ promotion.remarks }}</div>
             </td>
-            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ promotion.start_date }}</td>
-            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ promotion.end_date }}</td>
+            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ formattedDob(promotion.start_date) }}</td>
+            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ formattedDob(promotion.end_date) }}</td>
             <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">{{ promotion.price }}</td>
           </tr>
         </tbody>
