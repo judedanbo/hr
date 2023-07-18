@@ -111,8 +111,8 @@ const sidebarOpen = ref(false)
                 <TopMenu :userNavigation="userNavigation" />
             </div>
 
-            <main class="pb-6 bg-white dark:bg-gray-800">
-                <div class="px-4 sm:px-6 lg:px-8">
+            <main class="pb-6 bg-gray-100 dark:bg-gray-600 min-h-screen">
+                <div class="">
                     <slot />
                 </div>
             </main>

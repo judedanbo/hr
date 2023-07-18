@@ -1,7 +1,7 @@
 <script setup>
 import {
   format,
-  differenceInYears,
+  formatDistance,
   
 } from "date-fns";
 
@@ -17,12 +17,12 @@ const formattedDob = (dateString) => {
 
 let getAge = (dateString) => {
   const date = new Date(dateString);
-  return differenceInYears(new Date(), date);
+  return formatDistance(date, new Date(), { addSuffix: true,  });
 };
 </script>
 <template>
   <main
-    class="-mx-4 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16 xl:pb-20 xl:pt-16 bg-gray-50 dark:bg-gray-500"
+    class="px-8 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16 xl:pb-20 xl:pt-16 bg-gray-50 dark:bg-gray-500"
   >
     <h2 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
       Important dates
@@ -60,7 +60,7 @@ let getAge = (dateString) => {
           <span class="font-medium text-gray-900 dark:text-white">{{
             staff.ranks[0]?.name
           }}</span
-          ><br />{{ staff.ranks[0]?.start_date }}<br />{{ staff[0]?.remarks }}
+          ><br />{{ formattedDob(staff.ranks[0]?.start_date) }}<br />{{ staff[0]?.remarks }}
         </dd>
       </div>
       <div
@@ -80,7 +80,7 @@ let getAge = (dateString) => {
           <span class="font-medium text-gray-900 dark:text-white">{{
             staff.units[0]?.name
           }}</span
-          ><br />{{ staff.units[0]?.start_date }}<br />
+          ><br />{{ formattedDob(staff.units[0]?.start_date) }}<br />
         </dd>
       </div>
       <div

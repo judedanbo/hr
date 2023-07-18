@@ -52,7 +52,7 @@ const submitForm = () => {
 };
 
 const newDepartment = () => {
-    console.log("new department");
+    // console.log("new department");
     form.reset();
     toggle()
 }
@@ -192,10 +192,10 @@ watch(
                 </div>
             </div>
 
-            <div class="space-y-16 py-16 xl:space-y-20">
+            <div class="space-y-16 py-8">
 
                 <!-- department list-->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-7xl pt-4 pb-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-700 rounded-lg">
                     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
                         <div class="flex items-center justify-between">
                             <h2 class="text-base font-semibold leading-7 text-gray-900 dark:text-gray-50">Departments</h2>

@@ -66,6 +66,8 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::get('/staff/create', 'create')->name('staff.create');
     Route::post('/staff', 'store')->name('staff.store');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
+    Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
+    Route::post('/staff/{staff}/transfer', 'transfer')->name('staff.transfer');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
 });
@@ -81,6 +83,7 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
     Route::get('/rank/{job}', 'show')->name('job.show');
+    Route::post('/rank', 'store')->name('job.store');
 });
 
 // report

@@ -16,12 +16,9 @@ import TransferHistory from "./TransferHistory.vue";
 import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
 
-
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
-
-
 
 let getAge = (dateString) => {
   const date = new Date(dateString);
@@ -36,19 +33,33 @@ let props = defineProps({
   contacts: Array,
   filters: Object,
   all_ranks: Array,
+  all_units: Array,
 });
 
-let tabs = [
-  { name: "Profile", active: true },
-  { name: "Account" },
-  { name: "Notification" },
-];
 let BreadcrumbLinks = [
   { name: "Staff", url: "/staff" },
   { name: props.person.name, url: "/" },
 ];
 
+let availableJobs = ref([
+  {
+    value: null,
+    label: "Select Rank",
+  },
+]);
 
+props.all_ranks.map((job) => {
+  availableJobs.value.push(job);
+});
+let availableUnits = ref([
+  {
+    value: null,
+    label: "Select Department/Branch/Section/Unit",
+  },
+]);
+props.all_units.map((unit) => {
+  availableUnits.value.push(unit);
+});
 </script>
 <template>
   <Head :title="person.name" />
@@ -101,6 +112,12 @@ let BreadcrumbLinks = [
                   File Number
                   <span class="text-gray-700 dark:text-gray-100">{{
                     staff.file_number
+                  }}</span>
+                </div>
+                <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
+                  Staff Number
+                  <span class="text-gray-700 dark:text-gray-100">{{
+                    staff.staff_number
                   }}</span>
                 </div>
                 <div
@@ -177,29 +194,39 @@ let BreadcrumbLinks = [
         </div>
       </header>
 
-      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl py-4 xl:px-8">
         <div
-          class="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
+          class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
         >
-          <Summary class="" :person="person" />
-          <!-- Employment summary -->
-          <StaffDates
-            class="lg:col-span-2 lg:row-span-2 lg:row-end-2"
-            :staff="staff"
-          />
+          <div class="md:col-start-3 flex flex-wrap gap-4 w-full">
+            <!-- Employment summary -->
+            <Summary class="" :person="person" />
+            <!-- Contact information -->
+            <Address :address="address" :contacts="contacts" class="md:flex-1" />
+            <Dependents :dependents="staff.dependents" class="md:flex-1" />
+          </div>
 
-          <!-- Employment History -->
-          <PromotionHistory class="lg:col-start-1" :promotions="staff.ranks" :ranks="all_ranks" />
-          <!-- Posting History -->
-          <TransferHistory class="lg:col-start-2" :transfers="staff.units" />
-
-          <!-- Contact information -->
-          <Dependents :dependents="staff.dependents" />
-          <Address  :address="address" :contacts="contacts" class="lg:col-start-3" />
+          <div
+            class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4 mt-4"
+          >
+            <StaffDates class="w-full" :staff="staff" />
+            <!-- Employment History -->
+            <PromotionHistory
+              class="w-full md:flex-1"
+              :promotions="staff.ranks"
+              :ranks="availableJobs"
+              :staff="staff.staff_id"
+            />
+            <!-- Posting History -->
+            <TransferHistory
+              class="w-full md:flex-1 flex-1"
+              :transfers="staff.units"
+              :units="availableUnits"
+              :staff="staff.staff_id"
+            />
+          </div>
         </div>
       </div>
     </main>
-
-    
   </MainLayout>
 </template>

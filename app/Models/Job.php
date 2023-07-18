@@ -12,6 +12,8 @@ class Job extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'institution_id', 'previous_rank_id'];
+
     /**
      * Get the institution that owns the Job
      */
@@ -25,6 +27,10 @@ class Job extends Model
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id');
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')->withPivot(
+            'start_date',
+            'end_date',
+            'remarks'
+        );
     }
 }

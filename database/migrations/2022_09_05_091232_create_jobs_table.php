@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('institution_id')->constrained();
             $table->string('name', 100);
+            $table->foreignId('previous_rank_id')->constrained()->on('ranks')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

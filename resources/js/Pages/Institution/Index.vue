@@ -93,9 +93,9 @@ let BreadCrumpLinks = [
     <template #header>
       <PageHeader name="Institutions" />
     </template>
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-4">
+    <div class="max-w-7xl mx-auto px-0 lg:px-8">
       <div
-        class="bg-gray-100 dark:bg-gray-600 overflow-hidden shadow-sm sm:rounded-lg"
+        class="bg-gray-100 dark:bg-gray-600 overflow-hidden shadow-sm lg:rounded-lg w-full"
       >
         <div class="p-4">
           <BreadCrumpVue :links="BreadCrumpLinks" />

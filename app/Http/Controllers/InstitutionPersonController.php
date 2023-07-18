@@ -8,8 +8,10 @@ use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Person;
+use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -31,7 +33,6 @@ class InstitutionPersonController extends Controller
                 'units' => function ($query) {
                     $query->whereNull('units.end_date');
                 },
-
             ])
             ->whereHas('statuses', function ($query) {
                 $query->where('status', 'A');
@@ -182,6 +183,7 @@ class InstitutionPersonController extends Controller
             ]) : null,
             'contact_types' => ContactType::select(['id', 'name'])->get(),
             'all_ranks' => Job::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
+            'all_units' => Unit::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
 
             'address' => $staff->person->address->count() > 0 ? [
                 'id' => $staff->person->address->first()->id,
@@ -240,6 +242,54 @@ class InstitutionPersonController extends Controller
                 ]) : null,
             ],
         ]);
+    }
+
+    public function promote(Request $request, InstitutionPerson $staff)
+    {
+        $request->validate([
+            'rank_id' => ['required', 'exists:jobs,id'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'remarks' => ['nullable', 'string'],
+        ]);
+
+        $staff->load('ranks');
+
+        $staff->ranks()->wherePivot('end_date', null)->update([
+            'end_date' => Carbon::parse($request->start_date)->subDay(),
+        ]);
+
+        $staff->ranks()->attach($request->rank_id, [
+            'start_date' => $request->start_date,
+            // 'end_date' => $request->end_date,
+            'remarks' => $request->remarks,
+        ]);
+
+        return redirect()->back()->with('success', 'Staff promoted successfully');
+    }
+    public function transfer(Request $request, InstitutionPerson $staff)
+    {
+        $request->validate([
+            'unit_id' => ['required', 'exists:units,id'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'remarks' => ['nullable', 'string'],
+        ]);
+
+        $staff->load('units');
+
+
+        $staff->units()->wherePivot('end_date', null)->update([
+            'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
+        ]);
+
+        $staff->units()->attach($request->unit_id, [
+            'start_date' => $request->start_date,
+            // 'end_date' => $request->end_date,
+            'remarks' => $request->remarks,
+        ]);
+
+        return redirect()->back()->with('success', 'Staff promoted successfully');
     }
 
     /**

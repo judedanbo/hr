@@ -3,7 +3,7 @@ import { Inertia } from "@inertiajs/inertia";
 const emit = defineEmits(["formSubmitted"]);
 
 defineProps({
-  ranks: Array,
+  units: Array,
   staff: Number,
 })
 
@@ -19,7 +19,7 @@ const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
     // console.log(data)
-    Inertia.post(route("staff.promote", { staff: data.staff_id }),
+    Inertia.post(route("staff.transfer", { staff: data.staff_id }),
     data, {
         preserveScroll: true,
         onSuccess: () => {
@@ -36,16 +36,16 @@ const submitHandler = (data, node) => {
 
 <template>
   <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-    <h1 class="text-2xl pb-4 dark:text-gray-100">Promote Staff</h1>
+    <h1 class="text-2xl pb-4 dark:text-gray-100">Transfer Staff</h1>
     <FormKit @submit="submitHandler" type="form" submit-label="Save">
       <FormKit type="hidden" name="staff_id" :value="staff" />
       <FormKit
         type="select"
-        name="rank_id"
-        id="rank_id"
+        name="unit_id"
+        id="unit_id"
         validation="required|integer|min:1|max:20"
         label="New Rank"
-        :options="ranks"
+        :options="units"
         error-visibility="submit"
       />
       <div class="sm:flex gap-4">

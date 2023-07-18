@@ -27,9 +27,9 @@ let getAge = (dateString) => {
 </script>
 <template>
   <!-- Personal Details summary -->
-  <main class="">
+  <main class="w-full">
     <h2 class="sr-only">Personal Details summary</h2>
-    <div class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80">
+    <div class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80">
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100">

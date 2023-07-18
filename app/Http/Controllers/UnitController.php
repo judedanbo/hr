@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UnitType;
 use App\Http\Requests\StoreUnitRequest;
 use App\Models\Unit;
 use Carbon\Carbon;
@@ -12,7 +13,17 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
-
+        $types = [];
+        $first  = new \stdClass();
+        $first->value = null;
+        $first->label = 'Select Unit Type';
+        array_push($types, $first);
+        foreach (UnitType::cases() as $type) {
+            $temp = new \stdClass();
+            $temp->value = $type->value;
+            $temp->label = $type->name;
+            array_push($types, $temp);
+        }
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 // ->departments()
@@ -44,7 +55,7 @@ class UnitController extends Controller
                         ] : null,
                     ]
                 ),
-
+            'unit_types' => $types,
             'filters' => ['search' => request()->search],
         ]);
     }
@@ -160,8 +171,8 @@ class UnitController extends Controller
     public function store(StoreUnitRequest $request)
     {
         // dd($request->validated());
-        Unit::create($request->validated());
+        $unit = Unit::create($request->validated());
 
-        return redirect()->route('institution.show', $request->institution_id)->with('success', 'Unit created successfully');
+        return redirect()->route('unit.show', $unit->id)->with('success', 'Unit created successfully');
     }
 }

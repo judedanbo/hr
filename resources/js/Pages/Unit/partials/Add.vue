@@ -3,8 +3,9 @@ import { Inertia } from "@inertiajs/inertia";
 const emit = defineEmits(["formSubmitted"]);
 
 defineProps({
-  ranks: Array,
-  staff: Number,
+  units: Array,
+  types: Array,
+  institution: Object,
 })
 
 import {
@@ -18,8 +19,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-    // console.log(data)
-    Inertia.post(route("staff.promote", { staff: data.staff_id }),
+    Inertia.post(route("unit.store"),
     data, {
         preserveScroll: true,
         onSuccess: () => {
@@ -27,7 +27,7 @@ const submitHandler = (data, node) => {
             emit("formSubmitted");
         },
         onError: (errors) => {
-            node.setErrors([''], errors)
+            node.setErrors(['Error on submission'], errors)
         }
     })
 }
@@ -36,16 +36,49 @@ const submitHandler = (data, node) => {
 
 <template>
   <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-    <h1 class="text-2xl pb-4 dark:text-gray-100">Promote Staff</h1>
+    <h1 class="text-2xl pb-4 dark:text-gray-100">Add Unit</h1>
     <FormKit @submit="submitHandler" type="form" submit-label="Save">
-      <FormKit type="hidden" name="staff_id" :value="staff" />
+      <FormKit
+        type="text"
+        name="name"
+        id="name"
+        label="Unit name"
+        validation="required|string|length:2,150"
+        validation-visibility="submit" />
+      <FormKit
+        type="hidden"
+        name="institution_id"
+        id="institution_id"
+        label="institution_id"
+        :value="institution.id"
+        validation="required|integer|min:1|max:150"
+        validation-visibility="submit"
+        disabled />
+      <FormKit
+        type="text"
+        name="institution"
+        id="institution"
+        label="Institution"
+        :value="institution.name"
+        validation="required|string|length:1,150"
+        validation-visibility="submit"
+        disabled />
       <FormKit
         type="select"
-        name="rank_id"
-        id="rank_id"
-        validation="required|integer|min:1|max:20"
-        label="New Rank"
-        :options="ranks"
+        name="type"
+        id="type"
+        validation="required|string|length:1,5"
+        label="Unit Type"
+        :options="types"
+        error-visibility="submit" 
+      />
+      <FormKit
+        type="select"
+        name="unit_id"
+        id="unit_id"
+        validation="integer|min:1|max:30"
+        label="Parent Unit"
+        :options="units"
         error-visibility="submit"
       />
       <div class="sm:flex gap-4">
@@ -65,13 +98,13 @@ const submitHandler = (data, node) => {
           inner-class="w-1/2"
         />
       </div>
-      <FormKit
+      <!-- <FormKit
         type="text"
         name="remarks"
         id="remarks"
         label="Remarks"
         validation="string|length:2,120"
-        validation-visibility="submit" />
+        validation-visibility="submit" /> -->
     </FormKit>
   </main>
 </template>

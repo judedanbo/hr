@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreJobRequest;
 use App\Models\Job;
 use Inertia\Inertia;
 
@@ -9,13 +10,20 @@ class JobController extends Controller
 {
     public function index()
     {
-        $jobs = Job::withCount('staff')
-            // ->where('institution_id', $institution)
-            // ->where('name', 'like', 'Prin.Auditor%')
-            ->get();
-
+        // $jobs = Job::withCount(['staff' => function ($query) {
+        //     $query->active();
+        //     $query->where('job_staff.end_date', null);
+        // }])
+        //     // ->where('institution_id', $institution)
+        //     // ->where('name', 'like', 'Prin.Auditor%')
+        //     // ->with('staff')
+        //     ->get();
+        // return ($jobs);
         return Inertia::render('Job/Index', [
-            'jobs' => Job::withCount('staff')
+            'jobs' => Job::withCount(['staff' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+            }])
                 ->when(request()->search, function ($query, $search) {
 
                     $query->where('name', 'like', "%{$search}%");
@@ -41,8 +49,14 @@ class JobController extends Controller
 
     public function show($job)
     {
-        $job = Job::with('staff.person', 'staff.units', 'institution')
-            ->withCount('staff')
+        $job = Job::with(['staff' => function ($query) {
+            $query->active();
+            $query->where('job_staff.end_date', null);
+        }, 'staff.units', 'institution'])
+            ->withCount(['staff' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+            }])
             // ->active()
             ->find($job);
         // dd($job);
@@ -51,6 +65,10 @@ class JobController extends Controller
                 'id' => $job->id,
                 'name' => $job->name,
                 'staff_count' => $job->staff_count,
+                'institution' => $job->institution ? [
+                    'name' => $job->institution->name,
+                    'id' => $job->institution->id,
+                ] : null,
                 'staff' => $job->staff->map(fn ($staff) => [
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
@@ -59,6 +77,13 @@ class JobController extends Controller
                     'unit_id' => $staff->units?->first()?->id,
                 ]),
             ],
+            'filters' => ['search' => request()->search],
         ]);
+    }
+
+    public function store(StoreJobRequest $request)
+    {
+        Job::create($request->validated());
+        return redirect()->route('job.index')->with('success', 'Job created.');
     }
 }

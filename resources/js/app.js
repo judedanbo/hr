@@ -38,7 +38,7 @@ createInertiaApp({
                 inner:
                   "formkit-disabled:bg-gray-200 formkit-disabled:cursor-not-allowed formkit-disabled:pointer-events-none",
                 input:
-                  "bg-white dark:bg-gray-500 rounded border-none focus:ring-green-500 dark:focus:ring-red-200 ",
+                  "bg-white dark:bg-gray-500 rounded border-none focus:ring-green-500 dark:focus:ring-gray-200 ",
                 label: "block mb-1  text-sm dark:text-gray-200",
                 legend: " text-sm",
                 loaderIcon:
@@ -47,7 +47,7 @@ createInertiaApp({
                 messages: "list-none p-0 mt-1 mb-0",
                 outer: "mb-4 formkit-disabled:opacity-50",
                 prefixIcon:
-                  "w-10 p-2 flex self-stretch grow-0 shrink-0 rounded-tl rounded-bl border-l border-y border-gray-400 bg-white dark:bg-gray-600 bg-gradient-to-b from-transparent to-gray-200 [&>svg]:w-full [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
+                  "w-10 p-2 flex self-stretch grow-0 shrink-0 rounded-tl rounded-bl border-l border-y border-gray-400 dark:border-gray-600 dark:text-white bg-gray-100 dark:bg-gray-600 bg-gradient-to-b from-transparent to-gray-200 [&>svg]:w-full [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
                 suffixIcon:
                   "w-7 pr-3 flex self-stretch grow-0 shrink-0 [&>svg]:w-full [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
               },
@@ -77,7 +77,7 @@ createInertiaApp({
                 emptyMessageInner:
                   "flex items-center justify-center text-sm p-2 text-center w-full text-gray-500 [&>span]:mr-3 [&>span]:ml-0",
                 inner:
-                  "max-w-md relative flex focus-within:ring-green-500 focus-within:ring-2 rounded mb-1 formkit-disabled:focus-within:ring-gray-400 formkit-disabled:focus-within:ring-1 [&>span:first-child]:focus-within:text-green-500",
+                  "max-w-md relative flex focus-within:ring-green-500 dark:focus-within-ring-gray-100 focus-within:ring-2 rounded mb-1 formkit-disabled:focus-within:ring-gray-400 formkit-disabled:focus-within:ring-1 [&>span:first-child]:focus-within:text-green-500",
                 input: "w-full px-3 py-2",
                 listbox: "bg-white drop-shadow-lg rounded overflow-hidden",
                 listboxButton: "flex w-12 self-stretch justify-center mx-auto",
@@ -97,13 +97,13 @@ createInertiaApp({
               },
               "family:text": {
                 inner:
-                  "flex items-center max-w-md focus-within:ring-green-500 focus-within:ring-2 [&>label:first-child]:focus-within:text-green-500 rounded mb-1",
+                  "flex items-center max-w-md focus-within:ring-green-500 dark:focus-within-ring-gray-100 focus-within:ring-2 [&>label:first-child]:focus-within:text-green-500 rounded mb-1",
                 input:
                   "w-full px-3 py-2 border-none text-base text-gray-700 dark:text-gray-50 placeholder-gray-400",
               },
               "family:date": {
                 inner:
-                  "flex items-center max-w-md focus-within:ring-green-500 focus-within:ring-2 [&>label:first-child]:focus-within:text-green-500 rounded mb-1",
+                  "flex items-center max-w-md focus-within:ring-green-500 dark:focus-within-ring-gray-100 focus-within:ring-2 [&>label:first-child]:focus-within:text-green-500 rounded mb-1",
                 input:
                   "w-full px-3 py-2 border-none text-gray-700 dark:text-gray-50 placeholder-gray-400",
               },
@@ -146,7 +146,7 @@ createInertiaApp({
               },
               select: {
                 inner:
-                  "flex relative max-w-md items-center rounded mb-1 focus-within:ring-green-500 focus-within:ring-2 [&>span:first-child]:focus-within:text-green-500",
+                  "flex relative max-w-md items-center rounded mb-1 focus-within:ring-green-500 dark:focus-within-ring-gray-100 focus-within:ring-2 [&>span:first-child]:focus-within:text-green-500",
                 input:
                   'w-full pl-3 pr-8 py-2 border-none text-base text-gray-700 dark:text-gray-50 placeholder-gray-400 formkit-multiple:p-0 data-[placeholder="true"]:text-gray-400 formkit-multiple:data-[placeholder="true"]:text-inherit',
                 selectIcon:
@@ -156,7 +156,7 @@ createInertiaApp({
               },
               textarea: {
                 inner:
-                  "flex max-w-md rounded mb-1 focus-within:ring-green-500 [&>label:first-child]:focus-within:text-green-500",
+                  "flex max-w-md rounded mb-1 focus-within:ring-green-500 dark:focus-within-ring-gray-100 [&>label:first-child]:focus-within:text-green-500",
                 input:
                   "block w-full h-32 px-3 py-3 border-none text-base text-gray-700 dark:text-gray-50 placeholder-gray-400 focus:shadow-outline",
               },

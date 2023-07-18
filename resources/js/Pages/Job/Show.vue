@@ -14,7 +14,7 @@ import InfoCard from "@/Components/InfoCard.vue";
 let props = defineProps({
     job: Object,
 
-    // filters: Object,
+    filters: Object,
 });
 
 //
@@ -23,7 +23,7 @@ let BreadcrumbLinks = [
     { name: props.job.name },
 ];
 
-// let search = ref(props.filters.search);
+let search = ref(props.filters.search);
 
 // watch(
 //     search,
@@ -45,7 +45,7 @@ let BreadcrumbLinks = [
     <MainLayout>
         <template #header>
             <!-- <BreadCrumpVue :links="BreadcrumbLinks" /> -->
-            <PageHeader v-if="job" :name="job.name" />
+            <!-- <PageHeader v-if="job" :name="job.name" /> -->
         </template>
 
         <div class="py-2">
