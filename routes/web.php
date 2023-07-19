@@ -106,7 +106,7 @@ Route::controller(PromotionController::class)->middleware(['auth'])->group(funct
 
 Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
-    Route::get('/next-promotions/{year}/{month?}', 'show')->name('promotion.batch.show');
+    Route::get('/next-promotions/{year}', 'show')->name('promotion.batch.show');
 });
 
 Route::controller(QualificationController::class)->middleware(['auth'])->group(function () {

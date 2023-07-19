@@ -25,7 +25,7 @@ class PromotionBatchController extends Controller
         ]);
     }
 
-    public function show($year, $month)
+    public function show($year)
     {
         // return InstitutionPerson::query()
         //     ->active()
@@ -54,12 +54,27 @@ class PromotionBatchController extends Controller
             [
                 'promotions' => InstitutionPerson::query()
                     ->when(request()->search, function ($query, $search) {
-                        $query->where('staff_number', 'LIKE', '%' . $search . '%');
-                        // ->orWhere('file_number', 'LIKE', '%'.$search.'%');
+                        if ($search != '') {
+                            $query->where(function ($whereQuery) use ($search) {
+                                $whereQuery->where('staff_number', 'LIKE', '%' . $search . '%');
+                                $whereQuery->orWhere('file_number', 'LIKE', '%' . $search . '%');
+
+                                $whereQuery->orWhereHas('person', function ($query) use ($search) {
+                                    $query->where('surname', 'LIKE', '%' . $search . '%');
+                                    $query->orWhere('first_name', 'LIKE', '%' . $search . '%');
+                                    $query->orWhere('other_names', 'LIKE', '%' . $search . '%');
+                                });
+                                $whereQuery->orWhereHas('ranks', function ($query) use ($search) {
+                                    $query->whereNull('end_date');
+                                    $query->where('name', 'LIKE', '%' . $search . '%');
+                                });
+                            });
+                        }
                     })
                     ->active()
-                    ->whereHas('ranks', function ($query) use ($year, $month) {
-                        $query->whereNull('end_date');
+                    ->whereHas('ranks', function ($query) use ($year) {
+                        // $query->whereNull('end_date');
+                        // dd($year);
                         $query->whereYear('start_date', '<', $year - 3);
 
                         $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
@@ -112,8 +127,7 @@ class PromotionBatchController extends Controller
                     ]),
                 'filters' => [
                     'search' => Request()->search,
-                    'year' => $year,
-                    'month' => $month,
+
                 ],
             ]
         );

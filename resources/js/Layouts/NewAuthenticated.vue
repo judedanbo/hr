@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import MainNav from '../Components/MainNav.vue'
 import TopMenu from '@/Components/TopMenu.vue'
 import { Link } from '@inertiajs/inertia-vue3'
+import { format } from 'date-fns'
 import {
     Dialog,
     DialogPanel,
@@ -27,7 +28,7 @@ const navigation = [
     { name: 'Staff', href: route('staff.index'), icon: UsersIcon, current: false },
     { name: 'Departments', href: route('unit.index'), icon: FolderIcon, current: false },
     { name: 'Ranks', href: route('job.index'), icon: CalendarIcon, current: false },
-    { name: 'Next Promotions', href: route('promotion.batch.show', { year: 2023, month: 'april' }), icon: DocumentDuplicateIcon, current: false },
+    { name: 'Next Promotions', href: route('promotion.batch.show', { year: format(new Date(),'yyyy'), }), icon: DocumentDuplicateIcon, current: false },
     { name: 'Past Promotions', href: route('promotion.index'), icon: DocumentDuplicateIcon, current: false },
     { name: 'Reports', href: route('report.index'), icon: ChartPieIcon, current: false },
 ]

@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import Pagination from '@/Components/Pagination.vue'
+// import Pagination from '@/Components/Pagination.vue'
 import Promotion from './Promotions.vue'
 import { ref, watch } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
@@ -18,16 +18,29 @@ const searchStaff = (value) => {
     Inertia.get(route('promotion.batch.show', { year: year.value, month: month.value }), { search: value }, { preserveState: true, replace: true, preserveScroll: true })
 }
 
-// watch(search, (value) => {
-//     Inertia.get(route('promotion.show', { year: 2022 }), { search: value }, { preserveState: true, replace: true, preserveScroll: true })
-// })
+watch(search, (value) => {
+    Inertia.get(route('promotion.batch.show', { year: 2023 }), { search: value }, { preserveState: true, replace: true, preserveScroll: true })
+})
 </script>
 
 <template>
-    <MainLayout>
-        <!-- Promotions -->
-        <!-- <input v-model="search" type="search"> -->
-        <Promotion @update:model-value="searchStaff" :promotions="promotions.data" />
-        <Pagination :records="promotions" />
+    <MainLayout class="px-8 py-4">
+        <h1 class="text-2xl px-4 py-4 dark:text-gray-100">Promotion List</h1>
+    <div class="sm:flex sm:items-center justify-between px-8">
+        <FormKit
+          v-model="search"
+          prefix-icon="search"
+          type="search"
+          placeholder="Search institutions..."
+          autofocus
+        />
+        <button
+          type="button"
+          class="block rounded-md bg-green-600 dark:bg-gray-700 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 w-48"
+        >
+          Export Data
+        </button>
+    </div>
+        <Promotion @update:model-value="searchStaff" :promotions="promotions" />
     </MainLayout>
 </template>

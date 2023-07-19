@@ -250,7 +250,6 @@ let BreadCrumpLinks = [
                   </table>
                   <Pagination :records="staff" />
                 </div>
-
                 <NoItem v-else name="Staff" />
               </div>
             </div>
