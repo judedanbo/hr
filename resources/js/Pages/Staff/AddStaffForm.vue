@@ -2,6 +2,8 @@
 import { useForm } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import { ref } from "vue";
+const emit = defineEmits(["formSubmitted"]);
+
 
 const step = ref("personalInformation");
 const stepNames = [
@@ -17,6 +19,7 @@ const submitHandler = (data, node) => {
     preserveState: true,
     onSuccess: () => {
       node.reset();
+      emit("formSubmitted");
     },
     onError: (errors) => {
       node.setErrors(['there are errors'],
@@ -132,6 +135,7 @@ const submitHandler = (data, node) => {
           <FormKit
             type="select"
             label="Marital Status"
+            id="marital_status"
             name="marital_status"
             validation="required"
             :options="{

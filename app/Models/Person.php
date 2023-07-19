@@ -24,6 +24,7 @@ class Person extends Model
         'other_names',
         'date_of_birth',
         'gender',
+        'marital_status',
         'nationality',
         'social_security_number',
         'national_id_number',

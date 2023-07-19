@@ -25,8 +25,8 @@ const searchStaff = (value) => {
 
 <template>
     <MainLayout>
-        Promotions
-        <input v-model="search" type="search">
+        <!-- Promotions -->
+        <!-- <input v-model="search" type="search"> -->
         <Promotion @update:model-value="searchStaff" :promotions="promotions.data" />
         <Pagination :records="promotions" />
     </MainLayout>

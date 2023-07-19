@@ -13,12 +13,17 @@ let props = defineProps({
 })
 
 
-
 const formatDate = (date) => {
+    if (date === null) {
+        return ''
+    }
     return format(new Date(date), 'dd MMM, yyyy')
 }
 
 const formatDistance = (date) => {
+    if (date === null) {
+        return ''
+    }
     return formatDistanceStrict(new Date(date), new Date(props.promotions[0].now), { addSuffix: true })
 }
 
@@ -34,7 +39,7 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
 <template>
     <div class="px-4 sm:px-6 lg:px-8">
         <div class="sm:flex sm:items-center">
-            <div class="sm:flex-auto">
+            <div class="sm:flex-auto py-8">
                 <!-- <h1 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50">April 2022 </h1> -->
                 <!-- <p class="mt-2 text-sm text-gray-700 dark:text-gray-50">A list of all who were last promoted at least 3 -->
                 <!-- years ago. Ordered by last promotion date</p> -->
@@ -82,6 +87,14 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
                                     <th scope="col"
                                         class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
                                         Last Promotion
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
+                                        Current Posting
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
+                                        Retirement Date
                                     </th>
 
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
@@ -134,6 +147,26 @@ const indeterminate = computed(() => selectedStaff.value.length > 0 && selectedS
                                             {{ formatDistance(promotion.start_date) }}
                                         </div>
 
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200 ">
+
+                                        <div v-if="promotion.unit.length > 0" class="font-medium text-gray-900 dark:text-gray-50">
+                                            {{ promotion.unit.name }}
+                                        </div>
+                                        <div v-if="promotion.unit.length > 0" class="mt-1 text-gray-500 dark:text-gray-200">
+                                            {{ formatDistance(promotion.unit.start_date) }}
+                                        </div>
+                                        <div v-else> no posting</div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200 ">
+
+                                        <div  class="font-medium text-gray-900 dark:text-gray-50">
+                                            {{ formatDate(promotion.retirement_date) }}
+                                        </div>
+                                        <div class="mt-1 text-gray-500 dark:text-gray-200">
+                                            {{ formatDistance(promotion.retirement_date) }}
+                                        </div>
+                                        
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                         <a href="#"

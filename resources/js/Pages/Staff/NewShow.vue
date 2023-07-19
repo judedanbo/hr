@@ -1,18 +1,12 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import Tab from "@/Components/Tab.vue";
-import StaffRanks from "./StaffRanks.vue";
-import StaffUnits from "./StaffUnits.vue";
-import { format, formatDistance, differenceInYears } from "date-fns";
-import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
+import {  formatDistance } from "date-fns";
 import StaffDates from "./StaffDates.vue";
-import PageHeader from "@/Components/PageHeader.vue";
-import StaffDependents from "@/Components/StaffDependents.vue";
 import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
 import TransferHistory from "./TransferHistory.vue";
+import Qualifications from "./Qualifications.vue";
 import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
 
@@ -34,6 +28,7 @@ let props = defineProps({
   filters: Object,
   all_ranks: Array,
   all_units: Array,
+  qualifications: Array,
 });
 
 let BreadcrumbLinks = [
@@ -202,14 +197,20 @@ props.all_units.map((unit) => {
             <!-- Employment summary -->
             <Summary class="" :person="person" />
             <!-- Contact information -->
-            <Address :address="address" :contacts="contacts" class="md:flex-1" />
-            <Dependents :dependents="staff.dependents" class="md:flex-1" />
+            <Address :address="address" :contacts="contacts" :contact_types="contact_types" :person="person.id" />
+            <Dependents :dependents="staff.dependents" />
           </div>
 
           <div
-            class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4 mt-4"
+            class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"
           >
             <StaffDates class="w-full" :staff="staff" />
+            <!-- Qualifications -->
+            <Qualifications
+              class="w-full"
+              :qualifications="qualifications"
+              :person="person.id"
+            />
             <!-- Employment History -->
             <PromotionHistory
               class="w-full md:flex-1"
@@ -224,6 +225,7 @@ props.all_units.map((unit) => {
               :units="availableUnits"
               :staff="staff.staff_id"
             />
+            
           </div>
         </div>
       </div>

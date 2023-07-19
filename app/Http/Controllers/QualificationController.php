@@ -56,7 +56,8 @@ class QualificationController extends Controller
      */
     public function store(StoreQualificationRequest $request)
     {
-        //
+        Qualification::create($request->validated());
+        return redirect()->back()->with('success', 'Qualification added.');
     }
 
     /**

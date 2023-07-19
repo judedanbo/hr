@@ -22,7 +22,7 @@ let getAge = (dateString) => {
 </script>
 <template>
   <main
-    class="px-8 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16 xl:pb-20 xl:pt-16 bg-gray-50 dark:bg-gray-500"
+    class="px-8 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16  bg-gray-50 dark:bg-gray-500"
   >
     <h2 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
       Important dates

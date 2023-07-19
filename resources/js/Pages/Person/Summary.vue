@@ -98,7 +98,7 @@ let getAge = (dateString) => {
             <FlagIcon class="h-6 w-5 text-gray-400 dark:text-gray-50" aria-hidden="true" />
           </dt>
           <dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-            {{ person.marital_status ?? "Nationality Not Specified" }}
+            {{ person.nationality ?? "Nationality Not Specified" }}
           </dd>
         </div>
         <div class="mt-4 flex w-full flex-none gap-x-4 px-6">
@@ -118,7 +118,7 @@ let getAge = (dateString) => {
             </svg>
           </dt>
           <dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-            {{ person.marital_status ?? "Religion Not Specified" }}
+            {{ person.religion ?? "Religion Not Specified" }}
           </dd>
         </div>
 

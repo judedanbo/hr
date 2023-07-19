@@ -6,6 +6,7 @@ use App\Enums\ContactType as EnumsContactType;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Validation\Rules\Enum;
 
 class PersonController extends Controller
 {
@@ -69,8 +70,10 @@ class PersonController extends Controller
      */
     public function show($person)
     {
-        $person = Person::with(['address', 'contacts', 'dependent'])->whereId($person)->first();
-
+        $person = Person::with(['address' => function ($query) {
+            $query->where('valid_end', null);
+        }, 'contacts', 'dependent'])->whereId($person)->first();
+        // return $person;
         return Inertia::render('Person/Show', [
             'person' => [
                 'id' => $person->id,
@@ -102,9 +105,10 @@ class PersonController extends Controller
     public function addContact(Request $request, Person $person)
     {
         $attribute = $request->validate([
+            'contact_type' => [new Enum(EnumsContactType::class)],
             'contact' => 'required|min:7|max:30',
-            'contact_type_id' => ['required', 'exists:contact_types,id'],
         ]);
+
 
         $person->contacts()->create($attribute);
 
@@ -121,6 +125,14 @@ class PersonController extends Controller
             'country' => ['required'],
             'post_code' => ['nullable'],
         ]);
+
+        $person->address()->where('valid_end', null)->update([
+            'valid_end' => now(),
+        ]);
+
+        // $staff->ranks()->wherePivot('end_date', null)->update([
+        //     'end_date' => Carbon::parse($request->start_date)->subDay(),
+        // ]);
 
         $person->address()->create($attribute);
 

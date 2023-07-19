@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePersonRequest;
-use App\Models\ContactType;
+use App\Enums\ContactType;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
@@ -113,7 +113,7 @@ class InstitutionPersonController extends Controller
     // public function store(StorePersonRequest $request)
     public function store(StorePersonRequest $request)
     {
-        // dd($request->validated());
+        // return ($request->validated());
         DB::transaction(function () use ($request) {
             $person = Person::create($request->personalInformation);
 
@@ -142,10 +142,26 @@ class InstitutionPersonController extends Controller
      */
     public function show($staff)
     {
+        $contact_types = [];
+        $first  = new \stdClass();
+        $first->value = null;
+        $first->label = 'Select contact type';
+        array_push($contact_types, $first);
+        foreach (ContactType::cases() as $type) {
+            $temp = new \stdClass();
+            $temp->value = $type->value;
+            $temp->label = $type->name;
+            array_push($contact_types, $temp);
+        }
+
         $staff = InstitutionPerson::query()
             ->with(
                 [
-                    'person.address', 'person.contacts',
+                    'person' => function ($query) {
+                        $query->with(['address' => function ($query) {
+                            $query->whereNull('valid_end');
+                        }]);
+                    }, 'person.contacts', 'person.qualifications',
                     'units.institution',
                     'ranks',
                     'dependents.person',
@@ -175,13 +191,22 @@ class InstitutionPersonController extends Controller
                     'number' => $id->id_number,
                 ]) : null,
             ],
+            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn ($qualification) => [
+                'id' => $qualification->id,
+                'course' => $qualification->course,
+                'institution' => $qualification->institution,
+                'qualification' => $qualification->qualification,
+                'qualification_number' => $qualification->qualification_number,
+                'level' => $qualification->level,
+                'year' => $qualification->year,
+            ]) : [],
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type' => $contact->contact_type->name,
                 'valid_end' => $contact->valid_end,
             ]) : null,
-            'contact_types' => ContactType::select(['id', 'name'])->get(),
+            'contact_types' => $contact_types,
             'all_ranks' => Job::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
             'all_units' => Unit::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
 

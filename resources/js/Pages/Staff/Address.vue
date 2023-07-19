@@ -1,11 +1,26 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
+import Modal from "@/Components/Modal.vue";
+import { ref } from "vue";
+import { useToggle } from "@vueuse/core";
+import AddAddress from "../Person/partials/AddAddress.vue";
+import AddContact from "../Person/partials/AddContact.vue";
 
 defineProps({
-  address: Array,
+  address: Object,
   contacts: Array,
+  person: Number,
+  contact_types: Array,
 });
+
+
+let openAddressModal = ref(false);
+let toggleAddressModal = useToggle(openAddressModal);
+
+let openContactModal = ref(false);
+let toggleContactModal = useToggle(openContactModal);
+
 const formattedDob = (dob) => {
   return new Date(dob).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -35,12 +50,12 @@ let getAge = (dateString) => {
           </dt>
         </div>
         <div class="flex-none self-end px-6 pt-4">
-          <Link
-            :href="route('staff.index')"
+          <button
+           @click="toggleAddressModal()"
             class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
           >
-            change address
-          </Link>
+            Change address
+          </button>
         </div>
 
         <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
@@ -96,12 +111,12 @@ let getAge = (dateString) => {
           </dt>
         </div>
         <div class="flex-none self-end px-6 pt-4">
-          <Link
-            :href="route('staff.index')"
+          <button
+            @click="toggleContactModal()"
             class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
           >
             Add Contact
-          </Link>
+          </button>
         </div>
 
         <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
@@ -154,5 +169,11 @@ let getAge = (dateString) => {
         </div>
       </dl>
     </div>
+    <Modal @close="toggleAddressModal()" :show="openAddressModal">
+      <AddAddress @formSubmitted="toggleAddressModal()"  :person="person" />
+    </Modal>
+    <Modal @close="toggleContactModal()" :show="openContactModal">
+      <AddContact @formSubmitted="toggleContactModal()" :contact_types="contact_types"  :person="person" />
+    </Modal>
   </main>
 </template>

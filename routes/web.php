@@ -110,5 +110,6 @@ Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(
 });
 
 Route::controller(QualificationController::class)->middleware(['auth'])->group(function () {
-    Route::get('/qualification', 'index')->name('promotion.batch.index');
+    Route::get('/qualification', 'index')->name('qualification.index');
+    Route::post('/qualification', 'store')->name('qualification.store');
 });

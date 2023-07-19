@@ -260,7 +260,7 @@ let BreadCrumpLinks = [
     </div>
   </MainLayout>
   <Modal @close="toggle()" :show="openDialog">
-    <AddStaffForm />
+    <AddStaffForm @form-submitted="toggle()" />
   </Modal>
   <!-- <AddStaff @closeDialog="openDialog = false" :open="openDialog" /> -->
 </template>
