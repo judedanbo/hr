@@ -34,12 +34,13 @@ watch(search, (value) => {
           placeholder="Search institutions..."
           autofocus
         />
-        <button
+        <a
+          :href="route('export.promotion')"
           type="button"
           class="block rounded-md bg-green-600 dark:bg-gray-700 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 w-48"
         >
-          Export Data
-        </button>
+          Export Data to excel
+        </a>
     </div>
         <Promotion @update:model-value="searchStaff" :promotions="promotions" />
     </MainLayout>

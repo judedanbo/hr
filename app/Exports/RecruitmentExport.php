@@ -14,7 +14,11 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class RecruitmentExport implements
     // FromCollection,
-    ShouldAutoSize, WithHeadings, FromQuery, WithMapping, ShouldQueue
+    ShouldAutoSize,
+    WithHeadings,
+    FromQuery,
+    WithMapping,
+    ShouldQueue
 {
     use Exportable;
 

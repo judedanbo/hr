@@ -56,47 +56,39 @@ class PromotionBatchController extends Controller
                     ->when(request()->search, function ($query, $search) {
                         if ($search != '') {
                             $query->where(function ($whereQuery) use ($search) {
-                                $whereQuery->where('staff_number', 'LIKE', '%' . $search . '%');
-                                $whereQuery->orWhere('file_number', 'LIKE', '%' . $search . '%');
+                                // TODO: search by staff number, file number. currently cannot search by file number
+                                // $whereQuery->where('staff_number', 'LIKE', '%' . $search . '%');
+                                // $whereQuery->orWhere('file_number', 'LIKE', '%' . $search . '%');
+                                $whereQuery->orWhere(function ($orWhereQuery) use ($search) {
 
-                                $whereQuery->orWhereHas('person', function ($query) use ($search) {
-                                    $query->where('surname', 'LIKE', '%' . $search . '%');
-                                    $query->orWhere('first_name', 'LIKE', '%' . $search . '%');
-                                    $query->orWhere('other_names', 'LIKE', '%' . $search . '%');
-                                });
-                                $whereQuery->orWhereHas('ranks', function ($query) use ($search) {
-                                    $query->whereNull('end_date');
-                                    $query->where('name', 'LIKE', '%' . $search . '%');
+                                    $orWhereQuery->whereHas('person', function ($query) use ($search) {
+                                        $query->where('surname', 'LIKE', '%' . $search . '%');
+                                        $query->orWhere('first_name', 'LIKE', '%' . $search . '%');
+                                        $query->orWhere('other_names', 'LIKE', '%' . $search . '%');
+                                    });
+                                    $orWhereQuery->whereHas('ranks', function ($query) use ($search) {
+                                        $query->whereNull('end_date');
+                                        $query->whereYear('job_staff.start_date', '<', Date('Y') - 3);
+                                        $query->where('name', 'LIKE', '%' . $search . '%');
+                                    });
                                 });
                             });
                         }
+                    }, function ($query) {
+
+                        $query->whereHas('ranks', function ($query) {
+                            $query->whereNull('end_date');
+                            $query->whereYear('start_date', '<', Date('Y') - 3);
+                            $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
+                        });
                     })
                     ->active()
-                    ->whereHas('ranks', function ($query) use ($year) {
-                        // $query->whereNull('end_date');
-                        // dd($year);
-                        $query->whereYear('start_date', '<', $year - 3);
-
-                        $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
-                        // if ($month == 'april') {
-                        //     $query->whereMonth('start_date', '<=', 4);
-                        // } elseif ($month == 'october') {
-                        //     $query->whereMonth('start_date', '>', 4);
-                        // }
-                    })
                     ->with(['person', 'institution', 'units' => function ($query) {
                         $query->whereNull('staff_unit.end_date');
                     }, 'ranks' => function ($query) {
                         $query->whereNull('end_date');
                     }])
-                    ->with(['person', 'institution', 'units'  => function ($query) {
-                        $query->whereNull('staff_unit.end_date');
-                    }, 'ranks' => function ($query) use ($year) {
-                        $searchYear = $year - 3;
 
-                        $query->whereNull('end_date');
-                        $query->whereYear('start_date', '<', $searchYear);
-                    }])
                     ->orderBy(
                         JobStaff::select('start_date')
                             ->whereColumn('staff_id', 'institution_person.id')

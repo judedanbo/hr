@@ -57,7 +57,7 @@ const indeterminate = computed(
                 type="button"
                 class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white dark:text-gray-50"
               >
-                Bulk edit
+                Invite for Interview
               </button>
               <button
                 type=" button"

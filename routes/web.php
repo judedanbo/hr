@@ -7,6 +7,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
@@ -94,6 +95,9 @@ Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail
 
 Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');
+
+// promotion report
+Route::get('/promotion/export', [PromotionExportController::class, 'show'])->middleware(['auth'])->name('export.promotion');
 
 Route::get('/report/promotion', [PromotionController::class, 'index'])->middleware(['auth'])->name('report.promotion');
 Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth'])->name('report.promotion.year');
