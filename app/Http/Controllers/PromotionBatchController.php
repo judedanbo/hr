@@ -55,6 +55,7 @@ class PromotionBatchController extends Controller
                 'promotions' => InstitutionPerson::query()
                     ->when(request()->search, function ($query, $search) {
                         if ($search != '') {
+                            $query->active();
                             $query->where(function ($whereQuery) use ($search) {
                                 // TODO: search by staff number, file number. currently cannot search by file number
                                 // $whereQuery->where('staff_number', 'LIKE', '%' . $search . '%');
@@ -75,14 +76,14 @@ class PromotionBatchController extends Controller
                             });
                         }
                     }, function ($query) {
-
+                        $query->active();
                         $query->whereHas('ranks', function ($query) {
                             $query->whereNull('end_date');
                             $query->whereYear('start_date', '<', Date('Y') - 3);
                             $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
                         });
                     })
-                    ->active()
+
                     ->with(['person', 'institution', 'units' => function ($query) {
                         $query->whereNull('staff_unit.end_date');
                     }, 'ranks' => function ($query) {
