@@ -15,15 +15,24 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class PromotionListExport implements
     ShouldAutoSize,
     WithHeadings,
     FromQuery,
     WithMapping,
-    ShouldQueue
+    ShouldQueue,
+    WithTitle
 {
     use Exportable;
+    /**
+     * @return string
+     */
+    public function title(): string
+    {
+        return 'Promotion List';
+    }
 
     public function headings(): array
     {
@@ -56,30 +65,28 @@ class PromotionListExport implements
     public function columnFormats(): array
     {
         return [
-            'D' => NumberFormat::FORMAT_DATE_YYYYMMDDSLASH,
-            'F' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            "A" => NumberFormat::FORMAT_TEXT,
+            'D' => NumberFormat::FORMAT_DATE_YYYYMMDD,
+            'F' => NumberFormat::FORMAT_DATE_YYYYMMDD,
+            'H' => NumberFormat::FORMAT_DATE_YYYYMMDD,
         ];
     }
 
     public function query()
     {
         return InstitutionPerson::query()
-            ->active()
             ->whereHas('ranks', function ($query) {
-                $query->whereYear('start_date', '<',  Date('Y') - 3);
+                $query->whereNull('end_date');
+                $query->whereYear('start_date', '<', Date('Y') - 3);
                 $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
+            })
+            ->whereHas('statuses', function ($query) {
+                $query->where('status', 'A');
             })
             ->with(['person', 'institution', 'units' => function ($query) {
                 $query->whereNull('staff_unit.end_date');
             }, 'ranks' => function ($query) {
                 $query->whereNull('end_date');
-            }])
-            ->orderBy(
-                JobStaff::select('start_date')
-                    ->whereColumn('staff_id', 'institution_person.id')
-                    ->orderBy('start_date', 'desc')
-                    ->limit(1)
-            );
+            }]);
     }
 }

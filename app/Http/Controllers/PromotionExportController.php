@@ -11,6 +11,6 @@ class PromotionExportController extends Controller
 {
     public function show(Excel $excel)
     {
-        return $excel->download(new PromotionListExport, 'promotion_list.xlsx', Excel::XLSX);
+        return $excel->download(new PromotionListExport, 'Promotion List.xlsx', Excel::XLSX);
     }
 }

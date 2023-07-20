@@ -38,7 +38,7 @@
                     <ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
                     </Link>
                     <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" -->
-                    <Link :href="link.url" v-for="(link, index) in links.slice(1, -1)" :key="index"
+                    <Link :href="link.url" v-for="(link, index) in props.records.links.slice(1, -1)" :key="index"
                         class="z-10 relative inline-flex items-center px-4 py-2 border text-sm font-medium" :class="link.active
                             ? 'bg-green-50 dark:bg-gray-200 border-green-500 dark:border-gray-200 text-green-600 dark:text-green-800'
                             : 'bg-white  border-gray-300 text-gray-500'
@@ -65,11 +65,11 @@ let props = defineProps({
     // prev: String,
 });
 
-let links = props.records.links.map((link) => {
-    if (link.url) {
-        link.url = link.url.replace(/^http?:/, 'https:');
-    }
-    return link
-});
+// let links = props.records.links.map((link) => {
+//     if (link.url) {
+//         link.url = link.url.replace(/^http?:/, 'https:');
+//     }
+//     return link
+// });
 
 </script>

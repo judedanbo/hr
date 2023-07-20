@@ -76,26 +76,30 @@ class PromotionBatchController extends Controller
                             });
                         }
                     }, function ($query) {
-                        $query->active();
+
                         $query->whereHas('ranks', function ($query) {
                             $query->whereNull('end_date');
                             $query->whereYear('start_date', '<', Date('Y') - 3);
                             $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
                         });
                     })
-
+                    ->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    })
                     ->with(['person', 'institution', 'units' => function ($query) {
                         $query->whereNull('staff_unit.end_date');
                     }, 'ranks' => function ($query) {
                         $query->whereNull('end_date');
                     }])
 
-                    ->orderBy(
-                        JobStaff::select('start_date')
-                            ->whereColumn('staff_id', 'institution_person.id')
-                            ->orderBy('start_date', 'desc')
-                            ->limit(1)
-                    )
+                    // ->orderBy(
+                    //     JobStaff::select(['jobs.name'])
+                    //         ->join('jobs', 'jobs.id', '=', 'job_staff.job_id')
+                    //         ->whereColumn('staff_id', 'institution_person.id')
+                    //         ->orderBy('jobs.name', 'desc')
+                    //         // ->orderBy('job_staff.start_date', 'desc')
+                    //         ->limit(1)
+                    // )
                     ->paginate()
                     ->withQueryString()
                     ->through(fn ($staff) => [
