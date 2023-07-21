@@ -31,7 +31,7 @@ watch(search, (value) => {
           v-model="search"
           prefix-icon="search"
           type="search"
-          placeholder="Search institutions..."
+          placeholder="Search..."
           autofocus
         />
         <a
@@ -45,3 +45,8 @@ watch(search, (value) => {
         <Promotion @update:model-value="searchStaff" :promotions="promotions" />
     </MainLayout>
 </template>
+<style>
+input::placeholder{
+   @apply dark:text-gray-300
+    }
+</style>

@@ -19,45 +19,36 @@ import Button from "@/Components/Button.vue";
 import { useToggle } from "@vueuse/core";
 import InputError from "@/Components/InputError.vue";
 import PageNav from '@/Components/PageNav.vue'
+import AddForm from './partials/AddForm.vue'
+import EditForm from './partials/EditForm.vue'
 let props = defineProps({
     institution: Object,
     departments: Array,
     filters: Object,
     unitTypes: Array,
+    allUnits: Array,
 });
 
-
-
-const form = useForm({
-    name: null,
-    abbreviation: null,
-    type: '',
-    unit_id: '',
-    start_date: format(new Date(), 'yyyy-MM-dd'),
-    institution_id: props.institution.id,
-});
 
 let open = ref(false);
+let openEditForm = ref(false);
 
 let toggle = useToggle(open)
+let toggleEditForm = useToggle(openEditForm)
 
-const submitForm = () => {
-    form.post(route("unit.store"), {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.reset()
-            toggle()
-        }
-    });
-};
+let selectedUnit = ref(null);
+
+
 
 const newDepartment = () => {
     // console.log("new department");
-    form.reset();
     toggle()
 }
 
 const closeModal = () => {
+    toggleEditForm()
+}
+const closeEditModal = () => {
     form.reset();
     toggle()
 }
@@ -69,27 +60,30 @@ const navMenu = [
     { name: "Units", href: "#", active: false },
 ];
 
-// <a class="text-gray-700 dark:text-gray-50">Departments</a>
-//                             <a class="text-gray-700 dark:text-gray-50">Units</a>
-//                             <a class="text-gray-700 dark:text-gray-50">Staff</a>
-//                             <a class="text-gray-700 dark:text-gray-50">Heads</a>
 
-
-//
-// let BreadcrumbLinks = [
-//     { name: "Institutions", url: route("institution.index") },
-//     { name: props.institution.name },
-// ];
 
 let editDepartment = (id) => {
-    // console.log("edit department" + id);
-    const dept = props.departments.find((department) => department.id === id);
-    form.reset();
-    form.name = dept.name;
-    form.type = dept.type;
-    form.unit_id = dept.unit_id;
-    form.start_date = dept.start_date;
-    toggle()
+    // console.log('edit department')
+    // console.log(id)
+    selectedUnit.value = props.departments.find((department) => department.id === id);
+    // form.reset();
+    // form.name = dept.name;
+    // form.type = dept.type;
+    // form.unit_id = dept.unit_id;
+    // form.start_date = dept.start_date;
+    
+    toggleEditForm()
+    // console.log(openEditForm.value)
+}
+
+let deleteUnit = (id) => {
+    console.log('delete unit')
+    // Inertia.delete(route("unit.destroy", { unit: id }), {
+    //     preserveScroll: true,
+    //     onSuccess: () => {
+    //         Inertia.reload({ preserveScroll: true, preserveState: true });
+    //     },
+    // });
 }
 
 let search = ref(props.filters.search);
@@ -129,19 +123,7 @@ watch(
                         New unit
                     </a>
                 </div>
-                <!-- <header class="pb-4 pt-6 sm:pb-6">
-                    <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-6 px-4 sm:flex-nowrap sm:px-6 lg:px-8">
-                        <div
-                            class="order-last flex w-full gap-x-8 text-sm font-semibold leading-6 sm:order-none sm:w-auto sm:border-l sm:border-gray-200 sm:pl-6 sm:leading-7">
-
-                            <a class="text-gray-700 dark:text-gray-50">Departments</a>
-                            <a class="text-gray-700 dark:text-gray-50">Units</a>
-                            <a class="text-gray-700 dark:text-gray-50">Staff</a>
-                            <a class="text-gray-700 dark:text-gray-50">Heads</a>
-                        </div>
-                    </div>
-                </header> -->
-
+               
                 <!-- Stats -->
                 <div class="border-b border-b-gray-900/10 lg:border-t lg:border-t-gray-900/5 ">
                     <dl class="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:px-2 xl:px-0 ">
@@ -204,88 +186,18 @@ watch(
                         <ul role="list" class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
                             <template v-for="department in departments" :key="department.id">
 
-                                <UnitCard @editItem="(id) => editDepartment(id)" :unit="department" />
+                                <UnitCard @editItem="(id) => editDepartment(id)" @delete-unit="(id) => deleteUnit(id)" :unit="department" />
                             </template>
                         </ul>
                     </div>
                 </div>
             </div>
-            <Modal @close="closeModal" :show="open">
-                <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-                    <form @submit.prevent="submitForm" action="#">
-                        <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                            <div>
-                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                    Name of department
-                                </label>
-                                <input v-model="form.name" type="text" id="name"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-gray-500 "
-                                    placeholder="Name of department ">
-                                <InputError :message="form.errors.name" />
-                            </div>
-                            <div>
-                                <label for="institution" id="institution"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Institution</label>
-                                <input v-model="institution.name" disabled
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 disabled:bg-gray-300 cursor-not-allowed "
-                                    placeholder="institution">
-                                <InputError :message="form.errors.institution_id" />
-                            </div>
-                            <div>
-                                <label for="parent"
-                                    class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">Parent</label>
-                                <select v-model="form.unit_id" id="parent" name="parent"
-                                    class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6 dark:bg-gray-900 dark:text-gray-50">
-                                    <option value="">None</option>
-                                    <option v-for="department in props.departments" :key="department.id" :value="department.id">
-                                        {{ department.name }}</option>
-                                </select>
-                                <InputError :message="form.errors.unit_id" />
-                            </div>
-                            <div>
-                                <label for="type"
-                                    class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">Type</label>
-                                <select v-model="form.type" id="parent" name="parent"
-                                    class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6 dark:bg-gray-900 dark:text-gray-50">
-                                    <option value="">Select One</option>
-                                    <option value="DEP">Department</option>
-                                    <option value="DIV">Division</option>
-                                    <option value="SEC">Section</option>
-                                    <option value="BRH">Branch</option>
-                                    <option value="MU">Management Unit</option>
-                                </select>
-                                <InputError :message="form.errors.type" />
-                            </div>
-
-                            <div>
-                                <label for="parent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                    Start date
-                                </label>
-                                <input v-model="form.start_date" type="date" :max="format(new Date(), 'yyyy-MM-dd')"
-                                    min="2000-01-01"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
-                                <InputError :message="form.errors.start_date" />
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between space-x-4">
-                            <button type="submit" :disabled="form.processing"
-                                class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-800 dark:hover:bg-gray-900 dark:focus:ring-gray-800 disabled:opacity-50">
-                                Add department
-                            </button>
-                            <button @click.prevent="form.reset()" type="button"
-                                class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 dark:hover:bg-rose-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-rose-500 dark:text-rose-500 dark:hover:text-white dark:hover:rose-red-600 dark:focus:ring-red-900">
-                                <svg class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                Reset
-                            </button>
-                        </div>
-                    </form>
-                </main>
-            </Modal>
+            <Modal @close="toggle()" :show="open">
+               <AddForm :institutionName="institution.name" :institutionId="institution.id" :allUnits="allUnits" :unitTypes="unitTypes" />
+               </Modal>
+            <Modal @close="toggleEditForm()" :show="openEditForm" >
+               <EditForm :institutionName="institution.name" :institutionId="institution.id" :allUnits="allUnits" :unitTypes="unitTypes" :unit="selectedUnit" />
+               </Modal>
         </main>
     </NewLayout>
 </template>

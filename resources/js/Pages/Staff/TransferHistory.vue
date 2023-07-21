@@ -3,20 +3,38 @@ import { format, differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
 import Transfer  from "./partials/Transfer.vue";
 import Modal from "@/Components/Modal.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 
+const emit = defineEmits(["closeForm"]);
 
-
-defineProps({
+let props = defineProps({
   transfers: Array,
   units: Array,
-  staff: Number
+  staff: Number,
+  showTransferForm: {
+    type: Boolean,
+    default: false,
+  }
 });
 
-let openTransferModal = ref(false);
-let toggleTransferModal = useToggle(openTransferModal);
 
+let openTransferModal = ref(props.showTransferForm.value);
+let toggleTransferModal = () => { 
+  console.log('toggleTransferModal')
+  openTransferModal.value = false
+  emit('closeForm');
+}
+
+
+watch(
+  () => props.showTransferForm,
+  (value) => {
+    if (value) {
+      openTransferModal.value = true;
+    }
+  }
+);
 const formattedDob = (dob) => {
   if (!dob) return "";
   return new Date(dob).toLocaleDateString("en-GB", {
@@ -76,7 +94,7 @@ let getAge = (dateString) => {
             </td>
             <td class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell">{{ formattedDob(transfer.start_date) }}</td>
             <td class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell">{{ formattedDob(transfer.end_date) }}</td>
-            <!-- <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 dark:text-gray-100 sm:pr-0">{{ transfer.price }}</td> -->
+            
           </tr>
         </tbody>
        

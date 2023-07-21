@@ -66,7 +66,7 @@ const submitHandler = (data, node) => {
         <FormKit
         type="text"
         name="qualification_number"
-        id="qualification_numbe"
+        id="qualification_number"
         label="Qualification Number"
         validation="string|length:2,100"
         validation-visibility="submit"

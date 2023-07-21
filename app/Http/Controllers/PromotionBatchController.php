@@ -55,7 +55,6 @@ class PromotionBatchController extends Controller
                 'promotions' => InstitutionPerson::query()
                     ->when(request()->search, function ($query, $search) {
                         if ($search != '') {
-                            $query->active();
                             $query->where(function ($whereQuery) use ($search) {
                                 // TODO: search by staff number, file number. currently cannot search by file number
                                 // $whereQuery->where('staff_number', 'LIKE', '%' . $search . '%');

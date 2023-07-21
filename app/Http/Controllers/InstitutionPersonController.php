@@ -261,7 +261,7 @@ class InstitutionPersonController extends Controller
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'name' => $dep->person->full_name,
-                    'gender' => $dep->person->gender,
+                    'gender' => $dep->person->gender?->name,
                     'dob' => $dep->person->date_of_birth,
                     'relation' => $dep->relation,
                 ]) : null,

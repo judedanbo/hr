@@ -54,11 +54,11 @@ class PromotionListExport implements
             $staff->staff_number,
             $staff->file_number,
             $staff->person->full_name,
-            $staff->person->date_of_birth ? $staff->person->date_of_birth->addYears(60)->format('Y-m-d') : null,
+            $staff->person->date_of_birth ? $staff->person->date_of_birth->addYears(60)->format('d M Y') : null,
             $staff->units?->first()?->name,
-            $staff->units?->first() ? $staff->units?->first()->pivot->start_date->format('Y-m-d') : null,
+            $staff->units?->first() ? $staff->units?->first()->pivot->start_date->format('d M Y') : null,
             $staff->ranks?->first()?->name,
-            $staff->ranks?->first() ? $staff->ranks?->first()->pivot->start_date->format('Y-m-d') : null,
+            $staff->ranks?->first() ? $staff->ranks?->first()->pivot->start_date->format('d M Y') : null,
         ];
     }
 

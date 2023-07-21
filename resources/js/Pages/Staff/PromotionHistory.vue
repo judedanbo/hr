@@ -1,18 +1,40 @@
 <script setup>
 import { format, differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/Modal.vue";
 import Promote  from "./partials/Promote.vue";
 
-let openPromoteModal = ref(false);
-let togglePromoteModal = useToggle(openPromoteModal);
-defineProps({
+const emit = defineEmits(["closeForm"]);
+
+let props = defineProps({
   promotions: Array,
   ranks: Array,
-  staff: Number
+  staff: Number,
+  showPromotionForm: {
+    type: Boolean,
+    default: false,
+  }
 });
+
+
+let openPromoteModal = ref(props.showPromotionForm.value);
+let togglePromoteModal = () =>{
+  openPromoteModal.value = false
+  emit('closeForm');
+}
+
+
+watch(
+  () => props.showPromotionForm,
+  (value) => {
+    if (value) {
+      openPromoteModal.value = true;
+    }
+  }
+);
+
 const formattedDob = (dob) => {
   if (!dob) return "";
   return new Date(dob).toLocaleDateString("en-GB", {

@@ -49,23 +49,22 @@ let getAge = (dateString) => {
           <col class="sm:w-1/6" />
           <col class="sm:w-1/6" />
         </colgroup>
-        <thead class="border-b border-gray-300 text-gray-900">
+        <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-50">
           <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Position</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Start</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">End</th>
-            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Duration</th>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0">Name</th>
+            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell">Relation</th>
+           
           </tr>
         </thead>
         <tbody>
           <tr v-for="dependent in dependents" :key="dependent.id" class="border-b border-gray-200">
             <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
-              <div class="font-medium text-gray-900">{{ dependent.name }}</div>
-              <div class="mt-1 truncate text-gray-500">{{ dependent.remarks }}</div>
+              <div class="font-medium text-gray-900 dark:text-gray-50">{{ dependent.name }}</div>
+              <div class="mt-1 truncate text-gray-500">{{ dependent.gender }}</div>
             </td>
-            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ dependent.start_date }}</td>
-            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ dependent.end_date }}</td>
-            <!-- <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">{{ dependent.price }}</td> -->
+            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ dependent.relation }}</td>
+           
+           
           </tr>
         </tbody>
        

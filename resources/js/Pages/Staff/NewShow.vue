@@ -9,11 +9,17 @@ import TransferHistory from "./TransferHistory.vue";
 import Qualifications from "./Qualifications.vue";
 import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
-
+import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 
+
+let showPromotionForm = ref(false);
+let showTransferForm = ref(false);
+
+let togglePromotionForm = useToggle(showPromotionForm);
+let toggleTransferForm = useToggle(showTransferForm);
 let getAge = (dateString) => {
   const date = new Date(dateString);
   return formatDistance(date, new Date(), { addSuffix: true });
@@ -124,21 +130,23 @@ props.all_units.map((unit) => {
             </div>
             <div class="flex items-center gap-x-4 sm:gap-x-6">
               <button
+                @click="togglePromotionForm()"
                 type="button"
-                class="hidden text-sm font-semibold leading-6 text-green-900 sm:block"
+                class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
               >
                 Promote
               </button>
-              <a
-                href="#"
-                class="hidden text-sm font-semibold leading-6 text-green-900 sm:block"
-                >Transfer</a
+              <button
+                @click="toggleTransferForm()"
+                type="button"
+                class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
+                >Transfer</button
               >
-              <a
-                href="#"
+              <button
+                
                 class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                >Edit</a
-              >
+                >Edit
+                </button>
 
               <Menu as="div" class="relative sm:hidden">
                 <MenuButton class="-m-3 block p-3">
@@ -213,17 +221,21 @@ props.all_units.map((unit) => {
             />
             <!-- Employment History -->
             <PromotionHistory
-              class="w-full md:flex-1"
-              :promotions="staff.ranks"
-              :ranks="availableJobs"
-              :staff="staff.staff_id"
+            @close-form="togglePromotionForm()"
+            :promotions="staff.ranks"
+            :ranks="availableJobs"
+            :staff="staff.staff_id"
+            :showPromotionForm="showPromotionForm"
+            class="w-full md:flex-1"
             />
             <!-- Posting History -->
             <TransferHistory
-              class="w-full md:flex-1 flex-1"
-              :transfers="staff.units"
-              :units="availableUnits"
-              :staff="staff.staff_id"
+            @close-form="toggleTransferForm()"
+            :transfers="staff.units"
+            :units="availableUnits"
+            :staff="staff.staff_id"
+            :showTransferForm="showTransferForm"
+            class="w-full md:flex-1 flex-1"
             />
             
           </div>

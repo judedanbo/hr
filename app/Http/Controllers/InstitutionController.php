@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UnitType;
 use App\Http\Requests\StoreInstitutionRequest;
 use App\Http\Requests\UpdateInstitutionRequest;
 use App\Models\Institution;
@@ -71,24 +72,61 @@ class InstitutionController extends Controller
 
     public function show($institution)
     {
+        $types = [];
+        // $first  = new \stdClass();
+        // $first->value = null;
+        // $first->label = 'Select Unit Type';
+        // array_push($types, $first);
+        foreach (UnitType::cases() as $type) {
+            $temp = new \stdClass();
+            $temp->value = $type->value;
+            $temp->label = $type->name;
+            array_push($types, $temp);
+        }
         $institution = Institution::query()
             ->where('id', $institution)
             ->withCount([
-                'departments',
-                'divisions',
-                'units',
-                'staff',
+                'departments' => function ($query) {
+                    $query->whereNull('end_date');
+                },
+                'divisions' => function ($query) {
+                    $query->whereNull('end_date');
+                },
+                'units' => function ($query) {
+                    $query->whereNull('end_date');
+                },
+                'staff' => function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                },
             ])
             ->first();
 
         $departments = Unit::query()
             ->with(['subs' => function ($query) {
-
-
-                $query->withCount('subs');
-                $query->withCount('staff');
+                $query->withCount(['subs' => function ($query) {
+                    $query->whereNull('end_date');
+                }]);
+                $query->withCount(['staff' => function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                }]);
             }])
-            ->withCount('subs', 'staff', 'divisions')
+            ->withCount([
+                'subs' => function ($query) {
+                    $query->whereNull('end_date');
+                },
+                'staff' => function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                },
+                'divisions' => function ($query) {
+                    $query->whereNull('end_date');
+                },
+            ])
             ->where('units.type', 'DEP')
             ->get();
         // return $departments;
@@ -104,6 +142,12 @@ class InstitutionController extends Controller
                 'staff' => $institution->staff_count,
             ] : null,
             // 'departments' => [],
+            'allUnits' => Unit::whereNull('end_date')
+                ->get()->map(fn ($unit) => [
+                    'value' => $unit->id,
+                    'label' => $unit->name,
+                ]),
+            'unitTypes' => $types,
             'departments' => $departments != null && $departments->count() > 0 ?
                 $departments->map(fn ($department) => [
                     'id' => $department->id,
@@ -224,6 +268,8 @@ class InstitutionController extends Controller
                 'name' => $institution->name,
                 'staff' => $institution->staff_count,
             ],
+            'all_units' => Unit::whereNull('end_date')
+                ->select(['id', 'name']),
             'filters' => [
                 'search' => request()->search,
                 'page' => request()->page,
