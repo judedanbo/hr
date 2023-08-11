@@ -2,17 +2,17 @@
 import { Inertia } from "@inertiajs/inertia";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
-const emit = defineEmits(["cancelDelete", "institutionDeleted"]);
+const emit = defineEmits(["cancelDelete", "institutionDeleted", 'UnitDeleted']);
 
 let props = defineProps({
   selectedModel: Object,
 });
 
-const deleteInstitution = (institution) => {
-  Inertia.delete(route("institution.delete", { institution: institution }),{
+const deleteUnit = (unit) => {
+  Inertia.delete(route("unit.delete", { unit: unit }),{
     PreserveScroll: true,
     onSuccess: () => {
-        emit("institutionDeleted");
+        emit("UnitDeleted");
     },
   });
 };
@@ -31,11 +31,11 @@ const deleteInstitution = (institution) => {
       </div>
       <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
         <div as="h3" class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50">
-          Delete Institution ({{ selectedModel.name }})
+          Delete Unit 
         </div>
         <div class="mt-2">
           <p class="text-sm text-gray-500 dark:text-gray-200">
-            Are you sure you want to delete this institution?
+            Are you sure you want to delete the <strong>{{ selectedModel.name }}</strong> unit?
           </p>
         </div>
       </div>
@@ -44,7 +44,7 @@ const deleteInstitution = (institution) => {
       <button
         type="button"
         class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-        @click="deleteInstitution(selectedModel.id)"
+        @click="deleteUnit(selectedModel.id)"
       >
         Delete
       </button>

@@ -151,6 +151,7 @@ class InstitutionController extends Controller
             'departments' => $departments != null && $departments->count() > 0 ?
                 $departments->map(fn ($department) => [
                     'id' => $department->id,
+                    'institution_id' => $department->institution_id,
                     'name' => $department->name,
                     'divisions' => $department->divisions_count,
                     'type' => $department->type,

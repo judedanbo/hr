@@ -68,7 +68,7 @@ defineProps({
             </MenuItem>
             <MenuItem>
               <p
-                @click.prevent="delete(unit.id)"
+                @click.prevent="deleteUnit(unit.id)"
                 class="block px-3 py-1 text-sm leading-6 text-red-900 dark:text-red-500 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
               >
                 Remove<span class="sr-only">, {{ unit.name }}</span>

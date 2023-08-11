@@ -29,7 +29,7 @@ props.unitTypes.unshift({
 
 const submitHandler = (data, node) => {
   // console.log(data)
-  Inertia.post(route("unit.store"), data, {
+  Inertia.patch(route("unit.update", {unit: data.id}), data, {
     preserveScroll: true,
     onSuccess: () => {
       node.reset();
@@ -48,7 +48,6 @@ const submitHandler = (data, node) => {
       Edit Department/Section/Unit
     </h1>
     <!-- {{ unit }} -->
-    {{ unit.start_date.substring(0,10) }}
     <FormKit @submit="submitHandler" type="form" submit-label="Save">
       <FormKit
         type="hidden"
@@ -58,9 +57,15 @@ const submitHandler = (data, node) => {
       />
       <FormKit
         type="hidden"
+        name="id"
+        id="id"
+        :value="unit.id"
+      />
+      <FormKit
+        type="hidden"
         name="unit_id"
         id="unit_id"
-        :value="unit.id"
+        :value="unit.unit_id"
       />
       <FormKit
         type="text"
@@ -123,7 +128,7 @@ const submitHandler = (data, node) => {
         :max="end_date"
         :value="unit.start_date?.substring(0,10)"
         :validation="
-          'required|date_after_or_equal :' + end_date + '|date_before_or_equal:' + start_date
+          'date_after_or_equal :' + end_date + '|date_before_or_equal:' + start_date
         "
         validation-visibility="submit"
       />
@@ -136,7 +141,7 @@ const submitHandler = (data, node) => {
         :max="end_date"
         :value="unit.end_date?.substring(0,10)"
         :validation="
-          'required|date_after_or_equal :' + end_date + '|date_before_or_equal:' + start_date
+          'date_after_or_equal :' + end_date + '|date_before_or_equal:' + start_date
         "
         validation-visibility="submit"
       />

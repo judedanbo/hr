@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateInstitutionRequest extends FormRequest
+class UpdateUnitRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,12 @@ class UpdateInstitutionRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|integer|exists:institutions',
             'name' => 'required|string|max:100',
-            'abbreviation' => 'required|string|max:6',
-            'status' => 'string|max:10|nullable',
+            'institution_id' => 'required|integer|exists:institutions,id',
+            'unit_id' => 'nullable|integer|exists:units,id',
+            'type' => 'required|string|max:4',
             'start_date' => 'date|before_or_equal:today|after_or_equal:2000-01-01|nullable',
-            'end_date' => 'date|after_or_equal:today|after:start_date|nullable',
+            'end_date' => 'date|after_or_equal:start_date|nullable',
         ];
     }
 }

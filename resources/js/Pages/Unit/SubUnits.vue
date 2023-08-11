@@ -7,7 +7,7 @@ import NoItem from "@/Components/NoItem.vue";
 
 defineProps({
     type: String,
-    subs: Array,
+    subs: Object,
     searchText: String,
 });
 

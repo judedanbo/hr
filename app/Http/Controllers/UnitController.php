@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\UnitType;
 use App\Http\Requests\StoreUnitRequest;
+use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -174,5 +175,19 @@ class UnitController extends Controller
         $unit = Unit::create($request->validated());
 
         return redirect()->route('unit.show', $unit->id)->with('success', 'Unit created successfully');
+    }
+
+    public function update(UpdateUnitRequest $request)
+    {
+        // return $request->validated();
+        $unit = Unit::whereId($request->id)->first();
+        $unit->update($request->validated());
+        return redirect()->back()->with('success', 'Unit updated successfully');
+    }
+
+    public function delete(Unit $unit)
+    {
+        $unit->delete();
+        return redirect()->back()->with('success', 'Unit deleted successfully');
     }
 }

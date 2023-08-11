@@ -59,6 +59,8 @@ Route::controller(UnitController::class)->middleware(['auth'])->group(function (
     Route::get('/unit', 'index')->name('unit.index');
     Route::post('/unit', 'store')->name('unit.store');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
+    Route::delete('/unit/{unit}', 'delete')->name('unit.delete');
+    Route::patch('/unit/{unit}', 'update')->name('unit.update');
 });
 
 // staff

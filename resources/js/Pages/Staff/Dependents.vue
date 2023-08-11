@@ -62,7 +62,7 @@ let getAge = (dateString) => {
               <div class="font-medium text-gray-900 dark:text-gray-50">{{ dependent.name }}</div>
               <div class="mt-1 truncate text-gray-500">{{ dependent.gender }}</div>
             </td>
-            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ dependent.relation }}</td>
+            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 dark:text-gray-50 sm:table-cell">{{ dependent.relation }}</td>
            
            
           </tr>
