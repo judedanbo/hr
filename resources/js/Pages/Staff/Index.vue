@@ -41,7 +41,6 @@ watch(
 );
 
 let openStaff = (staff) => {
-  console.log(staff);
   Inertia.visit(route("staff.show", { staff: staff }));
 };
 
@@ -53,7 +52,6 @@ let formatDate = (dateString) => {
 
 let getAge = (dateString) => {
   const date = new Date(dateString);
-  // console.log(Date);
 
   return differenceInYears(new Date(), date);
 };

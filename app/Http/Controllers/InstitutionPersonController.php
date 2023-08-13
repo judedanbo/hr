@@ -292,6 +292,30 @@ class InstitutionPersonController extends Controller
 
         return redirect()->back()->with('success', 'Staff promoted successfully');
     }
+
+    function promotions(InstitutionPerson $staff)
+    {
+        $staff->load('ranks', 'person');
+        return [
+            'staff_id' => $staff->id,
+            'full_name' => $staff->person->full_name,
+            'staff_number' => $staff->staff_number,
+            'file_number' => $staff->file_number,
+            'old_staff_number' => $staff->old_staff_number,
+            'hire_date' => $staff->hire_date,
+            'retirement_date' => $staff->person->date_of_birth->addYears(60),
+            'start_date' => $staff->start_date,
+            'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
+                'id' => $rank->id,
+                'name' => $rank->name,
+                'start_date' => $rank->pivot->start_date,
+                'end_date' => $rank->pivot->end_date,
+                'remarks' => $rank->pivot->remarks,
+                'distance' => $rank->pivot->start_date->diffInYears()
+            ])
+                : null
+        ];
+    }
     public function transfer(Request $request, InstitutionPerson $staff)
     {
         $request->validate([

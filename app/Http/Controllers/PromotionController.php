@@ -56,7 +56,7 @@ class PromotionController extends Controller
         ]);
     }
 
-    public function show(int $year = null, $month = null)
+    public function show(int $year = null)
     {
 
         if ($year == null) {
@@ -64,18 +64,28 @@ class PromotionController extends Controller
         }
 
         $promotions = InstitutionPerson::query()
-            ->whereHas('ranks', function ($query) use ($year, $month) {
+            ->whereHas('ranks', function ($query) use ($year) {
                 $query->whereNull('end_date');
                 $query->whereYear('start_date', $year);
                 $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
-                if ($month == 'april') {
-                    $query->whereMonth('start_date', '<=', 6);
-                } elseif ($month == 'october') {
-                    $query->whereMonth('start_date', '>', 6);
-                }
+                // if ($month == 'april') {
+                //     $query->whereMonth('start_date', '<=', 6);
+                // } elseif ($month == 'october') {
+                //     $query->whereMonth('start_date', '>', 6);
+                // }
                 // $query->whereMonth('start_date', '<=', $month == 'april' ? 6 : 12);
-                $query->when(request()->search, function ($whenQuery, $search) {
-                    $whenQuery->where('name', 'like', '%' . $search . '%');
+                // $query->when(request()->search, function ($whenQuery, $search) {
+                //     $whenQuery->where('name', 'like', '%' . $search . '%');
+                // });
+                $query->when(request()->month, function ($whenQuery, $month) {
+                    if ($month == 'april') {
+                        $whenQuery->whereMonth('start_date', '<=', 4);
+                    } elseif ($month == 'october') {
+                        $whenQuery->whereMonth('start_date', '>', 4);
+                    }
+                });
+                $query->when(request()->rank, function ($whenQuery, $rank) {
+                    $whenQuery->where('job_id', $rank);
                 });
             })
             ->whereHas('statuses', function ($query) {
@@ -85,29 +95,73 @@ class PromotionController extends Controller
                 $query->whereNull('end_date');
                 $query->whereYear('start_date', '<=', $year);
             }])
-            ->paginate()
-            ->withQueryString()
-            ->through(fn ($staff) => [
+            ->get()
+            // ->paginate()
+            // ->withQueryString()
+            ->map(fn ($staff) => [
                 'id' => $staff->id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,
-                'surname' => $staff->person->surname,
-                'first_name' => $staff->person->first_name,
-                'other_name' => $staff->person->other_name,
+                'full_name' => $staff->person->full_name,
                 'institution' => $staff->institution->name,
                 'unit' => $staff->units?->first(),
                 'rank_id' => $staff->ranks->first()->id,
                 'rank_name' => $staff->ranks->first()->name,
                 'remarks' => $staff->ranks->first()->pivot->remarks,
-                'start_date' => $staff->ranks->first()->pivot->start_date,
+                'start_date' => $staff->ranks->first()->pivot->start_date->format('d F Y'),
                 'now' => date('Y-m-d'),
             ]);
+        $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
 
-        return Inertia::render('PromotionRank/Index', [
-            'promotions' => $promotions,
-            'filters' => ['search' => request()->search],
-        ]
+        return Inertia::render(
+            'Promotion/Show',
+            [
+                'promotions' => $promotions,
+                'filters' => [
+                    'search' => request()->search,
+                    'month' => request()->month,
+                    'rank' => request()->rank,
+                    'year' => $year,
+                ],
+            ]
         );
+    }
 
+    public function byRanks(int $year = null, int $rank = null)
+    {
+        $promotions = InstitutionPerson::query()
+            ->whereHas('ranks', function ($query) {
+                $query->whereNull('end_date');
+                $query->where('job_id', $rank);
+            })
+            ->whereHas('statuses', function ($query) {
+                $query->where('status', 'A');
+            })
+            ->with(['person', 'institution', 'units', 'ranks' => function ($query) {
+                $query->whereNull('end_date');
+            }])
+            ->get()
+            ->map(fn ($staff) => [
+                'id' => $staff->id,
+                'staff_number' => $staff->staff_number,
+                'file_number' => $staff->file_number,
+                'full_name' => $staff->person->full_name,
+                'institution' => $staff->institution->name,
+                'unit' => $staff->units?->first(),
+                'rank_id' => $staff->ranks->first()->id,
+                'rank_name' => $staff->ranks->first()->name,
+                'remarks' => $staff->ranks->first()->pivot->remarks,
+                'start_date' => $staff->ranks->first()->pivot->start_date->format('d F Y'),
+                'now' => date('Y-m-d'),
+            ]);
+        $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
+
+        return Inertia::render(
+            'Promotion/ByRanks',
+            [
+                'promotions' => $promotions,
+                'filters' => ['search' => request()->search],
+            ]
+        );
     }
 }

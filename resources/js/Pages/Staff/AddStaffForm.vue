@@ -31,10 +31,8 @@ const submitHandler = (data, node) => {
       errors.forEach(element => {
         
       });
-      console.log(errors);
     },
   });
-  // console.log(data);
 };
 </script>
 <template>

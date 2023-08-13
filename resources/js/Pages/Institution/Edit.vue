@@ -25,7 +25,6 @@ const submitHandler = (data, node) => {
         },
         onError: (errors) => {
             node.setErrors(['errors'], errors)
-            // console.log(errors)
         }
     }, 
     props.selectedModel

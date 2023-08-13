@@ -70,6 +70,7 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::post('/staff', 'store')->name('staff.store');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
     Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
+    Route::get('/staff/{staff}/promotions', 'promotions')->name('staff.promotion-history');
     Route::post('/staff/{staff}/transfer', 'transfer')->name('staff.transfer');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
@@ -106,7 +107,8 @@ Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'
 
 Route::controller(PromotionController::class)->middleware(['auth'])->group(function () {
     Route::get('/past-promotion', 'index')->name('promotion.index');
-    Route::get('/past-promotion/{year}/{month?}', 'show')->name('promotion.show');
+    Route::get('/past-promotion/{year}', 'show')->name('promotion.show');
+    Route::get('/past-promotion/{year}/rank', 'byRanks')->name('promotion.ranks');
     Route::get('/past-promotion/{promotion}/export', 'export')->name('promotion.export');
 });
 

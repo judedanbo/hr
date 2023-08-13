@@ -24,7 +24,6 @@ props.unitTypes.unshift({
 });
 
 const submitHandler = (data, node) => {
-  // console.log(data)
   Inertia.post(route("unit.store"), data, {
     preserveScroll: true,
     onSuccess: () => {

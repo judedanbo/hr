@@ -10,7 +10,6 @@ defineProps({
 const emit = defineEmits(['closeDialog'])
 
 const closeDialog = () => {
-    console.log('closeDialog')
     emit('closeDialog')
 }
 

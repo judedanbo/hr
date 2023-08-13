@@ -18,7 +18,6 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-    // console.log(data)
     Inertia.post(route("qualification.store"),
     data, {
         preserveScroll: true,

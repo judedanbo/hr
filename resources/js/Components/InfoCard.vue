@@ -13,7 +13,6 @@ let props = defineProps({
 
 let details = (url = props.link) => {
     Inertia.get(props.link);
-    // console.log(url);
 };
 </script>
 <template>

@@ -21,7 +21,6 @@ let props = defineProps({
 
 let openTransferModal = ref(props.showTransferForm.value);
 let toggleTransferModal = () => { 
-  console.log('toggleTransferModal')
   openTransferModal.value = false
   emit('closeForm');
 }

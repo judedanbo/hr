@@ -70,7 +70,6 @@ let addAllYears = () => {
   } else {
     selectedYears.value.add(year);
   }
-  console.log(selectedYears.value);
 };
 
 let BreadCrumpLinks = [

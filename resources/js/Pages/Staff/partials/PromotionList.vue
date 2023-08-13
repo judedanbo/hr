@@ -1,0 +1,76 @@
+<script setup>
+defineProps({
+  promotions: Array,
+});
+
+const formattedDob = (dob) => {
+  if (!dob) return "";
+  return new Date(dob).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+</script>
+<template>
+  <body class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
+    <table v-if="promotions.length > 0" class="min-w-full">
+      <colgroup></colgroup>
+      <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-100">
+        <tr>
+          <th
+            scope="col"
+            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 sm:pl-0"
+          >
+            Position
+          </th>
+          <th
+            scope="col"
+            class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell"
+          >
+            Start
+          </th>
+          <th
+            scope="col"
+            class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell"
+          >
+            End
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="promotion in promotions"
+          :key="promotion.id"
+          class="border-b border-gray-200"
+        >
+          <td class="max-w-0 py-5 pl-2 pr-3 text-sm sm:pl-0">
+            <div class="font-medium text-gray-900 dark:text-gray-100">
+              {{ promotion.name }}
+            </div>
+            <div class="mt-1 truncate text-gray-500 text-xs dark:text-gray-100">
+              {{ promotion.remarks }}
+            </div>
+          </td>
+          <td
+            class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell"
+          >
+            {{ formattedDob(promotion.start_date) }}
+          </td>
+          <td
+            class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell"
+          >
+            {{ formattedDob(promotion.end_date) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      v-else
+      class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center"
+    >
+      No promotions found.
+    </div>
+  </body>
+</template>

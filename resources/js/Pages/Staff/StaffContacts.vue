@@ -13,7 +13,6 @@ defineProps({
 
 let addContact = () => {
     showAddContactModal.value = true;
-    // console.log("add dependent");
 };
 let showDeleteDepModal = ref(false);
 let dependentToDelete = ref(null);
@@ -23,7 +22,6 @@ let deleteDependents = (id) => {
     showDeleteDepModal.value = true;
 };
 let editDependent = (id) => {
-    console.log("edit dependent " + id);
 };
 
 const formattedDob = (dateString) => {

@@ -40,20 +40,15 @@ let toggleEditModal = useToggle(openEditModal);
 let toggleDeleteModal = useToggle(openDeleteModal);
 
 let displayEditModal = ($event, id) => {
-  // console.log(props.institutions.data)
   selectedModel.value = props.institutions.data.filter(
     (institution) => institution.id == id
   );
-  // console.log(id)
-  // console.log($event.target)
   toggleEditModal();
 };
 let displayDeleteModal = ($event, id) => {
   selectedModel.value = props.institutions.data.filter(
     (institution) => institution.id == id
   );
-  // console.log(id)
-  // console.log($event.target)
   toggleDeleteModal();
 };
 const submitForm = () => {

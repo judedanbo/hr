@@ -1,10 +1,12 @@
 <script setup>
-import { watch, ref, computed } from "vue";
+import { ref, computed } from "vue";
 import { format, formatDistanceStrict } from "date-fns";
-import { Inertia } from "@inertiajs/inertia";
-import BreezeInput from "@/Components/Input.vue";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link, Inertia } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Pagination.vue";
+import PromotionList from "../Staff/partials/PromotionList.vue";
+import { useToggle } from "@vueuse/core";
+import Modal from "@/Components/Modal.vue";
+
 defineEmits(["update:modelValue"]);
 
 let props = defineProps({
@@ -18,6 +20,14 @@ const formatDate = (date) => {
   return format(new Date(date), "dd MMM, yyyy");
 };
 
+const staffPromotions = ref(null);
+
+const showPromotionList = async (staff) => {
+  const res =  await axios.get(route("staff.promotion-history", { staff: staff }))
+  staffPromotions.value = await res.data;
+  toggleStaffPromotionsModal();
+}
+
 const formatDistance = (date) => {
   if (date === null) {
     return "";
@@ -30,6 +40,12 @@ const formatDistance = (date) => {
 };
 
 const selectedStaff = ref([]);
+
+const showStaffPromotionsModal = ref(false);
+
+let toggleStaffPromotionsModal = useToggle(showStaffPromotionsModal);
+
+
 
 const fullName = (user) => {
   return `${user.first_name} ${user.other_name ?? ""} ${user.surname}`;
@@ -160,9 +176,9 @@ const indeterminate = computed(
                   >
                     <div class="font-medium text-gray-900 dark:text-gray-50">
                       <Link
-                        :href="route('staff.show', { staff: promotion.id })"
+                        :href="route('staff.show', { staff: promotion.staff_id })"
                       >
-                        {{ fullName(promotion) }}
+                        {{ promotion.staff_name }}
                       </Link>
                     </div>
                     <div class="mt-1 text-gray-500 dark:text-gray-200">
@@ -180,9 +196,7 @@ const indeterminate = computed(
                       {{ promotion.remarks }}
                     </div>
                   </td>
-                  <!-- <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200">
-                                        {{ promotion.staff_number }}
-                                    </td> -->
+                
                   <td
                     class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
                   >
@@ -223,14 +237,14 @@ const indeterminate = computed(
                   <td
                     class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3"
                   >
-                    <a
-                      href="#"
-                      class="text-green-600 dark:text-gray-100 hover:text-green-900 dark:hover:text-gray-50"
+                    <p
+                     @click="showPromotionList( promotion.staff_id)"
+                      class="text-green-600 dark:text-gray-100 hover:text-green-900 dark:hover:text-gray-50 cursor-pointer "
                     >
                       Show history<span class="sr-only"
                         >, {{ promotion.name }}</span
                       >
-                    </a>
+                    </p>
                   </td>
                 </tr>
               </tbody>
@@ -239,6 +253,18 @@ const indeterminate = computed(
           </div>
         </div>
       </div>
+      <Modal @close="toggleStaffPromotionsModal()" :show="showStaffPromotionsModal">
+        <div class="px-4 pt-4">
+
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
+            {{ staffPromotions.full_name  }}
+          </h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-200">
+            Promotions history
+            </p>  
+        </div>
+        <PromotionList v-if="staffPromotions" :promotions="staffPromotions.promotions" />
+      </Modal>
     </div>
   </div>
 </template>

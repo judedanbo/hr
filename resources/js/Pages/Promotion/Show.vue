@@ -2,7 +2,7 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Promotion from "./Promotion.vue";
 defineProps({
-    promotion: Array,
+    promotions: Object,
     filters: Object,
 });
 </script>
@@ -21,10 +21,9 @@ defineProps({
                     Promotion History</h2>
             </div>
 
-            {{ promotion }}
-            <div class="w-1/4">
+            <div class="w-1/2 mx-auto">
 
-                <Promotion :promotion="promotion" />
+                <Promotion :promotions="promotions" :filters="filters" />
             </div>
         </div>
     </MainLayout>

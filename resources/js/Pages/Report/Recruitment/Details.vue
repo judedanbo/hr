@@ -28,8 +28,6 @@ watch(
             ranks: selectedRanks.value.map((item) => item).join("|"),
         });
 
-        console.log(props.filters.active);
-        console.log(data.value);
 
         Inertia.get(route("report.recruitment.details"), data, {
             preserveState: true,
@@ -89,7 +87,6 @@ let addAllYears = () => {
     } else {
         selectedYears.value.add(year);
     }
-    console.log(selectedYears.value);
 };
 
 let BreadCrumpLinks = [

@@ -102,12 +102,10 @@ class PromotionBatchController extends Controller
                     ->paginate()
                     ->withQueryString()
                     ->through(fn ($staff) => [
-                        'id' => $staff->id,
+                        'staff_id' => $staff->id,
                         'staff_number' => $staff->staff_number,
                         'file_number' => $staff->file_number,
-                        'surname' => $staff->person->surname,
-                        'first_name' => $staff->person->first_name,
-                        'other_name' => $staff->person->other_name,
+                        'staff_name' => $staff->person->full_name,
                         'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('Y-m-d'),
                         'institution' => $staff->institution->name,
                         'unit' => $staff->units ? [

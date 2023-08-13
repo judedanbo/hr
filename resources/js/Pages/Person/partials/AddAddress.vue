@@ -18,8 +18,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-    // console.log(data)
-    // console.log(props.person)
+
     Inertia.post(route("person.address.create", {person: props.person}),
     data, {
         preserveScroll: true,

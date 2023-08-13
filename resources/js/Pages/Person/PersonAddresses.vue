@@ -28,7 +28,6 @@ let deleteAddress = (id) => {
     showDeleteAddressModal.value = true;
 };
 let editAddress = (id) => {
-    console.log("edit Address " + id);
 };
 
 const formattedDob = (dateString) => {

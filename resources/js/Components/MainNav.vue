@@ -6,7 +6,6 @@ defineProps({
     teams: Array,
 });
 
-console.log()
 </script>
 <template>
     <nav class="flex flex-1 flex-co">

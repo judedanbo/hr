@@ -37,7 +37,6 @@ let toggleDeleteModal = useToggle(openDeleteModal);
 let selectedUnit = ref(null);
 
 const newDepartment = () => {
-  // console.log("new department");
   toggle();
 };
 

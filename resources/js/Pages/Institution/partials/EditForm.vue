@@ -28,7 +28,6 @@ props.unitTypes.unshift({
 });
 
 const submitHandler = (data, node) => {
-  // console.log(data)
   Inertia.patch(route("unit.update", {unit: data.id}), data, {
     preserveScroll: true,
     onSuccess: () => {
