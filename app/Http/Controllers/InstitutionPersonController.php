@@ -186,6 +186,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->name,
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->name,
+                'image' => $staff->person->image,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
@@ -241,7 +242,7 @@ class InstitutionPersonController extends Controller
                     'start_date' => $rank->pivot->start_date,
                     'end_date' => $rank->pivot->end_date,
                     'remarks' => $rank->pivot->remarks,
-                    'distance' => $rank->pivot->start_date->diffInYears(),
+                    'distance' => $rank->pivot->start_date?->diffInYears(),
                 ]),
 
                 'units' => $staff->units->map(fn ($unit) => [
@@ -249,7 +250,7 @@ class InstitutionPersonController extends Controller
                     'name' => $unit->name,
                     'start_date' => $unit->pivot->start_date,
                     'end_date' => $unit->pivot->end_date,
-                    'distance' => $unit->pivot->start_date->diffInYears(),
+                    'distance' => $unit->pivot->start_date?->diffInYears(),
                 ]),
                 // ? [
                 //     'id' => $staff->unit->id,

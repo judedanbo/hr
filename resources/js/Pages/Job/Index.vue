@@ -117,7 +117,7 @@ watch(
                       <tr
                         v-for="job in jobs.data"
                         :key="job.id"
-                        class="transition-all hover:bg-gray-100 hover:shadow-lg dark:bg-gray-600 dark:hover:bg-gray-700"
+                        class="transition-all hover:bg-gray-100 hover:shadow-lg dark:bg-gray-500 dark:hover:bg-gray-700"
                       >
                         <td class="px-6 py-2 whitespace-nowrap">
                           <div class="flex items-center">

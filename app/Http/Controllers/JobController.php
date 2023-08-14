@@ -20,18 +20,35 @@ class JobController extends Controller
         //     ->get();
         // return ($jobs);
         return Inertia::render('Job/Index', [
-            'jobs' => Job::withCount(['staff' => function ($query) {
-                $query->active();
-                $query->where('job_staff.end_date', null);
-            }])
+            'jobs' =>
+            Job::query()
+                // ->whereHas('staff', function ($query) {
+                //     $query->whereHas('statuses', function ($query) {
+                //         $query->where('status', 'A');
+                //     });
+                //     $query->where('job_staff.end_date', null);
+                // })
+                // ->withCount(['staff'])
+                // ->when(request()->search, function ($query, $search) {
+                //     $query->where('name', 'like', "%{$search}%");
+                // })
+                // ->with(['institution', 'staff'])
                 ->when(request()->search, function ($query, $search) {
-
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->with(['institution', 'staff' => function ($query) {
-                    $query->active();
+                ->whereHas('staff', function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                    $query->where('job_staff.end_date', null);
+                })
+                ->with(['institution'])
+                ->withCount(['staff' => function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                    $query->where('job_staff.end_date', null);
                 }])
-
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($job) => [
@@ -50,11 +67,22 @@ class JobController extends Controller
     public function show($job)
     {
         $job = Job::with(['staff' => function ($query) {
-            $query->active();
+            // $query->active();
+            $query->whereHas('statuses', function ($query) {
+                $query->where('status', 'A');
+            });
             $query->where('job_staff.end_date', null);
-        }, 'staff.units', 'institution'])
+            $query->when(request()->search, function ($query, $search) {
+                $query->whereHas('person', function ($query) use ($search) {
+                    $query->where('first_name', 'like', "%{$search}%");
+                    $query->orWhere('surname', 'like', "%{$search}%");
+                });
+            });
+        }, 'staff.units', 'staff.ranks', 'institution'])
             ->withCount(['staff' => function ($query) {
-                $query->active();
+                $query->whereHas('statuses', function ($query) {
+                    $query->where('status', 'A');
+                });
                 $query->where('job_staff.end_date', null);
             }])
             // ->active()
@@ -72,9 +100,16 @@ class JobController extends Controller
                 'staff' => $job->staff->map(fn ($staff) => [
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
+                    'initials' => $staff->person->initials,
+                    'image' => $staff->person->image,
                     'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
                     'unit' => $staff->units?->first()?->name,
                     'unit_id' => $staff->units?->first()?->id,
+                    'rank' => $staff->ranks?->first()?->name,
+                    'rank_start' => $staff->ranks?->first()?->pivot->start_date,
+                    'rank_start_text' => $staff->ranks?->first()?->pivot->start_date->format('d F Y'),
+                    'rank_remark' => $staff->ranks?->first()?->pivot->remarks,
                 ]),
             ],
             'filters' => ['search' => request()->search],

@@ -118,6 +118,12 @@ let BreadCrumpLinks = [
                         scope="col"
                         class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
                       >
+                        Units
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
+                      >
                         Staff
                       </th>
                     </tr>
@@ -150,6 +156,11 @@ let BreadCrumpLinks = [
                         </div>
                       </td>
 
+                      <td
+                        class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50"
+                      >
+                        {{ unit.units }}
+                      </td>
                       <td
                         class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50"
                       >

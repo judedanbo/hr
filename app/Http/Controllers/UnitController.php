@@ -27,9 +27,9 @@ class UnitController extends Controller
         }
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
-                // ->departments()
+                ->departments()
                 ->with('institution')
-                ->withCount('staff')
+                ->withCount(['staff', 'subs'])
                 // ->countSubs()
                 ->when(request()->institution, function ($query, $search) {
                     $query->where('institution_id', request()->institution);
@@ -44,6 +44,7 @@ class UnitController extends Controller
                         'id' => $unit->id,
                         'name' => $unit->name,
                         'staff' => $unit->staff_count,
+                        'units' => $unit->subs_count,
                         'institution' => $unit->institution ? [
                             'id' => $unit->institution->id,
                             'name' => $unit->institution->name,

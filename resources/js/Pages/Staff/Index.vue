@@ -9,7 +9,7 @@ import Pagination from "../../Components/Pagination.vue";
 import { format, differenceInYears, formatDistanceStrict } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
-import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
+import { PlusIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
 import PageHeader from "@/Components/PageHeader.vue";
 import BreezeButton from "@/Components/Button.vue";
@@ -17,6 +17,7 @@ import Modal from "@/Components/Modal.vue";
 import AddStaff from "./AddStaff.vue";
 import AddStaffForm from "./AddStaffForm.vue";
 import { useToggle } from "@vueuse/core";
+import Avatar from "../Person/partials/Avatar.vue";
 
 let props = defineProps({
   staff: Object,
@@ -85,7 +86,15 @@ let BreadCrumpLinks = [
             <InfoCard title="Staff" :value="staff.total" link="#" />
 
            
-            <BreezeButton @click="toggle()">Add New Staff</BreezeButton>
+            <!-- <BreezeButton @click="toggle()">Add New Staff</BreezeButton> -->
+            <a
+              @click.prevent="toggle()"
+              href="#"
+              class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+            >
+              <PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+              New Staff
+            </a>
           </div>
 
           <div class="flex flex-col mt-6">
@@ -145,12 +154,13 @@ let BreadCrumpLinks = [
                       >
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="flex items-center">
-                            <div
+                            <!-- <div
                               class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
                             >
                               {{ person.initials }}
-                            </div>
-
+                            </div> -->
+                            
+                            <Avatar :initials="person.initials" :image-url="person.image"/>
                             <div class="ml-4">
                               <div
                                 class="text-sm font-medium text-gray-900 dark:text-gray-100"
