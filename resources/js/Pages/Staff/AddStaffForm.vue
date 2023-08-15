@@ -1,9 +1,26 @@
 <script setup>
 import { useForm } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from "axios";
 const emit = defineEmits(["formSubmitted"]);
 
+const contact_types = ref([]);  
+const gender = ref([]);  
+const maritalStatus = ref([])
+onMounted(async () => {
+  const { data } = await axios.get(route("contact-type.index"));
+  contact_types.value = data;
+  const  genderData  = await axios.get(route('gender.index'))
+  gender.value = genderData.data;
+  const maritalStatusData = await axios.get(route('marital-status.index'));
+  maritalStatus.value = maritalStatusData.data
+});
+
+// onMounted(async() =>{
+//   const {gender} = await axios.get(route('gender.index'))
+//   console.log(gender);
+// })
 
 const step = ref("personalInformation");
 const stepNames = [
@@ -40,8 +57,8 @@ const submitHandler = (data, node) => {
     <h1 class="text-2xl dark:text-gray-200">Add new Staff</h1>
     <FormKit
       type="form"
-      name="staffForm"
-      id="staffForm"
+      name="addStaffForm"
+      id="addStaffForm"
       value="formData"
       @submit="submitHandler"
       submit-label="Add Staff"
@@ -122,11 +139,8 @@ const submitHandler = (data, node) => {
               type="select"
               label="Gender"
               validation="required"
-              :options="{
-                '': 'Select one',
-                M: 'Male',
-                F: 'Female',
-              }"
+              placeholder="Select one"
+              :options="gender"
             />
           </div>
   
@@ -135,14 +149,9 @@ const submitHandler = (data, node) => {
             label="Marital Status"
             id="marital_status"
             name="marital_status"
+            placeholder="Select one"
             validation="required"
-            :options="{
-              '': 'Select one',
-              M: 'Married',
-              F: 'Single',
-              D: 'Divorced',
-              W: 'Widowed',
-            }"
+            :options="maritalStatus"
             :validation-messages="{
               required: 'Marital status is required',
             }"
@@ -155,15 +164,9 @@ const submitHandler = (data, node) => {
             name="contact_type"
             id="contact_type"
             label="Contact type"
-            placeholder="Contact type"
+            placeholder="Select one"
             validation="required"
-            :options="{
-              '': 'Select one',
-              1: 'Email',
-              2: 'Phone',
-              3: 'Address',
-              4: 'GhanaPOST GPS',
-            }"
+            :options="contact_types"
           />
           <FormKit
             type="text"

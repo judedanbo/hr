@@ -32,29 +32,35 @@ class JobController extends Controller
                 // ->when(request()->search, function ($query, $search) {
                 //     $query->where('name', 'like', "%{$search}%");
                 // })
-                // ->with(['institution', 'staff'])
                 ->when(request()->search, function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->whereHas('staff', function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->where('status', 'A');
-                    });
-                    $query->where('job_staff.end_date', null);
-                })
-                ->with(['institution'])
+                // ->whereHas('staff', function ($query) {
+                //     $query->whereHas('statuses', function ($query) {
+                //         $query->where('status', 'A');
+                //     });
+                //     $query->where('job_staff.end_date', null);
+                // })
+                ->with(['institution', 'category', 'staff'])
                 ->withCount(['staff' => function ($query) {
                     $query->whereHas('statuses', function ($query) {
                         $query->where('status', 'A');
                     });
                     $query->where('job_staff.end_date', null);
                 }])
+                // ->orderBy()
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($job) => [
                     'id' => $job->id,
                     'name' => $job->name,
                     'staff' => $job->staff_count,
+                    'category' => $job->category ? [
+                        'id' => $job->category->id,
+                        'name' => $job->category->name,
+                        'level' => $job->category->level,
+                        'short_name' => $job->category->short_name,
+                    ] : '',
                     'institution' => [
                         'id' => $job->institution->id,
                         'name' => $job->institution->name,
@@ -63,6 +69,13 @@ class JobController extends Controller
             'filters' => ['search' => request()->search],
         ]);
     }
+
+    function create()
+    {
+        return Job::select(['id as value', 'name as label'])
+            ->get();
+    }
+
 
     public function show($job)
     {

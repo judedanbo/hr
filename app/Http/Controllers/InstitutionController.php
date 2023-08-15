@@ -41,6 +41,13 @@ class InstitutionController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return Institution::select(['id as value', 'name as label'])
+            ->get();
+    }
+
+
     public function department($institution)
     {
         $institution = Institution::query()

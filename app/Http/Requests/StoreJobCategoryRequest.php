@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreJobRequest extends FormRequest
+class StoreJobCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,13 @@ class StoreJobRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:100',
+            'short_name' => 'string|max:10|unique:job_categories,id|nullable',
+            'level' => 'required|integer:between:1,100',
+            'job_category_id' => 'nullable|integer|exists:job_categories,id',
+            'description' => 'nullable|string',
             'institution_id' => 'required|integer|exists:institutions,id',
-            'job_category_id' => 'integer|exists:job_categories,id|nullable',
-            'start_date' => 'date|before_or_equal:today|after_or_equal:2000-01-01|nullable',
-            'end_date' => 'date|after_or_equal:start_date|nullable',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
         ];
     }
 }

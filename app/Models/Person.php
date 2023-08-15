@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\Gender;
-use App\Enums\MaritalStatus;
+use App\Enums\GenderEnum;
+use App\Enums\MaritalStatusEnum;
 use App\Enums\Nationality;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,9 +33,9 @@ class Person extends Model
     ];
 
     protected $casts = [
-        'gender' => Gender::class,
+        'gender' => GenderEnum::class,
         'date_of_birth' => 'date',
-        'marital_status' => MaritalStatus::class,
+        'marital_status' => MaritalStatusEnum::class,
         'nationality' => Nationality::class,
     ];
 

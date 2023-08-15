@@ -11,7 +11,6 @@ defineProps({
   address: Object,
   contacts: Array,
   person: Number,
-  contact_types: Array,
 });
 
 
@@ -173,7 +172,7 @@ let getAge = (dateString) => {
       <AddAddress @formSubmitted="toggleAddressModal()"  :person="person" />
     </Modal>
     <Modal @close="toggleContactModal()" :show="openContactModal">
-      <AddContact @formSubmitted="toggleContactModal()" :contact_types="contact_types"  :person="person" />
+      <AddContact @formSubmitted="toggleContactModal()" :person="person" />
     </Modal>
   </main>
 </template>

@@ -1,7 +1,7 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
+import {ref, onMounted } from 'vue'
 const emit = defineEmits(["formSubmitted"]);
-
 
 import {
     format,
@@ -9,11 +9,17 @@ import {
     subYears,
 } from "date-fns";
 
+
+
 let props = defineProps({
-  qualifications: Array,
   person: Number,
-  contact_types: Array,
 })
+
+const contact_types = ref([]);  
+onMounted(async () => {
+  const { data } = await axios.get(route("contact-type.index"));
+  contact_types.value = data;
+});
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
@@ -47,6 +53,7 @@ const submitHandler = (data, node) => {
             name="contact_type"
             id="contact_type"
             label="Contact Type"
+            placeholder="Select contact type"
             :options="contact_types"
             validation="required|integer|min:1|max:6"
             validation-visibility="submit"

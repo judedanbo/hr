@@ -1,9 +1,10 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
+import { onBeforeMount, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
 defineProps({
-  jobs: Array,
+  // jobs: Array,
   types: Array,
   institution: Object,
 })
@@ -14,11 +15,26 @@ import {
   subYears,
 } from "date-fns";
 
+let jobs = ref([]);
+let categories = ref([]);
+
+
+onBeforeMount(async() => {
+  const response = await axios.get(route("job.create"));
+  jobs.value = response.data;
+
+  const response2 = await axios.get(route("job-category.create"));
+  categories.value = response2.data;
+  console.log(categories.value);
+
+})
+
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
+  console.log(data);
     Inertia.post(route("job.store"),
     data, {
         preserveScroll: true,
@@ -66,11 +82,12 @@ const submitHandler = (data, node) => {
      
       <FormKit
         type="select"
-        name="job_id"
-        id="job_id"
-        validation="integer|min:1|max:30"
+        name="job_category_id"
+        id="job_category_id"
+        validation="number|min:1|max:30"
         label="Previous job"
-        :options="jobs"
+        placeholder="Select a category"
+        :options="categories"
         error-visibility="submit"
       />
       

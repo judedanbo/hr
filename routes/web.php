@@ -1,9 +1,15 @@
 <?php
 
+use App\Enums\Nationality;
+use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
+use App\Http\Controllers\GenderController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
+use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\MaritalStatusController;
+use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
@@ -11,8 +17,10 @@ use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
+use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
+use App\Models\JobCategory;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +54,7 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
+    Route::get('/institution/create', 'create')->name('institution.create');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
     Route::post('/institution', 'store')->name('institution.store');
     Route::patch('/institution/{institution}', 'update')->name('institution.update');
@@ -84,8 +93,18 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
     Route::delete('/dependent/{dependent}', 'destroy')->name('dependent.delete');
 });
 
+Route::controller(JobCategoryController::class)->middleware(['auth'])->group(function () {
+    Route::get('/job-category', 'index')->name('job-category.index');
+    Route::get('/job-category/create', 'create')->name('job-category.create');
+    Route::post('/job-category', 'store')->name('job-category.store');
+    Route::get('/job-category/{jobCategory}', 'show')->name('job-category.show');
+    Route::patch('/job-category/{jobCategory}', 'update')->name('job-category.update');
+    Route::delete('/job-category/{jobCategory}', 'delete')->name('job-category.delete');
+});
+
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
+    Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
     Route::post('/rank', 'store')->name('job.store');
 });
@@ -121,3 +140,10 @@ Route::controller(QualificationController::class)->middleware(['auth'])->group(f
     Route::get('/qualification', 'index')->name('qualification.index');
     Route::post('/qualification', 'store')->name('qualification.store');
 });
+
+Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth'])->name('contact-type.index');
+
+Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middleware(['auth'])->name('marital-status.index');
+Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])->name('gender.index');
+
+Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');

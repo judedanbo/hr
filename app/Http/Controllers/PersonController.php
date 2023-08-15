@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ContactType as EnumsContactType;
+use App\Enums\ContactTypeEnum;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -82,7 +82,7 @@ class PersonController extends Controller
                 // 'ssn' => $person->social_security_number,
                 'initials' => $person->initials,
             ],
-            'contact_types' => EnumsContactType::cases(),
+            'contact_types' => ContactTypeEnum::cases(),
             'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
@@ -105,7 +105,7 @@ class PersonController extends Controller
     public function addContact(Request $request, Person $person)
     {
         $attribute = $request->validate([
-            'contact_type' => [new Enum(EnumsContactType::class)],
+            'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:30',
         ]);
 

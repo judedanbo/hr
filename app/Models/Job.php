@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\JobCategory;
 
 class Job extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'institution_id', 'previous_rank_id'];
+    protected $fillable = ['name', 'institution_id', 'job_category_id'];
 
     /**
      * Get the institution that owns the Job
@@ -32,5 +33,21 @@ class Job extends Model
             'end_date',
             'remarks'
         );
+    }
+
+    /**
+     * Get the previousRank associated with the Job
+     */
+    public function previousRank(): BelongsTo
+    {
+        return $this->belongsTo(Rank::class, 'previous_rank_id');
+    }
+
+    /**
+     * Get the job category associated with the Job
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(JobCategory::class, 'job_category_id', 'id');
     }
 }

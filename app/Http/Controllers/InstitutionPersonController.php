@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePersonRequest;
-use App\Enums\ContactType;
+use App\Enums\ContactTypeEnum;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
@@ -142,18 +142,6 @@ class InstitutionPersonController extends Controller
      */
     public function show($staff)
     {
-        $contact_types = [];
-        $first  = new \stdClass();
-        $first->value = null;
-        $first->label = 'Select contact type';
-        array_push($contact_types, $first);
-        foreach (ContactType::cases() as $type) {
-            $temp = new \stdClass();
-            $temp->value = $type->value;
-            $temp->label = $type->name;
-            array_push($contact_types, $temp);
-        }
-
         $staff = InstitutionPerson::query()
             ->with(
                 [
@@ -180,12 +168,12 @@ class InstitutionPersonController extends Controller
                 'id' => $staff->person->id,
                 'name' => $staff->person->full_name,
                 'dob' => $staff->person->date_of_birth,
-                'gender' => $staff->person->gender?->name,
+                'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
                 'nationality' => $staff->person->nationality?->name,
                 'religion' => $staff->person->religion,
-                'marital_status' => $staff->person->marital_status?->name,
+                'marital_status' => $staff->person->marital_status?->label(),
                 'image' => $staff->person->image,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
@@ -204,10 +192,9 @@ class InstitutionPersonController extends Controller
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
-                'contact_type' => $contact->contact_type->name,
+                'contact_type' => $contact->contact_type->label(),
                 'valid_end' => $contact->valid_end,
             ]) : null,
-            'contact_types' => $contact_types,
             'all_ranks' => Job::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
             'all_units' => Unit::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
 

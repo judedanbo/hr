@@ -137,6 +137,9 @@ const showingNavigationDropdown = ref(false);
                     <BreezeResponsiveNavLink :href="route('job.index')" :active="route().current('job.index')">
                         Ranks
                     </BreezeResponsiveNavLink>
+                    <BreezeResponsiveNavLink :href="route('job.index')" :active="route().current('job-category.index')">
+                        Ranks Categories
+                    </BreezeResponsiveNavLink>
                     <BreezeResponsiveNavLink :href="route('unit.index')" :active="route().current('unit.index')">
                         Departments
                     </BreezeResponsiveNavLink>
@@ -170,7 +173,7 @@ const showingNavigationDropdown = ref(false);
             <AppMenu class="md:flex w-1/6" />
 
             <!-- Page Content -->
-            <main class="bg-green-50 mx-auto w-full md:w-5/6">
+            <main class="bg-green-50 mx-auto max-w-xl">
                 <slot />
             </main>
         </section>

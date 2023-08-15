@@ -14,6 +14,8 @@ import BreezeButton from "@/Components/Button.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/Modal.vue";
 import AddRank from "./partials/Add.vue";
+import InfoCard from "@/Components/InfoCard.vue";
+
 
 let openAddDialog = ref(false);
 
@@ -24,17 +26,6 @@ let props = defineProps({
   filters: Object,
 });
 
-let previousJobs = ref([{
-    value: null,
-    label: "Select previous Rank",
-}])
-props.jobs.data.map((job) => {
-    previousJobs.value.push( {
-        value: job.id,
-        label: job.name,
-    });
-    }
-);
 
 let BreadCrumpLinks = [
   {
@@ -70,6 +61,7 @@ watch(
             class="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 lg:grid-cols-4"
           ></div>
           <BreadCrumpVue :links="BreadCrumpLinks" />
+          <h2 class="text-3xl text-gray-900 dark:text-gray-50 mt-4">Ranks/Grades</h2>
           <div class="sm:flex items-center justify-between my-2">
             <FormKit
               v-model="search"
@@ -78,6 +70,7 @@ watch(
               placeholder="Search ranks..."
               autofocus
             />
+            <InfoCard title="Ranks" :value="jobs.total" />
             <BreezeButton @click="toggle()">Add New</BreezeButton>
           </div>
 
@@ -98,7 +91,20 @@ watch(
                           scope="col"
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-100 "
                         >
-                          Name
+                          Grade
+                        </th>
+
+                        <th
+                          scope="col"
+                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
+                        >
+                          Harmonized Grade
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
+                        >
+                          Grade Category
                         </th>
 
                         <th
@@ -119,7 +125,7 @@ watch(
                         :key="job.id"
                         class="transition-all hover:bg-gray-100 hover:shadow-lg dark:bg-gray-500 dark:hover:bg-gray-700"
                       >
-                        <td class="px-6 py-2 whitespace-nowrap">
+                        <td class="px-6 py-4 whitespace-nowrap">
                           <div class="flex items-center">
                             <div
                               class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
@@ -129,8 +135,8 @@ watch(
                               <div class="text-sm font-medium text-gray-900 dark:text-gray-50">
                                 {{ job.name }}
                                 {{
-                                  job.abbreviation
-                                    ? "(" + job.abbreviation + ")"
+                                  job.short_name
+                                    ? "(" + job.short_name + ")"
                                     : ""
                                 }}
                               </div>
@@ -139,6 +145,20 @@ watch(
                           </div>
                         </td>
 
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm text-gray-900 dark:text-gray-50">
+                            {{ job.category.name }} {{
+                          job.category.short_name
+                            ? "(" + job.category.short_name + ")"
+                            : ""
+                        }}
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm text-gray-900 dark:text-gray-50 text-center">
+                            {{ job.category.level }}
+                          </div>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="text-sm text-gray-900 dark:text-gray-50 text-center">
                             {{ job.staff.toLocaleString() }}
@@ -171,7 +191,7 @@ watch(
       </div>
     </div>
     <Modal @close="toggle()" :show="openAddDialog">
-        <AddRank @formSubmitted="toggle()" :jobs="previousJobs" />
+        <AddRank @formSubmitted="toggle()"/>
     </Modal>
   </MainLayout>
 </template>

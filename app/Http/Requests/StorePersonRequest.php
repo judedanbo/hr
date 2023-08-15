@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Gender;
-use App\Enums\MaritalStatus;
+use App\Enums\GenderEnum;
+use App\Enums\MaritalStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -38,8 +38,8 @@ class StorePersonRequest extends FormRequest
                 'before:' . Carbon::now()->subYears(18)->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(100)->format('Y-m-d'),
             ],
-            'personalInformation.gender' => ['required', new Enum(Gender::class)],
-            'personalInformation.marital_status' => ['required', new Enum(MaritalStatus::class)],
+            'personalInformation.gender' => ['required', new Enum(GenderEnum::class)],
+            'personalInformation.marital_status' => ['required', new Enum(MaritalStatusEnum::class)],
             'contactInformation.contact_type' => 'required|integer',
             'contactInformation.contact' => 'required|string|max:100|unique:contacts,contact',
             'employmentInformation.staff_number' => 'required|string|max:10|unique:institution_person,staff_number|different:employmentInformation.file_number',

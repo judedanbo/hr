@@ -28,6 +28,7 @@ const navigation = [
     { name: 'Staff', href: route('staff.index'), icon: UsersIcon, current: false },
     { name: 'Departments', href: route('unit.index'), icon: FolderIcon, current: false },
     { name: 'Ranks', href: route('job.index'), icon: CalendarIcon, current: false },
+    { name: 'Ranks Categories', href: route('job-category.index'), icon: CalendarIcon, current: false },
     { name: 'Next Promotions', href: route('promotion.batch.show', { year: format(new Date(),'yyyy'), }), icon: DocumentDuplicateIcon, current: false },
     { name: 'Past Promotions', href: route('promotion.index'), icon: DocumentDuplicateIcon, current: false },
     { name: 'Reports', href: route('report.index'), icon: ChartPieIcon, current: false },
@@ -84,7 +85,7 @@ const sidebarOpen = ref(false)
         </TransitionRoot>
 
         <!-- Static sidebar for desktop -->
-        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col ">
             <!-- Sidebar component, swap this element with another sidebar if you like -->
             <div
                 class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 dark:border-gray-900 dark:bg-gray-800">
@@ -101,7 +102,7 @@ const sidebarOpen = ref(false)
         <div class="lg:pl-72">
             <div
                 class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 dark:bg-gray-800 dark:border-gray-700">
-                <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" @click="sidebarOpen = true">
+                <button type="button" class="-m-2.5 p-2.5 text-gray-700 dark:text-gray-50 lg:hidden" @click="sidebarOpen = true">
                     <span class="sr-only">Open sidebar</span>
                     <Bars3Icon class="h-6 w-6" aria-hidden="true" />
                 </button>
