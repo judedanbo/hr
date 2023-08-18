@@ -7,7 +7,7 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import PersonContacts from "./PersonContacts.vue";
 import PersonAddresses from "./PersonAddresses.vue";
 import PageHeader from '@/Components/PageHeader.vue'
-
+import Avatar from './partials/Avatar.vue'
 const formattedDob = (dateString) => {
     const date = new Date(dateString);
     return format(date, "dd MMMM, yyyy");
@@ -50,7 +50,8 @@ let BreadcrumbLinks = [
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-10 bg-white border-b border-gray-200 md:flex justify-around">
                         <div class="flex flex-col md:flex-row items-center">
-                            <div class="w-48 h-48 rounded-full bg-gray-400 flex justify-center items-center">
+                            <Avatar v-if="person.image" class="w-48 h-48" :initials="person.initials" :image="person.image" :person_id="person.id"/>
+                            <div v-else class="w-48 h-48 rounded-full bg-gray-400 flex justify-center items-center">
                                 <h1 class="text-white font-semibold text-6xl tracking-widest">
                                     {{ person.initials }}
                                 </h1>

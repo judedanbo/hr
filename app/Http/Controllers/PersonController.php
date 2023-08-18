@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ContactTypeEnum;
+use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Person;
+use Exception;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules\Enum;
@@ -41,6 +43,7 @@ class PersonController extends Controller
                     'dob' => $person->date_of_birth,
                     'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
+                    'image' => $person->image,
                     // 'number' => Person::count()
                     'institution' => $person->institution ? [
                         'id' => $person->institution->first()?->id,
@@ -62,6 +65,28 @@ class PersonController extends Controller
         ]);
     }
 
+    function store(UpdatePersonRequest $request)
+    {
+        // return $request->validated();
+        if (!$request->hasFile('image')) {
+            return response()->json(['error', 'There is no file attached', 400]);
+        }
+        // return $request->file('image')->hashName(); //->image();
+        try {
+            $path =  $request->file('image')->store('public/images');
+            // return Person::create($request->validated());
+            if (!$path) {
+                return response()->json(['error', 'the file could not be saved', 500]);
+            }
+            $person =  $request->validated();
+            $person['image'] = $request->file('image')->hashName();
+            $newPerson  = Person::create($person);
+        } catch (Exception $e) {
+            return response()->json(['error', "failed to add Person with message " . $e->getMessage(), 500]);
+        }
+        return redirect()->route('person.show', $newPerson->id)->with('success', 'Person records created');
+    }
+
     /**
      * Display the specified resource.
      *
@@ -74,15 +99,19 @@ class PersonController extends Controller
             $query->where('valid_end', null);
         }, 'contacts', 'dependent'])->whereId($person)->first();
         // return $person;
-        return Inertia::render('Person/Show', [
+        return Inertia::render('Person/NewShow', [
             'person' => [
                 'id' => $person->id,
                 'name' => $person->full_name,
                 'dob' => $person->date_of_birth,
                 // 'ssn' => $person->social_security_number,
+                'image' => $person->image,
+                'gender' => $person->gender->label(),
+                'marital_status' => $person->marital_status->label(),
+                'nationality' => $person->nationality->nationality(),
+                'religion' => $person->religion,
                 'initials' => $person->initials,
             ],
-            'contact_types' => ContactTypeEnum::cases(),
             'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
@@ -138,6 +167,8 @@ class PersonController extends Controller
 
         return redirect()->back();
     }
+
+
 
     public function deleteAddress(Person $person, $address)
     {

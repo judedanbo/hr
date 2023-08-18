@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\CountryEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
-use App\Enums\Nationality;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Person extends Model
@@ -26,9 +28,9 @@ class Person extends Model
         'gender',
         'marital_status',
         'nationality',
-        'social_security_number',
-        'national_id_number',
         'image',
+        'ethnicity',
+        'religion',
         'about',
     ];
 
@@ -36,11 +38,11 @@ class Person extends Model
         'gender' => GenderEnum::class,
         'date_of_birth' => 'date',
         'marital_status' => MaritalStatusEnum::class,
-        'nationality' => Nationality::class,
+        'nationality' => CountryEnum::class,
     ];
 
     /// get full name of person
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
         return ucwords(strtolower("{$this->title} {$this->first_name} {$this->other_names} {$this->surname}"));
     }
@@ -50,17 +52,17 @@ class Person extends Model
         return $query->orderBy('date_of_birth');
     }
 
-    public function getInitialsAttribute()
+    public function getInitialsAttribute(): string
     {
         return strtoupper(substr($this->first_name, 0, 1) . substr($this->surname, 0, 1));
     }
 
-    public function getAgeAttribute()
+    public function getAgeAttribute(): int
     {
         return $this->date_of_birth->diffInYears(new Carbon());
     }
 
-    public function getNumberAttribute()
+    public function getNumberAttribute(): int
     {
         return Person::count();
     }
@@ -82,13 +84,31 @@ class Person extends Model
             )
             ->as('staff');
     }
+    /**
+     * The units that belong to the Person
+     */
+    public function retired(): BelongsToMany
+    {
+        return $this->belongsToMany(Institution::class)
+            ->using(InstitutionPerson::class)
+            // ->where
+            ->withPivot(
+                'file_number',
+                'staff_number',
+                'old_staff_number',
+                'hire_date',
+                'end_date',
+                'id'
+            )
+            ->as('staff');
+    }
 
     /**
      * Get the dependent associated with the Person
      */
-    public function dependent(): HasOne
+    public function dependent(): BelongsTo
     {
-        return $this->hasOne(Dependent::class);
+        return $this->belongsTo(Dependent::class);
     }
 
     /**
@@ -102,7 +122,7 @@ class Person extends Model
     /**
      * Get all all persons's address
      */
-    public function address()
+    public function address(): MorphMany
     {
         return $this->morphMany(Address::class, 'addressable');
     }
@@ -115,5 +135,10 @@ class Person extends Model
     public function qualifications(): HasMany
     {
         return $this->hasMany(Qualification::class);
+    }
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class);
     }
 }

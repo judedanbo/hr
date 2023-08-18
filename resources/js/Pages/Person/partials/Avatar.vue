@@ -1,15 +1,19 @@
 <script setup>
-defineProps({
+import axios from 'axios';
+import { onMounted, ref } from 'vue'
+const props = defineProps({
   initials: String,
-  imageUrl: String,
+  image: String,
 });
+
 </script>
 
 <template>
-  <div>
-    <img v-if="imageUrl"
-      class="h-12 w-12 flex-none rounded-full bg-gray-50"
-      :src="imageUrl"
+  <div >
+   <!-- <pre>{{ person }}</pre> -->
+    <img v-if="image"
+      class="flex-none rounded-full bg-gray-50"
+      :src="'/storage/images/'+image"
       alt=""
     />
     <div v-else

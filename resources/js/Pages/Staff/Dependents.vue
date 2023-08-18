@@ -5,7 +5,7 @@ import { useToggle } from "@vueuse/core";
 import AddDependant from './partials/AddDependant.vue'
 
 defineProps({
-  dependents: Array,
+  staff: Object,
 });
 
 let showAddDependantForm = ref(false)
@@ -37,7 +37,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
         </div>
 
         <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
-          <table v-if="dependents.length > 0" class="min-w-full">
+          <table v-if="staff.dependents.length > 0" class="min-w-full">
             <colgroup>
               <col class="w-full" />
               <col class="sm:w-1/6" />
@@ -64,7 +64,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
             </thead>
             <tbody>
               <tr
-                v-for="dependent in dependents"
+                v-for="dependent in staff.dependents"
                 :key="dependent.id"
                 class="border-b border-gray-200"
               >
@@ -94,7 +94,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
       </dl>
     </div>
     <Modal @close="toggleAddDependantFrom()" :show="showAddDependantForm" >
-      <AddDependant />
+      <AddDependant :staff_id="staff.staff_id"/>
     </Modal>
   </main>
 </template>

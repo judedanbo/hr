@@ -2,12 +2,7 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import {  formatDistance } from "date-fns";
-import StaffDates from "./StaffDates.vue";
 import Summary from "@/Pages/Person/Summary.vue";
-import PromotionHistory from "./PromotionHistory.vue";
-import TransferHistory from "./TransferHistory.vue";
-import Qualifications from "./Qualifications.vue";
-import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
@@ -28,14 +23,9 @@ let getAge = (dateString) => {
 
 let props = defineProps({
   person: Object,
-  staff: Object,
-  contact_types: Array,
   address: Object,
   contacts: Array,
   filters: Object,
-  all_ranks: Array,
-  all_units: Array,
-  qualifications: Array,
 });
 
 let BreadcrumbLinks = [
@@ -43,25 +33,6 @@ let BreadcrumbLinks = [
   { name: props.person.name, url: "/" },
 ];
 
-let availableJobs = ref([
-  {
-    value: null,
-    label: "Select Rank",
-  },
-]);
-
-props.all_ranks.map((job) => {
-  availableJobs.value.push(job);
-});
-let availableUnits = ref([
-  {
-    value: null,
-    label: "Select Department/Branch/Section/Unit",
-  },
-]);
-props.all_units.map((unit) => {
-  availableUnits.value.push(unit);
-});
 </script>
 <template>
   <Head :title="person.name" />
@@ -105,24 +76,13 @@ props.all_units.map((unit) => {
           >
             <div class="flex items-center gap-x-6">
               <Avatar v-if="person.image" :initials="person.initials" :image="person.image" class="w-24 h-24"/>
-              <div
+              <div v-else
                 class="flex justify-center items-center h-24 w-24 flex-none rounded-lg ring-1 ring-green-400/60 dark:ring-gray-400 text-5xl text-green-400/50 dark:text-gray-300 font-bold tracking-wide"
               >
                 {{ person.initials }}
               </div>
               <h1>
-                <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-                  File Number
-                  <span class="text-gray-700 dark:text-gray-100">{{
-                    staff.file_number
-                  }}</span>
-                </div>
-                <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-                  Staff Number
-                  <span class="text-gray-700 dark:text-gray-100">{{
-                    staff.staff_number
-                  }}</span>
-                </div>
+                
                 <div
                   class="mt-1 text-base font-semibold leading-6 text-gray-900 dark:text-white"
                 >
@@ -131,19 +91,6 @@ props.all_units.map((unit) => {
               </h1>
             </div>
             <div class="flex items-center gap-x-4 sm:gap-x-6">
-              <button
-                @click="togglePromotionForm()"
-                type="button"
-                class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-              >
-                Promote
-              </button>
-              <button
-                @click="toggleTransferForm()"
-                type="button"
-                class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-                >Transfer</button
-              >
               <button
                 
                 class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
@@ -207,41 +154,16 @@ props.all_units.map((unit) => {
             <!-- Employment summary -->
             <Summary class="" :person="person" />
             <!-- Contact information -->
-            <Address :address="address" :contacts="contacts" :contact_types="contact_types" :person="person.id" />
-            <Dependents :staff="staff" />
+            <Address :address="address" :contacts="contacts" :person="person.id" />
+            <!-- <Dependents :staff="staff" /> -->
           </div>
 
           <div
             class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"
           >
-            <StaffDates class="w-full" :staff="staff" />
-            <!-- Qualifications -->
-            <Qualifications
-              class="w-full"
-              :qualifications="qualifications"
-              :person="person.id"
-            />
-            <!-- Employment History -->
-            <PromotionHistory
-            @close-form="togglePromotionForm()"
-            :promotions="staff.ranks"
-            :ranks="availableJobs"
-            :staff="staff.staff_id"
-            :showPromotionForm="showPromotionForm"
-            class="w-full md:flex-1"
-            />
-            <!-- Posting History -->
-            <TransferHistory
-            @close-form="toggleTransferForm()"
-            :transfers="staff.units"
-            :units="availableUnits"
-            :staff="staff.staff_id"
-            :showTransferForm="showTransferForm"
-            class="w-full md:flex-1 flex-1"
-            />
-            
-          </div>
+           
         </div>
+      </div>
       </div>
     </main>
   </MainLayout>

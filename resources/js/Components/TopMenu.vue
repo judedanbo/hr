@@ -23,7 +23,7 @@ defineProps({
         <div class="flex items-center gap-x-4 lg:gap-x-6">
             <button type="button"
                 class="-m-2.5 p-2.5 text-gray-700 hover:text-gray-500 dark:text-gray-50 dark:hover:text-gray-200">
-                <span class="sr-only">Toggle Dark Light</span>
+                <span class="sr-only">Toggle Dark /Light mode</span>
                 <SunIcon @click="toggleDark()" v-if="isDark" class="h-6 w-6" aria-hidden="true" />
                 <MoonIcon @click="toggleDark()" v-else class="h-6 w-6" aria-hidden="true" />
             </button>

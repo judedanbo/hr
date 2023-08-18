@@ -2,27 +2,46 @@
 import { Inertia } from "@inertiajs/inertia";
 import PersonalInformationForm from '@/Pages/Person/partials/PersonalInformationForm.vue'
 import ImageUpload from '@/Pages/Person/partials/ImageUpload.vue'
+import NewDependentForm from '@/Pages/Dependent/partials/NewDependentForm.vue'
+import axios from "axios";
 
 const emit = defineEmits(["formSubmitted"]);
+defineProps({
+  staff_id: {
+    type: Number,
+    required: true,
+  },
+});
 
 
-const submitHandler = (data, node) => {
-  Inertia.post(route("staff.store"), data.staffData, {
+const submitHandler = async (data, node) => {
+  // console.log(data.staffData.personalInformation)
+  // const fd = new FormData()  
+  const profileImage = data.staffData.image.image[0].file
+  // console.log(data.staffData.personalInformation)
+  data.staffData.personalInformation.image = profileImage
+  // fd.append('image', profileImage)
+
+
+  // console.log(data.staffData.personalInformation)
+  // const person = await axios.post(route('person.store'), data.staffData.personalInformation)
+
+  // console.log(person)
+  Inertia.post(route("person.store"), data.staffData.personalInformation, {
     preserveState: true,
-    onSuccess: () => {
+    onSuccess: (message) => {
+      console.log('Success');
+      console.log(message);
       node.reset();
       emit("formSubmitted");
     },
     onError: (errors) => {
       node.setErrors(['there are errors'],
       { 
-        'staffData.contactInformation.contact': 'contact required',
-        "staffData.employmentInformation.staff_number": "staff number required",
+        errors
+        //'staffData.personalInformation.contact': 'contact required',
       }
       );
-      errors.forEach(element => {
-        
-      });
     },
   });
 };
@@ -34,14 +53,13 @@ const submitHandler = (data, node) => {
       type="form"
       name="addStaffForm"
       id="addStaffForm"
-      value="formData"
       @submit="submitHandler"
       submit-label="Add Staff"
       #default="{ value }"
       :actions="false"
       wrapper-class="mx-auto"
     >
-      <!-- <Staff :steps="stepNames" /> -->
+      <!-- <Staff :steps="staff" /> -->
   
       <FormKit
         type="multi-step"
@@ -58,23 +76,10 @@ const submitHandler = (data, node) => {
          <ImageUpload/>
         </FormKit>
         <FormKit type="step" name="relation">
-          <!-- <FormKit
-            type="select"
-            name="contact_type"
-            id="contact_type"
-            label="Contact type"
-            placeholder="Select one"
-            validation="required"
-            :options="contact_types"
-          />
-          <FormKit
-            type="text"
-            name="contact"
-            id="contact"
-            label="Contact"
-            placeholder="Contact"
-            validation="required|length:2,50"
-          /> -->
+          <NewDependentForm :staff_id="staff_id"/>
+          <template #stepNext>
+            <FormKit type="submit" label="Add Dependent" />
+          </template>
         </FormKit>
        
       </FormKit>

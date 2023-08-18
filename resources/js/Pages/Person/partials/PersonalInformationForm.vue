@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted} from 'vue'
+import { format, subYears } from 'date-fns';
 
 const contact_types = ref([]);  
 const gender = ref([]);  
@@ -68,13 +69,12 @@ onMounted(async () => {
       type="date"
       name="date_of_birth"
       id="date_of_birth"
-     
-      min="1923-01-01"
-      max="2006-01-01"
+      :min="format(subYears(new Date(), 130), 'yyyy-MM-dd')"
+      :max="format(new Date(), 'yyyy-MM-dd')"
       label="date of birth"
-      validation="required|date_after:1923-01-01|date_before:2005-01-01"
+      :validation="'required|date_after:' + format(subYears(new Date(), 130), 'yyyy-MM-dd') + '|date_before:'+ format(new Date(), 'yyyy-MM-dd')"
       validation-visibility="submit"
-      outer-class="md:w-1/3 lg:w-1/4"
+      outer-class="md:w-1/3 lg:w-1/3"
     />
 
     <FormKit
@@ -85,7 +85,7 @@ onMounted(async () => {
       validation="required"
       placeholder="Select one"
       :options="gender"
-      outer-class="md:w-1/4 lg:w-1/3"
+      outer-class="md:w-1/4 lg:w-1/4"
     />
     <FormKit
       name="nationality"

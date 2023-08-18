@@ -1,0 +1,53 @@
+<script setup>
+import axios from "axios";
+import { Link } from "@inertiajs/inertia-vue3";
+import { onMounted, ref } from "vue";
+let props = defineProps({
+  person: Number,
+});
+let roles = ref(null);
+onMounted(async () => {
+  roles.value = await axios.get(route("person-roles.show", props.person));
+  console.log(roles.value.data);
+});
+</script>
+<template>
+  <div v-if="roles">
+    <span
+      v-if="roles.data.staff"
+      class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700"
+    >
+      <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+      <circle cx="3" cy="3" r="3" />
+    </svg>
+      Active staff
+    </span>
+    
+    <span
+      v-if="roles.data.user"
+      class="inline-flex items-center gap-x-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700"
+    >
+      <svg
+        class="h-1.5 w-1.5 fill-red-500"
+        viewBox="0 0 6 6"
+        aria-hidden="true"
+      >
+        <circle cx="3" cy="3" r="3" />
+      </svg>
+      User
+    </span>
+    <span
+      v-if="roles.data.dependent"
+      class="inline-flex items-center gap-x-1.5 rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700"
+    >
+      <svg
+        class="h-1.5 w-1.5 fill-purple-500"
+        viewBox="0 0 6 6"
+        aria-hidden="true"
+      >
+        <circle cx="3" cy="3" r="3" />
+      </svg>
+      Dependent
+    </span>
+  </div>
+</template>

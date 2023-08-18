@@ -10,7 +10,9 @@ use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\NationalityController;
+use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\PersonRolesController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PromotionExportController;
@@ -47,10 +49,14 @@ Route::get('/dashboard', function () {
 Route::controller(PersonController::class)->middleware(['auth'])->group(function () {
     Route::get('/person', 'index')->name('person.index');
     Route::get('/person/{person}', 'show')->name('person.show');
+    Route::post('/person', 'store')->name('person.store');
     Route::post('/person/{person}/contact', 'addContact')->name('person.contact.create');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
+    // Route::get('/person/avatar', 'avatar')->name('person.ava');
 });
+Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->name('person.avatar');
+Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
