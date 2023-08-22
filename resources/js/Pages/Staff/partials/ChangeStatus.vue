@@ -8,11 +8,12 @@ const props = defineProps({
   institution: Number,
 })
 
-let units = ref([]);
+let statuses = ref([]);
 
 onMounted(async () => {
-    const response = await axios.get(route("institution.unit-list", {institution: props.institution}));
-    units.value = response.data;
+    const response = await axios.get(route("institution.statuses", {institution: props.institution}));
+    statuses.value = response.data;
+    console.log(statuses.value);
 });
 
 
@@ -27,7 +28,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-    Inertia.post(route("staff.transfer", { staff: data.staff_id }),
+    Inertia.post(route("staff-status.save", { staff: data.staff_id }),
     data, {
         preserveScroll: true,
         onSuccess: () => {
@@ -44,17 +45,18 @@ const submitHandler = (data, node) => {
 
 <template>
   <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-    <h1 class="text-2xl pb-4 dark:text-gray-100">Transfer Staff</h1>
+    <h1 class="text-2xl pb-4 dark:text-gray-100">Change Status</h1>
     <FormKit @submit="submitHandler" type="form" submit-label="Save">
       <FormKit type="hidden" name="staff_id" :value="staff" />
+      <FormKit type="hidden" name="institution_id" :value="institution" />
       <FormKit
         type="select"
-        name="unit_id"
-        id="unit_id"
-        validation="required|integer|min:1|max:20"
-        label="New Location"
-        placeholder="Select new location"
-        :options="units"
+        name="status"
+        id="status"
+        validation="required|string"
+        label="Status"
+        placeholder="Select Status"
+        :options="statuses"
         error-visibility="submit"
       />
       <div class="sm:flex gap-4">
@@ -68,17 +70,28 @@ const submitHandler = (data, node) => {
           :max="start_date"
           label="Start date"
           :validation="
-            'required|date_after:' + end_date + '|date_before:' + start_date
+            'required|date|date_after:' + end_date + '|date_before:' + start_date
           "
+          validation-visibility="submit"
+          inner-class="w-1/2"
+        />
+        <FormKit
+          type="date"
+          name="end_date"
+          id="end_date"
+          :min="today"
+          label="End date"
+          :validation="
+            'date|date_after:' + today"
           validation-visibility="submit"
           inner-class="w-1/2"
         />
       </div>
       <FormKit
         type="text"
-        name="remarks"
-        id="remarks"
-        label="Remarks"
+        name="description"
+        id="description"
+        label="Description"
         validation="string|length:2,120"
         validation-visibility="submit" />
     </FormKit>

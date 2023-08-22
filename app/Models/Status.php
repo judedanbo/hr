@@ -2,21 +2,22 @@
 
 namespace App\Models;
 
-use App\Enums\EmployeeStatus;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use App\Models\Institution;
+use App\Enums\EmployeeStatusEnum;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Status extends Pivot
 {
     use SoftDeletes;
 
-    protected $fillable = ['staff_id', 'status', 'description', 'start_date', 'end_date'];
+    protected $fillable = ['staff_id', 'status', 'description', 'start_date', 'end_date', 'institution_id'];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'status' => EmployeeStatus::class,
+        'status' => EmployeeStatusEnum::class,
     ];
 
     /**
@@ -25,5 +26,10 @@ class Status extends Pivot
     public function staff(): BelongsTo
     {
         return $this->belongsTo(InstitutionPerson::class, 'staff_id', 'id');
+    }
+
+    public function institution(): BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
     }
 }

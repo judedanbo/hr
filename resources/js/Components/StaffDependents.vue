@@ -1,7 +1,7 @@
 <script setup>
 import { Link } from "@inertiajs/inertia-vue3";
 import DeleteDependentModal from "@/Components/DeleteDependentModal.vue";
-import AddDependentModal from "@/Components/AddDependentModal.vue";
+import AddDependentModal from "@/Pages/Staff/AddDependentModal.vue" 
 import { format, differenceInYears } from "date-fns";
 
 import { MagnifyingGlassIcon, UserPlusIcon } from "@heroicons/vue/24/outline";

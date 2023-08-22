@@ -13,8 +13,19 @@ class PersonRolesController extends Controller
             'institution',
             'dependent', 'user'
         ]);
-        // return $person->institution->status;
-        $staff =  $person->institution->count();
+        $staff = new \stdClass;
+        if ($person->institution->count() > 0) {
+            $staff = $person->institution->map(fn ($inst) => [
+
+                'institution_id' => $inst->id,
+                'institution_name' => $inst->name,
+                'status_id' => $inst->staff->statuses->first()->id,
+                'status' => $inst->staff->statuses->first()->status->label(),
+            ]);
+        }
+        // $person->institution->first()?->staff->statuses->map(fn ($status) => [
+        // ]);
+        // $staff =  $person->institution->count();
         $dependent = $person->dependent ? true : false;
         $user = $person->user ? true : false;
 

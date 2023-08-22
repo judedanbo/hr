@@ -11,8 +11,8 @@ const emit = defineEmits(["closeForm"]);
 
 let props = defineProps({
   promotions: Array,
-  ranks: Array,
   staff: Number,
+  institution: Number,
   showPromotionForm: {
     type: Boolean,
     default: false,
@@ -78,7 +78,7 @@ let getAge = (dateString) => {
       <Promote
         @formSubmitted="togglePromoteModal()"
         :staff="staff"
-        :ranks="ranks"
+        :institution="institution"
       />
     </Modal>
   </main>

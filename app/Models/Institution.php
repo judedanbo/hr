@@ -39,6 +39,10 @@ class Institution extends Model
     {
         return $this->hasMany(Unit::class)->where('units.type', UnitType::Unit);
     }
+    public function allUnits(): HasMany
+    {
+        return $this->hasMany(Unit::class);
+    }
 
     /**
      * Get all of the staff for the Institution
@@ -54,5 +58,10 @@ class Institution extends Model
     public function ranks(): HasMany
     {
         return $this->hasMany(Job::class);
+    }
+
+    public function statuses(): HasMany
+    {
+        return $this->hasMany(Status::class);
     }
 }

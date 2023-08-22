@@ -1,7 +1,6 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
-import { Link } from "@inertiajs/inertia-vue3";
-import Transfer from "./partials/Transfer.vue";
+import { differenceInYears } from "date-fns";
+import ChangeStatus from "./partials/ChangeStatus.vue";
 import Modal from "@/Components/Modal.vue";
 import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
@@ -9,29 +8,22 @@ import { useToggle } from "@vueuse/core";
 const emit = defineEmits(["closeForm"]);
 
 let props = defineProps({
-  transfers: Array,
+  statuses: Array,
   staff: Number,
   institution: Number,
-  showTransferForm: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-let openTransferModal = ref(props.showTransferForm.value);
-let toggleTransferModal = () => {
-  openTransferModal.value = false;
-  emit("closeForm");
-};
+let openStatusModal = ref(false);
+const toggleStatusModal = useToggle(openStatusModal);
 
-watch(
-  () => props.showTransferForm,
-  (value) => {
-    if (value) {
-      openTransferModal.value = true;
-    }
-  }
-);
+// watch(
+//   () => props.showTransferForm,
+//   (value) => {
+//     if (value) {
+//       openStatusModal.value = true;
+//     }
+//   }
+// );
 const formattedDob = (dob) => {
   if (!dob) return "";
   return new Date(dob).toLocaleDateString("en-GB", {
@@ -49,29 +41,29 @@ let getAge = (dateString) => {
 <template>
   <!-- Transfer History -->
   <main>
-    <h2 class="sr-only">Transfer History</h2>
+    <h2 class="sr-only">Status History</h2>
     <div
-      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80"
+      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80  "
     >
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt
             class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
           >
-            Transfer History
+            Status History
           </dt>
         </div>
-        <div class="flex-none self-end px-6 pt-4">
+        <div class="flex-none self-end px-6 pt-4 ">
           <button
-            @click="toggleTransferModal()"
+            @click="toggleStatusModal()"
             class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
           >
-            {{ transfers.length > 0 ? "Transfer" : "First Posting" }}
+            {{  "Change" }}
           </button>
         </div>
 
-        <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
-          <table v-if="transfers.length > 0" class="min-w-full">
+        <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4 h-80 overflow-y-auto">
+          <table v-if="statuses.length > 0" class="min-w-full">
             <colgroup></colgroup>
             <thead
               class="border-b border-gray-300 text-gray-900 dark:text-gray-50"
@@ -81,7 +73,7 @@ let getAge = (dateString) => {
                   scope="col"
                   class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
                 >
-                  Position
+                  Status
                 </th>
                 <th
                   scope="col"
@@ -98,29 +90,27 @@ let getAge = (dateString) => {
                 <!-- <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pr-0">Duration</th> -->
               </tr>
             </thead>
-            <tbody>
+            <tbody >
               <tr
-                v-for="transfer in transfers"
-                :key="transfer.id"
+                v-for="status in statuses"
+                :key="status.id"
                 class="border-b border-gray-200"
               >
                 <td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
                   <div class="font-medium text-gray-900 dark:text-gray-50">
-                    {{ transfer.name }}
+                    {{ status.status }}
                   </div>
-                  <div class="mt-1 truncate text-gray-500 dark:text-gray-100">
-                    {{ transfer.remarks }}
-                  </div>
+                  
                 </td>
                 <td
                   class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
                 >
-                  {{ formattedDob(transfer.start_date) }}
+                  {{ formattedDob(status.start_date) }}
                 </td>
                 <td
                   class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
                 >
-                  {{ formattedDob(transfer.end_date) }}
+                  {{ formattedDob(status.end_date) }}
                 </td>
               </tr>
             </tbody>
@@ -129,17 +119,17 @@ let getAge = (dateString) => {
             v-else
             class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center"
           >
-            No transfers found.
+            No status found.
           </div>
         </div>
       </dl>
     </div>
-    <Modal @close="toggleTransferModal()" :show="openTransferModal">
-      <Transfer
-        @formSubmitted="toggleTransferModal()"
+    <Modal @close="toggleStatusModal()" :show="openStatusModal">
+      <ChangeStatus
+        @formSubmitted="toggleStatusModal()"
         :staff="staff"
         :institution="institution"
-        :transfers="transfers"
+        :statuses="statuses"
       />
     </Modal>
   </main>

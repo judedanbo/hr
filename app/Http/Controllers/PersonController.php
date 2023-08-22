@@ -48,7 +48,7 @@ class PersonController extends Controller
                     'institution' => $person->institution ? [
                         'id' => $person->institution->first()?->id,
                         'name' => $person->institution->first()?->name,
-                        'status' => $person->institution->first()?->staff->statuses->first()?->status->name,
+                        // 'status' => $person->institution->first()?->staff->statuses->first()?->status->name,
                         // $person->units->first()
                         // 'id' => $person->units->first()->id,
                         'staff_id' => $person->institution->first()?->staff->id,
@@ -108,7 +108,7 @@ class PersonController extends Controller
                 'image' => $person->image,
                 'gender' => $person->gender->label(),
                 'marital_status' => $person->marital_status->label(),
-                'nationality' => $person->nationality->nationality(),
+                'nationality' => $person->nationality?->nationality(),
                 'religion' => $person->religion,
                 'initials' => $person->initials,
             ],

@@ -2,7 +2,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
 import { Link } from "@inertiajs/inertia-vue3";
-
 const emit = defineEmits(["editItem", "deleteItem"]);
 
 const edit = (id) => {
@@ -27,7 +26,7 @@ defineProps({
       <div
         class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-50"
       >
-        {{ unit.name }}
+        <Link :href="route('unit.show', {unit:unit.id})">{{ unit.name }} </Link>
       </div>
       <Menu as="div" class="relative ml-auto">
         <MenuButton

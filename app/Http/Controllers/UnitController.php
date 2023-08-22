@@ -29,7 +29,12 @@ class UnitController extends Controller
             'units' => Unit::query()
                 ->departments()
                 ->with('institution')
-                ->withCount(['staff', 'subs'])
+                ->withCount(['staff' => function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->whereNull('end_date');
+                        $query->where('status', 'A');
+                    });
+                }, 'subs'])
                 // ->countSubs()
                 ->when(request()->institution, function ($query, $search) {
                     $query->where('institution_id', request()->institution);
@@ -79,38 +84,63 @@ class UnitController extends Controller
             // })
 
             ->with([
-                'institution', 'parent', 'subs',
-                'staff.person',
+                'institution', 'parent',
+                'staff' => function ($query) {
+                    $query->with(['person']);
+                    // $query->whereHas(['statuses', function ($query) {
+                    //     $query->whereNull('end_date');
+                    //     $query->where('status', 'A');
+                    // }]);
+                },
+                'subs' => function ($query) {
+                    $query->withCount(['staff', 'subs']);
+                }
             ])
-            ->when(request()->staff, function ($query, $search) {
-                $query->whereHas('staff', function ($q) use ($search) {
-                    $q->whereHas('person', function ($per) use ($search) {
-                        $terms = explode(' ', $search);
-                        foreach ($terms as $term) {
-                            $per->where('surname', 'like', "%{$search}%");
-                            $per->orWhere('first_name', 'like', "%{$term}%");
-                            $per->orWhere('other_names', 'like', "%{$term}%");
-                            $per->orWhere('date_of_birth', 'like', "%{$term}%");
-                            $per->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
-                        }
+            // ->when(request()->staff, function ($query, $search) {
+            //     $query->whereHas('staff', function ($q) use ($search) {
+            //         $q->whereHas('person', function ($per) use ($search) {
+            //             $terms = explode(' ', $search);
+            //             foreach ($terms as $term) {
+            //                 $per->where('surname', 'like', "%{$search}%");
+            //                 $per->orWhere('first_name', 'like', "%{$term}%");
+            //                 $per->orWhere('other_names', 'like', "%{$term}%");
+            //                 $per->orWhere('date_of_birth', 'like', "%{$term}%");
+            //                 $per->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
+            //             }
+            //         });
+            //     });
+            //     $query->withCount(['staff' => function ($q) use ($search) {
+            //         $q->withCount(['person' => function ($per) use ($search) {
+            //             $per->where('surname', 'like', "%{$search}%");
+            //             $per->orWhere('first_name', 'like', "%{$search}%");
+            //             $per->orWhere('other_names', 'like', "%{$search}%");
+            //             $per->orWhere('date_of_birth', 'like', "%{$search}%");
+            //             $per->orWhereRaw("monthname(date_of_birth) like '%{$search}%'");
+            //         }]);
+            //     }]);
+            // }, function ($query) {
+            //     $query->withCount([
+            //         'subs',
+            //         'staff' => function ($query) {
+            //             $query->whereHas('statuses', function ($hasQuery) {
+            //                 $hasQuery->whereNull('end_date');
+            //                 $hasQuery->where('status', 'A');
+            //             });
+            //         }
+            //     ]);
+            // })
+            ->withCount([
+                'subs',
+                'staff' => function ($query) {
+                    $query->whereHas('statuses', function ($hasQuery) {
+                        $hasQuery->whereNull('end_date');
+                        $hasQuery->where('status', 'A');
                     });
-                });
-                $query->withCount(['staff' => function ($q) use ($search) {
-                    $q->withCount(['person' => function ($per) use ($search) {
-                        $per->where('surname', 'like', "%{$search}%");
-                        $per->orWhere('first_name', 'like', "%{$search}%");
-                        $per->orWhere('other_names', 'like', "%{$search}%");
-                        $per->orWhere('date_of_birth', 'like', "%{$search}%");
-                        $per->orWhereRaw("monthname(date_of_birth) like '%{$search}%'");
-                    }]);
-                }]);
-            }, function ($query) {
-                $query->withCount('staff');
-            })
-
+                }
+            ])
             ->whereId($unit)
             ->first();
-        // return $unit;
+        // return $unit->subs;
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
@@ -153,13 +183,13 @@ class UnitController extends Controller
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,
                     'staff_count' => $sub->staff_count,
-                    'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
-                        'id' => $stf->id,
-                        'name' => $stf->full_name,
-                        'dob' => $stf->date_of_birth,
-                        'ssn' => $stf->social_security_number,
-                        'initials' => $stf->initials,
-                    ]) : null,
+                    // 'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
+                    //     'id' => $stf->id,
+                    //     'name' => $stf->full_name,
+                    //     'dob' => $stf->date_of_birth,
+                    //     'ssn' => $stf->social_security_number,
+                    //     'initials' => $stf->initials,
+                    // ]) : null,
                 ]) : null,
             ],
 

@@ -35,6 +35,7 @@ class InstitutionPersonController extends Controller
                 },
             ])
             ->whereHas('statuses', function ($query) {
+                $query->whereNull('end_date');
                 $query->where('status', 'A');
             })
             ->when(request()->search, function ($query, $search) {
@@ -69,7 +70,7 @@ class InstitutionPersonController extends Controller
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->name,
-                'status' => $staff->statuses->first()->status->name,
+                'status' => $staff->statuses->first()?->status->name,
                 'dob' => $staff->person->date_of_birth,
                 'current_rank' => $staff->ranks->count() ? [
                     'id' => $staff->ranks->first()->id,
@@ -127,6 +128,7 @@ class InstitutionPersonController extends Controller
             $staff->statuses()->create([
                 'status' => 'A',
                 'description' => 'Active',
+                'institution_id' => $institution->id,
                 'start_date' => Carbon::now(),
             ]);
         });
@@ -153,12 +155,13 @@ class InstitutionPersonController extends Controller
                     'units.institution',
                     'ranks',
                     'dependents.person',
+                    'statuses'
                 ]
             )
             ->whereHas('statuses', function ($query) {
+                $query->whereNull('end_date');
                 $query->where('status', 'A');
             })
-            ->active()
             ->whereId($staff)
             ->firstOrFail();
         // return $staff;
@@ -195,8 +198,6 @@ class InstitutionPersonController extends Controller
                 'contact_type' => $contact->contact_type->label(),
                 'valid_end' => $contact->valid_end,
             ]) : null,
-            'all_ranks' => Job::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
-            'all_units' => Unit::select(['id as value', 'name as label'])->where('institution_id', $staff->institution_id)->get(),
 
             'address' => $staff->person->address->count() > 0 ? [
                 'id' => $staff->person->address->first()->id,
@@ -210,6 +211,7 @@ class InstitutionPersonController extends Controller
             ] : null,
             'staff' => [
                 'staff_id' => $staff->id,
+                'institution_id' => $staff->institution_id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,
                 'old_staff_number' => $staff->old_staff_number,
@@ -239,12 +241,6 @@ class InstitutionPersonController extends Controller
                     'end_date' => $unit->pivot->end_date,
                     'distance' => $unit->pivot->start_date?->diffInYears(),
                 ]),
-                // ? [
-                //     'id' => $staff->unit->id,
-                //     'name' => $staff->unit->name,
-                //     'institution_id' => $staff->unit->institution->id,
-                //     'institution_name' => $staff->unit->institution->name,
-                // ] : null,
                 'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
@@ -256,6 +252,8 @@ class InstitutionPersonController extends Controller
             ],
         ]);
     }
+
+
 
     public function promote(Request $request, InstitutionPerson $staff)
     {
@@ -334,9 +332,12 @@ class InstitutionPersonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(InstitutionPerson $institutionPerson)
+    public function edit(InstitutionPerson $staff)
     {
-        //
+        $staff->load('person');
+        // InstitutionPerson::find($institutionPerson->id)->load('person');
+
+        return  $staff;
     }
 
     /**

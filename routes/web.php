@@ -1,11 +1,14 @@
 <?php
 
+use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
+use App\Http\Controllers\InstitutionRankController;
+use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
@@ -19,6 +22,7 @@ use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
+use App\Http\Controllers\StaffStatusController;
 use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -69,13 +73,41 @@ Route::controller(InstitutionController::class)->middleware(['auth'])->group(fun
     Route::get('/institution/{institution}/staff/{staff}', 'staff')->name('institution.staff');
     Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');
 });
+// InstitutionRankController::class;
+Route::get('/institution/{institution}/ranks', [InstitutionRankController::class, 'index'])->middleware(['auth'])->name('institution.job-list');
+
+Route::get('/institution/{institution}/units', function (Institution $institution) {
+    $institution->load('allUnits');
+    return $institution->allUnits->map(fn ($unit) => [
+        'value' => $unit->id,
+        'label' => $unit->name,
+    ]);
+})->middleware(['auth'])->name('institution.unit-list');
 // unit
+Route::get('/institution/{institution}/statuses', function (Institution $institution) {
+
+    // return $institution->statuses;
+    $statuses = null;
+    foreach (EmployeeStatusEnum::cases() as $county) {
+        $status = new \stdClass;
+        $status->value = $county->value;
+        $status->label = $county->label() . ' (' . $county->name . ')';
+        $statuses[] = $status;
+    }
+    return $statuses;
+})->name('institution.statuses');
+
 Route::controller(UnitController::class)->middleware(['auth'])->group(function () {
     Route::get('/unit', 'index')->name('unit.index');
     Route::post('/unit', 'store')->name('unit.store');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
     Route::delete('/unit/{unit}', 'delete')->name('unit.delete');
     Route::patch('/unit/{unit}', 'update')->name('unit.update');
+});
+
+Route::controller(InstitutionStatusController::class)->middleware(['auth'])->group(function () {
+    Route::get('/institution/{institution}/status', 'index')->name('institution-status.index');
+    Route::get('/institution/{institution}/status/{status}', 'show')->name('institution-status.show');
 });
 
 // staff
@@ -85,6 +117,7 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::post('/staff', 'store')->name('staff.store');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
     Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
+    Route::get('/staff/{staff}/edit', 'edit')->name('staff.edit');
     Route::get('/staff/{staff}/promotions', 'promotions')->name('staff.promotion-history');
     Route::post('/staff/{staff}/transfer', 'transfer')->name('staff.transfer');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
@@ -153,3 +186,5 @@ Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middle
 Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])->name('gender.index');
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
+
+Route::post('staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');

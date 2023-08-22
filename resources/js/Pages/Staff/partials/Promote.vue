@@ -1,10 +1,11 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
+import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
-defineProps({
-  ranks: Array,
+const props = defineProps({
   staff: Number,
+  institution: Number,
 })
 
 import {
@@ -16,6 +17,13 @@ import {
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 4), "yyyy-MM-dd");
+
+let ranks = ref([]);
+
+onMounted(async () => {
+    const response = await axios.get(route("institution.job-list", {institution: props.institution}));
+    ranks.value = response.data;
+});
 
 const submitHandler = (data, node) => {
     Inertia.post(route("staff.promote", { staff: data.staff_id }),
@@ -44,6 +52,7 @@ const submitHandler = (data, node) => {
         id="rank_id"
         validation="required|integer|min:1|max:20"
         label="New Rank"
+        placeholder="Select new Rank"
         :options="ranks"
         error-visibility="submit"
       />

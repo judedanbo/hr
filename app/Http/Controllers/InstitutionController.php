@@ -20,7 +20,9 @@ class InstitutionController extends Controller
                     $query->where('name', 'like', "%{$search}%");
                     $query->orWhere('abbreviation', 'like', "%{$search}%");
                 })
-                ->withCount('departments', 'divisions', 'units', 'staff')
+                ->withCount([
+                    'departments', 'divisions', 'units', 'staff'
+                ])
                 ->whereNull('end_date')
                 ->paginate(10)
                 ->withQueryString()
@@ -104,6 +106,7 @@ class InstitutionController extends Controller
                 },
                 'staff' => function ($query) {
                     $query->whereHas('statuses', function ($query) {
+                        $query->whereNull('end_date');
                         $query->where('status', 'A');
                     });
                 },
@@ -117,6 +120,7 @@ class InstitutionController extends Controller
                 }]);
                 $query->withCount(['staff' => function ($query) {
                     $query->whereHas('statuses', function ($query) {
+                        $query->whereNull('end_date');
                         $query->where('status', 'A');
                     });
                 }]);
@@ -127,6 +131,7 @@ class InstitutionController extends Controller
                 },
                 'staff' => function ($query) {
                     $query->whereHas('statuses', function ($query) {
+                        $query->whereNull('end_date');
                         $query->where('status', 'A');
                     });
                 },

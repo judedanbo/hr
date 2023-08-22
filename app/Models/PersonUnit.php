@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\EmployeeStatus;
+use App\Enums\EmployeeStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class PersonUnit extends Pivot
 {
     protected $casts = [
-        // 'status' => EmployeeStatus::class,
+        // 'status' => EmployeeStatusEnum::class,
         'hire_date' => 'date',
         'date_of_birth' => 'date',
         'start_date' => 'date',

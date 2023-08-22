@@ -77,8 +77,8 @@ const submitHandler = (data, node) => {
       />
       <FormKit
         type="select"
-        name="parent"
-        id="parent"
+        name="unit_id"
+        id="unit_id"
         :options="allUnits"
         label="Parent department/sec/unit"
         validation="number|min:1|max:500"

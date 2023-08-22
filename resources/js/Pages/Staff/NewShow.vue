@@ -1,29 +1,39 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import {  formatDistance } from "date-fns";
+import { formatDistance } from "date-fns";
 import StaffDates from "./StaffDates.vue";
 import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
 import TransferHistory from "./TransferHistory.vue";
+import StatusHistory from "./StatusHistory.vue";
 import Qualifications from "./Qualifications.vue";
 import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
-import Avatar from '../Person/partials/Avatar.vue'
-
+import { EllipsisVerticalIcon, PlusIcon } from "@heroicons/vue/20/solid";
+import Avatar from "../Person/partials/Avatar.vue";
+import StaffDependents from "@/Components/StaffDependents.vue";
+import Modal from "@/Components/Modal.vue";
+import EditStaffForm from "./EditStaffForm.vue";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
+let openEditModal = ref(false);
+
+let toggle = useToggle(openEditModal);
 
 let togglePromotionForm = useToggle(showPromotionForm);
 let toggleTransferForm = useToggle(showTransferForm);
-let getAge = (dateString) => {
-  const date = new Date(dateString);
-  return formatDistance(date, new Date(), { addSuffix: true });
+const formattedDob = (dob) => {
+  if (!dob) return "";
+  return new Date(dob).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 };
 
 let props = defineProps({
@@ -32,36 +42,14 @@ let props = defineProps({
   contact_types: Array,
   address: Object,
   contacts: Array,
-  filters: Object,
-  all_ranks: Array,
-  all_units: Array,
   qualifications: Array,
+  filters: Object,
 });
 
 let BreadcrumbLinks = [
   { name: "Staff", url: "/staff" },
   { name: props.person.name, url: "/" },
 ];
-
-let availableJobs = ref([
-  {
-    value: null,
-    label: "Select Rank",
-  },
-]);
-
-props.all_ranks.map((job) => {
-  availableJobs.value.push(job);
-});
-let availableUnits = ref([
-  {
-    value: null,
-    label: "Select Department/Branch/Section/Unit",
-  },
-]);
-props.all_units.map((unit) => {
-  availableUnits.value.push(unit);
-});
 </script>
 <template>
   <Head :title="person.name" />
@@ -101,16 +89,22 @@ props.all_units.map((unit) => {
 
         <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div
-            class="mx-auto flex max-w-2xl items-center justify-between gap-x-8 lg:mx-0 lg:max-w-none"
+            class="mx-auto flex flex-wrap max-w-2xl items-center md:justify-between lg:justify-start gap-x-8 lg:mx-0 lg:max-w-none"
           >
-            <div class="flex items-center gap-x-6">
-              <Avatar v-if="person.image" :initials="person.initials" :image="person.image" class="w-24 h-24"/>
+            <div class="flex flex-wrap items-center justify-between md:justify-start gap-x-6 w-full md:w-1/2">
+              <Avatar
+                v-if="person.image"
+                :initials="person.initials"
+                :image="person.image"
+                class="w-24 h-24"
+              />
               <div
+                v-else
                 class="flex justify-center items-center h-24 w-24 flex-none rounded-lg ring-1 ring-green-400/60 dark:ring-gray-400 text-5xl text-green-400/50 dark:text-gray-300 font-bold tracking-wide"
               >
                 {{ person.initials }}
               </div>
-              <h1>
+              <div class="">
                 <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
                   File Number
                   <span class="text-gray-700 dark:text-gray-100">{{
@@ -124,13 +118,35 @@ props.all_units.map((unit) => {
                   }}</span>
                 </div>
                 <div
-                  class="mt-1 text-base font-semibold leading-6 text-gray-900 dark:text-white"
+                  class="mt-1 text-xl font-semibold leading-6 text-gray-900 dark:text-white"
                 >
                   {{ person.name }}
                 </div>
-              </h1>
+              </div>
             </div>
-            <div class="flex items-center gap-x-4 sm:gap-x-6">
+            <div>
+              <div v-if="staff.statuses.length > 0" class="mt-4 md:mt-0">
+                <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
+                  Current Status
+                  <span class="text-gray-700 dark:text-gray-100">{{
+                    staff.statuses[0]?.status
+                  }}</span>
+                </div>
+                <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
+                  Description
+                  <span class="text-gray-700 dark:text-gray-100">{{
+                    staff.statuses[0]?.description
+                  }}</span>
+                </div>
+                <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
+                  Start date
+                  <span class="text-gray-700 dark:text-gray-100">{{
+                    formattedDob(staff.statuses[0]?.start_date)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit">
               <button
                 @click="togglePromotionForm()"
                 type="button"
@@ -142,13 +158,18 @@ props.all_units.map((unit) => {
                 @click="toggleTransferForm()"
                 type="button"
                 class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-                >Transfer</button
               >
-              <button
-                
-                class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                >Edit
-                </button>
+                Transfer
+              </button>
+
+              <a
+                @click.prevent="toggle()"
+                href="#"
+                class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+              >
+                <PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+                Edit
+              </a>
 
               <Menu as="div" class="relative sm:hidden">
                 <MenuButton class="-m-3 block p-3">
@@ -205,16 +226,32 @@ props.all_units.map((unit) => {
         >
           <div class="md:col-start-3 flex flex-wrap gap-4 w-full">
             <!-- Employment summary -->
-            <Summary class="" :person="person" />
+            <Summary  :person="person" />
             <!-- Contact information -->
-            <Address :address="address" :contacts="contacts" :contact_types="contact_types" :person="person.id" />
-            <Dependents :staff="staff" />
+            <Address
+              :address="address"
+              :contacts="contacts"
+              :contact_types="contact_types"
+              :person="person.id"
+            />
+            <!-- TODO Add dependant forme and display -->
+            <!-- <Dependents :staff="staff" /> -->
+            <!-- <StaffDependents v-if="staff" :staff="staff" class="" /> -->
           </div>
 
           <div
             class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"
           >
-            <StaffDates class="w-full" :staff="staff" />
+            <!-- important Dates -->
+            <StaffDates class="w-2/3" :staff="staff" />
+            <!-- statutes history -->
+            <StatusHistory
+              @close-form="toggleTransferForm()"
+              :statuses="staff.statuses"
+              :staff="staff.staff_id"
+              :institution="staff.institution_id"
+              class="w-full md:flex-1 flex-1"
+            />
             <!-- Qualifications -->
             <Qualifications
               class="w-full"
@@ -223,26 +260,29 @@ props.all_units.map((unit) => {
             />
             <!-- Employment History -->
             <PromotionHistory
-            @close-form="togglePromotionForm()"
-            :promotions="staff.ranks"
-            :ranks="availableJobs"
-            :staff="staff.staff_id"
-            :showPromotionForm="showPromotionForm"
-            class="w-full md:flex-1"
+              @close-form="togglePromotionForm()"
+              :promotions="staff.ranks"
+              :staff="staff.staff_id"
+              :institution="staff.institution_id"
+              :showPromotionForm="showPromotionForm"
+              class="w-full md:flex-1"
             />
             <!-- Posting History -->
             <TransferHistory
-            @close-form="toggleTransferForm()"
-            :transfers="staff.units"
-            :units="availableUnits"
-            :staff="staff.staff_id"
-            :showTransferForm="showTransferForm"
-            class="w-full md:flex-1 flex-1"
+              @close-form="toggleTransferForm()"
+              :transfers="staff.units"
+              :staff="staff.staff_id"
+              :institution="staff.institution_id"
+              :showTransferForm="showTransferForm"
+              class="w-full md:flex-1 flex-1"
             />
             
           </div>
         </div>
       </div>
+      <Modal @close="toggle()" :show="openEditModal">
+        <EditStaffForm :staff_id="staff.staff_id" />
+      </Modal>
     </main>
   </MainLayout>
 </template>
