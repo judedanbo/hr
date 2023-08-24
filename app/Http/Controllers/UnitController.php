@@ -71,32 +71,20 @@ class UnitController extends Controller
     {
 
         $unit = Unit::query()
-            // ->when(request()->dept, function ($query, $search) {
-            //     $query->with('subs', function ($q) use ($search) {
-            //         $q->withCount(['staff']);
-            //         $q->where('name', 'like', "%{$search}%");
-            //     });
-            // }, function ($query) {
-            //     $query->with(['subs' => function ($query) {
-            //         $query->withCount('staff', 'subs');
-            //         $query->with('staff');
-            //     }]);
-            // })
-
             ->with([
                 'institution', 'parent',
                 'staff' => function ($query) {
-                    $query->with(['person']);
-                    // $query->whereHas(['statuses', function ($query) {
-                    //     $query->whereNull('end_date');
-                    //     $query->where('status', 'A');
-                    // }]);
+                    $query->with(['person', 'ranks', 'units']);
+                    $query->whereHas('statuses', function ($query) {
+                        $query->whereNull('end_date');
+                        $query->where('status', 'A');
+                    });
                 },
                 'subs' => function ($query) {
                     $query->withCount(['staff', 'subs']);
                 }
             ])
-            // ->when(request()->staff, function ($query, $search) {
+            // ->when(request()->search, function ($query, $search) {
             //     $query->whereHas('staff', function ($q) use ($search) {
             //         $q->whereHas('person', function ($per) use ($search) {
             //             $terms = explode(' ', $search);
@@ -177,6 +165,20 @@ class UnitController extends Controller
                     'name' => $st->person->full_name,
                     'dob' => $st->person->date_of_birth,
                     'initials' => $st->person->initials,
+                    'image' => $st->person->image,
+                    'rank' => $st->ranks->count() > 0 ? [
+                        'id' => $st->ranks->first()->id,
+                        'name' => $st->ranks->first()->name,
+                        'start_date' => $st->ranks->first()->pivot->start_date->format('d M Y'),
+                        'remarks' => $st->ranks->first()->pivot->remarks,
+                    ] : null,
+                    'unit' => $st->units->count() > 0 ? [
+                        'id' => $st->units->first()->id,
+                        'name' => $st->units->first()->name,
+                        'start_date' => $st->units->first()->pivot->start_date->format('d M Y'),
+                        'start_date_full' => $st->units->first()->pivot->start_date,
+                        'duration' => $st->units->first()->pivot->start_date->diffForHumans(),
+                    ] : null,
                 ]),
                 'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
                     'id' => $sub->id,
