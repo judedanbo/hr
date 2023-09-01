@@ -110,12 +110,12 @@ let BreadCrumpLinks = [
                         >
                           Date of Birth
                         </th>
-                        <th
+                        <!-- <th
                           scope="col"
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
                           SSNIT No
-                        </th>
+                        </th> -->
                         <th
                           scope="col"
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
@@ -166,11 +166,11 @@ let BreadCrumpLinks = [
                             Years
                           </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <!-- <td class="px-6 py-4 whitespace-nowrap">
                           <div class="text-sm text-gray-900">
                             {{ person.ssn }}
                           </div>
-                        </td>
+                        </td> -->
                         <td
                           class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"
                         >

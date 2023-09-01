@@ -39,9 +39,9 @@ class PersonController extends Controller
                 ->through(fn ($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,
-                    'gender' => $person->gender?->name,
+                    'gender' => $person->gender?->label(),
                     'dob' => $person->date_of_birth,
-                    'ssn' => $person->identities->first()?->id_number,
+                    // 'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
                     'image' => $person->image,
                     // 'number' => Person::count()

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('unit_id')->constrained();
             $table->foreignId('staff_id')->constrained('id')->on('institution_person');
-            $table->date('start_date')->default(now());
+            $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('remarks', 100)->nullable();
             $table->timestamps();

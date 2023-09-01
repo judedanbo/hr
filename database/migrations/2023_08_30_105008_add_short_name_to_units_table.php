@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('status', function (Blueprint $table) {
-            $table->foreignId('institution_id')->after('end_date');
+        Schema::table('units', function (Blueprint $table) {
+            $table->string('short_name', 10)->after('name')->nullable()->comment('Short name / abbreviation of the unit');
         });
     }
 
@@ -25,8 +25,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('status', function (Blueprint $table) {
-            $table->dropColumn('institution_id');
+        Schema::table('units', function (Blueprint $table) {
+            $table->dropColumn('short_name');
+            // $table->removeColumn('short_name');
         });
     }
 };

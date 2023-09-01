@@ -69,7 +69,7 @@ class InstitutionPersonController extends Controller
                 'hire_date' => $staff->hire_date,
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
-                'gender' => $staff->person->gender->name,
+                'gender' => $staff->person->gender->label(),
                 'status' => $staff->statuses->first()?->status->name,
                 'dob' => $staff->person->date_of_birth,
                 'current_rank' => $staff->ranks->count() ? [
@@ -245,7 +245,7 @@ class InstitutionPersonController extends Controller
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'name' => $dep->person->full_name,
-                    'gender' => $dep->person->gender?->name,
+                    'gender' => $dep->person->gender?->label(),
                     'dob' => $dep->person->date_of_birth,
                     'relation' => $dep->relation,
                 ]) : null,

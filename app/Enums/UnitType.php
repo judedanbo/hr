@@ -11,4 +11,5 @@ enum UnitType: string
     case Ministry = 'MIN';
     case Business_Unit = 'BU';
     case Branch = 'BRH';
+    case District = 'DIS';
 }

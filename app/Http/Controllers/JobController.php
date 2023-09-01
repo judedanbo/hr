@@ -41,14 +41,19 @@ class JobController extends Controller
                 //     });
                 //     $query->where('job_staff.end_date', null);
                 // })
-                ->with(['institution', 'category', 'staff'])
+                ->with([
+                    'institution',
+                    'category',
+                    'staff'
+                ])
                 ->withCount(['staff' => function ($query) {
                     $query->whereHas('statuses', function ($query) {
                         $query->where('status', 'A');
                     });
                     $query->where('job_staff.end_date', null);
                 }])
-                // ->orderBy()
+                // ->orderBy('job_category_id is null', 'asc')
+                ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($job) => [

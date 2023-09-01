@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('status', function (Blueprint $table) {
-            $table->foreignId('institution_id')->after('end_date');
+        Schema::table('staff_unit', function (Blueprint $table) {
+            $table->text('old_data')->nullable()->after('remarks');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('status', function (Blueprint $table) {
-            $table->dropColumn('institution_id');
+        Schema::table('staff_unit', function (Blueprint $table) {
+            $table->dropColumn('old_data');
         });
     }
 };

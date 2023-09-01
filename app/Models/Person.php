@@ -108,7 +108,7 @@ class Person extends Model
      */
     public function dependent(): BelongsTo
     {
-        return $this->belongsTo(Dependent::class);
+        return $this->belongsTo(Dependent::class, 'id', 'person_id');
     }
 
     /**
