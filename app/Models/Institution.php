@@ -19,7 +19,7 @@ class Institution extends Model
      */
     public function departments(): HasMany
     {
-        return $this->hasMany(Unit::class)->where('units.type', UnitType::Department);
+        return $this->hasMany(Unit::class)->where('units.type', UnitType::DEPARTMENT);
     }
 
     /**
@@ -29,7 +29,7 @@ class Institution extends Model
      */
     public function divisions(): HasMany
     {
-        return $this->hasMany(Unit::class)->where('units.type', UnitType::Division);
+        return $this->hasMany(Unit::class)->where('units.type', UnitType::DIVISION);
     }
 
     /**
@@ -37,7 +37,7 @@ class Institution extends Model
      */
     public function units(): HasMany
     {
-        return $this->hasMany(Unit::class)->where('units.type', UnitType::Unit);
+        return $this->hasMany(Unit::class)->where('units.type', UnitType::UNIT);
     }
     public function allUnits(): HasMany
     {

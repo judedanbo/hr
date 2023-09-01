@@ -82,10 +82,6 @@ class InstitutionController extends Controller
     public function show($institution)
     {
         $types = [];
-        // $first  = new \stdClass();
-        // $first->value = null;
-        // $first->label = 'Select Unit Type';
-        // array_push($types, $first);
         foreach (UnitType::cases() as $type) {
             $temp = new \stdClass();
             $temp->value = $type->value;
@@ -141,7 +137,6 @@ class InstitutionController extends Controller
             ])
             ->where('units.type', 'DEP')
             ->get();
-        // return $departments;
         return Inertia::render('Institution/Show', [
             'institution' => $institution != null ? [
                 'id' => $institution->id,
@@ -153,13 +148,6 @@ class InstitutionController extends Controller
                 'units' => $institution->units_count,
                 'staff' => $institution->staff_count,
             ] : null,
-            // 'departments' => [],
-            'allUnits' => Unit::whereNull('end_date')
-                ->get()->map(fn ($unit) => [
-                    'value' => $unit->id,
-                    'label' => $unit->name,
-                ]),
-            'unitTypes' => $types,
             'departments' => $departments != null && $departments->count() > 0 ?
                 $departments->map(fn ($department) => [
                     'id' => $department->id,
@@ -171,7 +159,7 @@ class InstitutionController extends Controller
                     'end_date' => $department->end_date,
                     'unit_id' => $department->unit_id,
                     'units' => $department->subs_count, // + $department->subs->sum('subs_count'),
-                    'staff' => $department->staff_count + $department->subs->sum('staff_count'),
+                    'staff' => $department->staff_count + $department->subs?->sum('staff_count'),
                     // 'units' => $department->subs->sum('subs_count'),
                 ])
                 : null,

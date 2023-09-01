@@ -1,5 +1,6 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
+import { ref, onMounted } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
 import { format, addYears, subYears } from "date-fns";
@@ -7,20 +8,19 @@ import { format, addYears, subYears } from "date-fns";
 let props = defineProps({
   institutionName: String,
   institutionId: Number,
-  allUnits: Array,
-  unitTypes: Array,
+
 });
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(addYears(new Date(), 1), "yyyy-MM-dd");
 
-props.allUnits.unshift({
-  value: null,
-  label: "Select parent unit",
-});
-props.unitTypes.unshift({
-  value: null,
-  label: "Select unit type",
+let unitTypes =  ref([]);
+let allUnits =  ref([]);
+onMounted(async () => {
+  const unitTypesData = await axios.get(route("unit-type.index"));
+  const unitListData = await axios.get(route("institution.unit-list", {institution: props.institutionId}));
+  unitTypes.value = unitTypesData.data;
+  allUnits.value = unitListData.data;
 });
 
 const submitHandler = (data, node) => {
@@ -61,6 +61,7 @@ const submitHandler = (data, node) => {
         type="select"
         name="type"
         id="type"
+        placeholder="Select unit type"
         :options="unitTypes"
         label="Parent unit type"
         validation="string|length:1,5"
@@ -80,6 +81,7 @@ const submitHandler = (data, node) => {
         name="unit_id"
         id="unit_id"
         :options="allUnits"
+        placeholder="Select parent department/sec/unit"
         label="Parent department/sec/unit"
         validation="number|min:1|max:500"
         validation-visibility="submit"

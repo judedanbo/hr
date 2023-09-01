@@ -5,7 +5,6 @@ import { onMounted, ref, watch } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import RecruitmentChart from "./Chart.vue";
-import PageHeader from "@/Components/PageHeader.vue";
 
 let props = defineProps({
     recruitment: Object,
@@ -93,9 +92,6 @@ let BreadCrumpLinks = [
     <Head title="Recruitment" />
 
     <MainLayout>
-        <template #header>
-            <PageHeader name='Recruitment' />
-        </template>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <BreadCrumpVue :links="BreadCrumpLinks" />
             <div class="overflow-hidden shadow-sm sm:rounded-lg">

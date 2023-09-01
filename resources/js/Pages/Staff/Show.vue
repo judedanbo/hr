@@ -8,7 +8,6 @@ import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
 import StaffDates from "@/Pages/Staff/StaffDates.vue";
-import PageHeader from '@/Components/PageHeader.vue'
 import StaffDependents from "@/Components/StaffDependents.vue";
 
 
@@ -48,10 +47,6 @@ let BreadcrumbLinks = [
     <Head :title="person.name" />
 
     <MainLayout>
-        <template #header>
-            <PageHeader :name="person.initials" />
-        </template>
-
         <div class="py-2">
             <BreadCrumpVue :links="BreadcrumbLinks" />
             <div class="max-w-7xl mx-auto md:px-6 lg:px-8">

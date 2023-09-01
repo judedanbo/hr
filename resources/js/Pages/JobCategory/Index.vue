@@ -5,7 +5,6 @@ import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import PageHeader from "@/Components/PageHeader.vue";
 import BreezeButton from "@/Components/Button.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/Modal.vue";
@@ -48,9 +47,6 @@ watch(
   <Head title="Harmonized Categories" />
  
   <MainLayout>
-    <template #header>
-      <PageHeader name="Ranks" />
-    </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-2 border-b border-gray-200">

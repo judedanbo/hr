@@ -28,13 +28,31 @@ class UnitController extends Controller
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
-                ->with('institution')
-                ->withCount(['staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->whereNull('end_date');
-                        $query->where('status', 'A');
-                    });
-                }, 'subs'])
+                ->with([
+                    'institution',
+                    'subs' => function ($query) {
+                        $query->withCount([
+                            'staff' => function ($query) {
+                                $query->whereHas('statuses', function ($query) {
+                                    $query->whereNull('end_date');
+                                    $query->where('status', 'A');
+                                });
+                            },
+                            'subs'
+                        ]);
+                    }
+                ])
+                ->withCount(
+                    [
+                        'staff' => function ($query) {
+                            $query->whereHas('statuses', function ($query) {
+                                $query->whereNull('end_date');
+                                $query->where('status', 'A');
+                            });
+                        },
+                        'subs'
+                    ]
+                )
                 // ->countSubs()
                 ->when(request()->institution, function ($query, $search) {
                     $query->where('institution_id', request()->institution);
@@ -48,7 +66,7 @@ class UnitController extends Controller
                     fn ($unit) => [
                         'id' => $unit->id,
                         'name' => $unit->name,
-                        'staff' => $unit->staff_count,
+                        'staff' => $unit->staff_count + $unit->subs->sum('staff_count'),
                         'units' => $unit->subs_count,
                         'institution' => $unit->institution ? [
                             'id' => $unit->institution->id,
@@ -81,7 +99,22 @@ class UnitController extends Controller
                     });
                 },
                 'subs' => function ($query) {
-                    $query->withCount(['staff', 'subs']);
+                    $query->with(['staff' => function ($query) {
+                        $query->with(['person', 'ranks', 'units']);
+                        $query->whereHas('statuses', function ($query) {
+                            $query->whereNull('end_date');
+                            $query->where('status', 'A');
+                        });
+                    }]);
+                    $query->withCount([
+                        'staff' => function ($query) {
+                            $query->whereHas('statuses', function ($query) {
+                                $query->whereNull('end_date');
+                                $query->where('status', 'A');
+                            });
+                        },
+                        'subs'
+                    ]);
                 }
             ])
             // ->when(request()->search, function ($query, $search) {
@@ -132,7 +165,10 @@ class UnitController extends Controller
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
-
+        $sub_staff  = $unit->subs->map(fn ($sub) => $sub->staff)->flatten(1);
+        // return $sub_staff;
+        $allStaff = $unit->staff->merge($sub_staff)->flatten(1);
+        // return $allStaff;
         return Inertia::render('Unit/Show', [
             'unit' => [
                 'id' => $unit->id,
@@ -151,33 +187,36 @@ class UnitController extends Controller
                 //     'name' => $sub->name,
                 //     'subs' => $sub->subs_count,
                 //     'staff_count' => $sub->staff_count,
-                //     'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
-                //         'id' => $stf->id,
-                //         'name' => $stf->full_name,
-                //         'dob' => $stf->date_of_birth,
-                //         'ssn' => $stf->social_security_number,
-                //         'initials' => $stf->initials
+                //     'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
+                //         'id' => $stafff->id,
+                //         'name' => $stafff->full_name,
+                //         'dob' => $stafff->date_of_birth,
+                //         'ssn' => $stafff->social_security_number,
+                //         'initials' => $stafff->initials
                 //     ]) : null,
                 // ]) : null,
-                'type' => $unit->type->name,
-                'staff' => $unit->staff->map(fn ($st) => [
-                    'id' => $st->person->id,
-                    'name' => $st->person->full_name,
-                    'dob' => $st->person->date_of_birth,
-                    'initials' => $st->person->initials,
-                    'image' => $st->person->image,
-                    'rank' => $st->ranks->count() > 0 ? [
-                        'id' => $st->ranks->first()->id,
-                        'name' => $st->ranks->first()->name,
-                        'start_date' => $st->ranks->first()->pivot->start_date->format('d M Y'),
-                        'remarks' => $st->ranks->first()->pivot->remarks,
+                'type' => $unit->type->label(),
+                'staff' => $allStaff->map(fn ($staff) => [
+                    'id' => $staff->person->id,
+                    'name' => $staff->person->full_name,
+                    'dob' => $staff->person->date_of_birth?->format('d M Y'),
+                    'initials' => $staff->person->initials,
+                    'hire_date' => $staff->hire_date->format('d M Y'),
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'image' => $staff->person->image,
+                    'rank' => $staff->ranks->count() > 0 ? [
+                        'id' => $staff->ranks->first()->id,
+                        'name' => $staff->ranks->first()->name,
+                        'start_date' => $staff->ranks->first()->pivot->start_date->format('d M Y'),
+                        'remarks' => $staff->ranks->first()->pivot->remarks,
                     ] : null,
-                    'unit' => $st->units->count() > 0 ? [
-                        'id' => $st->units->first()->id,
-                        'name' => $st->units->first()->name,
-                        'start_date' => $st->units->first()->pivot->start_date->format('d M Y'),
-                        'start_date_full' => $st->units->first()->pivot->start_date,
-                        'duration' => $st->units->first()->pivot->start_date->diffForHumans(),
+                    'unit' => $staff->units->count() > 0 ? [
+                        'id' => $staff->units->first()->id,
+                        'name' => $staff->units->first()->name,
+                        'start_date' => $staff->units->first()?->pivot->start_date?->format('d M Y'),
+                        'start_date_full' => $staff->units->first()->pivot?->start_date,
+                        'duration' => $staff->units->first()->pivot->start_date?->diffForHumans(),
                     ] : null,
                 ]),
                 'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
@@ -185,12 +224,12 @@ class UnitController extends Controller
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,
                     'staff_count' => $sub->staff_count,
-                    // 'staff' => $sub->staff ? $sub->staff->map(fn ($stf) => [
-                    //     'id' => $stf->id,
-                    //     'name' => $stf->full_name,
-                    //     'dob' => $stf->date_of_birth,
-                    //     'ssn' => $stf->social_security_number,
-                    //     'initials' => $stf->initials,
+                    // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
+                    //     'id' => $stafff->id,
+                    //     'name' => $stafff->full_name,
+                    //     'dob' => $stafff->date_of_birth,
+                    //     'ssn' => $stafff->social_security_number,
+                    //     'initials' => $stafff->initials,
                     // ]) : null,
                 ]) : null,
             ],

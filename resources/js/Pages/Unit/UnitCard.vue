@@ -84,7 +84,7 @@ defineProps({
         <dt class="text-gray-500 dark:text-gray-50">Divisions</dt>
         <dd class="flex items-start gap-x-2">
           <div class="font-medium text-gray-900 dark:text-gray-50">
-            {{ unit.divisions }}
+            {{ unit.divisions.toLocaleString() }}
           </div>
         </dd>
       </div>
@@ -92,7 +92,7 @@ defineProps({
         <dt class="text-gray-500 dark:text-gray-50">Staff</dt>
         <dd class="text-gray-500">
           <div class="font-medium text-gray-900 dark:text-gray-50">
-            {{ unit.staff }}
+            {{ unit.staff.toLocaleString() }}
           </div>
         </dd>
       </div>
@@ -100,7 +100,7 @@ defineProps({
         <dt class="text-gray-500 dark:text-gray-50">Units</dt>
         <dd class="flex items-start gap-x-2">
           <div class="font-medium text-gray-900 dark:text-gray-50">
-            {{ unit.units }}
+            {{ unit.units.toLocaleString() }}
           </div>
         </dd>
       </div>

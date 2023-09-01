@@ -12,7 +12,6 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
-import PageHeader from "@/Components/PageHeader.vue";
 import Avatar from "./partials/Avatar.vue";
 import Roles from "./partials/Roles.vue";
 let props = defineProps({
@@ -56,9 +55,6 @@ let BreadCrumpLinks = [
   <Head title="Dashboard" />
 
   <MainLayout>
-    <template #header>
-      <PageHeader name="People" />
-    </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <BreadCrumpVue :links="BreadCrumpLinks" />
       <div class="overflow-hidden shadow-sm sm:rounded-lg">

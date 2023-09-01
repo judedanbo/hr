@@ -57,7 +57,7 @@ class Unit extends Model
     }
     public function divisions(): HasMany
     {
-        return $this->hasMany(Unit::class, 'unit_id', 'id')->where('units.type', UnitType::Division);
+        return $this->hasMany(Unit::class, 'unit_id', 'id')->where('units.type', UnitType::DIVISION);
     }
 
     // public function scopeDepartments($query)
@@ -81,17 +81,17 @@ class Unit extends Model
 
     public function scopeDepartments($query)
     {
-        return $query->where('type', UnitType::Department);
+        return $query->where('type', UnitType::DEPARTMENT);
     }
 
     public function scopeDivisions($query)
     {
-        return $query->where('type', UnitType::Division);
+        return $query->where('type', UnitType::DIVISION);
     }
 
     public function scopeUnits($query)
     {
-        return $query->where('type', UnitType::Unit);
+        return $query->where('type', UnitType::UNIT);
     }
 
     /**

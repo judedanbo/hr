@@ -7,8 +7,6 @@ import { PlusIcon } from "@heroicons/vue/24/outline";
 
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
-
-import PageHeader from "@/Components/PageHeader.vue";
 import UnitCard from "../Unit/UnitCard.vue";
 import Modal from "@/Components/Modal.vue";
 
@@ -22,8 +20,6 @@ let props = defineProps({
   institution: Object,
   departments: Array,
   filters: Object,
-  unitTypes: Array,
-  allUnits: Array,
 });
 
 let open = ref(false);
@@ -89,9 +85,6 @@ watch(
   <Head v-if="institution" :title="institution.name" />
 
   <NewLayout>
-    <template #header>
-      <PageHeader v-if="institution" :name="institution.name" />
-    </template>
 
     <main class="w-full px-8">
       <div class="relative isolate overflow-hidden">
@@ -129,7 +122,7 @@ watch(
               <dd
                 class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900 dark:text-gray-50"
               >
-                {{ institution.departments }}
+                {{ institution.departments.toLocaleString() }}
               </dd>
             </div>
             <div
@@ -144,7 +137,7 @@ watch(
               <dd
                 class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900 dark:text-gray-50"
               >
-                {{ institution.divisions }}
+                {{ institution.divisions.toLocaleString() }}
               </dd>
             </div>
             <div
@@ -159,7 +152,7 @@ watch(
               <dd
                 class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900 dark:text-gray-50"
               >
-                {{ institution.units }}
+                {{ institution.units.toLocaleString() }}
               </dd>
             </div>
             <div
@@ -174,7 +167,7 @@ watch(
               <dd
                 class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900 dark:text-gray-50"
               >
-                {{ institution.staff }}
+                {{ institution.staff.toLocaleString() }}
               </dd>
             </div>
           </dl>
@@ -239,8 +232,6 @@ watch(
         <AddForm
           :institutionName="institution.name"
           :institutionId="institution.id"
-          :allUnits="allUnits"
-          :unitTypes="unitTypes"
         />
       </Modal>
       <Modal @close="toggleEditForm()" :show="openEditForm">
@@ -249,8 +240,6 @@ watch(
           @formSubmitted="toggleEditForm()"
           :institutionName="institution.name"
           :institutionId="institution.id"
-          :allUnits="allUnits"
-          :unitTypes="unitTypes"
           :unit="selectedUnit"
         />
       </Modal>

@@ -6,7 +6,6 @@ import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import PersonContacts from "./PersonContacts.vue";
 import PersonAddresses from "./PersonAddresses.vue";
-import PageHeader from '@/Components/PageHeader.vue'
 import Avatar from './partials/Avatar.vue'
 const formattedDob = (dateString) => {
     const date = new Date(dateString);
@@ -41,10 +40,6 @@ let BreadcrumbLinks = [
     <Head title="Dashboard" />
 
     <MainLayout>
-        <template #header>
-            <PageHeader name="Person" />
-        </template>
-
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

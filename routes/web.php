@@ -23,6 +23,7 @@ use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\StaffStatusController;
+use App\Http\Controllers\UnitTypeController;
 use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -188,3 +189,5 @@ Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])-
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
 
 Route::post('staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
+
+Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth'])->name('unit-type.index');

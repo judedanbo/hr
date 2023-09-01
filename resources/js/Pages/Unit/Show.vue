@@ -79,7 +79,7 @@ let BreadcrumbLinks = [
     </template>
 
     <div class="py-2">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-full mx-auto sm:px-6 lg:px-8">
         <BreadCrumpVue :links="BreadcrumbLinks" />
         <FormKit
           v-model="search"
@@ -89,9 +89,9 @@ let BreadcrumbLinks = [
           autofocus
           outer-class="md:w-1/2 xl:w-1/3 px-4 "
         />
-        <div class="flex space-x-4 flex-col md:flex-row items-start justify-center py-4">
-          <SubUnits v-model="dept" type="Divisions" :subs="props.unit" />
-          <UnitStaff :staff="props.unit.staff" />
+        <div class="flex space-y-4 space-x-0 xl:space-x-4 xl:space-y-0 flex-col xl:flex-row items-start justify-center py-4">
+          <SubUnits v-model="dept" :type="unit.name" :subs="props.unit" />
+          <UnitStaff :unit="props.unit" />
         </div>
       </div>
     </div>

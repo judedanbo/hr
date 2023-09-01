@@ -7,7 +7,6 @@ import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import PageHeader from "@/Components/PageHeader.vue";
 import { useToggle } from "@vueuse/core";
 import { format } from "date-fns";
 import Modal from "@/Components/Modal.vue";
@@ -85,9 +84,7 @@ let BreadCrumpLinks = [
   <Head title="Institutions" />
 
   <MainLayout>
-    <template #header>
-      <PageHeader name="Institutions" />
-    </template>
+
     <div class="max-w-7xl mx-auto px-0 lg:px-8">
       <div
         class="bg-gray-100 dark:bg-gray-600 overflow-hidden shadow-sm lg:rounded-lg w-full"

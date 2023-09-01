@@ -13,7 +13,7 @@ enum ContactTypeEnum: int
     public function label(): string
     {
         return match ($this) {
-            self::EMAIL => 'Email Adress',
+            self::EMAIL => 'Email Address',
             self::pHONE => 'Phone number',
             self::ADDRESS => 'Address',
             self::GHPOSTGPS => 'Ghana postGPS',

@@ -116,13 +116,13 @@ let BreadCrumpLinks = [
                       </th>
                       <th
                         scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-gray-500 dark:text-gray-100 uppercase text-right"
                       >
                         Units
                       </th>
                       <th
                         scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-gray-500 dark:text-gray-100 uppercase text-right"
                       >
                         Staff
                       </th>
@@ -157,14 +157,14 @@ let BreadCrumpLinks = [
                       </td>
 
                       <td
-                        class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50"
+                        class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50 text-right"
                       >
-                        {{ unit.units }}
+                        {{ unit.units.toLocaleString() }}
                       </td>
                       <td
-                        class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50"
+                        class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50 text-right"
                       >
-                        {{ unit.staff }}
+                        {{ unit.staff.toLocaleString() }}
                       </td>
                     </tr>
                   </tbody>

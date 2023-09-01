@@ -1,5 +1,6 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
+import { ref, onMounted } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
 import { format, addYears, subYears } from "date-fns";
@@ -7,25 +8,22 @@ import { format, addYears, subYears } from "date-fns";
 let props = defineProps({
   institutionName: String,
   institutionId: Number,
-  allUnits: Array,
-  unitTypes: Array,
   unit: {
     type: Object,
     required: true,
   },
 });
-const today = format(new Date(), "yyyy-MM-dd");
+let unit_types =  ref([]);
+let unitList =  ref([]);
+onMounted(async () => {
+  const unitTypesData = await axios.get(route("unit-type.index"));
+  const unitListData = await axios.get(route("institution.unit-list", {institution: props.institutionId}));
+  unit_types.value = unitTypesData.data;
+  unitList.value = unitListData.data;
+});
 const start_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(addYears(new Date(), 1), "yyyy-MM-dd");
 
-props.allUnits.unshift({
-  value: null,
-  label: "Select parent unit",
-});
-props.unitTypes.unshift({
-  value: null,
-  label: "Select unit type",
-});
 
 const submitHandler = (data, node) => {
   Inertia.patch(route("unit.update", {unit: data.id}), data, {
@@ -46,7 +44,6 @@ const submitHandler = (data, node) => {
     <h1 class="text-2xl pb-4 dark:text-gray-100">
       Edit Department/Section/Unit
     </h1>
-    <!-- {{ unit }} -->
     <FormKit @submit="submitHandler" type="form" submit-label="Save">
       <FormKit
         type="hidden"
@@ -79,15 +76,19 @@ const submitHandler = (data, node) => {
         type="select"
         name="type"
         id="type"
-        label="Parent unit type"
+        label="Unit type"
+        placeholder="Select unit type"
         validation="string|length:1,5"
         validation-visibility="submit"
-        v-model="unit.type" 
+        v-model="unit.type"
       >
         <option
-          v-for="unitType in unitTypes"
+          v-for="unitType in unit_types"
+          :id="unitType.value"
+          :name="unitType.value"
           :key="unitType.value"
           :value="unitType.value"
+        
         >
           {{ unitType.label }}
         </option>
@@ -106,12 +107,13 @@ const submitHandler = (data, node) => {
         name="parent"
         id="parent"
         label="Parent department/sec/unit"
+        placeholder="Select parent unit"
         validation="number|min:1|max:500"
         validation-visibility="submit"
         v-model="unit.unit_id"
       >
         <option
-          v-for="unit in allUnits"
+          v-for="unit in unitList"
           :key="unit.value"
           :value="unit.value"
         >

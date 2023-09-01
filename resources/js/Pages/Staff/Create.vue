@@ -10,7 +10,6 @@ import { format, differenceInYears, formatDistanceStrict } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import NoItem from "@/Components/NoItem.vue";
-import PageHeader from "@/Components/PageHeader.vue";
 import AddStaffForm from "./AddStaffForm.vue";
 </script>
 
@@ -18,9 +17,6 @@ import AddStaffForm from "./AddStaffForm.vue";
   <Head title="Staff" />
 
   <MainLayout>
-    <template #header>
-      <PageHeader name="Staff" />
-    </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="overflow-hidden shadow-sm sm:rounded-lg">
         Add new Staff

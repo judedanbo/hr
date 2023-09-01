@@ -11,10 +11,7 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
-import PageHeader from "@/Components/PageHeader.vue";
-import BreezeButton from "@/Components/Button.vue";
 import Modal from "@/Components/Modal.vue";
-import AddStaff from "./AddStaff.vue";
 import AddStaffForm from "./AddStaffForm.vue";
 import { useToggle } from "@vueuse/core";
 import Avatar from "../Person/partials/Avatar.vue";
@@ -68,9 +65,6 @@ let BreadCrumpLinks = [
   <Head title="Staff" />
 
   <MainLayout>
-    <template #header>
-      <PageHeader name="Staff" />
-    </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <BreadCrumpVue :links="BreadCrumpLinks" />
       <div class="overflow-hidden shadow-sm sm:rounded-lg">
