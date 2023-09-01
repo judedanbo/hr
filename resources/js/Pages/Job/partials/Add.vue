@@ -25,7 +25,6 @@ onBeforeMount(async() => {
 
   const response2 = await axios.get(route("job-category.create"));
   categories.value = response2.data;
-  console.log(categories.value);
 
 })
 
@@ -34,7 +33,6 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-  console.log(data);
     Inertia.post(route("job.store"),
     data, {
         preserveScroll: true,

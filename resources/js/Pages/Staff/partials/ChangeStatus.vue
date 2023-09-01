@@ -13,7 +13,6 @@ let statuses = ref([]);
 onMounted(async () => {
     const response = await axios.get(route("institution.statuses", {institution: props.institution}));
     statuses.value = response.data;
-    console.log(statuses.value);
 });
 
 

@@ -23,7 +23,6 @@ onMounted(async () => {
   maritalStatus.value = maritalStatusData.data
   const StaffData = await axios.get(route('staff.edit', {staff: props.staff_id}));
   staff.value = StaffData.data;
-  console.log(staff.value);
 });
 
 

@@ -11,7 +11,8 @@ class PersonRolesController extends Controller
     {
         $person->load([
             'institution',
-            'dependent', 'user'
+            'dependent',
+            'user'
         ]);
         $staff = new \stdClass;
         if ($person->institution->count() > 0) {

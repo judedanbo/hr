@@ -19,7 +19,6 @@ onMounted(async () => {
 
 // onMounted(async() =>{
 //   const {gender} = await axios.get(route('gender.index'))
-//   console.log(gender);
 // })
 
 const step = ref("personalInformation");

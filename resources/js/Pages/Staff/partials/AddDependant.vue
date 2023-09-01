@@ -15,23 +15,17 @@ defineProps({
 
 
 const submitHandler = async (data, node) => {
-  // console.log(data.staffData.personalInformation)
   // const fd = new FormData()  
   const profileImage = data.staffData.image.image[0].file
-  // console.log(data.staffData.personalInformation)
   data.staffData.personalInformation.image = profileImage
   // fd.append('image', profileImage)
 
 
-  // console.log(data.staffData.personalInformation)
   // const person = await axios.post(route('person.store'), data.staffData.personalInformation)
 
-  // console.log(person)
   Inertia.post(route("person.store"), data.staffData.personalInformation, {
     preserveState: true,
     onSuccess: (message) => {
-      console.log('Success');
-      console.log(message);
       node.reset();
       emit("formSubmitted");
     },

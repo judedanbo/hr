@@ -14,13 +14,11 @@ let institution = ref([]);
 onMounted(async () => {
     const response = await axios.get(route("job-category.create"));
     categories.value = response.data;
-    // console.log(categories.value);
 });
 
 onMounted(async () => {
     const response = await axios.get(route("institution.create"));
     institution.value = response.data;
-    // console.log(institution.value);
 });
 
 
