@@ -74,7 +74,7 @@ let BreadCrumpLinks = [
               v-model="search"
               prefix-icon="search"
               type="search"
-              placeholder="Search institutions..."
+              placeholder="Search staff..."
               autofocus
             />
             <InfoCard title="Staff" :value="staff.total" link="#" />
@@ -122,6 +122,12 @@ let BreadCrumpLinks = [
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
                         >
                           Employment
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
+                        >
+                          Retirement
                         </th>
                         <th
                           scope="col"
@@ -179,7 +185,7 @@ let BreadCrumpLinks = [
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="text-sm text-gray-900 dark:text-gray-100">
-                            {{ formatDate(person.dob) }}
+                            {{ person.dob }}
                           </div>
                           <div class="text-xs text-gray-500 dark:text-gray-100">
                             {{
@@ -192,7 +198,7 @@ let BreadCrumpLinks = [
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="text-sm text-gray-900 dark:text-gray-100">
-                            {{ formatDate(person.hire_date) }}
+                            {{ person.hire_date }}
                           </div>
                           <div class="text-xs text-gray-500 dark:text-gray-100">
                             {{
@@ -216,19 +222,37 @@ let BreadCrumpLinks = [
                             <div
                               class="text-sm text-gray-900 dark:text-gray-100"
                             >
+                              {{ person.retirement_date }}
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-100">
+                              {{ person.retirement_date_distance }}
+                            </p>
+
+                             
+                          </div>
+                        </td>
+                        <td
+                          class="px-6 py-4 text-sm text-gray-500 dark:text-gray-100 whitespace-nowrap"
+                          :title="
+                            getAge(person.current_rank?.start_date) + ' years'
+                          "
+                        >
+                          <div v-if="person.current_rank">
+                            <div
+                              class="text-sm text-gray-900 dark:text-gray-100"
+                            >
                               {{ person.current_rank.name }}
                             </div>
                             <p class="text-xs text-gray-500 dark:text-gray-100">
-                              {{ formatDate(person.current_rank.start_date) }}
-
-                              <span
-                                v-if="person.current_rank.remarks"
-                                class="text-green-800 dark:text-gray-100 font-semibold"
-                              >
-                                -
-                                {{ person.current_rank.remarks }}
-                              </span>
+                              {{ person.current_rank.start_date }}
                             </p>
+
+                              <p
+                                v-if="person.current_rank.remarks"
+                                class="text-green-800 dark:text-gray-100 font-semibold text-xs tracking-wider"
+                              >
+                                {{ person.current_rank.remarks }}
+                              </p>
                           </div>
                         </td>
                         <td
@@ -243,7 +267,7 @@ let BreadCrumpLinks = [
                               {{ person.current_unit?.name }}
                             </div>
                             <div>
-                              {{ formatDate(person.current_unit.start_date) }}
+                              {{ person.current_unit.start_date }}
                             </div>
                           </div>
                         </td>

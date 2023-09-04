@@ -88,7 +88,7 @@ let BreadCrumpLinks = [
             v-model="search"
             prefix-icon="search"
             type="search"
-            placeholder="Search institutions..."
+            placeholder="Search department/unit/sections..."
             autofocus
           />
           <InfoCard title="Units" :value="units.total" />

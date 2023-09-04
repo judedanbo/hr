@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class InstitutionPerson extends Pivot
@@ -74,6 +75,16 @@ class InstitutionPerson extends Pivot
             ->using(JobStaff::class)
             ->orderByPivot('start_date', 'desc')
             ->latest();
+    }
+
+    // get current rank of staff
+    public function getCurrentRankAttribute()
+    {
+        return $this->ranks()->first();
+    }
+    public function getCurrentUnitAttribute()
+    {
+        return $this->units->first();
     }
 
     public function dependents(): HasMany
