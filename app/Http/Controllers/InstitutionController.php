@@ -81,59 +81,25 @@ class InstitutionController extends Controller
 
     public function show($institution)
     {
-        $types = [];
-        foreach (UnitType::cases() as $type) {
-            $temp = new \stdClass();
-            $temp->value = $type->value;
-            $temp->label = $type->name;
-            array_push($types, $temp);
-        }
         $institution = Institution::query()
             ->where('id', $institution)
             ->withCount([
-                'departments' => function ($query) {
-                    $query->whereNull('end_date');
-                },
-                'divisions' => function ($query) {
-                    $query->whereNull('end_date');
-                },
-                'units' => function ($query) {
-                    $query->whereNull('end_date');
-                },
-                'staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->whereNull('end_date');
-                        $query->where('status', 'A');
-                    });
-                },
+                'departments',
+                'divisions',
+                'units',
+                'staff',
             ])
             ->first();
 
         $departments = Unit::query()
             ->with(['subs' => function ($query) {
-                $query->withCount(['subs' => function ($query) {
-                    $query->whereNull('end_date');
-                }]);
-                $query->withCount(['staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->whereNull('end_date');
-                        $query->where('status', 'A');
-                    });
-                }]);
+                $query->withCount('subs');
+                $query->withCount('staff');
             }])
             ->withCount([
-                'subs' => function ($query) {
-                    $query->whereNull('end_date');
-                },
-                'staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->whereNull('end_date');
-                        $query->where('status', 'A');
-                    });
-                },
-                'divisions' => function ($query) {
-                    $query->whereNull('end_date');
-                },
+                'subs',
+                'staff',
+                'divisions',
             ])
             ->where('units.type', 'DEP')
             ->get();

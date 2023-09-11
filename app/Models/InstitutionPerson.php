@@ -54,6 +54,8 @@ class InstitutionPerson extends Pivot
             ->withPivot('start_date', 'end_date')
             ->using(StaffUnit::class)
             ->orderByPivot('start_date', 'desc')
+            ->wherePivotNull('end_date')
+            ->whereNull('units.end_date')
             ->latest();
     }
 
@@ -74,6 +76,7 @@ class InstitutionPerson extends Pivot
         )
             ->using(JobStaff::class)
             ->orderByPivot('start_date', 'desc')
+            ->wherePivotNull('end_date')
             ->latest();
     }
 
@@ -105,7 +108,10 @@ class InstitutionPerson extends Pivot
 
     public function scopeRetired($query)
     {
-        return $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 60');
+        return $query->with(['statuses' => function ($query) {
+            $query->whereNull('end_date');
+            $query->where('status', '<>', 'A');
+        }]);
     }
 
     public function scopeCurrentStatus($query)

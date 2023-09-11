@@ -27,12 +27,8 @@ class InstitutionPersonController extends Controller
         $staff = InstitutionPerson::query()
             ->with([
                 'person',
-                'ranks' => function ($query) {
-                    $query->whereNull('end_date');
-                },
-                'units' => function ($query) {
-                    $query->whereNull('units.end_date');
-                },
+                'ranks',
+                'units',
             ])
             ->whereHas('statuses', function ($query) {
                 $query->whereNull('end_date');
@@ -58,7 +54,6 @@ class InstitutionPersonController extends Controller
                 });
             })
             ->active()
-            // ->withCount()
             ->paginate()
             ->withQueryString()
             ->through(fn ($staff) => [

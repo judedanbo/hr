@@ -49,7 +49,10 @@ class Institution extends Model
      */
     public function staff(): HasMany
     {
-        return $this->hasMany(InstitutionPerson::class);
+        return $this->hasMany(InstitutionPerson::class)
+            ->whereHas('statuses', function ($query) {
+                $query->whereNull('end_date');
+            });
     }
 
     /**

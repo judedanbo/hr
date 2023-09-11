@@ -53,7 +53,8 @@ class Unit extends Model
      */
     public function subs(): HasMany
     {
-        return $this->hasMany(Unit::class, 'unit_id', 'id');
+        return $this->hasMany(Unit::class, 'unit_id', 'id')
+            ->whereNull('end_date');
     }
     public function divisions(): HasMany
     {
@@ -81,17 +82,23 @@ class Unit extends Model
 
     public function scopeDepartments($query)
     {
-        return $query->where('type', UnitType::DEPARTMENT);
+        return $query
+            ->where('type', UnitType::DEPARTMENT)
+            ->whereNull('end_date');
     }
 
     public function scopeDivisions($query)
     {
-        return $query->where('type', UnitType::DIVISION);
+        return $query
+            ->where('type', UnitType::DIVISION)
+            ->whereNull('end_date');
     }
 
     public function scopeUnits($query)
     {
-        return $query->where('type', UnitType::UNIT);
+        return $query
+            ->where('type', UnitType::UNIT)
+            ->whereNull('end_date');
     }
 
     /**
