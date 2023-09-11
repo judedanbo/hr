@@ -12,6 +12,7 @@ class StaffStatusController extends Controller
 {
     public function store(Request $request)
     {
+        return $request;
         // validation
         DB::transaction(function () use ($request) {
             Status::where('staff_id', $request->staff_id)
@@ -20,6 +21,6 @@ class StaffStatusController extends Controller
             Status::create($request->all());
         });
 
-        return redirect()->route('staff.show', $request->staff_id)->with('success', 'Staff status changed');
+        return redirect()->route('person.show', $request->person_id)->with('success', 'Staff status changed');
     }
 }

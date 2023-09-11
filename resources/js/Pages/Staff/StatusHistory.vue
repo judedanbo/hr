@@ -16,27 +16,6 @@ let props = defineProps({
 let openStatusModal = ref(false);
 const toggleStatusModal = useToggle(openStatusModal);
 
-// watch(
-//   () => props.showTransferForm,
-//   (value) => {
-//     if (value) {
-//       openStatusModal.value = true;
-//     }
-//   }
-// );
-const formattedDob = (dob) => {
-  if (!dob) return "";
-  return new Date(dob).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
-
-let getAge = (dateString) => {
-  const date = new Date(dateString);
-  return differenceInYears(new Date(), date);
-};
 </script>
 <template>
   <!-- Transfer History -->
@@ -62,7 +41,7 @@ let getAge = (dateString) => {
           </button>
         </div>
 
-        <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4 h-80 overflow-y-auto">
+        <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full p-4 overflow-y-auto">
           <table v-if="statuses.length > 0" class="min-w-full">
             <colgroup></colgroup>
             <thead
@@ -87,7 +66,6 @@ let getAge = (dateString) => {
                 >
                   End
                 </th>
-                <!-- <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pr-0">Duration</th> -->
               </tr>
             </thead>
             <tbody >
@@ -105,12 +83,12 @@ let getAge = (dateString) => {
                 <td
                   class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
                 >
-                  {{ formattedDob(status.start_date) }}
+                  {{ status.start_date }}
                 </td>
                 <td
                   class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
                 >
-                  {{ formattedDob(status.end_date) }}
+                  {{ status.end_date }}
                 </td>
               </tr>
             </tbody>

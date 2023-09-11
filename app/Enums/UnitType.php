@@ -10,6 +10,7 @@ enum UnitType: string
     case SECTION = 'SEC';
     case MINISTRY = 'MIN';
     case BRANCH = 'BRH';
+    case REGION = 'REG';
     case DISTRICT = 'DIS';
     case NOT_AVAILABLE = "";
 
@@ -21,9 +22,10 @@ enum UnitType: string
             self::SECTION => 'Section',
             self::MINISTRY => 'Ministry',
             self::BRANCH => 'Branch',
-            self::DISTRICT => 'District',
+            self::REGION => 'Regional Office',
+            self::DISTRICT => 'District Office',
             self::NOT_AVAILABLE => 'Unit not Provided',
-            default => static::NOT_AVAILABLE,
+            default => "Unit type not Provided",
         };
     }
 }

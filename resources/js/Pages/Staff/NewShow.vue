@@ -141,7 +141,7 @@ let BreadcrumbLinks = [
                 <div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
                   Start date
                   <span class="text-gray-700 dark:text-gray-100">{{
-                    formattedDob(staff.statuses[0]?.start_date)
+                    staff.statuses[0]?.start_date
                   }}</span>
                 </div>
               </div>
@@ -240,7 +240,7 @@ let BreadcrumbLinks = [
           </div>
 
           <div
-            class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"
+            class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4 items-start"
           >
             <!-- important Dates -->
             <StaffDates class="w-2/3" :staff="staff" />

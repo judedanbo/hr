@@ -60,7 +60,8 @@ let getAge = (dateString) => {
             />
           </dt>
           <dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-            <time :datetime="person.dob">{{ formattedDob(person.dob) }}</time> ({{ getAge(person.dob) }} years old)
+            <time :datetime="person.dob_value">
+            {{ person.dob }}</time> ({{ person.dob_distance }})
           </dd>
         </div>
         <div class="mt-4 flex w-full flex-none gap-x-4 px-6">
@@ -117,8 +118,9 @@ let getAge = (dateString) => {
               />
             </svg>
           </dt>
-          <dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-            {{ person.religion ?? "Religion Not Specified" }}
+        
+          <dd v-if="(person.religion || person.religion == '')" class="text-sm leading-6 text-gray-500 dark:text-gray-50">
+            {{ person.religion }}
           </dd>
         </div>
 

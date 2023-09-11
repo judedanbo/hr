@@ -111,12 +111,12 @@ let BreadCrumpLinks = [
                         >
                           Name
                         </th>
-                        <th
+                        <!-- <th
                           scope="col"
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
                         >
                           Date of Birth
-                        </th>
+                        </th> -->
                         <th
                           scope="col"
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
@@ -133,7 +133,7 @@ let BreadCrumpLinks = [
                           scope="col"
                           class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
                         >
-                          Rank
+                          Current Rank
                         </th>
                         <th
                           scope="col"
@@ -153,25 +153,35 @@ let BreadCrumpLinks = [
                         class="cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-lg"
                       >
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <!-- <div
-                              class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-                            >
-                              {{ person.initials }}
-                            </div> -->
-                            
+                          <div class="flex items-center">                            
                             <Avatar :initials="person.initials" :image-url="person.image"/>
                             <div class="ml-4">
                               <div
-                                class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                                class="text-green-900 dark:text-gray-50 font-semibold"
                               >
                                 {{ person.name }}
                               </div>
                               <div
-                                class="text-xs text-gray-500 dark:text-gray-100"
+                                class="text-xs text-gray-500 dark:text-gray-200"
                               >
-                                {{ person.gender }}
-                                |
+                                {{ person.gender }} &bull; {{ person.dob }} ({{ person.dob_distance }})
+                                
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <!-- <td class="px-6 py-4 whitespace-nowrap">
+                          <div class="text-sm text-gray-900 dark:text-gray-200">
+                            {{ person.dob }}
+                          </div>
+                          <div class="text-xs text-gray-500 dark:text-gray-200">
+                            {{ person.dob_distance }}
+                          </div>
+                        </td> -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <div
+                                class=" text-green-800 dark:text-gray-200"
+                              >
                                 {{ person.staff_number }}
 
                                 {{
@@ -180,94 +190,68 @@ let BreadCrumpLinks = [
                                     : ""
                                 }}
                               </div>
-                            </div>
+                          <div class="text-xs text-gray-900 dark:text-gray-200">
+                            {{ person.hire_date }} &bull;  {{ person.hire_date_distance }}
                           </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900 dark:text-gray-100">
-                            {{ person.dob }}
-                          </div>
-                          <div class="text-xs text-gray-500 dark:text-gray-100">
-                            {{
-                              formatDistanceStrict(
-                                new Date(person.dob),
-                                new Date()
-                              )
-                            }}
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900 dark:text-gray-100">
-                            {{ person.hire_date }}
-                          </div>
-                          <div class="text-xs text-gray-500 dark:text-gray-100">
-                            {{
-                              formatDistanceStrict(
-                                new Date(person.hire_date),
-                                new Date(),
-                                {
-                                  addSuffix: true,
-                                }
-                              )
-                            }}
-                          </div>
+                          
                         </td>
                         <td
-                          class="px-6 py-4 text-sm text-gray-500 dark:text-gray-100 whitespace-nowrap"
+                          class="px-6 py-4 text-sm text-gray-500 dark:text-gray-200 whitespace-nowrap"
                           :title="
-                            getAge(person.current_rank?.start_date) + ' years'
+                            person.current_rank?.start_date_distance
                           "
                         >
-                          <div v-if="person.current_rank">
+                          <div>
                             <div
-                              class="text-sm text-gray-900 dark:text-gray-100"
+                              class="font-semibold text-green-900 dark:text-gray-200"
                             >
                               {{ person.retirement_date }}
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-100">
+                            <p class="text-xs text-gray-500 dark:text-gray-200">
                               {{ person.retirement_date_distance }}
                             </p>
-
-                             
                           </div>
                         </td>
                         <td
-                          class="px-6 py-4 text-sm text-gray-500 dark:text-gray-100 whitespace-nowrap"
+                          class="px-6 py-4 text-sm text-gray-500 dark:text-gray-200 whitespace-nowrap"
                           :title="
-                            getAge(person.current_rank?.start_date) + ' years'
+                            person.current_rank?.start_date_distance
                           "
                         >
                           <div v-if="person.current_rank">
                             <div
-                              class="text-sm text-gray-900 dark:text-gray-100"
+                              class="font-semibold text-green-900 dark:text-gray-200"
                             >
                               {{ person.current_rank.name }}
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-100">
-                              {{ person.current_rank.start_date }}
+                            <p class="text-xs text-gray-500 dark:text-gray-200">
+                              {{ person.current_rank.start_date_distance }}
                             </p>
 
                               <p
                                 v-if="person.current_rank.remarks"
-                                class="text-green-800 dark:text-gray-100 font-semibold text-xs tracking-wider"
+                                class="text-green-800 dark:text-gray-200 text-xs tracking-wider"
                               >
                                 {{ person.current_rank.remarks }}
                               </p>
                           </div>
                         </td>
                         <td
-                          class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-100"
+                          class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-200"
                           :title="
-                            getAge(person.current_unit?.start_date) + ' years'
+                            person.current_unit?.start_date_distance
                           "
                         >
                           <div v-if="person.current_unit">
-                            <div>
+                            <div class="font-semibold text-green-800 dark:text-gray-50">
                              
-                              {{ person.current_unit?.name }}
+                              {{ person.current_unit.name }}
                             </div>
-                            <div>
+                            <div class="text-xs text-gray-500 dark:text-gray-200">
                               {{ person.current_unit.start_date }}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-200">
+                              {{ person.current_unit.start_date_distance }}
                             </div>
                           </div>
                         </td>

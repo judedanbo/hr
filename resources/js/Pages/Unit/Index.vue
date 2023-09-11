@@ -1,12 +1,10 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
-import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import InfoCard from "@/Components/InfoCard.vue";
 import NoItem from "@/Components/NoItem.vue";
 import BreezeButton from "@/Components/Button.vue";

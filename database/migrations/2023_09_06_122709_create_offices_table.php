@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('regions', function (Blueprint $table) {
-            $table->tinyIncrements('id');
-            $table->string('name', 35);
-            $table->string('capital', 35);
+        Schema::create('offices', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 150);
+            $table->unsignedTinyInteger('type');
+            $table->unsignedInteger('district_id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('regions');
+        Schema::dropIfExists('offices');
     }
 };

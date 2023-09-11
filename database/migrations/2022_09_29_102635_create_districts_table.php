@@ -17,6 +17,8 @@ return new class extends Migration
             $table->mediumIncrements('id');
             $table->string('name', 100);
             $table->unsignedTinyInteger('region_id');
+            $table->string('capital', 35);
+            $table->unsignedTinyInteger('district_type');
             $table->foreign('region_id')->references('id')->on('regions');
             $table->timestamps();
             $table->softDeletes();
