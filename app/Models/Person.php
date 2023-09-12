@@ -134,11 +134,28 @@ class Person extends Model
 
     public function qualifications(): HasMany
     {
-        return $this->hasMany(Qualification::class);
+        return $this->hasMany(Qualification::class)
+            ->latest('year');
     }
 
     public function user(): HasOne
     {
         return $this->hasOne(User::class);
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->when($search, function ($query, $search) {
+            $terms = explode(' ', $search);
+            foreach ($terms as $term) {
+                $query->where(function ($searchName) use ($term) {
+                    $searchName->where('first_name', 'like', "%{$term}%");
+                    $searchName->orWhere('other_names', 'like', "%{$term}%");
+                    $searchName->orWhere('surname', 'like', "%{$term}%");
+                    $searchName->orWhere('date_of_birth', 'like', "%{$term}%");
+                    $searchName->orWhereRaw('monthname(date_of_birth) like ?', [$term]);
+                });
+            }
+        });
     }
 }

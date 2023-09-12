@@ -137,14 +137,9 @@ class InstitutionPersonController extends Controller
                     'statuses'
                 ]
             )
-            ->whereHas('statuses', function ($query) {
-                $query->whereNull('end_date');
-                $query->where('status', 'A');
-            })
+            ->active()
             ->whereId($staff)
             ->firstOrFail();
-        // return $staff;
-        // return Inertia::render('Staff/Show', [
         return Inertia::render('Staff/NewShow', [
             'person' => [
                 'id' => $staff->person->id,

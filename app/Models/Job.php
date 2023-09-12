@@ -50,4 +50,20 @@ class Job extends Model
     {
         return $this->belongsTo(JobCategory::class, 'job_category_id', 'id');
     }
+
+    public function scopeSearchRank($query, $search)
+    {
+        $query->when($search, function ($query, $search) {
+            $terms = explode(' ', $search);
+            foreach ($terms as $term) {
+                $query->where(function ($searchRank) use ($term) {
+                    $searchRank->where('name', 'like', "%{$term}%");
+                    $searchRank->orWhereHas('category', function ($searchRank) use ($term) {
+                        $searchRank->where('name', 'like', "%{$term}%");
+                        $searchRank->orWhere('short_name', 'like', "%{$term}%");
+                    });
+                });
+            }
+        });
+    }
 }

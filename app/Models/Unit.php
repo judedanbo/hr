@@ -112,4 +112,17 @@ class Unit extends Model
         // ->wherePivot('end_date', '>=', now());
         // ->where('status', 'Active');
     }
+
+    public function scopeSearchUnit($query, $search)
+    {
+
+        $query->when($search, function ($query, $search) {
+            $terms = explode(' ', $search);
+            foreach ($terms as $term) {
+                $query->where(function ($searchName) use ($term) {
+                    $searchName->where('name', 'like', "%{$term}%");
+                });
+            }
+        });
+    }
 }

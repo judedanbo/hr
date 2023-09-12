@@ -19,20 +19,9 @@ class PersonController extends Controller
      */
     public function index()
     {
-        // return Person::with('institution')->first();
         return Inertia::render('Person/Index', [
             'people' => Person::query()
-                ->when(request()->search, function ($query, $search) {
-                    $terms = explode(' ', $search);
-                    foreach ($terms as $term) {
-                        $query->where('surname', 'like', "%{$term}%");
-                        $query->orWhere('first_name', 'like', "%{$term}%");
-                        $query->orWhere('other_names', 'like', "%{$term}%");
-                        $query->orWhere('date_of_birth', 'like', "%{$term}%");
-                        // $query->orWhere('social_security_number', 'like', "%{$term}%");
-                        $query->orWhereRaw('monthname(date_of_birth) like ?', [$term]);
-                    }
-                })
+                ->search(request()->search)
                 ->with('institution', 'dependent', 'identities')
                 ->paginate(10)
                 ->withQueryString()
@@ -44,20 +33,13 @@ class PersonController extends Controller
                     // 'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
                     'image' => $person->image,
-                    // 'number' => Person::count()
                     'institution' => $person->institution ? [
                         'id' => $person->institution->first()?->id,
                         'name' => $person->institution->first()?->name,
-                        // 'status' => $person->institution->first()?->staff->statuses->first()?->status->name,
-                        // $person->units->first()
-                        // 'id' => $person->units->first()->id,
                         'staff_id' => $person->institution->first()?->staff->id,
-                        // 'name' => $person->units->first()->staff
                     ] : null,
                     'dependent' => $person->dependent ? [
                         'staff_id' => $person->dependent->staff_id,
-                        // 'institution' => $person->dependent->institution_id,
-                        // 'name' => $person->dependent->name
                     ] : null,
                 ]),
             'contact_types' => [],

@@ -14,17 +14,17 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
-        $types = [];
-        $first  = new \stdClass();
-        $first->value = null;
-        $first->label = 'Select Unit Type';
-        array_push($types, $first);
-        foreach (UnitType::cases() as $type) {
-            $temp = new \stdClass();
-            $temp->value = $type->value;
-            $temp->label = $type->name;
-            array_push($types, $temp);
-        }
+        // $types = [];
+        // $first  = new \stdClass();
+        // $first->value = null;
+        // $first->label = 'Select Unit Type';
+        // array_push($types, $first);
+        // foreach (UnitType::cases() as $type) {
+        //     $temp = new \stdClass();
+        //     $temp->value = $type->value;
+        //     $temp->label = $type->name;
+        //     array_push($types, $temp);
+        // }
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
@@ -33,33 +33,24 @@ class UnitController extends Controller
                     'subs' => function ($query) {
                         $query->withCount([
                             'staff' => function ($query) {
-                                $query->whereHas('statuses', function ($query) {
-                                    $query->whereNull('end_date');
-                                    $query->where('status', 'A');
-                                });
+                                $query->active();
                             },
-                            'subs'
+                            // 'subs'
                         ]);
                     }
                 ])
                 ->withCount(
                     [
                         'staff' => function ($query) {
-                            $query->whereHas('statuses', function ($query) {
-                                $query->whereNull('end_date');
-                                $query->where('status', 'A');
-                            });
+                            $query->active();
                         },
                         'subs'
                     ]
                 )
-                // ->countSubs()
                 ->when(request()->institution, function ($query, $search) {
                     $query->where('institution_id', request()->institution);
                 })
-                ->when(request()->search, function ($query, $search) {
-                    $query->where('name', 'like', "%{$search}%");
-                })
+                ->searchUnit(request()->search)
                 ->paginate(10)
                 ->withQueryString()
                 ->through(
@@ -72,15 +63,10 @@ class UnitController extends Controller
                             'id' => $unit->institution->id,
                             'name' => $unit->institution->name,
                         ] : null,
-                        'subs' => $unit->subs->count() > 0 ? [
-                            $unit->subs->map(fn ($sub) => [
-                                'id' => $sub->id,
-                                'name' => $sub->name,
-                            ]),
-                        ] : null,
+
                     ]
                 ),
-            'unit_types' => $types,
+            // 'unit_types' => $types,
             'filters' => ['search' => request()->search],
         ]);
     }

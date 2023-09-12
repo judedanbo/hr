@@ -10,49 +10,15 @@ class JobController extends Controller
 {
     public function index()
     {
-        // $jobs = Job::withCount(['staff' => function ($query) {
-        //     $query->active();
-        //     $query->where('job_staff.end_date', null);
-        // }])
-        //     // ->where('institution_id', $institution)
-        //     // ->where('name', 'like', 'Prin.Auditor%')
-        //     // ->with('staff')
-        //     ->get();
-        // return ($jobs);
         return Inertia::render('Job/Index', [
             'jobs' =>
             Job::query()
-                // ->whereHas('staff', function ($query) {
-                //     $query->whereHas('statuses', function ($query) {
-                //         $query->where('status', 'A');
-                //     });
-                //     $query->where('job_staff.end_date', null);
-                // })
-                // ->withCount(['staff'])
-                // ->when(request()->search, function ($query, $search) {
-                //     $query->where('name', 'like', "%{$search}%");
-                // })
-                ->when(request()->search, function ($query, $search) {
-                    $query->where('name', 'like', "%{$search}%");
-                })
-                // ->whereHas('staff', function ($query) {
-                //     $query->whereHas('statuses', function ($query) {
-                //         $query->where('status', 'A');
-                //     });
-                //     $query->where('job_staff.end_date', null);
-                // })
-                ->with([
-                    'institution',
-                    'category',
-                    'staff'
-                ])
+                ->searchRank(request()->search)
+                ->with(['category', 'institution'])
                 ->withCount(['staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->where('status', 'A');
-                    });
+                    $query->active();
                     $query->where('job_staff.end_date', null);
                 }])
-                // ->orderBy('job_category_id is null', 'asc')
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
                 ->withQueryString()
