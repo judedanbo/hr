@@ -7,7 +7,9 @@ use App\Enums\ContactTypeEnum;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
+use App\Models\JobStaff;
 use App\Models\Person;
+use App\Models\StaffUnit;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,35 +27,11 @@ class InstitutionPersonController extends Controller
     public function index()
     {
         $staff = InstitutionPerson::query()
-            ->with([
-                'person',
-                'ranks',
-                'units',
-            ])
-            ->whereHas('statuses', function ($query) {
-                $query->whereNull('end_date');
-                $query->where('status', 'A');
-            })
-            ->when(request()->search, function ($query, $search) {
-                $query->where(function ($whereQry) use ($search) {
-                    $whereQry->where('staff_number', 'like', "%{$search}%");
-                    $whereQry->orWhere('file_number', 'like', "%{$search}%");
-                    $whereQry->orWhere('old_staff_number', 'like', "%{$search}%");
-                    $whereQry->orWhereYear('hire_date', $search);
-                    $whereQry->orWhereRaw('monthname(hire_date) like ?', ['%' . $search . '%']);
-                    $whereQry->orWhereHas('person', function ($perQuery) use ($search) {
-                        $perQuery->where('first_name', 'like', "%{$search}%");
-                        $perQuery->orWhere('other_names', 'like', "%{$search}%");
-                        $perQuery->orWhere('surname', 'like', "%{$search}%");
-                        $perQuery->orWhere('date_of_birth', 'like', "%{$search}%");
-                    });
-                    $whereQry->orWhereHas('ranks', function ($rankQuery) use ($search) {
-                        $rankQuery->where('name', 'like', "%{$search}%");
-                    });
-                    // $whereQry->orWhere('jobs.name', 'like', "%{$search}%");
-                });
-            })
             ->active()
+            ->with('person')
+            ->withCurrentUnit()
+            ->withCurrentRank()
+            ->search(request()->search)
             ->paginate()
             ->withQueryString()
             ->through(fn ($staff) => [
@@ -66,7 +44,6 @@ class InstitutionPersonController extends Controller
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->label(),
-                'status' => $staff->statuses->first()?->status->name,
                 'dob' =>  $staff->person->date_of_birth->format('d M Y'),
                 'dob_distance' =>  $staff->person->date_of_birth->diffInYears() . " years old",
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M Y'),
@@ -74,19 +51,20 @@ class InstitutionPersonController extends Controller
                 'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
                 'current_rank' => $staff->currentRank ? [
                     'id' => $staff->currentRank->id,
-                    'name' => $staff->currentRank->name,
-                    'job_id' => $staff->currentRank->pivot->job_id,
-                    'start_date' => $staff->currentRank->pivot->start_date->format('d M Y'),
-                    'start_date_distance' => $staff->currentRank->pivot->start_date->diffForHumans(),
-                    'end_date' => $staff->currentRank->pivot->end_date?->format('d M Y'),
-                    'remarks' => $staff->currentRank->pivot->remarks,
+                    'name' => $staff->currentRank->job->name,
+                    'job_id' => $staff->currentRank->name,
+                    'start_date' => $staff->currentRank->start_date?->format('d M Y'),
+                    'start_date_distance' => $staff->currentRank->start_date?->diffForHumans(),
+                    'end_date' => $staff->currentRank->end_date?->format('d M Y'),
+                    'remarks' => $staff->currentRank->remarks,
                 ] : null,
-                'current_unit' => $staff->units->count() ? [
-                    'id' => $staff->currentUnit->id,
-                    'name' => $staff->currentUnit->name,
-                    'start_date' => $staff->currentUnit->pivot->start_date->format('d M Y'),
-                    'start_date_distance' => $staff->currentUnit->pivot->start_date->diffForHumans(),
-                    'end_date' => $staff->currentUnit->pivot->end_date?->format('d M Y'),
+                'current_unit' => $staff->currentUnit ? [
+                    'id' => $staff->currentUnit->unit_id,
+                    'rank' => $staff->currentUnit,
+                    'name' => $staff->currentUnit->unit?->name,
+                    'start_date' => $staff->currentUnit->start_date?->format('d M Y'),
+                    'start_date_distance' => $staff->currentUnit->start_date?->diffForHumans(),
+                    'end_date' => $staff->currentUnit->end_date?->format('d M Y'),
                 ] : null,
             ]);
 
@@ -177,7 +155,7 @@ class InstitutionPersonController extends Controller
                 'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
-                'nationality' => $staff->person->nationality?->name,
+                'nationality' => $staff->person->nationality?->label(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
                 'image' => $staff->person->image,

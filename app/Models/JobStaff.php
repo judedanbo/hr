@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class JobStaff extends Pivot
@@ -12,16 +12,16 @@ class JobStaff extends Pivot
     /**
      * Get all of the jobs for the JobStaff
      */
-    public function job(): HasOne
+    public function job(): BelongsTo
     {
-        return $this->HasOne(Job::class, 'id', 'job_id');
+        return $this->BelongsTo(Job::class);
     }
 
     /**
      * Get all of the staff for the JobStaff
      */
-    public function staff(): HasOne
+    public function staff(): BelongsTo
     {
-        return $this->HasOne(InstitutionPerson::class, 'id', 'staff_id');
+        return $this->BelongsTo(InstitutionPerson::class,);
     }
 }

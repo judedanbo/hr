@@ -54,8 +54,8 @@ class InstitutionPerson extends Pivot
             ->withPivot('start_date', 'end_date')
             ->using(StaffUnit::class)
             ->orderByPivot('start_date', 'desc')
-            ->wherePivotNull('end_date')
-            ->whereNull('units.end_date')
+            // ->wherePivotNull('end_date')
+            // ->whereNull('units.end_date');
             ->latest();
     }
 
@@ -76,19 +76,59 @@ class InstitutionPerson extends Pivot
         )
             ->using(JobStaff::class)
             ->orderByPivot('start_date', 'desc')
-            ->wherePivotNull('end_date')
+            // ->wherePivotNull('end_date')
             ->latest();
     }
 
+    public function allUnits(): HasMany
+    {
+        return $this->hasMany(StaffUnit::class, 'staff_id')
+            ->latest('start_date');
+    }
+
+    public function currentUnit(): BelongsTo
+    {
+        return $this->BelongsTo(StaffUnit::class);
+    }
+
+    public function scopeWithCurrentUnit($query)
+    {
+        $query->addSelect([
+            'current_unit_id' => StaffUnit::select('id')
+                ->whereColumn('institution_person.id', 'staff_unit.staff_id')
+                ->latest('staff_unit.start_date')
+                ->take(1)
+        ])->with(['currentUnit' => function ($query) {
+            $query->with('unit:id,name');
+        }]);
+    }
+
+    public function currentRank(): BelongsTo
+    {
+        return $this->BelongsTo(JobStaff::class);
+    }
+
+    public function scopeWithCurrentRank($query)
+    {
+        $query->addSelect([
+            'current_rank_id' => JobStaff::select('id')
+                ->whereColumn('institution_person.id', 'job_staff.staff_id')
+                ->latest('job_staff.start_date')
+                ->take(1)
+        ])->with(['currentRank' => function ($query) {
+            $query->with('job:id,name');
+        }]);
+    }
+
     // get current rank of staff
-    public function getCurrentRankAttribute()
-    {
-        return $this->ranks()->first();
-    }
-    public function getCurrentUnitAttribute()
-    {
-        return $this->units->first();
-    }
+    // public function getCurrentRankAttribute()
+    // {
+    //     return $this->ranks()->first();
+    // }
+    // public function getCurrentUnitAttribute()
+    // {
+    //     return $this->units->first();
+    // }
 
     public function dependents(): HasMany
     {
@@ -97,13 +137,19 @@ class InstitutionPerson extends Pivot
 
     public function scopeActive($query)
     {
-        return $query->with(['statuses' => function ($query) {
+        // return $query->addSelect([
+        //     'staff_status' => Status::select('status')
+        //         ->whereColumn('institution_person.id', 'status.staff_id')
+        //         // ->whereNull('status.end_date')
+        //         // ->whereNotNull('status.status')
+        //         ->where('status.status', 'A')
+        //         ->latest('status.start_date')
+        //         ->take(1)
+        // ]);
+        return $query->whereHas('statuses', function ($query) {
             $query->whereNull('end_date');
             $query->where('status', 'A');
-        }]);
-        // return $query->with(['person' => function ($query) {
-        //     $query->whereRaw("(DATEDIFF(NOW(), date_of_birth)/365) < 60");
-        // }]); //whereRaw("(DATEDIFF(NOW(), people.date_of_birth)/365) < 60");
+        });
     }
 
     public function scopeRetired($query)
@@ -133,5 +179,39 @@ class InstitutionPerson extends Pivot
     public function statuses(): HasMany
     {
         return $this->hasMany(Status::class, 'staff_id', 'id')->latest();
+    }
+
+
+    public function scopeSearch($query, $search)
+    {
+        $query->when($search, function ($query, $search) {
+            $query->where(function ($whereQry) use ($search) {
+                $whereQry->where('staff_number', 'like', "%{$search}%");
+                $whereQry->orWhere('file_number', 'like', "%{$search}%");
+                $whereQry->orWhere('old_staff_number', 'like', "%{$search}%");
+                $whereQry->orWhereYear('hire_date', $search);
+                $whereQry->orWhereRaw('monthname(hire_date) like ?', ['%' . $search . '%']);
+                $whereQry->orWhereHas('person', function ($perQuery) use ($search) {
+                    $terms = explode(' ', $search);
+                    foreach ($terms as $term) {
+                        $perQuery->where(function ($searchName) use ($term) {
+                            $searchName->where('first_name', 'like', "%{$term}%");
+                            $searchName->orWhere('other_names', 'like', "%{$term}%");
+                            $searchName->orWhere('surname', 'like', "%{$term}%");
+                            $searchName->orWhere('date_of_birth', 'like', "%{$term}%");
+                            $searchName->orWhereRaw('monthname(date_of_birth) like ?', [$term]);
+                        });
+                    }
+                });
+                $whereQry->orWhereHas('ranks', function ($rankQuery) use ($search) {
+                    $rankQuery->where('name', 'like', "%{$search}%");
+                    $rankQuery->whereNull('job_staff.end_date');
+                });
+                $whereQry->orWhereHas('units', function ($jobQuery) use ($search) {
+                    $jobQuery->where('name', 'like', "%{$search}%");
+                    $jobQuery->whereNull('staff_unit.end_date');
+                });
+            });
+        });
     }
 }
