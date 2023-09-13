@@ -70,16 +70,11 @@ let BreadCrumpLinks = [
   <Head title="Departments" />
 
   <MainLayout>
-    <template #header>
-      <h2
-        class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50"
-      >
-        Departments
-      </h2>
-    </template>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <BreadCrumpVue :links="BreadCrumpLinks" />
+
     <div class="overflow-hidden shadow-sm sm:rounded-lg">
       <div class="p-6 border-b border-gray-200">
-        <BreadCrumpVue :links="BreadCrumpLinks" />
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"></div>
         <div class="sm:flex items-center justify-between my-2">
           <FormKit
@@ -91,8 +86,8 @@ let BreadCrumpLinks = [
           />
           <InfoCard title="Units" :value="units.total" />
           <BreezeButton @click="toggle()">Add New</BreezeButton>
-        </div>
-        <!-- {{ units.data[0].institution }} -->
+        </div>   
+             
         <div v-if="units.total > 0" class="flex flex-col mt-2">
           <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div
@@ -108,13 +103,13 @@ let BreadCrumpLinks = [
                     <tr>
                       <th
                         scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-100 uppercase"
+                        class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-100 uppercase"
                       >
                         Name
                       </th>
                       <th
                         scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-gray-500 dark:text-gray-100 uppercase text-right"
+                        class="px-6 py-3 text-xs font-bold tracking-widest text-gray-800 dark:text-gray-100 uppercase text-right"
                       >
                         Units
                       </th>
@@ -127,7 +122,7 @@ let BreadCrumpLinks = [
                     </tr>
                   </thead>
                   <tbody
-                    class="bg-white dark:bg-gray-600 divide-y divide-gray-200"
+                  class="bg-white dark:bg-gray-500 divide-y divide-gray-200 dark:divide-gray-400"
                   >
                     <tr
                       @click="openUnit(unit.id)"
@@ -135,7 +130,7 @@ let BreadCrumpLinks = [
                       :key="unit.id"
                       class="cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-400 hover:shadow-lg"
                     >
-                      <td class="px-6 py-2 whitespace-nowrap">
+                      <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                           <div
                             class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
@@ -175,6 +170,7 @@ let BreadCrumpLinks = [
         <NoItem v-else name="Department" />
       </div>
     </div>
+  </div>
     <Modal @close="toggle()" :show="openAddDialog">
       <AddUnit
         :units="parentUnits"

@@ -92,29 +92,29 @@ let BreadCrumpLinks = [
                   <table
                     class="min-w-full overflow-x-scroll divide-y divide-gray-200"
                   >
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
                       <tr>
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-100 uppercase"
                         >
                           Name
                         </th>
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-100 uppercase"
                         >
                           Date of Birth
                         </th>
                         <!-- <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-100 uppercase"
                         >
                           SSNIT No
                         </th> -->
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-100 uppercase"
                         >
                           Role
                         </th>
@@ -123,20 +123,14 @@ let BreadCrumpLinks = [
                         </th>
                       </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-500 divide-y divide-gray-200 dark:divide-gray-400">
                       <tr
                         v-for="person in people.data"
                         :key="person.id"
-                        class="transition-all hover:bg-gray-100 hover:shadow-lg"
+                        class="cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-400 hover:shadow-lg"
                       >
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4 text-sm font-medium whitespace-nowrap dark:text-gray-50 text-right">
                           <div class="flex items-center">
-                            <!-- <div
-                                                            class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center">
-                                                            {{
-                                                                person.initials
-                                                            }}
-                                                        </div> -->
                             <Avatar
                               class="w-12 h-12"
                               :initials="person.initials"
@@ -144,20 +138,20 @@ let BreadCrumpLinks = [
                             />
 
                             <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">
+                              <div class="text-sm font-medium text-gray-900 dark:text-gray-50">
                                 {{ person.name }}
                               </div>
-                              <div class="text-sm text-gray-500">
+                              <div class="text-sm text-left text-gray-500 dark:text-gray-100">
                                 {{ person.gender }}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">
+                          <div class="text-sm text-gray-900 dark:text-gray-200">
                             {{ formatDate(person.dob) }}
                           </div>
-                          <div class="text-sm text-gray-500">
+                          <div class="text-sm text-gray-500 dark:text-gray-100">
                             {{ getAge(person.dob) }}
                             Years
                           </div>
@@ -181,7 +175,7 @@ let BreadCrumpLinks = [
                                 person: person.id,
                               })
                             "
-                            class="text-green-600 hover:text-green-900"
+                            class="text-green-600 hover:text-green-900 dark:text-gray-50"
                             >Show
                           </Link>
                         </td>

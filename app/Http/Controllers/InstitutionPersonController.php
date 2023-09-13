@@ -32,7 +32,7 @@ class InstitutionPersonController extends Controller
             ->withCurrentUnit()
             ->withCurrentRank()
             ->search(request()->search)
-            ->paginate()
+            ->paginate(10)
             ->withQueryString()
             ->through(fn ($staff) => [
                 'id' => $staff->id,

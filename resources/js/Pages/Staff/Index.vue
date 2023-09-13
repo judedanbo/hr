@@ -79,8 +79,6 @@ let BreadCrumpLinks = [
             />
             <InfoCard title="Staff" :value="staff.total" link="#" />
 
-           
-            <!-- <BreezeButton @click="toggle()">Add New Staff</BreezeButton> -->
             <a
               @click.prevent="toggle()"
               href="#"
@@ -107,44 +105,39 @@ let BreadCrumpLinks = [
                       <tr>
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-50 uppercase"
                         >
                           Name
                         </th>
-                        <!-- <th
-                          scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
-                        >
-                          Date of Birth
-                        </th> -->
+                        
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-50 uppercase"
                         >
                           Employment
                         </th>
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-50 uppercase"
                         >
                           Retirement
                         </th>
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-50 uppercase"
                         >
                           Current Rank
                         </th>
                         <th
                           scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-50 uppercase"
+                          class="px-6 py-3 text-xs font-bold tracking-widest text-left text-gray-800 dark:text-gray-50 uppercase"
                         >
                           Current Unit
                         </th>
                       </tr>
                     </thead>
                     <tbody
-                      class="bg-white dark:bg-gray-500 divide-y divide-gray-200"
+                      class="bg-white dark:bg-gray-500 divide-y divide-gray-200 dark:divide-gray-400"
                     >
                       <tr
                         v-for="person in staff.data"

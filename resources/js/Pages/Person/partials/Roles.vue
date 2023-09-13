@@ -16,7 +16,7 @@ onMounted(async () => {
     <span v-if="roles.data.staff.length > 0" >
       <span
         v-if="roles.data.staff[0].status == 'Active staff'"
-        class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700"
+        class="inline-flex items-center gap-x-1.5 rounded-full bg-green-100 dark:bg-gray-300/20 px-2 py-1 text-xs font-medium text-green-700 dark:text-gray-200"
       >
         <svg
           class="h-1.5 w-1.5 fill-green-500"
@@ -29,7 +29,7 @@ onMounted(async () => {
       </span>
       <span
         v-else
-        class="inline-flex items-center gap-x-1.5 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700"
+        class="inline-flex items-center gap-x-1.5 rounded-full bg-yellow-100 dark:bg-gray-300/20 px-2 py-1 text-xs font-medium text-yellow-700 dark:text-gray-200"
       >
         <svg
           class="h-1.5 w-1.5 fill-yellow-500"
@@ -44,7 +44,7 @@ onMounted(async () => {
 
     <span
       v-if="roles.data.user"
-      class="inline-flex items-center gap-x-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700"
+      class="inline-flex items-center gap-x-1.5 rounded-full bg-red-100 dark:bg-gray-300/20 px-2 py-1 text-xs font-medium text-red-700 dark:text-gray-200"
     >
       <svg
         class="h-1.5 w-1.5 fill-red-500"
