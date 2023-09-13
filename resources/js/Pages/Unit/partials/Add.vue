@@ -1,10 +1,14 @@
 <script setup>
+import { onMounted, ref } from 'vue'
 import { Inertia } from "@inertiajs/inertia";
 const emit = defineEmits(["formSubmitted"]);
-
+let unitTypes =  ref([]);
+onMounted(async () => {
+  const unitTypesData = await axios.get(route("unit-type.index"));
+  unitTypes.value = unitTypesData.data;
+});
 defineProps({
   units: Array,
-  types: Array,
   institution: Object,
 })
 
@@ -55,7 +59,7 @@ const submitHandler = (data, node) => {
         validation-visibility="submit"
         disabled />
       <FormKit
-        type="text"
+        type="hidden"
         name="institution"
         id="institution"
         label="Institution"
@@ -68,8 +72,9 @@ const submitHandler = (data, node) => {
         name="type"
         id="type"
         validation="required|string|length:1,5"
+        placeholder="Select Unit type"
         label="Unit Type"
-        :options="types"
+        :options="unitTypes"
         error-visibility="submit" 
       />
       <FormKit

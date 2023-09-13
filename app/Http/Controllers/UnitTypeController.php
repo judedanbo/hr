@@ -13,7 +13,7 @@ class UnitTypeController extends Controller
         foreach (UnitType::cases() as $type) {
             $newType = new \stdClass();
             $newType->value = $type->value;
-            $newType->label = $type->name;
+            $newType->label = $type->label();
             $types[] = $newType;
         }
         return $types;

@@ -14,17 +14,6 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
-        // $types = [];
-        // $first  = new \stdClass();
-        // $first->value = null;
-        // $first->label = 'Select Unit Type';
-        // array_push($types, $first);
-        // foreach (UnitType::cases() as $type) {
-        //     $temp = new \stdClass();
-        //     $temp->value = $type->value;
-        //     $temp->label = $type->name;
-        //     array_push($types, $temp);
-        // }
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
@@ -66,7 +55,6 @@ class UnitController extends Controller
 
                     ]
                 ),
-            // 'unit_types' => $types,
             'filters' => ['search' => request()->search],
         ]);
     }

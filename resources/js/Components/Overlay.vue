@@ -1,7 +1,6 @@
 <script setup>
 
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { defineEmits } from 'vue'
 
 defineProps({
     open: Boolean

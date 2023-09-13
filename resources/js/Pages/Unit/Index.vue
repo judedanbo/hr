@@ -178,7 +178,6 @@ let BreadCrumpLinks = [
     <Modal @close="toggle()" :show="openAddDialog">
       <AddUnit
         :units="parentUnits"
-        :types="unit_types"
         :institution="units.data[0].institution"
       />
     </Modal>
