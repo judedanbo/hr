@@ -1,12 +1,16 @@
 <script setup>
 import { ref } from "vue";
-const url = ref(null);
-// let selectedFile = null;
-const imageChanged = (e) => {
-  // this.selectedFile = e.target.files[0];
-
-  const file = e.target.files[0];
-  url.value = URL.createObjectURL(file);
+const url = ref('/images/placeholder.webp');
+const imageChanged = () => {
+  // console.log(e)
+  // console.log(data)
+  const file = profileImage.files[0];
+  // console.log(file)
+  if(file){
+    url.value = URL.createObjectURL(file);
+  }else{
+    url.value = '/images/placeholder.webp';
+  }
 };
 </script>
 <template>
@@ -19,14 +23,13 @@ const imageChanged = (e) => {
       />
     </div>
     <FormKit
-      @Change="imageChanged"
+      @input="imageChanged"
+      id="profileImage"
       type="file"
       name="image"
-      id="image"
-      label="Select Image"
       accept="image/*"
       validation="image"
-      inner-class="opacity-0"
-    />
+    >
+  </FormKit>
   </div>
 </template>

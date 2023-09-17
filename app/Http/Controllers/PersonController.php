@@ -77,15 +77,22 @@ class PersonController extends Controller
      */
     public function show($person)
     {
-        $person = Person::with(['address' => function ($query) {
-            $query->where('valid_end', null);
-        }, 'contacts', 'dependent'])->whereId($person)->first();
+        $person = Person::with([
+            'address' => function ($query) {
+                $query->where('valid_end', null);
+            },
+            'contacts',
+            'dependent',
+            'dependents',
+            'institution'
+        ])
+            ->whereId($person)->first();
         // return $person;
         return Inertia::render('Person/NewShow', [
             'person' => [
                 'id' => $person->id,
                 'name' => $person->full_name,
-                'dob' => $person->date_of_birth,
+                'dob' => $person->date_of_birth->format('d M Y'),
                 // 'ssn' => $person->social_security_number,
                 'image' => $person->image,
                 'gender' => $person->gender->label(),
@@ -110,6 +117,24 @@ class PersonController extends Controller
                 'post_code' => $person->address->first()->post_code,
                 'valid_end' => $person->address->first()->valid_end,
             ] : null,
+            'staff' => $person->institution->count() > 0 ?  $person->institution->map(fn ($inst) => [
+                'institution_name' =>  $inst->name,
+                'institution_id' =>  $inst->id,
+                'staff_id' =>  $inst->staff->id,
+                'staff_number' =>  $inst->staff->staff_number,
+                'file_number' =>  $inst->staff->file_number,
+                'hire_date' =>  $inst->staff->hire_date,
+                'end_date' =>  $inst->staff->end_date,
+            ])  : null,
+            'dependents' => $person->dependents ? $person->dependents->map(fn ($dep) => [
+                'id' => $dep->id,
+                'person_id' => $dep->person_id,
+                'name' => $dep->person->full_name,
+                'gender' => $dep->person->gender?->label(),
+                'dob' => $dep->person->date_of_birth,
+                'relation' => $dep->relation,
+                'staff_id' => $dep->staff_id,
+            ]) : null,
         ]);
     }
 

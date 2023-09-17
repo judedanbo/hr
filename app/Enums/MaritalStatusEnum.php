@@ -4,11 +4,11 @@ namespace App\Enums;
 
 enum MaritalStatusEnum: String
 {
+    case NOT_AVAILABLE = '';
     case SINGLE = 'S';
     case MARRIED = 'M';
     case WIDOWED = 'W';
     case DEVOICED = 'D';
-    case NOT_AVAILABLE = '';
 
     public function label(): string
     {

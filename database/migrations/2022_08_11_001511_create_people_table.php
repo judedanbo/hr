@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('country_of_birth', 3)->nullable();
             $table->string('gender', 1)->nullable();
             $table->string('marital_status', 12)->nullable();
-            $table->string('nationality', 40)->nullable();
+            $table->string('nationality', 3)->nullable();
             $table->string('ethnicity', 40)->nullable();
             $table->string('religion', 40)->nullable();
             $table->string('image')->nullable();

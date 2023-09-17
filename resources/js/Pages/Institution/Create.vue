@@ -20,7 +20,7 @@ const submitHandler = (data, node) => {
             emit("formSubmitted");
         },
         onError: (errors) => {
-            node.setErrors([''], errors)
+            node.setErrors(['error submitting form '], errors)
         }
     })
 }

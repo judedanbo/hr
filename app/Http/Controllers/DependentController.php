@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDependentRequest;
 use App\Http\Requests\UpdateDependentRequest;
 use App\Models\Dependent;
+use App\Models\Person;
+use Exception;
 use Inertia\Inertia;
 
 class DependentController extends Controller
@@ -26,7 +28,9 @@ class DependentController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Dependents/Create', []
+        return Inertia::render(
+            'Dependents/Create',
+            []
 
         );
     }
@@ -38,7 +42,19 @@ class DependentController extends Controller
      */
     public function store(StoreDependentRequest $request)
     {
-        //
+        $person = $request->validated();
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('public/images');
+            $person['image'] = $request->file('image')->hashName();
+        }
+
+        $newPerson = Person::create($person);
+        Dependent::create([
+            'staff_id' => $request->validated()['staff_id'],
+            'person_id' => $newPerson->id,
+            'relation' => $request->validated()['relation'],
+        ]);
+        return redirect()->back()->with('success', 'Dependent created successfully');
     }
 
     /**

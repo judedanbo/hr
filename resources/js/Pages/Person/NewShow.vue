@@ -6,6 +6,7 @@ import Summary from "@/Pages/Person/Summary.vue";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
+import Dependents from '../Staff/Dependents.vue'
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import Avatar from '../Person/partials/Avatar.vue'
@@ -26,6 +27,8 @@ let props = defineProps({
   address: Object,
   contacts: Array,
   filters: Object,
+  dependents: Array,
+  staff: Object,
 });
 
 let BreadcrumbLinks = [
@@ -155,9 +158,8 @@ let BreadcrumbLinks = [
             <Summary class="" :person="person" />
             <!-- Contact information -->
             <Address :address="address" :contacts="contacts" :person="person.id" />
-            <!-- <Dependents :staff="staff" /> -->
+            <Dependents :dependents="dependents" />
           </div>
-
           <div
             class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"
           >

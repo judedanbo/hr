@@ -150,7 +150,7 @@ class InstitutionPersonController extends Controller
                 'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
-                'nationality' => $staff->person->nationality?->label(),
+                'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
                 'image' => $staff->person->image,
@@ -224,6 +224,7 @@ class InstitutionPersonController extends Controller
                     'gender' => $dep->person->gender?->label(),
                     'dob' => $dep->person->date_of_birth,
                     'relation' => $dep->relation,
+                    'staff_id' => $staff->id,
                 ]) : null,
             ],
         ]);

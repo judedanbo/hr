@@ -1,8 +1,8 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 const emit = defineEmits(["formSubmitted"]);
-let unitTypes =  ref([]);
+let unitTypes = ref([]);
 onMounted(async () => {
   const unitTypesData = await axios.get(route("unit-type.index"));
   unitTypes.value = unitTypesData.data;
@@ -10,32 +10,26 @@ onMounted(async () => {
 defineProps({
   units: Array,
   institution: Object,
-})
+});
 
-import {
-  format,
-  addDays,
-  subYears,
-} from "date-fns";
+import { format, addDays, subYears } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-    Inertia.post(route("unit.store"),
-    data, {
-        preserveScroll: true,
-        onSuccess: () => {
-            node.reset()
-            emit("formSubmitted");
-        },
-        onError: (errors) => {
-            node.setErrors(['Error on submission'], errors)
-        }
-    })
-}
-
+  Inertia.post(route("unit.store"), data, {
+    preserveScroll: true,
+    onSuccess: () => {
+      node.reset();
+      emit("formSubmitted");
+    },
+    onError: (errors) => {
+      node.setErrors(["Error on submission"], errors);
+    },
+  });
+};
 </script>
 
 <template>
@@ -48,7 +42,8 @@ const submitHandler = (data, node) => {
         id="name"
         label="Unit name"
         validation="required|string|length:2,150"
-        validation-visibility="submit" />
+        validation-visibility="submit"
+      />
       <FormKit
         type="hidden"
         name="institution_id"
@@ -57,7 +52,8 @@ const submitHandler = (data, node) => {
         :value="institution.id"
         validation="required|integer|min:1|max:150"
         validation-visibility="submit"
-        disabled />
+        disabled
+      />
       <FormKit
         type="hidden"
         name="institution"
@@ -66,7 +62,8 @@ const submitHandler = (data, node) => {
         :value="institution.name"
         validation="required|string|length:1,150"
         validation-visibility="submit"
-        disabled />
+        disabled
+      />
       <FormKit
         type="select"
         name="type"
@@ -75,7 +72,7 @@ const submitHandler = (data, node) => {
         placeholder="Select Unit type"
         label="Unit Type"
         :options="unitTypes"
-        error-visibility="submit" 
+        error-visibility="submit"
       />
       <FormKit
         type="select"
@@ -87,7 +84,6 @@ const submitHandler = (data, node) => {
         error-visibility="submit"
       />
       <div class="sm:flex gap-4">
-       
         <FormKit
           type="date"
           name="start_date"

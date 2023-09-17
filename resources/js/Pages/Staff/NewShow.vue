@@ -235,7 +235,7 @@ let BreadcrumbLinks = [
               :person="person.id"
             />
             <!-- TODO Add dependant forme and display -->
-            <!-- <Dependents :staff="staff" /> -->
+            <Dependents :staff_id="staff.staff_id" :dependents="staff.dependents" />
             <!-- <StaffDependents v-if="staff" :staff="staff" class="" /> -->
           </div>
 

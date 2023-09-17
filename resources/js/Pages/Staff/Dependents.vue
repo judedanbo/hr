@@ -5,7 +5,8 @@ import { useToggle } from "@vueuse/core";
 import AddDependant from './partials/AddDependant.vue'
 
 defineProps({
-  staff: Object,
+  dependents: Array,
+  staff_id: Number
 });
 
 let showAddDependantForm = ref(false)
@@ -29,15 +30,15 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
         </div>
         <div class="flex-none self-end px-6 pt-4">
           <button
+            v-if="staff_id"
             @click.prevent="toggleAddDependantFrom()"
             class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
           >
             Add dependent
           </button>
         </div>
-
         <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
-          <table v-if="staff.dependents.length > 0" class="min-w-full">
+          <table v-if="dependents.length > 0" class="min-w-full">
             <colgroup>
               <col class="w-full" />
               <col class="sm:w-1/6" />
@@ -64,20 +65,20 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
             </thead>
             <tbody>
               <tr
-                v-for="dependent in staff.dependents"
+                v-for="dependent in dependents"
                 :key="dependent.id"
                 class="border-b border-gray-200"
               >
-                <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+                <td class="max-w-0 py-2 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="font-medium text-gray-900 dark:text-gray-50">
                     {{ dependent.name }}
                   </div>
-                  <div class="mt-1 truncate text-gray-500">
+                  <div class="mt-1 truncate text-gray-500 dark:text-gray-50">
                     {{ dependent.gender }}
                   </div>
                 </td>
                 <td
-                  class="hidden px-3 py-5 text-right text-sm text-gray-500 dark:text-gray-50 sm:table-cell"
+                  class="hidden px-3 py-2 text-right text-sm text-gray-500  dark:text-gray-50 sm:table-cell"
                 >
                   {{ dependent.relation }}
                 </td>
@@ -93,8 +94,8 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
         </div>
       </dl>
     </div>
-    <Modal @close="toggleAddDependantFrom()" :show="showAddDependantForm" >
-      <AddDependant :staff_id="staff.staff_id"/>
+    <Modal  @close="toggleAddDependantFrom()" :show="showAddDependantForm" >
+      <AddDependant @formSubmitted="toggleAddDependantFrom()" :staff_id="staff_id"/>
     </Modal>
   </main>
 </template>

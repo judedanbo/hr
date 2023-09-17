@@ -2,7 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GenderEnum;
+use App\Enums\MaritalStatusEnum;
+use App\Enums\Nationality;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreDependentRequest extends FormRequest
 {
@@ -13,7 +18,7 @@ class StoreDependentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +29,23 @@ class StoreDependentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'string|min:1|max:10|nullable',
+            'surname' => 'required|string|max:100',
+            'first_name' => 'required|string|max:100',
+            'other_names' => 'string|max:100|nullable',
+            'date_of_birth' => [
+                'required',
+                'date',
+                'before_or_equal:' . Carbon::now()->format('Y-m-d'),
+                'after:' . Carbon::now()->subYears(150)->format('Y-m-d'),
+            ],
+            'nationality' => ['required', new Enum(Nationality::class)],
+            'gender' => ['required', new Enum(GenderEnum::class)],
+            'marital_status' => [new Enum(MaritalStatusEnum::class)],
+            'religion' => 'string|max:40|nullable',
+            'image' => 'file|image|nullable',
+            'staff_id' => 'required|integer',
+            'relation' => 'required|string|max:40',
         ];
     }
 }
