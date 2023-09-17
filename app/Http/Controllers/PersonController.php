@@ -82,6 +82,7 @@ class PersonController extends Controller
                 $query->where('valid_end', null);
             },
             'contacts',
+            'user',
             'dependent',
             'dependents',
             'institution'
@@ -92,14 +93,20 @@ class PersonController extends Controller
             'person' => [
                 'id' => $person->id,
                 'name' => $person->full_name,
+                'dob-value' => $person->date_of_birth,
                 'dob' => $person->date_of_birth->format('d M Y'),
-                // 'ssn' => $person->social_security_number,
-                'image' => $person->image,
-                'gender' => $person->gender->label(),
-                'marital_status' => $person->marital_status->label(),
+                'dob_distance' => $person->date_of_birth->diffInYears() . " years old",
+                'gender' => $person->gender?->label(),
+                'ssn' => $person->social_security_number,
+                'initials' => $person->initials,
                 'nationality' => $person->nationality?->nationality(),
                 'religion' => $person->religion,
-                'initials' => $person->initials,
+                'marital_status' => $person->marital_status?->label(),
+                'image' => $person->image,
+                'identities' => $person->identities->count() > 0 ? $person->identities->map(fn ($id) => [
+                    'type' => str_replace('_', ' ', $id->id_type->name),
+                    'number' => $id->id_number,
+                ]) : null,
             ],
             'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,

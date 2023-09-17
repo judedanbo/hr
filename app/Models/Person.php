@@ -55,7 +55,19 @@ class Person extends Model
 
     public function getInitialsAttribute(): string
     {
-        return strtoupper(substr($this->first_name, 0, 1) . substr($this->surname, 0, 1));
+        $otherNamesInitial = substr($this->other_names, 0, 1) ?? null;
+        $firstNameInitial = substr($this->first_name, 0, 1) ?? null;
+
+        $surname = $this->surname;
+
+        if ($firstNameInitial === null || $otherNamesInitial == null) {
+            $surnameMultiple = explode(' ', $surname);
+            if (count($surnameMultiple) > 1) {
+                return strtoupper(substr($surnameMultiple[0], 0, 1) . substr($surnameMultiple[1], 0, 1));
+            }
+            return strtoupper(substr($surname, 0, 2));
+        }
+        return strtoupper($firstNameInitial ?? $otherNamesInitial . substr($this->surname, 0, 1));
     }
 
     public function getAgeAttribute(): int
