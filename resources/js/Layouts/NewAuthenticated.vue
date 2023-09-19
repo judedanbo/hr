@@ -41,14 +41,14 @@ const navigation = [
     icon: FolderIcon,
     current: false,
   },
+  // {
+  //   name: "Ranks",
+  //   href: route("job.index"),
+  //   icon: CalendarIcon,
+  //   current: false,
+  // },
   {
     name: "Ranks",
-    href: route("job.index"),
-    icon: CalendarIcon,
-    current: false,
-  },
-  {
-    name: "Ranks Categories",
     href: route("job-category.index"),
     icon: CalendarIcon,
     current: false,

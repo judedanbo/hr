@@ -8,6 +8,14 @@ enum EmployeeStatusEnum: String
     case Inactive = 'I';
     case Suspended = 'S';
     case Left = 'L';
+    case Termination = 'T';
+    case Resignation = 'R';
+    case Voluntary = 'V';
+    case Deceased = 'D';
+    case Retired = 'E';
+    case Dismissed = 'M';
+    case leavePay = 'P';
+    case leaveNoPay = 'N';
 
     public  function label(): string
     {
@@ -16,6 +24,14 @@ enum EmployeeStatusEnum: String
             self::Inactive => 'Inactive staff',
             self::Suspended => 'Suspended staff',
             self::Left => 'Separated staff',
+            self::Termination => 'Appointment Terminated',
+            self::Resignation => 'Resigned staff',
+            self::Voluntary => 'Voluntary Resignation',
+            self::Deceased => 'Deceased',
+            self::Retired => 'Statutory Retirement',
+            self::Dismissed => 'Dismissed',
+            self::leavePay => 'Leave with pay',
+            self::leaveNoPay => 'Leave without pay',
         };
     }
 }

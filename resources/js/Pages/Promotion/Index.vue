@@ -91,10 +91,7 @@ watch(search, (value) => {
                                                                 promotion.job_name }}</Link>
 
                                                     </div>
-                                                    <div v-if="promotion.tax" class="mt-1 text-xs leading-5 text-gray-500">
-                                                        {{
-                                                            promotion.tax }}
-                                                        tax</div>
+                                                    
                                                 </div>
                                             </div>
                                             <div

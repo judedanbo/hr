@@ -3,7 +3,6 @@ import { Link } from '@inertiajs/inertia-vue3'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 defineProps({
     navigation: Array,
-    teams: Array,
 });
 
 </script>
@@ -24,22 +23,7 @@ defineProps({
                     </li>
                 </ul>
             </li>
-            <!-- {{ $page.props.ziggy.location }} -->
-            <!-- <li>
-                <div class="text-xs font-semibold leading-6 text-gray-400">Your teams</div>
-                <ul role="list" class="-mx-2 mt-2 space-y-1">
-                    <li v-for="team in teams" :key="team.name">
-                        <Link :href="team.href"
-                            :class="[team.current ? 'bg-gray-50 text-green-600' : 'text-gray-800 dark:text-gray-50 hover:text-green-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
-                            <span
-                                :class="[team.current ? 'text-green-600 border-green-600' : 'text-gray-400 border-gray-200 group-hover:border-green-600 group-hover:text-green-600', 'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white']">{{
-                                    team.initial }}</span>
-                            <span class="truncate">{{ team.name }}</span>
-                        </Link>
-                    </li>
-                </ul>
-            </li> -->
-            <li class="mt-auto">
+           <li class="mt-auto">
                 <Link href="#"
                     class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-gray-50 hover:text-green-600 dark:hover:text-gray-800">
                 <Cog6ToothIcon

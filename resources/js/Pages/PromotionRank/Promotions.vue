@@ -211,18 +211,15 @@ const indeterminate = computed(
                     class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
                   >
                     <div
-                      v-if="promotion.unit.length > 0"
                       class="font-medium text-gray-900 dark:text-gray-50"
                     >
                       {{ promotion.unit.name }}
                     </div>
                     <div
-                      v-if="promotion.unit.length > 0"
                       class="mt-1 text-gray-500 dark:text-gray-200"
                     >
                       {{ formatDistance(promotion.unit.start_date) }}
                     </div>
-                    <div v-else>no posting</div>
                   </td>
                   <td
                     class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"

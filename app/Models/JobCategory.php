@@ -29,6 +29,15 @@ class JobCategory extends Model
     }
 
     /**
+     * Get staff of the JobCategory
+     */
+
+    public function staff()
+    {
+        return $this->hasManyThrough(JobStaff::class, Job::class);
+    }
+
+    /**
      * Get the parent that owns the JobCategory
      */
     public function parent()

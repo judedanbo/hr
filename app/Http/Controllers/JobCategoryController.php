@@ -19,7 +19,19 @@ class JobCategoryController extends Controller
         return Inertia::render('JobCategory/Index', [
 
             'categories' => JobCategory::query()
-                ->withCount(['jobs',])
+                ->withCount(
+                    [
+                        'jobs'
+                    ]
+                )
+                ->with(['staff' => function ($query) {
+                    $query->withCount(['staff' => function ($query) {
+                        $query->whereHas('statuses', function ($query) {
+                            $query->where('status', 'A');
+                        });
+                        $query->where('job_staff.end_date', null);
+                    }]);
+                }])
                 ->when(request()->search, function ($query, $search) {
                     $query->where('name', "like", "%" . $search . "%");
                     $query->orWhere('short_name', 'like', "%$search%");
@@ -33,11 +45,13 @@ class JobCategoryController extends Controller
                     'short_name' => $jobCategory->short_name,
                     'level' => $jobCategory->level,
                     'jobs' => $jobCategory->jobs_count,
+                    // 'staff' => $jobCategory->staff_count,
                     'parent' => $jobCategory->parent ? [
                         'name' => $jobCategory->parent->name,
                         'id' => $jobCategory->parent->id
                     ] : '',
                     'institution' => $jobCategory->institution->name,
+                    'staff' => $jobCategory->staff->sum('staff_count'),
 
                 ]),
             'filters' => request()->all([

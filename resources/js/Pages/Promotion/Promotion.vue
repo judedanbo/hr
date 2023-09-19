@@ -1,5 +1,6 @@
 <script setup>
 import { Link } from "@inertiajs/inertia-vue3";
+import Pagination from "@/Components/Pagination.vue";
   defineProps({
     promotions: {
       type: Object,
@@ -74,7 +75,9 @@ const getMonth = (month) => {
                 </template>
               </tbody>
             </table>
+            
           </div>
+          <Pagination :records="promotions" />
         </div>
       </div>
   </template>
