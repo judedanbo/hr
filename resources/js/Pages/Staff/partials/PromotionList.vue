@@ -17,7 +17,7 @@ const formattedDob = (dob) => {
   <body class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
     <table v-if="promotions.length > 0" class="min-w-full">
       <colgroup></colgroup>
-      <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-100">
+      <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-100 dark:border-gray-200/50">
         <tr>
           <th
             scope="col"
@@ -43,9 +43,9 @@ const formattedDob = (dob) => {
         <tr
           v-for="promotion in promotions"
           :key="promotion.id"
-          class="border-b border-gray-200"
+          class="border-b border-gray-200 dark:border-gray-400/30"
         >
-          <td class="max-w-0 py-5 pl-2 pr-3 text-sm sm:pl-0">
+          <td class="max-w-0 py-2 pl-2 pr-3 text-sm sm:pl-0 w-2/4">
             <div class="font-medium text-gray-900 dark:text-gray-100">
               {{ promotion.name }}
             </div>
@@ -54,12 +54,12 @@ const formattedDob = (dob) => {
             </div>
           </td>
           <td
-            class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell"
+            class="hidden p-1 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/4"
           >
             {{ formattedDob(promotion.start_date) }}
           </td>
           <td
-            class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell"
+            class="hidden p-1  text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/4"
           >
             {{ formattedDob(promotion.end_date) }}
           </td>

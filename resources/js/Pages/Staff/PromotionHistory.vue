@@ -53,12 +53,12 @@ let getAge = (dateString) => {
   <main>
     <h2 class="sr-only">Promotion History</h2>
     <div
-      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80"
+      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80"
     >
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt
-            class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100"
+            class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-100"
           >
             Promotion History
           </dt>
@@ -66,7 +66,7 @@ let getAge = (dateString) => {
         <div class="flex-none self-end px-6 pt-4">
           <button
             @click="togglePromoteModal()"
-            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
           >
             {{ promotions.length > 0 ? "Promote" : "Assign rank" }}
           </button>

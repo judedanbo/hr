@@ -22,12 +22,12 @@ const toggleStatusModal = useToggle(openStatusModal);
   <main>
     <h2 class="sr-only">Status History</h2>
     <div
-      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80  "
+      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80  "
     >
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt
-            class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+            class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-50"
           >
             Status History
           </dt>
@@ -35,7 +35,7 @@ const toggleStatusModal = useToggle(openStatusModal);
         <div class="flex-none self-end px-6 pt-4 ">
           <button
             @click="toggleStatusModal()"
-            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
           >
             {{  "Change" }}
           </button>
@@ -45,7 +45,7 @@ const toggleStatusModal = useToggle(openStatusModal);
           <table v-if="statuses.length > 0" class="min-w-full">
             <colgroup></colgroup>
             <thead
-              class="border-b border-gray-300 text-gray-900 dark:text-gray-50"
+              class="border-b border-gray-300 text-gray-900 dark:border-gray-200/30 dark:text-gray-50"
             >
               <tr>
                 <th
@@ -72,7 +72,7 @@ const toggleStatusModal = useToggle(openStatusModal);
               <tr
                 v-for="status in statuses"
                 :key="status.id"
-                class="border-b border-gray-200"
+                class="border-b border-gray-200 dark:border-gray-400/30"
               >
                 <td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
                   <div class="font-medium text-gray-900 dark:text-gray-50">

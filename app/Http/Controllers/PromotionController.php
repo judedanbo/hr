@@ -95,11 +95,13 @@ class PromotionController extends Controller
             //     $query->where('status', 'A');
             // })
             ->with(['ranks', 'person', 'institution', 'units', 'statuses'])
-            // ->get()
-            ->paginate()
-            ->withQueryString()
-            ->through(fn ($staff) => [
+            // ->orderBy('job_categories.level')
+            ->get()
+            // ->paginate()
+            // ->withQueryString()
+            ->map(fn ($staff) => [
                 'id' => $staff->id,
+                'person_id' => $staff->person_id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,
                 'full_name' => $staff->person->full_name,
@@ -108,8 +110,10 @@ class PromotionController extends Controller
                 'rank_id' => $staff->ranks->first()->id,
                 'rank_name' => $staff->ranks->first()->name,
                 'remarks' => $staff->ranks->first()->pivot->remarks,
+                'status' => $staff->statuses->first()->status->label(),
                 'start_date' => $staff->ranks->first()->pivot->start_date->format('d F Y'),
                 'now' => date('Y-m-d'),
+                'test_rank' => $staff->ranks,
             ]);
         $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
 

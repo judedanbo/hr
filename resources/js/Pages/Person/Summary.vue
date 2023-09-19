@@ -29,7 +29,7 @@ let getAge = (dateString) => {
   <!-- Personal Details summary -->
   <main class="w-full">
     <h2 class="sr-only">Personal Details summary</h2>
-    <div class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80">
+    <div class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-500/30">
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100">
@@ -43,14 +43,14 @@ let getAge = (dateString) => {
          
           <Link
             :href="route('person.show', person.id)"
-            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
           >
             View
           </Link>
         </div>
 
         <div
-          class="mt-4 flex w-full flex-none gap-x-4 px-6 pt-6 border-t border-gray-900/5 dark:border-gray-400"
+          class="mt-4 flex w-full flex-none gap-x-4 px-6 pt-6 border-t border-gray-900/5 dark:border-gray-200/30"
         >
           <dt class="flex-none">
             <span class="sr-only">Date of birth</span>
@@ -141,7 +141,7 @@ let getAge = (dateString) => {
           </dd>
         </div>
       </dl>
-      <div class="mt-6 border-t border-gray-900/5 dark:border-gray-400 px-6 py-6">
+      <div class="mt-6 border-t border-gray-900/5 dark:border-gray-200/30 px-6 py-6">
         <Link
           :href="route('person.show', person.id)"
           class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100"

@@ -22,9 +22,9 @@ let getAge = (dateString) => {
 </script>
 <template>
   <main
-    class="px-8 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16  bg-gray-50 dark:bg-gray-500"
+    class="px-8 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14  xl:px-16  bg-gray-50 dark:bg-gray-500"
   >
-    <h2 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+    <h2 class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-white">
       Important dates
     </h2>
     <dl class="mt-6 grid grid-cols-1 gap-y-6 text-sm leading-6 sm:grid-cols-2">
@@ -51,7 +51,7 @@ let getAge = (dateString) => {
 
       <div
         v-if="staff.ranks.length > 0"
-        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/95 pt-6 sm:pr-4"
+        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/30 pt-6 sm:pr-4"
       >
         <dt class="font-semibold text-gray-900 dark:text-white">
           Current Rank
@@ -65,13 +65,13 @@ let getAge = (dateString) => {
       </div>
       <div
         v-else
-        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/95 pt-6 sm:pr-4 text-gray-900 dark:text-white"
+        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/30 pt-6 sm:pr-4 text-gray-900 dark:text-white"
       >
         No Rank rank available
       </div>
       <div
         v-if="staff.units.length > 0"
-        class="mt-8 sm:mt-6 sm:border-t sm:border-gray-900/5 dark:border-gray-200/95 sm:pl-4 sm:pt-6"
+        class="mt-8 sm:mt-6 sm:border-t sm:border-gray-900/5 dark:border-gray-200/30 sm:pl-4 sm:pt-6"
       >
         <dt class="font-semibold text-gray-900 dark:text-white">
           Current Posting
@@ -85,7 +85,7 @@ let getAge = (dateString) => {
       </div>
       <div
         v-else
-        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/95 pt-6 sm:pr-4 text-gray-900 dark:text-white"
+        class="mt-6 border-t border-gray-900/5 dark:border-gray-200/30 pt-6 sm:pr-4 text-gray-900 dark:text-white"
       >
         No Posting posting available
       </div>

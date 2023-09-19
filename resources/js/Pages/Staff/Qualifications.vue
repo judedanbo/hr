@@ -36,10 +36,10 @@ let getAge = (dateString) => {
   <!-- Transfer History -->
   <main >
     <h2 class="sr-only">staff's Qualifications</h2>
-    <div class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80">
+    <div class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80">
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
-          <dt class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50 ">
+          <dt class="text-xl font-semibold leading-6 text-gray-900 dark:text-gray-50">
             Qualifications
           </dt>
         </div>
@@ -48,7 +48,7 @@ let getAge = (dateString) => {
          <button
             @click="toggleQualificationModal()"
          
-           class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+           class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
          >
            {{'Add Qualification'}}
          </button>
@@ -59,7 +59,7 @@ let getAge = (dateString) => {
         <colgroup>
          
         </colgroup>
-        <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-50">
+        <thead class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50">
           <tr>
             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0">Institution</th>
             <th scope="col" class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell">Level</th>
@@ -70,7 +70,7 @@ let getAge = (dateString) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="qualification in qualifications" :key="qualification.id" class="border-b border-gray-200">
+          <tr v-for="qualification in qualifications" :key="qualification.id" class="border-b border-gray-200 dark:border-gray-400/30">
             <td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
               <div class="font-medium text-gray-900 dark:text-gray-50">{{ qualification.institution }}</div>
              

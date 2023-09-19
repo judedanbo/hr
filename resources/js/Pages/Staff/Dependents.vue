@@ -18,12 +18,12 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
   <main class="w-full">
     <h2 class="sr-only">Staff Dependents</h2>
     <div
-      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80"
+      class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-500/80"
     >
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt
-            class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100"
+            class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-100"
           >
             Staff Dependents
           </dt>
@@ -32,7 +32,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
           <button
             v-if="staff_id"
             @click.prevent="toggleAddDependantFrom()"
-            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
           >
             Add dependent
           </button>
@@ -46,7 +46,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
               <col class="sm:w-1/6" />
             </colgroup>
             <thead
-              class="border-b border-gray-300 text-gray-900 dark:text-gray-50"
+              class="border-b border-gray-300 dark:border-gray-200/80 text-gray-900 dark:text-gray-50"
             >
               <tr>
                 <th
@@ -67,7 +67,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm)
               <tr
                 v-for="dependent in dependents"
                 :key="dependent.id"
-                class="border-b border-gray-200"
+                class="border-b border-gray-200 dark:border-gray-200/80"
               >
                 <td class="max-w-0 py-2 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="font-medium text-gray-900 dark:text-gray-50">

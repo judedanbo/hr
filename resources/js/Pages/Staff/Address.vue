@@ -38,12 +38,12 @@ let getAge = (dateString) => {
   <main class="w-full">
     <h2 class="sr-only">Staff Contact Information</h2>
     <div
-      class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80 "
+      class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-500/80 "
     >
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt
-            class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100"
+            class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-100"
           >
             Staff Address
           </dt>
@@ -51,7 +51,7 @@ let getAge = (dateString) => {
         <div class="flex-none self-end px-6 pt-4">
           <button
            @click="toggleAddressModal()"
-            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
           >
             Change address
           </button>
@@ -104,7 +104,7 @@ let getAge = (dateString) => {
       <dl class="flex flex-wrap">
         <div class="flex-auto pl-6 pt-6">
           <dt
-            class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100"
+            class="text-md font-semibold leading-6 text-gray-900 dark:text-gray-100 tracking-wide"
           >
             Staff Contact Information
           </dt>
@@ -112,7 +112,7 @@ let getAge = (dateString) => {
         <div class="flex-none self-end px-6 pt-4">
           <button
             @click="toggleContactModal()"
-            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+            class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
           >
             Add Contact
           </button>
@@ -124,7 +124,7 @@ let getAge = (dateString) => {
               <col class="w-full" />
               <col class="sm:w-1/6" />
             </colgroup>
-            <thead class="border-b border-gray-300 text-gray-900">
+            <thead class="border-b border-gray-300 dark:border-gray-200/30 text-gray-900">
               <tr>
                 <th
                   scope="col"
@@ -144,7 +144,7 @@ let getAge = (dateString) => {
               <tr
                 v-for="contact in contacts"
                 :key="contact.id"
-                class="border-b border-gray-200"
+                class="border-b border-gray-200 dark:border-gray-200/30"
               >
                 <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="font-medium text-gray-900 dark:text-gray-100">
