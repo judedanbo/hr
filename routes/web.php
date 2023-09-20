@@ -2,6 +2,7 @@
 
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
+use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\GenderController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\StaffStatusController;
+use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\UnitTypeController;
 use App\Models\Contact;
 use App\Models\Dependent;
@@ -97,6 +99,17 @@ Route::get('/institution/{institution}/statuses', function (Institution $institu
     }
     return $statuses;
 })->name('institution.statuses');
+
+Route::get('/institution/{institution}/staff-types', function (Institution $institution) {
+    $types = null;
+    foreach (StaffTypeEnum::cases() as $staffType) {
+        $type = new \stdClass;
+        $type->value = $staffType->value;
+        $type->label = $staffType->label();
+        $types[] = $type;
+    }
+    return $types;
+})->name('institution.staff-types');
 
 Route::controller(UnitController::class)->middleware(['auth'])->group(function () {
     Route::get('/unit', 'index')->name('unit.index');
@@ -190,5 +203,7 @@ Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])-
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
 
 Route::post('staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
+
+Route::post('staff-type.save', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
 
 Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth'])->name('unit-type.index');

@@ -139,7 +139,10 @@ class InstitutionPersonController extends Controller
             )
             ->active()
             ->whereId($staff)
-            ->firstOrFail();
+            ->first();
+        if (!$staff) {
+            return redirect()->route('staff.index')->with('error', 'Staff not found');
+        }
         return Inertia::render('Staff/NewShow', [
             'person' => [
                 'id' => $staff->person->id,
@@ -200,6 +203,13 @@ class InstitutionPersonController extends Controller
                     'description' => $status->description,
                     'start_date' => $status->start_date?->format('d M Y'),
                     'end_date' => $status->end_date?->format('d M Yp'),
+                ]),
+                'staff_type' => $staff->type?->map(fn ($type) => [
+                    'id' => $type->id,
+                    'type' => $type->staff_type,
+                    'type_label' => $type->staff_type->label(),
+                    'start_date' => $type->start_date?->format('d M Y'),
+                    'end_date' => $type->end_date?->format('d M Y'),
                 ]),
                 'ranks' => $staff->ranks->map(fn ($rank) => [
                     'id' => $rank->id,

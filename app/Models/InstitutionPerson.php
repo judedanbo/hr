@@ -28,6 +28,14 @@ class InstitutionPerson extends Pivot
     ];
 
     /**
+     * get staff types of a staff
+     *
+     */
+    public function type(): HasMany
+    {
+        return $this->hasMany(StaffType::class, 'staff_id')->latest();
+    }
+    /**
      * Get the person that owns the InstitutionPerson
      */
     public function person(): BelongsTo

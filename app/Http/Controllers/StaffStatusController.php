@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreStaffStatusRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Status;
 use Carbon\Carbon;
@@ -10,17 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class StaffStatusController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreStaffStatusRequest $request)
     {
-        return $request;
-        // validation
         DB::transaction(function () use ($request) {
             Status::where('staff_id', $request->staff_id)
                 ->whereNull('end_date')
-                ->update(['status.end_date' => Carbon::now()]);
+                ->update(['status.end_date' => Carbon::parse($request->start_date)->subDays(1)]);
             Status::create($request->all());
         });
 
-        return redirect()->route('person.show', $request->person_id)->with('success', 'Staff status changed');
+        return redirect()->back()->with('success', 'Staff status changed');
     }
 }

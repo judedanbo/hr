@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum GenderEnum: string
 {
+    case NOT_AVAILABLE = "";
     case MALE = 'M';
     case FEMALE = 'F';
-    case NOT_AVAILABLE = "";
 
     public function label(): string
     {

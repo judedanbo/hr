@@ -7,6 +7,7 @@ import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
 import TransferHistory from "./TransferHistory.vue";
 import StatusHistory from "./StatusHistory.vue";
+import StaffType from "./StaffType.vue";
 import Qualifications from "./Qualifications.vue";
 import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
@@ -245,13 +246,22 @@ let BreadcrumbLinks = [
             <!-- important Dates -->
             <StaffDates class="w-2/3" :staff="staff" />
             <!-- statutes history -->
-            <StatusHistory
-              @close-form="toggleTransferForm()"
-              :statuses="staff.statuses"
-              :staff="staff.staff_id"
-              :institution="staff.institution_id"
-              class="w-full md:flex-1 flex-1"
-            />
+            <div class="w-full md:flex-1 flex-1 space-y-2">
+
+              <StatusHistory
+                @close-form="toggleTransferForm()"
+                :statuses="staff.statuses"
+                :staff="staff.staff_id"
+                :institution="staff.institution_id"
+                class=""
+              />
+              <StaffType
+                @close-form="toggleTransferForm()"
+                :types="staff.staff_type"
+                :staff="staff.staff_id"
+                :institution="staff.institution_id"
+              />
+            </div>
             <!-- Qualifications -->
             <Qualifications
               class="w-full"
