@@ -11,7 +11,7 @@ class PersonAvatarController extends Controller
     {
         return [
             'image' => $person->only(['image']),
-            'initial' => $person->initials,
+            'initials' => $person->initials,
         ];
     }
 }

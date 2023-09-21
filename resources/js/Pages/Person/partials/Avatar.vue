@@ -1,6 +1,4 @@
 <script setup>
-import axios from 'axios';
-import { onMounted, ref } from 'vue'
 const props = defineProps({
   initials: String,
   image: String,

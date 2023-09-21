@@ -2,6 +2,7 @@
 
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
+use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\NationalityController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
@@ -136,6 +138,7 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::post('/staff/{staff}/transfer', 'transfer')->name('staff.transfer');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
+    Route::post('/staff/{staff}/write-note', 'writeNote')->name('staff.write-note');
 });
 
 // dependent
@@ -207,3 +210,27 @@ Route::post('staff-status.save', [StaffStatusController::class, 'store'])->middl
 Route::post('staff-type.save', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
 
 Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth'])->name('unit-type.index');
+
+Route::controller(NoteController::class)->middleware(['auth'])->group(function () {
+    Route::get('/notes', 'index')->name('notes.index');
+    Route::get('/notes/create', 'create')->name('notes.create');
+    Route::post('/notes', 'store')->name('notes.store');
+    Route::get('/notes/{note}', 'show')->name('notes.show');
+    Route::get('/notes/{note}/edit', 'edit')->name('notes.edit');
+    Route::patch('/notes/{note}', 'update')->name('notes.update');
+    Route::delete('/notes/{note}', 'delete')->name('notes.delete');
+});
+
+Route::get('/note-types', function () {
+    foreach (NoteTypeEnum::cases() as $type) {
+        $types[] = [
+            'value' => $type->value,
+            'label' => $type->label(),
+        ];
+    }
+    return $types;
+    // return NoteTypeEnum::acasll()->map(fn ($type) => [
+    //     'value' => $type->id,
+    //     'label' => $type->name,
+    // ]);
+})->middleware(['auth'])->name('note-types');

@@ -13,15 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->foreignId('person_id')->nullable()->constrained()->onUpdate('cascade');
-            $table->rememberToken();
+            $table->morphs('notable');
+            $table->text('note');
+            $table->dateTime('note_date')->useCurrent();
+            $table->string('note_type', 3)->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('notes');
     }
 };

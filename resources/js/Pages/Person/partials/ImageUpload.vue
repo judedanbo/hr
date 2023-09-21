@@ -2,10 +2,9 @@
 import { ref } from "vue";
 const url = ref('/images/placeholder.webp');
 const imageChanged = () => {
-  // console.log(e)
-  // console.log(data)
+
   const file = profileImage.files[0];
-  // console.log(file)
+
   if(file){
     url.value = URL.createObjectURL(file);
   }else{

@@ -18,4 +18,9 @@ class Address extends Model
         'country',
         'post_code',
     ];
+
+    public function addressable()
+    {
+        return $this->morphTo();
+    }
 }

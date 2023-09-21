@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePersonRequest;
 use App\Enums\ContactTypeEnum;
+use App\Http\Requests\StoreNoteRequest;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
@@ -134,7 +135,9 @@ class InstitutionPersonController extends Controller
                     'units.institution',
                     'ranks',
                     'dependents.person',
-                    'statuses'
+                    'statuses',
+                    'notes'
+
                 ]
             )
             ->active()
@@ -144,6 +147,12 @@ class InstitutionPersonController extends Controller
             return redirect()->route('staff.index')->with('error', 'Staff not found');
         }
         return Inertia::render('Staff/NewShow', [
+            'user' => [
+                'id' => auth()->user()->id,
+                'name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+                'person_id' => auth()->user()->person_id,
+            ],
             'person' => [
                 'id' => $staff->person->id,
                 'name' => $staff->person->full_name,
@@ -219,7 +228,16 @@ class InstitutionPersonController extends Controller
                     'remarks' => $rank->pivot->remarks,
                     'distance' => $rank->pivot->start_date?->diffInYears(),
                 ]),
+                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn ($note) => [
+                    'id' => $note->id,
+                    'note' => $note->note,
+                    'note_date' => $note->note_date->diffForHumans(),
+                    'note_date_time' => $note->note_date,
+                    'note_type' => $note->note_type,
+                    'created_by' => $note->created_by,
+                    'url' => $note->url,
 
+                ]) : null,
                 'units' => $staff->units->map(fn ($unit) => [
                     'id' => $unit->id,
                     'name' => $unit->name,
@@ -345,5 +363,14 @@ class InstitutionPersonController extends Controller
     public function destroy(InstitutionPerson $institutionPerson)
     {
         //
+    }
+
+    public function writeNote(StoreNoteRequest $request, InstitutionPerson $staff)
+    {
+        $validated = $request->validated();
+
+        $validated['created_by'] = auth()->user()->id;
+        $staff->writeNote($validated);
+        return redirect()->back()->with('success', 'Note added successfully.');
     }
 }

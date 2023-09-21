@@ -140,6 +140,15 @@ class Person extends Model
         return $this->morphMany(Address::class, 'addressable');
     }
 
+    /**
+     * Get all the person's notes
+     */
+
+    public function notes(): MorphMany
+    {
+        return $this->morphMany(Note::class, 'notable');
+    }
+
     public function identities(): HasMany
     {
         return $this->hasMany(PersonIdentity::class);

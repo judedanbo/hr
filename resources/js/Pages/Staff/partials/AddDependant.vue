@@ -21,7 +21,6 @@ const submitHandler =  (data, node) => {
   // fd.append('image', data.staffData.image.image[0].file)
   // const profileImage = data.staffData.image.image[0].file
   // data.staffData.personalInformation.image = profileImage
-  // console.log(data.dependentForm.ima.image[0].file)
   fd.append('title', data.dependentForm.personalInformation.title?? '')
   fd.append('surname', data.dependentForm.personalInformation.surname ?? '')
   fd.append('first_name', data.dependentForm.personalInformation.first_name ?? '')
@@ -38,18 +37,16 @@ const submitHandler =  (data, node) => {
   }
   // fd.append('image', data.dependentForm.image.image[0]?.file ?? '')
 
-  // console.log(data.dependentForm)
-  // console.log(fd)
+
 
   // axios.post(route("dependent.store"), fd)
   //   .then(function (response) {
-  //     console.log(response);
+
   //     node.reset();
   //     emit("formSubmitted");
   //   })
   //   .catch(function (error) {
-  //     console.log(error);
-  //     console.log(error.response.data.errors);
+
   //     node.setErrors(['there are errors'],
   //     {
   //       errors
@@ -57,8 +54,7 @@ const submitHandler =  (data, node) => {
   //     );
   //   });
 
-  // console.log(data.dependentForm)
-  // console.log(addStaffForm);
+
   // axios.post(route("dependent.store"), data.dependentForm)
 
   Inertia.post(route("dependent.store"), fd, {
@@ -66,7 +62,7 @@ const submitHandler =  (data, node) => {
     onSuccess: (message) => {
       node.reset();
       emit("formSubmitted");
-      console.log("done " + message);
+
     },
     onError: (errors) => {
       page_errors.value = errors;

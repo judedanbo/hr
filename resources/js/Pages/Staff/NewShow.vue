@@ -11,6 +11,7 @@ import StaffType from "./StaffType.vue";
 import Qualifications from "./Qualifications.vue";
 import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
+import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
@@ -38,6 +39,7 @@ const formattedDob = (dob) => {
 };
 
 let props = defineProps({
+  user: Object,
   person: Object,
   staff: Object,
   contact_types: Array,
@@ -267,6 +269,14 @@ let BreadcrumbLinks = [
               class="w-full"
               :qualifications="qualifications"
               :person="person.id"
+            />
+            <!-- Qualifications -->
+            <Notes
+              class="w-full"
+              :notes="staff.notes"
+              notable_type="App\Models\InstitutionPerson"
+              :notable_id="staff.staff_id"
+              :user="user"
             />
             <!-- Employment History -->
             <PromotionHistory

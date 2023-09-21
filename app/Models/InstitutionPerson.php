@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\Requests\StoreNoteRequest;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class InstitutionPerson extends Pivot
@@ -187,6 +190,21 @@ class InstitutionPerson extends Pivot
     public function statuses(): HasMany
     {
         return $this->hasMany(Status::class, 'staff_id', 'id')->latest();
+    }
+
+    /**
+     * Write a note for the staff
+     */
+    public function writeNote($note)
+    {
+        $this->notes()->create($note);
+    }
+
+    /** Get staff's notes */
+
+    public function notes(): MorphMany
+    {
+        return $this->morphMany(Note::class, 'notable')->latest();
     }
 
 

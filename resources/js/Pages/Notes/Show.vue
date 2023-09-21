@@ -54,7 +54,7 @@ let getAge = (dateString) => {
          </button>
        </div>
         
-        <div class="-mx-4 flow-root sm:mx-0 w-full px-4">
+        <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
       <table v-if="qualifications.length > 0" class="min-w-full">
         <colgroup>
          
