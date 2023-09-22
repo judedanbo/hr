@@ -19,6 +19,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
+use App\Http\Controllers\PromoteStaffController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PromotionExportController;
@@ -132,13 +133,20 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::get('/staff/create', 'create')->name('staff.create');
     Route::post('/staff', 'store')->name('staff.store');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
-    Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
+    // Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
+    // Route::post('/staff/{staff}/promote', 'editPromote')->name('staff.promote.edit');
     Route::get('/staff/{staff}/edit', 'edit')->name('staff.edit');
     Route::get('/staff/{staff}/promotions', 'promotions')->name('staff.promotion-history');
     Route::post('/staff/{staff}/transfer', 'transfer')->name('staff.transfer');
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
     Route::post('/staff/{staff}/write-note', 'writeNote')->name('staff.write-note');
+});
+
+Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(function () {
+    Route::post('/staff/{staff}/promote', 'store')->name('staff.promote.store');
+    Route::patch('/staff/{staff}/promote/{promotion}', 'update')->name('staff.promote.update');
+    Route::delete('/staff/{staff}/promote/{job}', 'delete')->name('staff.promote.delete');
 });
 
 // dependent

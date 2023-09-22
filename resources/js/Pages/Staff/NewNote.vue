@@ -50,7 +50,7 @@ const saveNote = () => {
    
     <form @submit.prevent="saveNote()" class="relative flex-auto">
       <div
-        class="overflow-hidden rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-200 focus-within:ring-2 focus-within:ring-green-500"
+        class="overflow-hidden rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-400 focus-within:ring-2 focus-within:ring-green-500 dark:focus-within:ring-gray-200"
       >
         <label for="note" class="sr-only">Add note</label>
         <textarea
@@ -58,7 +58,7 @@ const saveNote = () => {
           rows="2"
           name="note"
           id="note"
-          class="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+          class="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-200 focus:ring-0 sm:text-sm sm:leading-6"
           placeholder="Add note..."
         />
       </div>
@@ -70,28 +70,19 @@ const saveNote = () => {
           <div class="flex items-center">
             <button
               type="button"
-              class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
+              class="mx-1 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 dark:text-gray-50 hover:text-gray-500 dark:hover:text-gray-200 "
             >
-              <PaperClipIcon class="h-5 w-5" aria-hidden="true" />
+              <PaperClipIcon class="h-5 w-5 text" aria-hidden="true" />
               <span class="sr-only">Attach a file</span>
             </button>
           </div>
-          <div class="flex items-center">
-            <NewSelect v-model="form.note_type" v-if="noteTypes" :options="noteTypes" />
-            <!-- <FormKit
-              type="select"
-              name="note_type_id"
-              id="note_type_id"
-              placeholder="Select note type"
-              :options="noteTypes"
-              validation="required"
-              validation-visibility="submit"
-            /> -->
+          <div class="flex items-center w-56">
+            <NewSelect v-model="form.note_type" v-if="noteTypes" :options="noteTypes" class=""/>
           </div>
         </div>
         <button
           type="submit"
-          class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          class="rounded-md bg-white dark:bg-gray-600 px-2.5 py-1.5 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-green-500 hover:bg-gray-50"
         >
           Save note
         </button>

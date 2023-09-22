@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('remarks', 100)->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->index(['job_id', 'staff_id']);
         });
     }
 

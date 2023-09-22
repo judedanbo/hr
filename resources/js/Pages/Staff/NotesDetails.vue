@@ -26,16 +26,16 @@ defineProps({
       <!-- <img :src="note.person" alt="" class="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-50" /> -->
       <Avatar :person_id="note.created_by" />
       <div
-        class="flex-auto rounded-md py-1 px-3 ring-1 ring-inset ring-gray-100"
+        class="flex-auto rounded-md py-1 px-3 ring-1 ring-inset ring-gray-100 dark:ring-gray-400/20 "
       >
         <div class="flex justify-end gap-x-4">
           <time
             :datetime="note.note_date_time"
-            class="flex-none py-0.5 text-xs leading-5 text-gray-500"
+            class="flex-none py-0.5 text-xs leading-5 text-gray-500 dark:text-gray-50"
             >{{ note.note_date }}</time
           >
         </div>
-        <p class="text-sm leading-6 text-gray-500">{{ note.note }}</p>
+        <p class="text-sm leading-6 text-gray-500 dark:text-gray-50">{{ note.note }}</p>
       </div>
     </li>
   </ul>

@@ -90,7 +90,7 @@ watch(
       <div class="relative isolate overflow-hidden">
         <!-- Secondary navigation -->
         <div class="flex justify-between items-center">
-          <PageNav :pageMenu="navMenu" />
+          <!-- <PageNav :pageMenu="navMenu" /> -->
           <a
             @click.prevent="newDepartment()"
             href="#"

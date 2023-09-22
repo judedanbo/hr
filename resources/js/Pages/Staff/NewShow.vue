@@ -15,9 +15,8 @@ import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { EllipsisVerticalIcon, PlusIcon } from "@heroicons/vue/20/solid";
+import { EllipsisVerticalIcon, PlusIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
-import StaffDependents from "@/Components/StaffDependents.vue";
 import Modal from "@/Components/Modal.vue";
 import EditStaffForm from "./EditStaffForm.vue";
 
@@ -168,13 +167,13 @@ let BreadcrumbLinks = [
               <a
                 @click.prevent="toggle()"
                 href="#"
-                class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white  shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
               >
                 <PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
                 Edit
               </a>
 
-              <Menu as="div" class="relative sm:hidden">
+              <!-- <Menu as="div" class="relative sm:hidden">
                 <MenuButton class="-m-3 block p-3">
                   <span class="sr-only">More</span>
                   <EllipsisVerticalIcon
@@ -192,7 +191,7 @@ let BreadcrumbLinks = [
                   leave-to-class="transform opacity-0 scale-95"
                 >
                   <MenuItems
-                    class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                    class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-500 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
                   >
                     <MenuItem v-slot="{ active }">
                       <button
@@ -209,7 +208,7 @@ let BreadcrumbLinks = [
                       <a
                         href="#"
                         :class="[
-                          active ? 'bg-gray-50' : '',
+                          active ? 'bg-gray-50 dark-bg-gray-500' : '',
                           'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white',
                         ]"
                         >Edit</a
@@ -217,7 +216,7 @@ let BreadcrumbLinks = [
                     </MenuItem>
                   </MenuItems>
                 </transition>
-              </Menu>
+              </Menu> -->
             </div>
           </div>
         </div>

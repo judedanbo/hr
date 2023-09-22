@@ -1,20 +1,24 @@
 <script setup>
+import { EllipsisVerticalIcon, PlusIcon, EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
+import SubMenu from "@/Components/SubMenu.vue";
 defineProps({
   promotions: Array,
 });
 
-const formattedDob = (dob) => {
-  if (!dob) return "";
-  return new Date(dob).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+const emit = defineEmits(['editPromotion', 'deletePromotion']);
+
+
+const clicked = (action, model) => {
+  if(action === 'Edit') {
+   emit('editPromotion', model)
+  } else if(action === 'Delete') {
+    emit('deletePromotion', model)
+  }
 };
 
 </script>
 <template>
-  <body class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
+  <body class="-mx-4 mt-4 flow-root sm:mx-0 w-full px-4">
     <table v-if="promotions.length > 0" class="min-w-full">
       <colgroup></colgroup>
       <thead class="border-b border-gray-300 text-gray-900 dark:text-gray-100 dark:border-gray-200/50">
@@ -45,7 +49,7 @@ const formattedDob = (dob) => {
           :key="promotion.id"
           class="border-b border-gray-200 dark:border-gray-400/30"
         >
-          <td class="max-w-0 py-2 pl-2 pr-3 text-sm sm:pl-0 w-2/4">
+          <td class="max-w-0 py-2 pl-2 pr-3 text-sm sm:pl-0 w-2/5">
             <div class="font-medium text-gray-900 dark:text-gray-100">
               {{ promotion.name }}
             </div>
@@ -56,12 +60,17 @@ const formattedDob = (dob) => {
           <td
             class="hidden p-1 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/4"
           >
-            {{ formattedDob(promotion.start_date) }}
+            {{ promotion.start_date }}
           </td>
           <td
             class="hidden p-1  text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/4"
           >
-            {{ formattedDob(promotion.end_date) }}
+            {{ promotion.end_date }}
+            
+          </td>
+          <td class="w-8">
+            <!-- <EllipsisVerticalIcon class="w-4 text-right" /> -->
+            <SubMenu @itemClicked="(value) => clicked(value, promotion)" :items="['Edit', 'Delete']" />
           </td>
         </tr>
       </tbody>

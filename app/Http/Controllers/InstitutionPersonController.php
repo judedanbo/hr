@@ -223,10 +223,15 @@ class InstitutionPersonController extends Controller
                 'ranks' => $staff->ranks->map(fn ($rank) => [
                     'id' => $rank->id,
                     'name' => $rank->name,
-                    'start_date' => $rank->pivot->start_date,
-                    'end_date' => $rank->pivot->end_date,
+                    'staff_name' => $staff->person->full_name,
+                    'staff_id' => $rank->pivot->staff_id,
+                    'rank_id' => $rank->pivot->job_id,
+                    'start_date' => $rank->pivot->start_date?->format('d M Y'),
+                    'start_date_unix' => $rank->pivot->start_date?->format('Y-m-d'),
+                    'end_date' => $rank->pivot->end_date?->format('d M Y'),
+                    'end_date_unix' => $rank->pivot->end_date?->format('Y-m-d'),
                     'remarks' => $rank->pivot->remarks,
-                    'distance' => $rank->pivot->start_date?->diffInYears(),
+                    'distance' => $rank->pivot->start_date?->diffForHumans(),
                 ]),
                 'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn ($note) => [
                     'id' => $note->id,

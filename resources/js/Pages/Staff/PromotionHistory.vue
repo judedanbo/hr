@@ -1,10 +1,11 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Inertia } from "@inertiajs/inertia";
 import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/Modal.vue";
 import Promote from "./partials/Promote.vue";
+import Edit from "./partials/Edit.vue";
+import Delete from "./partials/Delete.vue";
 import PromotionList from "./partials/PromotionList.vue";
 
 const emit = defineEmits(["closeForm"]);
@@ -25,6 +26,36 @@ let togglePromoteModal = () => {
   emit("closeForm");
 };
 
+const openEditPromoteModal = ref(false);
+const toggleEditPromotionModal = useToggle(openEditPromoteModal);
+const editModel = ref(null);
+const editPromotion =  (model) => {
+  editModel.value = model;
+  toggleEditPromotionModal();
+};
+
+const openDeletePromotionModal = ref(false);
+const toggleDeletePromotionModal = useToggle(openDeletePromotionModal);
+
+const deleteModel = ref(null);
+const confirmDeletePromotion = (model) => {
+  deleteModel.value = model;
+  toggleDeletePromotionModal()
+  // deletePromotion(model.staff_id, model.rank_id);
+};
+
+const deletePromotion = (staff_id, rank_id) => {
+  Inertia.delete(
+    route("staff.promote.delete", { staff: staff_id, job: rank_id }),
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        toggleDeletePromotionModal();
+      },
+    }
+  );
+};
+
 watch(
   () => props.showPromotionForm,
   (value) => {
@@ -34,19 +65,7 @@ watch(
   }
 );
 
-const formattedDob = (dob) => {
-  if (!dob) return "";
-  return new Date(dob).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
 
-let getAge = (dateString) => {
-  const date = new Date(dateString);
-  return differenceInYears(new Date(), date);
-};
 </script>
 <template>
   <!-- Promotion History -->
@@ -71,7 +90,11 @@ let getAge = (dateString) => {
             {{ promotions.length > 0 ? "Promote" : "Assign rank" }}
           </button>
         </div>
-        <PromotionList :promotions="promotions" />
+        <PromotionList
+          @editPromotion="(model) => editPromotion(model)"
+          @deletePromotion="(model) => confirmDeletePromotion(model)"
+          :promotions="promotions"
+        />
       </dl>
     </div>
     <Modal @close="togglePromoteModal()" :show="openPromoteModal">
@@ -81,5 +104,16 @@ let getAge = (dateString) => {
         :institution="institution"
       />
     </Modal>
+    <Modal @close="toggleEditPromotionModal()" :show="openEditPromoteModal">
+      <Edit
+        @formSubmitted="toggleEditPromotionModal()"
+        :model="editModel"
+        :staff="staff"
+        :institution="institution"
+      />
+    </Modal>
+   
+
+    <Delete @deleteConfirmed="deletePromotion(deleteModel.staff_id, deleteModel.rank_id)" @close="toggleDeletePromotionModal()" :open="openDeletePromotionModal" :model="deleteModel" />
   </main>
 </template>
