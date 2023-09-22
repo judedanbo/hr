@@ -1,7 +1,7 @@
 <script setup>
 import { format, differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
-import AddQualification  from "./partials/AddQualification.vue";
+// import AddQualification  from "./partials/AddQualification.vue";
 import Modal from "@/Components/Modal.vue";
 import { ref } from "vue";
 import { useToggle } from "@vueuse/core";
@@ -92,7 +92,7 @@ let getAge = (dateString) => {
      
     </div>
     <Modal @close="toggleQualificationModal()" :show="openQualificationModal">
-      <AddQualification @formSubmitted="toggleQualificationModal()"  :person="person" />
+      <!-- <AddQualification @formSubmitted="toggleQualificationModal()"  :person="person" /> -->
     </Modal>
   </main>
 </template>
