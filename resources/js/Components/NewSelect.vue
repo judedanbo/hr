@@ -50,7 +50,7 @@ const label = computed(() => {
     >
     <div class="relative mt-2">
       <ListboxButton
-        class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6"
+        class="relative w-full cursor-default rounded-md bg-green-50 dark:bg-gray-600 py-1.5 pl-3 pr-10 text-left text-gray-900 dark:text-gray-50 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:dark:ring-gray-300 sm:text-sm sm:leading-6"
       >
         <span v-if="placeholder" class="block truncate">{{ label }}</span>
         <span v-else class="block truncate">Select Option</span>
@@ -77,8 +77,8 @@ const label = computed(() => {
           >
             <li
               :class="[
-                props.modelValue == option.value ? 'bg-green-600 text-white' : 'text-gray-900',
-                'relative cursor-default select-none py-2 pl-3 pr-9',
+                props.modelValue == option.value ? 'bg-green-700 dark:bg-gray-800 text-green-100 dark:text-gray-50 '  : 'text-gray-900 bg-green-50/50 dark:bg-gray-500 dark:text-gray-50 ',
+                'relative cursor-default select-none py-2 pl-3 pr-9 hover:bg-green-600/80 dark:hover:bg-gray-600 hover:text-gray-50',
               ]"
             >
               <span

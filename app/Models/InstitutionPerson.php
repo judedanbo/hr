@@ -62,7 +62,7 @@ class InstitutionPerson extends Pivot
     public function units(): belongsToMany
     {
         return $this->belongsToMany(Unit::class, 'staff_unit', 'staff_id', 'unit_id')
-            ->withPivot('start_date', 'end_date')
+            ->withPivot('start_date', 'end_date', 'remarks', 'old_data')
             ->using(StaffUnit::class)
             ->orderByPivot('start_date', 'desc')
             // ->wherePivotNull('end_date')

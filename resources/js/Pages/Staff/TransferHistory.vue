@@ -3,11 +3,38 @@ import { format, differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
 import Transfer from "./partials/Transfer.vue";
 import Modal from "@/Components/Modal.vue";
+import NewModal from "@/Components/NewModal.vue";
 import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 
-const emit = defineEmits(["closeForm"]);
+import TransferList from "./TransferList.vue";
+import EditTransfer from "./partials/EditTransfer.vue";
 
+const emit = defineEmits(["closeForm"]);
+const openEditTransferModal = ref(false);
+const toggleEditTransferModal = useToggle(openEditTransferModal);
+
+const editModel = ref(null);
+const editTransfer = (model) => {
+  editModel.value = model;
+  toggleEditTransferModal();
+};
+
+const confirmDeleteTransfer = (model) => {
+  deleteModel.value = model;
+  toggleDeleteTransferModal();
+};
+const deleteTransfer = (staff_id, institution_id) => {
+  Inertia.delete(
+    route("staff.transfer.delete", { staff: staff_id, institution: institution_id }),
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        toggleDeleteTransferModal();
+      },
+    }
+  );
+};
 let props = defineProps({
   transfers: Array,
   staff: Number,
@@ -18,7 +45,7 @@ let props = defineProps({
   },
 });
 
-let openTransferModal = ref(props.showTransferForm.value);
+let openTransferModal = ref(props.showTransferForm);
 let toggleTransferModal = () => {
   openTransferModal.value = false;
   emit("closeForm");
@@ -69,70 +96,13 @@ let getAge = (dateString) => {
             {{ transfers.length > 0 ? "Transfer" : "First Posting" }}
           </button>
         </div>
-
-        <div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
-          <table v-if="transfers.length > 0" class="min-w-full">
-            <colgroup></colgroup>
-            <thead
-              class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50"
-            >
-              <tr>
-                <th
-                  scope="col"
-                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
-                >
-                  Post
-                </th>
-                <th
-                  scope="col"
-                  class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-                >
-                  Start
-                </th>
-                <th
-                  scope="col"
-                  class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-                >
-                  End
-                </th>
-                <!-- <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pr-0">Duration</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="transfer in transfers"
-                :key="transfer.id"
-                class="border-b border-gray-200 dark:border-gray-400/30"
-              >
-                <td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0 w-2/4">
-                  <div class="font-medium text-gray-900 dark:text-gray-50">
-                    {{ transfer.name }}
-                  </div>
-                  <div class="mt-1 truncate text-gray-500 dark:text-gray-100">
-                    {{ transfer.remarks }}
-                  </div>
-                </td>
-                <td
-                  class="hidden p-1 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/4"
-                >
-                  {{ formattedDob(transfer.start_date) }}
-                </td>
-                <td
-                  class="hidden p-1 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/4"
-                >
-                  {{ formattedDob(transfer.end_date) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div
-            v-else
-            class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center"
-          >
-            No transfers found.
-          </div>
-        </div>
-      </dl>
+        <TransferList
+          @deleteTransfer="(model) => confirmDeleteTransfer(model)"
+          @editTransfer="(model) => editTransfer(model)"
+          :transfers="transfers"
+          class="w-full"
+        />
+       </dl>
     </div>
     <Modal @close="toggleTransferModal()" :show="openTransferModal">
       <Transfer
@@ -142,5 +112,12 @@ let getAge = (dateString) => {
         :transfers="transfers"
       />
     </Modal>
+   
+    <NewModal @close="toggleEditTransferModal()" :show="openEditTransferModal">
+      <EditTransfer @formSubmitted="toggleTransferModal()"
+        :staff="staff"
+        :institution="institution"
+        :transfer="editModel" />
+    </NewModal>
   </main>
 </template>

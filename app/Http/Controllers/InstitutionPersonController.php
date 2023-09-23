@@ -244,11 +244,16 @@ class InstitutionPersonController extends Controller
 
                 ]) : null,
                 'units' => $staff->units->map(fn ($unit) => [
-                    'id' => $unit->id,
-                    'name' => $unit->name,
-                    'start_date' => $unit->pivot->start_date,
-                    'end_date' => $unit->pivot->end_date,
-                    'distance' => $unit->pivot->start_date?->diffInYears(),
+                    'unit_id' => $unit->id,
+                    'unit_name' => $unit->name,
+                    'staff_id' => $unit->pivot->staff_id,
+                    'start_date' => $unit->pivot->start_date?->format('d M Y'),
+                    'start_date_unix' => $unit->pivot->start_date?->format('Y-m-d'),
+                    'end_date' => $unit->pivot->end_date?->format('d M Y'),
+                    'end_date_unix' => $unit->pivot->end_date?->format('Y-m-d'),
+                    'distance' => $unit->pivot->start_date?->diffForHumans(),
+                    'remarks' => $unit->pivot->remarks,
+                    'old_data' => $unit->pivot->old_data,
                 ]),
                 'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                     'id' => $dep->id,

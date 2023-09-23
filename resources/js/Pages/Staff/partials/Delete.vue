@@ -13,10 +13,6 @@ defineProps({
     model: Object,
     open: Boolean,
  })
-
-// const open = ref(true);
-
-
 </script>
 <template>
     
