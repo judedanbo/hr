@@ -67,7 +67,7 @@ class Person extends Model
             }
             return strtoupper(substr($surname, 0, 2));
         }
-        return strtoupper($firstNameInitial ?? $otherNamesInitial . substr($this->surname, 0, 1));
+        return strtoupper(($firstNameInitial ?? $otherNamesInitial) . substr($surname, 0, 1));
     }
 
     public function getAgeAttribute(): int

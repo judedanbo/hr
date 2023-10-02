@@ -18,24 +18,26 @@ onMounted(async () => {
   units.value = response.data;
 });
 
-import { format, addDays, subYears } from "date-fns";
-
-const today = format(new Date(), "yyyy-MM-dd");
-const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
-
-const submitHandler = (data, node) => {
-  Inertia.post(route("staff.transfer", { staff: data.staff_id }), data, {
-    preserveScroll: true,
-    onSuccess: () => {
-      node.reset();
-      emit("formSubmitted");
-    },
-    onError: (errors) => {
-      node.setErrors([""], errors);
-    },
-  });
+const submitHandler = (data) => {
+  // console.log(data);
+  Inertia.patch(
+    route("staff.transfer.update", {
+      staff: props.staff,
+      unit: props.transfer.unit_id,
+    }),
+    data,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        emit("formSubmitted");
+      },
+      onError: (errors) => {
+        console.log(errors);
+      },
+    }
+  );
 };
+
 </script>
 
 <template>
@@ -46,16 +48,14 @@ const submitHandler = (data, node) => {
       type="form"
       submit-label="Save"
       :value="{
-        id: transfer.id,
         unit_id: transfer.unit_id,
         start_date: transfer.start_date_unix,
         end_date: transfer.end_date_unix,
-        remarks: transfer.remarks
+        remarks: transfer.remarks,
       }"
     >
       <FormKit type="hidden" id="staff_id" name="staff_id" :value="staff" />
       <!-- {{ transfer }} -->
-      <FormKit type="hidden" id="id" name="id" />
       <FormKit
         type="select"
         name="unit_id"
@@ -73,12 +73,7 @@ const submitHandler = (data, node) => {
           label="Start date"
           validation-visibility="submit"
         />
-        <FormKit
-          type="date"
-          name="end_date"
-          id="end_date"
-          label="End date"
-        />
+        <FormKit type="date" name="end_date" id="end_date" label="End date" />
       </div>
       <FormKit
         type="text"

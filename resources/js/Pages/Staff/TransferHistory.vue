@@ -114,7 +114,7 @@ let getAge = (dateString) => {
     </Modal>
    
     <NewModal @close="toggleEditTransferModal()" :show="openEditTransferModal">
-      <EditTransfer @formSubmitted="toggleTransferModal()"
+      <EditTransfer @formSubmitted="toggleEditTransferModal()"
         :staff="staff"
         :institution="institution"
         :transfer="editModel" />

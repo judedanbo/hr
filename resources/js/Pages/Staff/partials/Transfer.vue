@@ -27,7 +27,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-    Inertia.post(route("staff.transfer", { staff: data.staff_id }),
+    Inertia.post(route("staff.transfer.store", { staff: data.staff_id }),
     data, {
         preserveScroll: true,
         onSuccess: () => {
@@ -51,7 +51,7 @@ const submitHandler = (data, node) => {
         type="select"
         name="unit_id"
         id="unit_id"
-        validation="required|integer|min:1|max:20"
+        validation="required|integer|min:1|max:300"
         label="New Location"
         placeholder="Select new location"
         :options="units"

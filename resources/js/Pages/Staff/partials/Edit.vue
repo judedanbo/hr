@@ -25,16 +25,23 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-  Inertia.patch(route("staff.promote.update", { staff: data.staff_id, promotion: data.id }), data, {
-    preserveScroll: true,
-    onSuccess: () => {
-      node.reset();
-      emit("formSubmitted");
-    },
-    onError: (errors) => {
-      node.setErrors([""], errors);
-    },
-  });
+  Inertia.patch(
+    route("staff.promote.update", {    
+      staff: data.staff_id,
+      promotion: data.id,
+    }),
+    data,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        node.reset();
+        emit("formSubmitted");
+      },
+      onError: (errors) => {
+        node.setErrors([""], errors);
+      },
+    }
+  );
 };
 </script>
 
@@ -42,13 +49,18 @@ const submitHandler = (data, node) => {
   <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
     <h1 class="text-2xl pb-4 dark:text-gray-100">Edit Staff promotion</h1>
 
-    <FormKit  @submit="submitHandler" type="form" submit-label="Save" :value="{
-      rank_id: model.rank_id,
-      start_date: model.start_date_unix,
-      end_date: model.end_date_unix,
-      remarks: model.remarks,
-      staff_id: model.staff_id,
-    }" >
+    <FormKit
+      @submit="submitHandler"
+      type="form"
+      submit-label="Save"
+      :value="{
+        rank_id: model.rank_id,
+        start_date: model.start_date_unix,
+        end_date: model.end_date_unix,
+        remarks: model.remarks,
+        staff_id: model.staff_id,
+      }"
+    >
       <FormKit type="hidden" name="id" :value="model.id" />
       <FormKit type="hidden" name="staff_id" :value="model.staff_id" />
       <FormKit
@@ -60,7 +72,6 @@ const submitHandler = (data, node) => {
         placeholder="Select new Rank"
         :options="ranks"
         error-visibility="submit"
-       
       >
       </FormKit>
       <div class="sm:flex gap-4">
@@ -69,7 +80,6 @@ const submitHandler = (data, node) => {
           name="start_date"
           id="start_date"
           label="Start date"
-         
           validation-visibility="submit"
           inner-class="w-1/2"
         />
@@ -88,7 +98,6 @@ const submitHandler = (data, node) => {
         name="remarks"
         id="remarks"
         label="Remarks"
-       
         validation="string"
         validation-visibility="submit"
       />

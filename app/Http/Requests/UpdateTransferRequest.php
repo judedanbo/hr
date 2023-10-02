@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePromotionRequest extends FormRequest
+class UpdateTransferRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,11 @@ class UpdatePromotionRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|exists:job_staff,id',
-            'rank_id' => 'required|exists:jobs,id',
-            'staff_id' => 'exists:institution_person,id',
-            'start_date' => 'required|date',
+            'staff_id' => 'required|exists:institution_person,id',
+            'unit_id' => 'required|exists:units,id',
+            'start_date' => 'required|date|',
             'end_date' => 'date|after:start_date|nullable',
-            'remarks' => 'string|max:100|nullable'
+            'remarks' => 'string|max:100|nullable',
         ];
     }
 }

@@ -244,6 +244,7 @@ class InstitutionPersonController extends Controller
 
                 ]) : null,
                 'units' => $staff->units->map(fn ($unit) => [
+                    'unit' =>  $unit,
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
                     'staff_id' => $unit->pivot->staff_id,
@@ -317,30 +318,30 @@ class InstitutionPersonController extends Controller
                 : null
         ];
     }
-    public function transfer(Request $request, InstitutionPerson $staff)
-    {
-        $request->validate([
-            'unit_id' => ['required', 'exists:units,id'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['nullable', 'date', 'after:start_date'],
-            'remarks' => ['nullable', 'string'],
-        ]);
+    // public function transfer(Request $request, InstitutionPerson $staff)
+    // {
+    //     $request->validate([
+    //         'unit_id' => ['required', 'exists:units,id'],
+    //         'start_date' => ['required', 'date'],
+    //         'end_date' => ['nullable', 'date', 'after:start_date'],
+    //         'remarks' => ['nullable', 'string'],
+    //     ]);
 
-        $staff->load('units');
+    //     $staff->load('units');
 
 
-        $staff->units()->wherePivot('end_date', null)->update([
-            'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
-        ]);
+    //     $staff->units()->wherePivot('end_date', null)->update([
+    //         'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
+    //     ]);
 
-        $staff->units()->attach($request->unit_id, [
-            'start_date' => $request->start_date,
-            // 'end_date' => $request->end_date,
-            'remarks' => $request->remarks,
-        ]);
+    //     $staff->units()->attach($request->unit_id, [
+    //         'start_date' => $request->start_date,
+    //         // 'end_date' => $request->end_date,
+    //         'remarks' => $request->remarks,
+    //     ]);
 
-        return redirect()->back()->with('success', 'Staff promoted successfully');
-    }
+    //     return redirect()->back()->with('success', 'Staff promoted successfully');
+    // }
 
     /**
      * Show the form for editing the specified resource.
