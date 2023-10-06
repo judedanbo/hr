@@ -113,7 +113,6 @@ watch(
       />
     </Modal>
    
-
     <Delete @deleteConfirmed="deletePromotion(deleteModel.staff_id, deleteModel.rank_id)" @close="toggleDeletePromotionModal()" :open="openDeletePromotionModal" :model="deleteModel" />
   </main>
 </template>
