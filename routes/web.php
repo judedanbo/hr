@@ -154,6 +154,7 @@ Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(fu
 Route::controller(TransferController::class)->middleware(['auth'])->group(function () {
     Route::post('/staff/{staff}/transfer', 'store')->name('staff.transfer.store');
     Route::patch('/staff/{staff}/transfer/{unit}', 'update')->name('staff.transfer.update');
+    Route::delete('/staff/{staff}/transfer/{unit}', 'delete')->name('staff.transfer.delete');
 });
 
 // dependent
