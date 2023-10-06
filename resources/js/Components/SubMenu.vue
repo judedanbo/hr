@@ -13,10 +13,12 @@ const emit = defineEmits(["itemClicked"]);
 </script>
 <template>
     <Menu as="div" class="relative">
-        <MenuButton class="-m-3 block p-3">
+        <MenuButton
+            class="ml-3 block py-3 rounded-lg hover:bg-green-50 dark:hover:bg-gray-50 group"
+        >
             <span class="sr-only">More</span>
             <EllipsisVerticalIcon
-                class="h-5 w-5 text-gray-500 dark:text-gray-300"
+                class="h-5 w-5 text-gray-500 dark:text-gray-300 group-hover:text-green-500 dark:group-hover:text-gray-700"
                 aria-hidden="true"
             />
         </MenuButton>
@@ -42,7 +44,7 @@ const emit = defineEmits(["itemClicked"]);
                         type="button"
                         :class="[
                             active ? 'bg-gray-50' : '',
-                            'block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900 dark:text-white dark:hover:text-gray-900',
+                            'block w-full py-1 text-right text-sm leading-6 text-gray-900 dark:text-white dark:hover:text-gray-900',
                         ]"
                     >
                         {{ item }}

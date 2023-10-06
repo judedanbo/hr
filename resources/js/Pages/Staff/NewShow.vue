@@ -210,51 +210,6 @@ let BreadcrumbLinks = [
                                 />
                                 Edit
                             </a>
-
-                            <!-- <Menu as="div" class="relative sm:hidden">
-                <MenuButton class="-m-3 block p-3">
-                  <span class="sr-only">More</span>
-                  <EllipsisVerticalIcon
-                    class="h-5 w-5 text-gray-500 dark:text-gray-300"
-                    aria-hidden="true"
-                  />
-                </MenuButton>
-
-                <transition
-                  enter-active-class="transition ease-out duration-100"
-                  enter-from-class="transform opacity-0 scale-95"
-                  enter-to-class="transform opacity-100 scale-100"
-                  leave-active-class="transition ease-in duration-75"
-                  leave-from-class="transform opacity-100 scale-100"
-                  leave-to-class="transform opacity-0 scale-95"
-                >
-                  <MenuItems
-                    class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-500 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
-                  >
-                    <MenuItem v-slot="{ active }">
-                      <button
-                        type="button"
-                        :class="[
-                          active ? 'bg-gray-50' : '',
-                          'block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900 dark:text-white',
-                        ]"
-                      >
-                        Copy URL
-                      </button>
-                    </MenuItem>
-                    <MenuItem v-slot="{ active }">
-                      <a
-                        href="#"
-                        :class="[
-                          active ? 'bg-gray-50 dark-bg-gray-500' : '',
-                          'block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white',
-                        ]"
-                        >Edit</a
-                      >
-                    </MenuItem>
-                  </MenuItems>
-                </transition>
-              </Menu> -->
                         </div>
                     </div>
                 </div>
@@ -307,7 +262,10 @@ let BreadcrumbLinks = [
                         <Qualifications
                             class="w-full"
                             :qualifications="qualifications"
-                            :person="person.id"
+                            :person="{
+                                id: person.id,
+                                name: person.name,
+                            }"
                         />
                         <!-- Qualifications -->
                         <Notes

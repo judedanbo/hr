@@ -173,6 +173,7 @@ class InstitutionPersonController extends Controller
             ],
             'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn ($qualification) => [
                 'id' => $qualification->id,
+                'person_id' => $qualification->person_id,
                 'course' => $qualification->course,
                 'institution' => $qualification->institution,
                 'qualification' => $qualification->qualification,

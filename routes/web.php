@@ -212,6 +212,8 @@ Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(
 Route::controller(QualificationController::class)->middleware(['auth'])->group(function () {
     Route::get('/qualification', 'index')->name('qualification.index');
     Route::post('/qualification', 'store')->name('qualification.store');
+    Route::patch('/qualification/{qualification}', 'update')->name('qualification.update');
+    Route::delete('/qualification/{qualification}', 'delete')->name('qualification.delete');
 });
 
 Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth'])->name('contact-type.index');

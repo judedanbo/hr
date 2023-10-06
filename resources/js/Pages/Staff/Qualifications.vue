@@ -1,32 +1,54 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
 import SubMenu from "@/Components/SubMenu.vue";
 import { Link } from "@inertiajs/inertia-vue3";
-import AddQualification from "./partials/AddQualification.vue";
+import { Inertia } from "@inertiajs/inertia";
+import AddQualification from "@/Pages/Qualification/Add.vue";
+import EditQualification from "@/Pages/Qualification/Edit.vue";
+import DeleteQualification from "@/Pages/Qualification/Delete.vue";
 import Modal from "@/Components/Modal.vue";
 import { ref } from "vue";
 import { useToggle } from "@vueuse/core";
+import NewModal from "@/Components/NewModal.vue";
+import QualificationList from "../Qualification/Staff.vue";
+
+// Edit Qualification
+const openEditModal = ref(false);
+const toggleEditModal = useToggle(openEditModal);
+
+// Delete Qualification
+const openDeleteModal = ref(false);
+const toggleDeleteModal = useToggle(openDeleteModal);
 
 defineProps({
     qualifications: Array,
-    person: Number,
+    person: Object,
 });
-
 let openQualificationModal = ref(false);
 let toggleQualificationModal = useToggle(openQualificationModal);
 
-const formattedDob = (dob) => {
-    if (!dob) return "";
-    return new Date(dob).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-    });
-};
+const qualificationModel = ref(null);
 
-let getAge = (dateString) => {
-    const date = new Date(dateString);
-    return differenceInYears(new Date(), date);
+const editQualification = (model) => {
+    qualificationModel.value = model;
+    toggleEditModal();
+};
+const confirmDelete = (model) => {
+    qualificationModel.value = model;
+    toggleDeleteModal();
+};
+const deleteQualification = () => {
+    Inertia.delete(
+        route("qualification.delete", {
+            qualification: qualificationModel.value.id,
+        }),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                qualificationModel.value = null;
+                toggleDeleteModal();
+            },
+        }
+    );
 };
 </script>
 <template>
@@ -52,107 +74,37 @@ let getAge = (dateString) => {
                         {{ "Add Qualification" }}
                     </button>
                 </div>
-
-                <div class="-mx-4 flow-root sm:mx-0 w-full px-4">
-                    <table v-if="qualifications.length > 0" class="min-w-full">
-                        <colgroup></colgroup>
-                        <thead
-                            class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50"
-                        >
-                            <tr>
-                                <th
-                                    scope="col"
-                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
-                                >
-                                    Institution
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-                                >
-                                    Level
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-                                >
-                                    Course
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-                                >
-                                    Qualification
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-                                >
-                                    Year
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="qualification in qualifications"
-                                :key="qualification.id"
-                                class="border-b border-gray-200 dark:border-gray-400/30"
-                            >
-                                <td
-                                    class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0"
-                                >
-                                    <div
-                                        class="font-medium text-gray-900 dark:text-gray-50"
-                                    >
-                                        {{ qualification.institution }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-                                >
-                                    {{ qualification.level }}
-                                </td>
-                                <td
-                                    class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-                                >
-                                    {{ qualification.course }}
-                                </td>
-
-                                <td
-                                    class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-                                >
-                                    {{ qualification.qualification }}
-                                    <div
-                                        class="font-medium text-xs text-gray-900 dark:text-gray-50"
-                                    >
-                                        {{ qualification.qualification_number }}
-                                    </div>
-                                </td>
-                                <td
-                                    class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-                                >
-                                    {{ qualification.year }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div
-                        v-else
-                        class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center"
-                    >
-                        No qualifications found.
-                    </div>
-                </div>
+                <QualificationList
+                    @editQualification="(model) => editQualification(model)"
+                    @deleteQualification="(model) => confirmDelete(model)"
+                    :qualifications="qualifications"
+                />
             </dl>
         </div>
-        <Modal
+        <NewModal
             @close="toggleQualificationModal()"
             :show="openQualificationModal"
         >
             <AddQualification
                 @formSubmitted="toggleQualificationModal()"
-                :person="person"
+                :person="person.id"
             />
-        </Modal>
+        </NewModal>
+        <NewModal @close="toggleEditModal()" :show="openEditModal">
+            <EditQualification
+                @formSubmitted="toggleEditModal()"
+                :person="person.id"
+                :qualification="qualificationModel"
+            />
+        </NewModal>
+
+        <!-- Delete Modal -->
+        <NewModal @close="toggleDeleteModal()" :show="openDeleteModal">
+            <DeleteQualification
+                @close="toggleDeleteModal()"
+                @deleteConfirmed="deleteQualification()"
+                :person="person.name"
+            />
+        </NewModal>
     </main>
 </template>

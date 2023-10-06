@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreQualificationRequest;
 use App\Http\Requests\UpdateQualificationRequest;
+use App\Models\Person;
 use App\Models\Qualification;
 use Inertia\Inertia;
 
@@ -87,7 +88,13 @@ class QualificationController extends Controller
      */
     public function update(UpdateQualificationRequest $request, Qualification $qualification)
     {
-        //
+        $qualification->update($request->validated());
+        return redirect()->back()->with('success', 'Qualification updated.');
+    }
+    public function delete($qualification)
+    {
+        Qualification::find($qualification)->delete();
+        return redirect()->back()->with('success', 'Qualification deleted.');
     }
 
     /**
