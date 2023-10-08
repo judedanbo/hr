@@ -9,7 +9,8 @@ import TransferHistory from "./TransferHistory.vue";
 import StatusHistory from "./StatusHistory.vue";
 import StaffType from "./StaffType.vue";
 import Qualifications from "./Qualifications.vue";
-import Dependents from "./Dependents.vue";
+import Dependents from "@/Pages/StaffDependents/Index.vue";
+// import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
 import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
@@ -21,7 +22,7 @@ import {
     EllipsisHorizontalIcon,
 } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
-import Modal from "@/Components/Modal.vue";
+import NewModal from "@/Components/NewModal.vue";
 import EditStaffForm from "./EditStaffForm.vue";
 
 let showPromotionForm = ref(false);
@@ -297,9 +298,9 @@ let BreadcrumbLinks = [
                     </div>
                 </div>
             </div>
-            <Modal @close="toggle()" :show="openEditModal">
+            <NewModal @close="toggle()" :show="openEditModal">
                 <EditStaffForm :staff_id="staff.staff_id" />
-            </Modal>
+            </NewModal>
         </main>
     </MainLayout>
 </template>

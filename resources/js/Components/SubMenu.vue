@@ -44,7 +44,7 @@ const emit = defineEmits(["itemClicked"]);
                         type="button"
                         :class="[
                             active ? 'bg-gray-50' : '',
-                            'block w-full py-1 text-right text-sm leading-6 text-gray-900 dark:text-white dark:hover:text-gray-900',
+                            'block w-full py-1 px-4 text-left text-sm leading-6 text-gray-900 dark:text-white dark:hover:text-gray-900',
                         ]"
                     >
                         {{ item }}
