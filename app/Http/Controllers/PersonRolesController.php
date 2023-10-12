@@ -9,6 +9,7 @@ class PersonRolesController extends Controller
 {
     public function show(Person $person)
     {
+        // return $person?->user;
         $person->load([
             'institution',
             'dependent',

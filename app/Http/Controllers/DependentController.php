@@ -44,7 +44,7 @@ class DependentController extends Controller
     {
         $person = $request->validated();
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('public/images');
+            $request->file('image')->store('public/images');
             $person['image'] = $request->file('image')->hashName();
         }
 
@@ -84,7 +84,25 @@ class DependentController extends Controller
      */
     public function update(UpdateDependentRequest $request, Dependent $dependent)
     {
-        //
+        // return $dependent->person;
+        if ($request->hasFile('image')) {
+            $request->file('image')->store('public/images');
+            $path = $request->file('image')->hashName();
+        }
+        $dependent->person()->update([
+            'title' => $request->title,
+            'surname' => $request->surname,
+            'first_name' => $request->first_name,
+            'other_names' => $request->other_names,
+            'date_of_birth' => $request->date_of_birth,
+            'gender' => $request->gender,
+            'marital_status' => $request->marital_status,
+            'religion' => $request->religion,
+            'nationality' => $request->nationality,
+            'image' => $path,
+        ]);
+        $dependent->update($request->validated());
+        return redirect()->back()->with('success', 'Dependent updated successfully');
     }
 
     /**

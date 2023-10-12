@@ -19,11 +19,8 @@ defineProps({
 
 const page_errors = ref(null);
 
-const submitHandler = (data, node) => {
+const updateDependent = (data, node) => {
     const fd = new FormData();
-    // fd.append('image', data.staffData.image.image[0].file)
-    // const profileImage = data.staffData.image.image[0].file
-    // data.staffData.personalInformation.image = profileImage
     fd.append("title", data.dependentForm.personalInformation.title ?? "");
     fd.append("surname", data.dependentForm.personalInformation.surname ?? "");
     fd.append(
@@ -56,52 +53,46 @@ const submitHandler = (data, node) => {
     if (data.dependentForm.image.image[0]?.file) {
         fd.append("image", data.dependentForm.image.image[0].file);
     }
-    // fd.append('image', data.dependentForm.image.image[0]?.file ?? '')
 
-    // axios.post(route("dependent.store"), fd)
-    //   .then(function (response) {
-
-    //     node.reset();
-    //     emit("formSubmitted");
-    //   })
-    //   .catch(function (error) {
-
-    //     node.setErrors(['there are errors'],
-    //     {
-    //       errors
-    //     }
-    //     );
-    //   });
-
-    // axios.post(route("dependent.store"), data.dependentForm)
-
-    Inertia.post(route("dependent.store"), fd, {
-        preserveState: true,
-        onSuccess: (message) => {
-            node.reset();
-            emit("formSubmitted");
-        },
-        onError: (errors) => {
-            page_errors.value = errors;
-            node.setErrors(["there are errors submitting the form"], errors);
-        },
-    });
+    Inertia.post(
+        route("dependent.update", {
+            dependent: data.dependentForm.personalInformation.id,
+        }),
+        fd,
+        {
+            preserveState: true,
+            onSuccess: (message) => {
+                node.reset();
+                emit("formSubmitted");
+            },
+            onError: (errors) => {
+                page_errors.value = errors;
+                node.setErrors(
+                    ["there are errors submitting the form"],
+                    errors
+                );
+            },
+        }
+    );
 };
 </script>
 <template>
     <main class="bg-gray-100 dark:bg-gray-700 px-8 py-8">
         <h1 class="text-2xl dark:text-gray-200">Edit new Dependent</h1>
-
+        <!-- {{ dependent }} -->
         <FormKit
             type="form"
-            id="addDependentForm"
-            name="addDependentForm"
-            @submit="submitHandler"
+            @submit="updateDependent"
             :actions="false"
             wrapper-class="mx-auto"
         >
             <!-- <Staff :steps="staff" /> -->
-
+            <FormKit
+                type="hidden"
+                id="dependent_id"
+                name="dependent_id"
+                :value="dependent.id"
+            />
             <FormKit
                 type="multi-step"
                 id="dependentForm"

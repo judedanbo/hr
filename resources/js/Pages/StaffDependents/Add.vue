@@ -74,6 +74,7 @@ const submitHandler = (data, node) => {
 
     Inertia.post(route("dependent.store"), fd, {
         preserveState: true,
+        preserveScroll: true,
         onSuccess: (message) => {
             node.reset();
             emit("formSubmitted");

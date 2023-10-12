@@ -1,9 +1,12 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
+import { Inertia } from "@inertiajs/inertia";
+
 import { useToggle } from "@vueuse/core";
 import AddDependant from "./Add.vue";
 import EditDependant from "./Edit.vue";
+import DeleteDependant from "./Delete.vue";
 import List from "./partials/List.vue";
 
 defineProps({
@@ -27,6 +30,25 @@ const toggleDeleteDependent = useToggle(showDeleteModel);
 
 let showAddDependantForm = ref(false);
 let toggleAddDependantFrom = useToggle(showAddDependantForm);
+
+const confirmDelete = (model) => {
+    selectedDependent.value = model;
+    toggleDeleteDependent();
+};
+
+const deleteDependent = () => {
+    Inertia.delete(
+        route("dependent.delete", {
+            dependent: selectedDependent.value.id,
+        }),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                toggleDeleteDependent();
+            },
+        }
+    );
+};
 </script>
 <template>
     <!-- dependent History -->
@@ -54,7 +76,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm);
                 </div>
                 <List
                     @editDependent="(model) => editDependent(model)"
-                    @deleteDependent="(model) => toggleDeleteDependent()"
+                    @deleteDependent="(model) => confirmDelete(model)"
                     :dependents="dependents"
                 />
             </dl>
@@ -72,8 +94,12 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm);
                 :dependent="selectedDependent"
             />
         </Modal>
-        <!-- <Modal @close="toggleDeleteDependent()" :show="showDeleteModel">
-            Delete Dependent
-        </Modal> -->
+        <Modal @close="toggleDeleteDependent()" :show="showDeleteModel">
+            <DeleteDependant
+                @close="toggleDeleteDependent()"
+                @deleteConfirmed="deleteDependent()"
+                :person="selectedDependent.name"
+            />
+        </Modal>
     </main>
 </template>

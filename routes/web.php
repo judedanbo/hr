@@ -163,6 +163,7 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
     // Route::get('/dependent/create', 'create')->name('dependent.create');
     // Route::get('/dependent/{dependent}', 'show')->name('dependent.show');
     Route::post('/dependent', 'store')->name('dependent.store');
+    Route::post('/dependent/{dependent}', 'update')->name('dependent.update');
     Route::delete('/dependent/{dependent}', 'destroy')->name('dependent.delete');
 });
 

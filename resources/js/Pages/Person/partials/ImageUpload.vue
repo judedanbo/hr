@@ -1,10 +1,16 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 const props = defineProps({
     imageUrl: String,
 });
+const url = ref(null);
 
-const url = ref(props.imageUrl ?? "/images/placeholder.webp");
+onMounted(() => {
+    url.value = props.imageUrl
+        ? "/storage/images/" + props.imageUrl
+        : "/images/placeholder.webp";
+});
+// const url = ref(props.imageUrl ?? "/images/placeholder.webp");
 
 const imageChanged = () => {
     const file = profileImage.files[0];
