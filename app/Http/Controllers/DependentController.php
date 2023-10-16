@@ -85,6 +85,7 @@ class DependentController extends Controller
     public function update(UpdateDependentRequest $request, Dependent $dependent)
     {
         // return $dependent->person;
+        $path = '';
         if ($request->hasFile('image')) {
             $request->file('image')->store('public/images');
             $path = $request->file('image')->hashName();

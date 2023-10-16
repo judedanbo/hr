@@ -2,13 +2,10 @@
 import { ref, onMounted } from "vue";
 import { format, subYears, addDays } from "date-fns";
 
-const contact_types = ref([]);
 const gender = ref([]);
 const maritalStatus = ref([]);
 const nationality = ref([]);
 onMounted(async () => {
-    const { data } = await axios.get(route("contact-type.index"));
-    contact_types.value = data;
     const genderData = await axios.get(route("gender.index"));
     gender.value = genderData.data;
     const maritalStatusData = await axios.get(route("marital-status.index"));
@@ -20,7 +17,7 @@ onMounted(async () => {
 </script>
 <template>
     <div class="md:flex md:gap-2 md:flex-wrap w-full">
-        <div class="w-1/4">
+        <div class="w-2/3 md:w-1/4">
             <FormKit
                 type="text"
                 name="title"
@@ -29,7 +26,6 @@ onMounted(async () => {
                 placeholder="title"
                 validation-visibility="submit"
                 validation="length:1,10"
-                input-class="w-full"
             />
         </div>
         <div class="md:flex-grow">
@@ -64,14 +60,14 @@ onMounted(async () => {
             />
         </div>
     </div>
-    <div class="md:flex justify-between flex-wrap">
+    <div class="md:flex md:gap-2 justify-between flex-wrap">
         <FormKit
             type="date"
             name="date_of_birth"
             id="date_of_birth"
             :min="format(subYears(new Date(), 150), 'yyyy-MM-dd')"
             :max="format(new Date(), 'yyyy-MM-dd')"
-            label="date of birth"
+            label="Date of birth"
             :validation="
                 'required|date_after:' +
                 format(subYears(new Date(), 130), 'yyyy-MM-dd') +
@@ -79,9 +75,34 @@ onMounted(async () => {
                 format(addDays(new Date(), 1), 'yyyy-MM-dd')
             "
             validation-visibility="submit"
-            outer-class="md:w-1/3 lg:w-1/3"
+            outer-class="md:flex-grow"
         />
 
+        <FormKit
+            name="place_of_birth"
+            id="place_of_birth"
+            type="text"
+            label="Place of Birth"
+            placeholder="Place of Birth"
+            outer-class="md:flex-grow"
+        />
+        <!-- <FormKit
+            name="country_of_birth"
+            id="country_of_birth"
+            type="text"
+            label="Country of Birth"
+            placeholder="Place of Birth"
+            outer-class="md:flex-grow"
+        /> -->
+        <FormKit
+            name="country_of_birth"
+            id="country_of_birth"
+            type="select"
+            label="Country of Birth"
+            placeholder="Select Country of Birth"
+            :options="nationality"
+            outer-class="md:flex-grow"
+        />
         <FormKit
             name="gender"
             id="gender"
@@ -90,7 +111,7 @@ onMounted(async () => {
             validation="required"
             placeholder="Select one"
             :options="gender"
-            outer-class="md:w-1/4 lg:w-1/4"
+            outer-class="md:flex-grow"
         />
         <FormKit
             name="nationality"
@@ -98,9 +119,9 @@ onMounted(async () => {
             type="select"
             label="Nationality"
             validation="required"
-            placeholder="Select one"
+            placeholder="Select nationality"
             :options="nationality"
-            outer-class="md:w-1/3 lg:w-1/3"
+            outer-class="md:flex-grow"
         />
         <FormKit
             type="select"
@@ -110,7 +131,7 @@ onMounted(async () => {
             placeholder="Select one"
             validation=""
             :options="maritalStatus"
-            outer-class="w-1/3"
+            outer-class="md:flex-grow"
         />
         <FormKit
             type="text"
@@ -118,8 +139,25 @@ onMounted(async () => {
             id="religion"
             label="Religion"
             placeholder="religion"
+            validation="length:0,40"
+            outer-class="md:flex-grow "
+        />
+        <FormKit
+            type="text"
+            name="ethnicity"
+            id="ethnicity"
+            label="Ethnicity"
+            placeholder="Ethnicity"
             validation="length:2,40"
-            outer-class="w-1/3"
+            outer-class="md:flex-grow"
         />
     </div>
+    <FormKit
+        type="textarea"
+        name="about"
+        id="about"
+        label="About"
+        placeholder="about"
+        validation="length:2,200"
+    />
 </template>

@@ -28,6 +28,8 @@ class Person extends Model
         'date_of_birth',
         'gender',
         'marital_status',
+        'place_of_birth',
+        'country_of_birth',
         'nationality',
         'image',
         'ethnicity',

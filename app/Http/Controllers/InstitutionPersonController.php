@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePersonRequest;
 use App\Enums\ContactTypeEnum;
 use App\Http\Requests\StoreNoteRequest;
+use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
@@ -46,6 +47,7 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->label(),
                 'dob' =>  $staff->person->date_of_birth->format('d M Y'),
+                'image' => $staff->person->image,
                 'dob_distance' =>  $staff->person->date_of_birth->diffInYears() . " years old",
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
@@ -362,9 +364,31 @@ class InstitutionPersonController extends Controller
     public function edit(InstitutionPerson $staff)
     {
         $staff->load('person');
-        // InstitutionPerson::find($institutionPerson->id)->load('person');
-
-        return  $staff;
+        return  [
+            'id' => $staff->id,
+            'file_number' => $staff->file_number,
+            'staff_number' => $staff->staff_number,
+            'old_staff_number' => $staff->old_staff_number,
+            'hire_date' => $staff->hire_date?->format('Y-m-d'),
+            'end_date' => $staff->end_date?->format('Y-m-d'),
+            'person' => [
+                'id' => $staff->person->id,
+                'title' => $staff->person->title,
+                'surname' => $staff->person->surname,
+                'first_name' => $staff->person->first_name,
+                'other_names' => $staff->person->other_names,
+                'date_of_birth' => $staff->person->date_of_birth?->format('Y-m-d'),
+                'place_of_birth' => $staff->person->place_of_birth,
+                'country_of_birth' => $staff->person->country_of_birth,
+                'gender' => $staff->person->gender,
+                'marital_status' => $staff->person->marital_status,
+                'religion' => $staff->person->religion,
+                'nationality' => $staff->person->nationality,
+                'ethnicity' => $staff->person->ethnicity,
+                'image' => $staff->person->image,
+                'about' => $staff->person->about,
+            ]
+        ];
     }
 
     /**
@@ -372,9 +396,17 @@ class InstitutionPersonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, InstitutionPerson $institutionPerson)
+    public function update(UpdateStaffRequest $request, InstitutionPerson $staff)
     {
-        //
+        // return $request->validated();
+        $validated = $request->validated();
+        $personalInformation = $validated['staffData']['personalInformation'];
+        $employmentInformation = $validated['staffData']['employmentInformation'];
+        // return $personalInformation;
+        $staff->person->update($personalInformation);
+        $staff->update($employmentInformation);
+
+        return back()->with('success', 'Staff updated successfully');
     }
 
     /**

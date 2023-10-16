@@ -68,6 +68,8 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 });
 Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->name('person.avatar');
 Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
+Route::post('person/{person}/avatar', [PersonAvatarController::class, 'store'])->middleware(['auth'])->name('person.avatar.store');
+
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
@@ -134,6 +136,7 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::get('/staff/create', 'create')->name('staff.create');
     Route::post('/staff', 'store')->name('staff.store');
     Route::get('/staff/{staff}', 'show')->name('staff.show');
+    Route::patch('/staff/{staff}', 'update')->name('staff.update');
     // Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
     // Route::post('/staff/{staff}/promote', 'editPromote')->name('staff.promote.edit');
     Route::get('/staff/{staff}/edit', 'edit')->name('staff.edit');
@@ -166,6 +169,8 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
     Route::post('/dependent/{dependent}', 'update')->name('dependent.update');
     Route::delete('/dependent/{dependent}', 'destroy')->name('dependent.delete');
 });
+
+Route::post('staff/{staff}/profile-image', [PersonAvatarController::class, 'store'])->middleware(['auth'])->name('staff.profile-image.store');
 
 Route::controller(JobCategoryController::class)->middleware(['auth'])->group(function () {
     Route::get('/job-category', 'index')->name('job-category.index');

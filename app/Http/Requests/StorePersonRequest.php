@@ -28,7 +28,7 @@ class StorePersonRequest extends FormRequest
     public function rules()
     {
         return [
-            'personalInformation.title' => 'string|min:1|max:10',
+            'personalInformation.title' => 'string|min:1|max:10|nullable',
             'personalInformation.surname' => 'required|string|max:100',
             'personalInformation.first_name' => 'required|string|max:100',
             'personalInformation.other_names' => 'string|max:100|nullable',
@@ -39,7 +39,7 @@ class StorePersonRequest extends FormRequest
                 'after:' . Carbon::now()->subYears(100)->format('Y-m-d'),
             ],
             'personalInformation.gender' => ['required', new Enum(GenderEnum::class)],
-            'personalInformation.marital_status' => ['required', new Enum(MaritalStatusEnum::class)],
+            'personalInformation.marital_status' => [new Enum(MaritalStatusEnum::class), 'nullable'],
             'contactInformation.contact_type' => 'required|integer',
             'contactInformation.contact' => 'required|string|max:100|unique:contacts,contact',
             'employmentInformation.staff_number' => 'required|string|max:10|unique:institution_person,staff_number|different:employmentInformation.file_number',

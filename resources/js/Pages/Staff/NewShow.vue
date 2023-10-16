@@ -299,7 +299,10 @@ let BreadcrumbLinks = [
                 </div>
             </div>
             <NewModal @close="toggle()" :show="openEditModal">
-                <EditStaffForm :staff_id="staff.staff_id" />
+                <EditStaffForm
+                    @formSubmitted="toggle()"
+                    :staff_id="staff.staff_id"
+                />
             </NewModal>
         </main>
     </MainLayout>
