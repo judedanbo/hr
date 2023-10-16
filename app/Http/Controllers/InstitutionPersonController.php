@@ -220,8 +220,10 @@ class InstitutionPersonController extends Controller
                     'id' => $type->id,
                     'type' => $type->staff_type,
                     'type_label' => $type->staff_type->label(),
-                    'start_date' => $type->start_date?->format('d M Y'),
-                    'end_date' => $type->end_date?->format('d M Y'),
+                    'start_date' => $type->start_date?->format('Y-m-d'),
+                    'start_date_display' => $type->start_date?->format('d M Y'),
+                    'end_date' => $type->end_date?->format('Y-m-d'),
+                    'end_date_display' => $type->end_date?->format('d M Y'),
                 ]),
                 'ranks' => $staff->ranks->map(fn ($rank) => [
                     'id' => $rank->id,

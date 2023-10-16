@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\StaffTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateStaffTypeRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class UpdateStaffTypeRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,13 @@ class UpdateStaffTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'staff_id' => 'required|exists:institution_person,id',
+            'staff_type' => [
+                'required',
+                new Enum(StaffTypeEnum::class)
+            ],
+            'start_date' => 'required|date|before_or_equal:today|after_or_equal:hire_date', // TODO: add hire_date to institution_person
+            'end_date' => 'date|after:start_date|nullable',
         ];
     }
 }

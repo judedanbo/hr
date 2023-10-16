@@ -1,17 +1,11 @@
 <script setup>
 import { ref } from "vue";
-import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-} from "@headlessui/vue";
+import { DialogTitle } from "@headlessui/vue";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 const emit = defineEmits(["close", "deleteConfirmed"]);
 defineProps({
-    model: Object,
-    staff: String,
+    // model: Object,
+    // person: String,
 });
 </script>
 <template>
@@ -28,14 +22,11 @@ defineProps({
             <DialogTitle
                 as="h3"
                 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50"
-                >Delete Transfer
+                >Delete Qualification
             </DialogTitle>
             <div class="mt-2 dark:text-gray-300">
-                <p class="text-sm">
-                    You are about to delete the transfer of {{ staff }} to
-                    {{ model.unit.name }}.
-                </p>
-                <p>Are you sure you want to delete this transfer?</p>
+                <p class="text-sm">You are about to delete the staff type.</p>
+                <p>Are you sure you want to delete this staff type ?</p>
             </div>
         </div>
     </div>

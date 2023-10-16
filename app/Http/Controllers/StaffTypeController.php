@@ -82,7 +82,17 @@ class StaffTypeController extends Controller
      */
     public function update(UpdateStaffTypeRequest $request, StaffType $staffType)
     {
-        //
+        // return $request->validated();
+        $staffType->update($request->validated());
+
+        return redirect()->back()->with('success', 'Staff type updated');
+    }
+
+    public function delete(StaffType $staffType)
+    {
+        $staffType->delete();
+
+        return redirect()->back()->with('success', 'Staff type deleted');
     }
 
     /**

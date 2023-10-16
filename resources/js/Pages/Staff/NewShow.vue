@@ -7,7 +7,7 @@ import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
 import TransferHistory from "./TransferHistory.vue";
 import StatusHistory from "./StatusHistory.vue";
-import StaffType from "./StaffType.vue";
+import StaffType from "../StaffType/Index.vue";
 import Qualifications from "./Qualifications.vue";
 import Dependents from "@/Pages/StaffDependents/Index.vue";
 // import Dependents from "./Dependents.vue";
@@ -255,7 +255,10 @@ let BreadcrumbLinks = [
                             <StaffType
                                 @close-form="toggleTransferForm()"
                                 :types="staff.staff_type"
-                                :staff="staff.staff_id"
+                                :staff="{
+                                    id: staff.staff_id,
+                                    hire_date: staff.hire_date,
+                                }"
                                 :institution="staff.institution_id"
                             />
                         </div>

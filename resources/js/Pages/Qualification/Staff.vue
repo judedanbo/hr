@@ -52,7 +52,7 @@ const subMenuClicked = (action, model) => {
                     >
                         Year
                     </th>
-                    <th><div class="sr-only">Action</div></th>
+                    <th><div class="sr-only">Actions</div></th>
                 </tr>
             </thead>
             <tbody>

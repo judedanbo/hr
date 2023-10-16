@@ -1,34 +1,61 @@
 <script setup>
-import ChangeStatus from "./partials/ChangeStatus.vue";
+import Create from "./Create.vue";
 import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
 import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
+import EditStaffType from "./Edit.vue";
+import DeleteStaffType from "./Delete.vue";
+import { Inertia } from "@inertiajs/inertia";
 
-const emit = defineEmits(["closeForm", "editHistory", "deleteHistory"]);
+const emit = defineEmits(["closeForm", "editType", "deleteType"]);
 
 let props = defineProps({
-    statuses: Array,
-    staff: Number,
+    types: Array,
+    staff: Object,
     institution: Number,
 });
 
-let openStatusModal = ref(false);
-const toggleStatusModal = useToggle(openStatusModal);
-
+let openStaffTypeModal = ref(false);
+const toggleStaffTypeModal = useToggle(openStaffTypeModal);
+const staffType = ref(null);
 const subMenuClicked = (action, model) => {
     if (action == "Edit") {
-        emit("editHistory", model);
+        staffType.value = model;
+        toggleEditStaffTypeModal();
     }
     if (action == "Delete") {
-        emit("deleteHistory", model);
+        staffType.value = model;
+        toggleDeleteStaffTypeModal();
     }
+};
+
+const openEditStaffTypeModal = ref(false);
+const toggleEditStaffTypeModal = useToggle(openEditStaffTypeModal);
+
+const openDeleteStaffTypeModal = ref(false);
+const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
+
+const deleteStaffType = () => {
+    Inertia.delete(
+        route("staff-type.delete", {
+            staff: props.staff.id,
+            staffType: staffType.value.id,
+        }),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                staffType.value = null;
+                toggleDeleteStaffTypeModal();
+            },
+        }
+    );
 };
 </script>
 <template>
     <!-- Transfer History -->
     <main>
-        <h2 class="sr-only">Status History</h2>
+        <h2 class="sr-only">Staff Type</h2>
         <div
             class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80"
         >
@@ -37,12 +64,12 @@ const subMenuClicked = (action, model) => {
                     <dt
                         class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-50"
                     >
-                        Status History
+                        Staff Type
                     </dt>
                 </div>
                 <div class="flex-none self-end px-6 pt-4">
                     <button
-                        @click="toggleStatusModal()"
+                        @click="toggleStaffTypeModal()"
                         class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
                     >
                         {{ "Change" }}
@@ -50,7 +77,7 @@ const subMenuClicked = (action, model) => {
                 </div>
 
                 <div class="-mx-4 flow-root sm:mx-0 w-full p-4 overflow-y-auto">
-                    <table v-if="statuses.length > 0" class="min-w-full">
+                    <table v-if="types.length > 0" class="min-w-full">
                         <colgroup></colgroup>
                         <thead
                             class="border-b border-gray-300 text-gray-900 dark:border-gray-200/30 dark:text-gray-50"
@@ -60,7 +87,7 @@ const subMenuClicked = (action, model) => {
                                     scope="col"
                                     class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
                                 >
-                                    Status
+                                    Type
                                 </th>
                                 <th
                                     scope="col"
@@ -79,34 +106,34 @@ const subMenuClicked = (action, model) => {
                         </thead>
                         <tbody>
                             <tr
-                                v-for="status in statuses"
-                                :key="status.id"
+                                v-for="type in types"
+                                :key="type.id"
                                 class="border-b border-gray-200 dark:border-gray-400/30"
                             >
                                 <td
-                                    class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0"
+                                    class="max-w-0 py-2 pl-1 pr-3 text-xs sm:pl-0"
                                 >
                                     <div
-                                        class="font-medium text-gray-900 dark:text-gray-50"
+                                        class="font-medium text-gray-900 dark:text-gray-50 w-3/5"
                                     >
-                                        {{ status.status }}
+                                        {{ type.type_label }}
                                     </div>
                                 </td>
                                 <td
-                                    class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
+                                    class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/5"
                                 >
-                                    {{ status.start_date }}
+                                    {{ type.start_date_display }}
                                 </td>
                                 <td
-                                    class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
+                                    class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/5"
                                 >
-                                    {{ status.end_date }}
+                                    {{ type.end_date_display }}
                                 </td>
                                 <td>
                                     <SubMenu
                                         @itemClicked="
                                             (action) =>
-                                                subMenuClicked(action, status)
+                                                subMenuClicked(action, type)
                                         "
                                         :items="['Edit', 'Delete']"
                                     />
@@ -118,17 +145,39 @@ const subMenuClicked = (action, model) => {
                         v-else
                         class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center"
                     >
-                        No status found.
+                        No staff type found.
                     </div>
                 </div>
             </dl>
         </div>
-        <Modal @close="toggleStatusModal()" :show="openStatusModal">
-            <ChangeStatus
-                @formSubmitted="toggleStatusModal()"
+        <Modal @close="toggleStaffTypeModal()" :show="openStaffTypeModal">
+            <Create
+                @formSubmitted="toggleStaffTypeModal()"
+                :staff="staff"
+                :staffType="staffType"
+                :institution="institution"
+            />
+        </Modal>
+        <Modal
+            @close="toggleEditStaffTypeModal()"
+            :show="openEditStaffTypeModal"
+        >
+            <EditStaffType
+                @formSubmitted="toggleEditStaffTypeModal()"
                 :staff="staff"
                 :institution="institution"
-                :statuses="statuses"
+                :staffType="staffType"
+            />
+        </Modal>
+
+        <!-- Delete Modal -->
+        <Modal
+            @close="toggleDeleteStaffTypeModal()"
+            :show="openDeleteStaffTypeModal"
+        >
+            <DeleteStaffType
+                @close="toggleDeleteStaffTypeModal()"
+                @deleteConfirmed="deleteStaffType()"
             />
         </Modal>
     </main>

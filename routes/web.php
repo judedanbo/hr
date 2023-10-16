@@ -229,9 +229,19 @@ Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])-
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
 
-Route::post('staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
+Route::post('/staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
 
-Route::post('staff-type.save', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
+Route::controller(StaffTypeController::class)->middleware(['auth'])->group(function () {
+    Route::get('/staff-type', 'index')->name('staff-type.index');
+    Route::get('/staff-type/create', 'create')->name('staff-type.create');
+    Route::post('/staff-type', 'store')->name('staff-type.store');
+    Route::get('/staff-type/{staffType}', 'show')->name('staff-type.show');
+    Route::patch('/staff-type/{staffType}', 'update')->name('staff-type.update');
+    Route::delete('/staff-type/{staffType}', 'delete')->name('staff-type.delete');
+});
+// Route::post('/staff-type/{staff}', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
+
+// Route::patch('/staff-type/{staff}/{type}', [StaffTypeController::class, 'update'])->middleware(['auth'])->name('staff-type.update');
 
 Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth'])->name('unit-type.index');
 
