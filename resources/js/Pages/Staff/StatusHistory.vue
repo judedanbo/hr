@@ -24,6 +24,28 @@ const subMenuClicked = (action, model) => {
         emit("deleteHistory", model);
     }
 };
+
+let openEditStaffHistoryModal = ref(false);
+const toggleEditStaffHistoryModal = useToggle(openEditStaffHistoryModal);
+
+let openDeleteStaffHistoryModal = ref(false);
+const toggleDeleteStaffHistoryModal = useToggle(openDeleteStaffHistoryModal);
+
+const deleteStaffHistory = () => {
+    Inertia.delete(
+        route("staff-history.delete", {
+            staff: props.staff.id,
+            staffHistory: staffHistory.value.id,
+        }),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                staffHistory.value = null;
+                toggleDeleteStaffHistoryModal();
+            },
+        }
+    );
+};
 </script>
 <template>
     <!-- Transfer History -->
@@ -129,6 +151,29 @@ const subMenuClicked = (action, model) => {
                 :staff="staff"
                 :institution="institution"
                 :statuses="statuses"
+            />
+        </Modal>
+        <!-- Edit staff History Modal -->
+        <Modal
+            @close="toggleEditStaffHistoryModal()"
+            :show="openEditStaffHistoryModal"
+        >
+            <EditStaffHistory
+                @formSubmitted="toggleEditStaffHistoryModal()"
+                :staff="staff"
+                :institution="institution"
+                :staffHistory="staffHistory"
+            />
+        </Modal>
+
+        <!-- Delete staff History Modal -->
+        <Modal
+            @close="toggleDeleteStaffHistoryModal()"
+            :show="openDeleteStaffHistoryModal"
+        >
+            <DeleteStaffHistory
+                @close="toggleDeleteStaffHistoryModal()"
+                @deleteConfirmed="deleteStaffHistory()"
             />
         </Modal>
     </main>

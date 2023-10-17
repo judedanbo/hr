@@ -158,6 +158,7 @@ const deleteStaffType = () => {
                 :institution="institution"
             />
         </Modal>
+        <!-- Edit staff Type Modal -->
         <Modal
             @close="toggleEditStaffTypeModal()"
             :show="openEditStaffTypeModal"
@@ -170,7 +171,7 @@ const deleteStaffType = () => {
             />
         </Modal>
 
-        <!-- Delete Modal -->
+        <!-- Delete staff type Modal -->
         <Modal
             @close="toggleDeleteStaffTypeModal()"
             :show="openDeleteStaffTypeModal"

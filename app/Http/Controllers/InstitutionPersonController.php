@@ -211,10 +211,13 @@ class InstitutionPersonController extends Controller
                 'start_date' => $staff->start_date,
                 'statuses' => $staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
-                    'status' => $status->status->name,
+                    'status' => $status->status,
+                    'status_display' => $status->status?->name,
                     'description' => $status->description,
-                    'start_date' => $status->start_date?->format('d M Y'),
-                    'end_date' => $status->end_date?->format('d M Yp'),
+                    'start_date' => $status->start_date?->format('Y-m-d'),
+                    'start_date_display' => $status->start_date?->format('d M Y'),
+                    'end_date' => $status->end_date?->format('Y-m-d'),
+                    'end_date_display' => $status->end_date?->format('d M Y'),
                 ]),
                 'staff_type' => $staff->type?->map(fn ($type) => [
                     'id' => $type->id,

@@ -6,7 +6,7 @@ use App\Enums\EmployeeStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreStaffStatusRequest extends FormRequest
+class UpdateStaffStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,7 +31,7 @@ class StoreStaffStatusRequest extends FormRequest
                 "required",
                 new Enum(EmployeeStatusEnum::class)
             ],
-            'start_date' => 'required|date|before_or_equal:today|after_or_equal:institution_person.hire_date',
+            'start_date' => 'required|date|before_or_equal:today|after_or_equal:hire_date',
             'end_date' => 'date|after:start_date|nullable',
             'description' => 'nullable|string|max:255',
         ];

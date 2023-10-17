@@ -34,6 +34,7 @@ use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
 use App\Models\JobCategory;
+use App\Models\StaffType;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -229,7 +230,15 @@ Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])-
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
 
-Route::post('/staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
+Route::controller(StaffStatusController::class)->middleware(['auth'])->group(function () {
+    Route::get('/staff-status', 'index')->name('staff-status.index');
+    Route::get('/staff-status/create', 'create')->name('staff-status.create');
+    Route::post('/staff-status', 'store')->name('staff-status.store');
+    Route::get('/staff-status/{staffStatus}', 'show')->name('staff-status.show');
+    Route::patch('/staff-status/{staffStatus}', 'update')->name('staff-status.update');
+    Route::delete('/staff-status/{staffStatus}', 'delete')->name('staff-status.delete');
+});
+// Route::post('/staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
 
 Route::controller(StaffTypeController::class)->middleware(['auth'])->group(function () {
     Route::get('/staff-type', 'index')->name('staff-type.index');
@@ -239,7 +248,7 @@ Route::controller(StaffTypeController::class)->middleware(['auth'])->group(funct
     Route::patch('/staff-type/{staffType}', 'update')->name('staff-type.update');
     Route::delete('/staff-type/{staffType}', 'delete')->name('staff-type.delete');
 });
-// Route::post('/staff-type/{staff}', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
+// Route::post('/staff-type/{`staff}', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
 
 // Route::patch('/staff-type/{staff}/{type}', [StaffTypeController::class, 'update'])->middleware(['auth'])->name('staff-type.update');
 

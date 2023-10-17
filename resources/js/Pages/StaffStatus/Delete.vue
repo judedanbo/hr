@@ -22,11 +22,13 @@ defineProps({
             <DialogTitle
                 as="h3"
                 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50"
-                >Delete Staff Type
+                >Delete Staff Status
             </DialogTitle>
             <div class="mt-2 dark:text-gray-300">
-                <p class="text-sm">You are about to delete the staff type.</p>
-                <p>Are you sure you want to delete this staff type ?</p>
+                <p class="text-sm">
+                    You are about to delete this staff status.
+                </p>
+                <p>Are you sure you want to proceed ?</p>
             </div>
         </div>
     </div>
