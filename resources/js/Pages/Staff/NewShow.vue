@@ -242,7 +242,7 @@ let BreadcrumbLinks = [
                         class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4 items-start"
                     >
                         <!-- important Dates -->
-                        <StaffDates class="w-2/3" :staff="staff" />
+                        <StaffDates class="md:w-2/3" :staff="staff" />
                         <!-- statutes history -->
                         <div class="w-full md:flex-1 flex-1 space-y-2">
                             <StaffStatus
