@@ -5,7 +5,7 @@ import { Inertia } from "@inertiajs/inertia";
 import AddQualification from "@/Pages/Qualification/Add.vue";
 import EditQualification from "@/Pages/Qualification/Edit.vue";
 import DeleteQualification from "@/Pages/Qualification/Delete.vue";
-import Modal from "@/Components/Modal.vue";
+import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
 import { useToggle } from "@vueuse/core";
 import NewModal from "@/Components/NewModal.vue";

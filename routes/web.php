@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\DocumentStatusEnum;
+use App\Enums\DocumentTypeEnum;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
 use App\Enums\NoteTypeEnum;
@@ -26,6 +28,7 @@ use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
+use App\Http\Controllers\QualificationDocument;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
@@ -34,6 +37,7 @@ use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
 use App\Models\JobCategory;
+use App\Models\Qualification;
 use App\Models\StaffType;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
@@ -187,6 +191,30 @@ Route::controller(JobController::class)->middleware(['auth'])->group(function ()
     Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
     Route::post('/rank', 'store')->name('job.store');
+});
+
+Route::get('/document-types', function () {
+    foreach (DocumentTypeEnum::cases() as $type) {
+        $types[] = [
+            'value' => $type->value,
+            'label' => $type->getDocumentType(),
+        ];
+    }
+    return $types;
+})->middleware(['auth'])->name('document-types');
+
+Route::get('/document-statuses', function () {
+    foreach (DocumentStatusEnum::cases() as $status) {
+        $types[] = [
+            'value' => $status->value,
+            'label' => $status->getDocumentStatus(),
+        ];
+    }
+    return $types;
+})->middleware(['auth'])->name('document-statuses');
+
+Route::controller(QualificationDocument::class)->middleware(['auth'])->group(function () {
+    Route::post('/qualification/{qualification}/document', 'update')->name('qualification.document.update');
 });
 
 // report

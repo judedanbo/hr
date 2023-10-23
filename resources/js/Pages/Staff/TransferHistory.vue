@@ -1,7 +1,7 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
 import Transfer from "./partials/Transfer.vue";
-import Modal from "@/Components/Modal.vue";
+import Modal from "@/Components/NewModal.vue";
 import NewModal from "@/Components/NewModal.vue";
 import DeleteTransfer from "@/Pages/Transfer/Delete.vue";
 import { ref, watch } from "vue";

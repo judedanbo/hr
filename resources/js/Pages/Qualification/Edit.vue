@@ -1,6 +1,8 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
 import { format, addDays, subYears } from "date-fns";
+import QualificationForm from "./partials/QualificationForm.vue";
+import QualificationEvidence from "./partials/QualificationEvidence.vue";
 const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
@@ -8,107 +10,90 @@ const props = defineProps({
     qualification: Object,
 });
 
-const submitHandler = (data, node) => {
-    Inertia.patch(
-        route("qualification.update", {
+const submitDocuments = (document) => {
+    console.log(document);
+    const formData = new FormData();
+    // document.forEach((file) => {
+    formData.append("document_file", document[0].file);
+    // });
+    Inertia.post(
+        route("qualification.document.update", {
             qualification: props.qualification.id,
         }),
-        data,
+        formData,
         {
             preserveScroll: true,
             onSuccess: () => {
-                node.reset();
-                emit("formSubmitted");
+                // emit("imageUpdated");
             },
             onError: (errors) => {
-                node.setErrors(["Sever side errors"], errors);
+                // const errorNode = getNode("documentUpload");
+                console.log(errors);
+                // errorNode.setErrors(errors);
+                // errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
             },
         }
     );
 };
+
+const submitHandler = (data, node) => {
+    // Inertia.patch(
+    //     route("qualification.update", {
+    //         qualification: props.qualification.id,
+    //     }),
+    //     data,
+    //     {
+    //         preserveScroll: true,
+    //         onSuccess: () => {
+    //             node.reset();
+    //             emit("formSubmitted");
+    //         },
+    //         onError: (errors) => {
+    //             node.setErrors(["Sever side errors"], errors);
+    //         },
+    //     }
+    // );
+    if (data.staffQualification.evidence.documentUpload.length > 0) {
+        submitDocuments(data.staffQualification.evidence.documentUpload);
+    }
+};
 </script>
 
 <template>
-    <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
+    <main class="bg-gray-100 dark:bg-gray-700">
         <h1 class="text-2xl pb-4 dark:text-gray-100">Edit Qualification</h1>
-        <FormKit
-            @submit="submitHandler"
-            type="form"
-            submit-label="Update"
-            :value="qualification"
-        >
+        <FormKit @submit="submitHandler" type="form" :actions="false">
             <!-- <FormKit type="hidden" name="id" id="id" /> -->
             <!-- <FormKit type="hidden" name="person_id" id="person_id" /> -->
             <FormKit
-                type="text"
-                name="institution"
-                id="institution"
-                label="Institution"
-                validation="string|length:2,100"
-                validation-visibility="submit"
-            />
-            <div class="sm:flex gap-4">
+                type="multi-step"
+                name="staffQualification"
+                :allow-incomplete="true"
+                tab-style="progress"
+            >
                 <FormKit
-                    type="text"
-                    name="course"
-                    id="course"
-                    label="Course"
-                    validation="required|string|length:2,100"
-                    validation-visibility="submit"
-                />
-                <div>
-                    <FormKit
-                        type="text"
-                        name="level"
-                        id="level"
-                        label="Level"
-                        validation="string|length:2,100"
-                        validation-visibility="submit"
+                    type="step"
+                    name="certification"
+                    id="certification"
+                    :value="qualification"
+                >
+                    <QualificationForm />
+                </FormKit>
+                <FormKit
+                    type="step"
+                    name="evidence"
+                    id="evidence"
+                    step-actions-class="flex justify-between"
+                >
+                    <!-- {{ qualification.documents }} -->
+                    <QualificationEvidence
+                        :documents="qualification.documents"
                     />
-                </div>
-            </div>
-            <div class="sm:flex gap-4">
-                <FormKit
-                    type="text"
-                    name="qualification"
-                    id="qualification"
-                    label="Qualification"
-                    validation="length:0,100"
-                    validation-visibility="submit"
-                />
-                <div>
-                    <FormKit
-                        type="text"
-                        name="qualification_number"
-                        id="qualification_number"
-                        label="Qualification Number"
-                        validation="string|length:0,100"
-                        validation-visibility="submit"
-                    />
-                </div>
-            </div>
-            <div class="w-1/2 sm:w-1/3 xl:w-1/4">
-                <FormKit
-                    type="text"
-                    name="year"
-                    id="year"
-                    label="Year of Graduation"
-                    validation="string|length:2,100"
-                    validation-visibility="submit"
-                />
-            </div>
+                    <template #stepNext>
+                        <FormKit type="submit" label="Save" />
+                    </template>
+                </FormKit>
+            </FormKit>
         </FormKit>
     </main>
 </template>
-
-<style scoped>
-.formkit-outer {
-    @apply w-full;
-}
-.formkit-submit {
-    @apply justify-self-end;
-}
-.formkit-actions {
-    @apply flex justify-end;
-}
-</style>

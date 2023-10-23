@@ -27,6 +27,15 @@ const imageChanged = () => {
             />
         </div>
         <FormKit
+            type="text"
+            name="document_title"
+            id="document_title"
+            label="Document Title"
+            placeholder="Document Title"
+            validation="required|length:0,100"
+        />
+        no validation for image
+        <FormKit
             @input="imageChanged"
             id="profileImage"
             type="file"

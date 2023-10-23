@@ -9,7 +9,10 @@ import {
 const emit = defineEmits(["close"]);
 
 defineProps({
-    show: Boolean,
+    show: {
+        type: Boolean,
+        default: false,
+    },
 });
 </script>
 <template>

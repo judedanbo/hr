@@ -1,5 +1,5 @@
 <script setup>
-import Modal from "@/Components/Modal.vue";
+import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
 import { useToggle } from "@vueuse/core";
 import AddDependant from "./partials/AddDependant.vue";

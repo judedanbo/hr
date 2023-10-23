@@ -11,7 +11,7 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
-import Modal from "@/Components/Modal.vue";
+import Modal from "@/Components/NewModal.vue";
 import AddStaffForm from "./AddStaffForm.vue";
 import { useToggle } from "@vueuse/core";
 import Avatar from "../Person/partials/Avatar.vue";

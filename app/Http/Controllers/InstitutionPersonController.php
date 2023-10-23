@@ -182,6 +182,7 @@ class InstitutionPersonController extends Controller
                 'qualification_number' => $qualification->qualification_number,
                 'level' => $qualification->level,
                 'year' => $qualification->year,
+                'documents' => $qualification->documents
             ]) : [],
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,

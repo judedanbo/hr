@@ -252,23 +252,13 @@ const closeAlert = (index) => {
     </div>
     <div class="fixed bottom-10 right-5 flex flex-col space-y-3">
         <template v-for="(alertItem, key, index) in alert" :key="index">
-            <TransitionRoot
-                :show="alertItem === null ? false : true"
-                enter="transition-opacity duration-75"
-                enter-from="opacity-0"
-                enter-to="opacity-100"
-                leave="transition-opacity duration-150"
-                leave-from="opacity-100"
-                leave-to="opacity-0"
-            >
-                <Alert
-                    @close="closeAlert(index)"
-                    v-if="alertItem"
-                    :alert="alertItem"
-                    :type="key"
-                    :index="index"
-                />
-            </TransitionRoot>
+            <Alert
+                @close="closeAlert(index)"
+                v-if="alertItem"
+                :alert="alertItem"
+                :type="key"
+                :index="index"
+            />
         </template>
     </div>
 </template>
