@@ -32,7 +32,8 @@ class UpdateQualificationDocumentRequest extends FormRequest
             'document_number' => 'string|max:20|nullable',
             'document_file' => 'string|max:100|nullable',
             'file_name' => 'required|file|max:2048|mimes:pdf,png,jpg,jpeg',
-            'document_status' => ['required', 'string', new Enum(DocumentStatusEnum::class)],
+            'file_type' => 'required|string|max:100',
+            'document_status' => [ 'string', new Enum(DocumentStatusEnum::class)],
             'document_remarks' => 'string|max:255|nullable',
         ];
     }

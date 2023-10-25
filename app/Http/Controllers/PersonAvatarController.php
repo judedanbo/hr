@@ -14,8 +14,14 @@ class PersonAvatarController extends Controller
             'initials' => $person->initials,
         ];
     }
+    public function store (Request $request, Person $person)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'max:2048'],
+        ]);
+    }
 
-    public function store(Request $request, Person $person)
+    public function update(Request $request, Person $person)
     {
         $request->validate([
             'image' => ['required', 'image', 'max:2048'],

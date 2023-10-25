@@ -5,16 +5,15 @@ import EditStaffForm from "./EditStaffForm.vue";
 </script>
 
 <template>
-  <Head title="Staff" />
+	<Head title="Staff" />
 
-  <MainLayout>
+	<MainLayout>
+		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<div class="overflow-hidden shadow-sm sm:rounded-lg">
+				Edit Staff
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <div class="overflow-hidden shadow-sm sm:rounded-lg">
-        Edit Staff
-
-        <EditStaffForm />
-      </div>
-    </div>
-  </MainLayout>
+				<EditStaffForm />
+			</div>
+		</div>
+	</MainLayout>
 </template>

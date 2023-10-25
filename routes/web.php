@@ -28,7 +28,7 @@ use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
-use App\Http\Controllers\QualificationDocument;
+use App\Http\Controllers\QualificationDocumentController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
@@ -73,7 +73,7 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 });
 Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->name('person.avatar');
 Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
-Route::post('person/{person}/avatar', [PersonAvatarController::class, 'store'])->middleware(['auth'])->name('person.avatar.store');
+Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth'])->name('person.avatar.update');
 
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
@@ -213,8 +213,9 @@ Route::get('/document-statuses', function () {
     return $types;
 })->middleware(['auth'])->name('document-statuses');
 
-Route::controller(QualificationDocument::class)->middleware(['auth'])->group(function () {
-    Route::post('/qualification/{qualification}/document', 'update')->name('qualification.document.update');
+Route::controller(QualificationDocumentController::class)->middleware(['auth'])->group(function () {
+    Route::post('/qualification/{qualification}/document', 'update')->name('qualification-document.update');
+    Route::delete('/qualification/{qualification}/document', 'delete')->name('qualification-document.delete');
 });
 
 // report

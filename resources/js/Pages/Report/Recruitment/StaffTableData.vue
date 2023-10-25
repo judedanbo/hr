@@ -1,10 +1,10 @@
 <script setup>
 defineProps({
-    name: String,
+	name: String,
 });
 </script>
 <template>
-    <td class="pl-5">
-        <slot />
-    </td>
+	<td class="pl-5">
+		<slot />
+	</td>
 </template>

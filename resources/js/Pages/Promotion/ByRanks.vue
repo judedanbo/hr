@@ -8,42 +8,51 @@ import { Inertia } from "@inertiajs/inertia";
 import Promotion from "./Promotion.vue";
 
 let props = defineProps({
-    promotions: Object,
-    filters: Object,
+	promotions: Object,
+	filters: Object,
 });
 
 let search = ref(props.filters.search);
 
 watch(search, (value) => {
-    Inertia.get(route('promotion.index'), { search: value }, { preserveState: true, replace: true, preserveScroll: true })
-})
-
+	Inertia.get(
+		route("promotion.index"),
+		{ search: value },
+		{ preserveState: true, replace: true, preserveScroll: true },
+	);
+});
 </script>
 
 <template>
-    <Head title="Promotions" />
+	<Head title="Promotions" />
 
-    <MainLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50">
-                Promotions
-            </h2>
-        </template>
+	<MainLayout>
+		<template #header>
+			<h2
+				class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50"
+			>
+				Promotions
+			</h2>
+		</template>
 
-        <div>
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2
-                    class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark:text-gray-50 lg:mx-0 lg:max-w-none">
-                    Promotion History</h2>
-                <input v-model="search" type="search" />
-            </div>
-            <div class="mt-6 overflow-hidden border-t border-gray-100 dark:border-gray-800">
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-                        <PromotionByRank :promotions="promotions" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </MainLayout>
+		<div>
+			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<h2
+					class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark:text-gray-50 lg:mx-0 lg:max-w-none"
+				>
+					Promotion History
+				</h2>
+				<input v-model="search" type="search" />
+			</div>
+			<div
+				class="mt-6 overflow-hidden border-t border-gray-100 dark:border-gray-800"
+			>
+				<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+					<div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
+						<PromotionByRank :promotions="promotions" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</MainLayout>
 </template>

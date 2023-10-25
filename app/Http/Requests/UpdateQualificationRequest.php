@@ -25,13 +25,14 @@ class UpdateQualificationRequest extends FormRequest
     {
         return [
             // "person_id" => "required|integer|exists:people,id",
-            "institution" => "string|max:100",
-            "course" => "string|max:100",
-            "qualification" => "string|max:100|nullable",
-            "qualification_number" => "string|max:10|nullable",
-            "level" => "string|max:50|nullable",
-            "pk" => "string|max:6|nullable",
-            "year" => "string|max:4|nullable"
+            // "staffQualification.certification." ,
+            "staffQualification.certification.institution" => "string|max:100",
+            "staffQualification.certification.course" => "string|max:100",
+            "staffQualification.certification.qualification" => "string|max:100|nullable",
+            "staffQualification.certification.qualification_number" => "string|max:10|nullable",
+            "staffQualification.certification.level" => "string|max:50|nullable",
+            "staffQualification.certification.pk" => "string|max:6|nullable",
+            "staffQualification.certification.year" => "string|max:4|nullable"
         ];
     }
 }

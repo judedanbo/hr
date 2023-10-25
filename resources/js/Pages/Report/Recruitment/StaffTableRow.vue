@@ -4,88 +4,85 @@ import { format, differenceInYears, addYears } from "date-fns";
 import StaffTableData from "./StaffTableData.vue";
 
 let props = defineProps({
-    staff: Object,
+	staff: Object,
 });
 
 let dob = computed(() => {
-    return formatDate(props.staff.date_of_birth);
+	return formatDate(props.staff.date_of_birth);
 });
 let hireDate = computed(() => {
-    return formatDate(props.staff.hire_date);
+	return formatDate(props.staff.hire_date);
 });
 
 let formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return format(date, "dd MMMM, yyyy");
+	const date = new Date(dateString);
+	return format(date, "dd MMMM, yyyy");
 };
 
 let getAge = (dateString, now = new Date()) => {
-    const date = new Date(dateString);
+	const date = new Date(dateString);
 
-    return differenceInYears(now, date);
+	return differenceInYears(now, date);
 };
 </script>
 <template>
-    <tr
-        :class="staff.status == 'Retired' ? 'bg-gray-300' : ''"
-        tabindex="0"
-        class="focus:outline-none h-10 border border-gray-100 rounded hover:bg-green-50"
-    >
-        <StaffTableData>
-            <div class="flex flex-col ml-2 text-gray-600 py-2 space-y-1">
-                <p class="leading-none">
-                    {{ staff.name }}
-                </p>
-                <p
-                    class="text-xs"
-                    :title="getAge(staff.date_of_birth) + ' years old'"
-                >
-                    {{ staff.gender }} | {{ dob }}
-                </p>
-            </div>
-        </StaffTableData>
-        <StaffTableData>
-            <div class="flex flex-col text-gray-600 ml-2 py-2 space-y-1">
-                <p class="leading-none">
-                    {{ staff.staff_number }}
-                </p>
-                <p class="text-sm leading-none">
-                    {{ staff.old_staff_number }}
-                </p>
-            </div>
-        </StaffTableData>
+	<tr
+		:class="staff.status == 'Retired' ? 'bg-gray-300' : ''"
+		tabindex="0"
+		class="focus:outline-none h-10 border border-gray-100 rounded hover:bg-green-50"
+	>
+		<StaffTableData>
+			<div class="flex flex-col ml-2 text-gray-600 py-2 space-y-1">
+				<p class="leading-none">
+					{{ staff.name }}
+				</p>
+				<p class="text-xs" :title="getAge(staff.date_of_birth) + ' years old'">
+					{{ staff.gender }} | {{ dob }}
+				</p>
+			</div>
+		</StaffTableData>
+		<StaffTableData>
+			<div class="flex flex-col text-gray-600 ml-2 py-2 space-y-1">
+				<p class="leading-none">
+					{{ staff.staff_number }}
+				</p>
+				<p class="text-sm leading-none">
+					{{ staff.old_staff_number }}
+				</p>
+			</div>
+		</StaffTableData>
 
-        <StaffTableData>
-            <div class="flex flex-col text-gray-600 ml-2 py-2 space-y-1">
-                <p class="leading-none">
-                    {{ hireDate }}
-                </p>
-                <p class="text-sm">
-                    {{ staff.years_employed }}
-                    years employed
-                </p>
-            </div>
-        </StaffTableData>
+		<StaffTableData>
+			<div class="flex flex-col text-gray-600 ml-2 py-2 space-y-1">
+				<p class="leading-none">
+					{{ hireDate }}
+				</p>
+				<p class="text-sm">
+					{{ staff.years_employed }}
+					years employed
+				</p>
+			</div>
+		</StaffTableData>
 
-        <StaffTableData>
-            <div class="flex flex-col ml-2 py-2 space-y-1">
-                <p class="leading-none text-gray-600">
-                    {{ staff.current_unit?.name }}
-                </p>
-                <p class="text-sm">
-                    {{ getAge(staff.current_unit?.start_date) }} years
-                </p>
-            </div>
-        </StaffTableData>
-        <StaffTableData>
-            <div class="flex flex-col ml-2 py-2 space-y-1">
-                <p class="leading-none text-gray-600">
-                    {{ staff.current_rank?.name }}
-                </p>
-                <p class="text-sm">
-                    {{ getAge(staff.current_rank?.start_date) }} years
-                </p>
-            </div>
-        </StaffTableData>
-    </tr>
+		<StaffTableData>
+			<div class="flex flex-col ml-2 py-2 space-y-1">
+				<p class="leading-none text-gray-600">
+					{{ staff.current_unit?.name }}
+				</p>
+				<p class="text-sm">
+					{{ getAge(staff.current_unit?.start_date) }} years
+				</p>
+			</div>
+		</StaffTableData>
+		<StaffTableData>
+			<div class="flex flex-col ml-2 py-2 space-y-1">
+				<p class="leading-none text-gray-600">
+					{{ staff.current_rank?.name }}
+				</p>
+				<p class="text-sm">
+					{{ getAge(staff.current_rank?.start_date) }} years
+				</p>
+			</div>
+		</StaffTableData>
+	</tr>
 </template>

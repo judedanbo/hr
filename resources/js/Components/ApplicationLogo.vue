@@ -1,3 +1,3 @@
 <template>
-    <img src="/images/inner-logo.png" alt="GAS" />
+	<img src="/images/inner-logo.png" alt="GAS" />
 </template>

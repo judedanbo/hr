@@ -1,99 +1,117 @@
 <script setup>
+import { getNode, setErrors } from "@formkit/core";
 import { Inertia } from "@inertiajs/inertia";
-import { format, addDays, subYears } from "date-fns";
 import QualificationForm from "./partials/QualificationForm.vue";
 import QualificationEvidence from "./partials/QualificationEvidence.vue";
-const emit = defineEmits(["formSubmitted"]);
+const emit = defineEmits(["formSubmitted", "documentSubmitted"]);
 
 const props = defineProps({
-    person: Number,
-    qualification: Object,
+	qualification: {
+		type: Object,
+		required: true,
+	},
 });
 
-const submitDocuments = (document) => {
-    console.log(document);
-    const formData = new FormData();
-    // document.forEach((file) => {
-    formData.append("document_file", document[0].file);
-    // });
-    Inertia.post(
-        route("qualification.document.update", {
-            qualification: props.qualification.id,
-        }),
-        formData,
-        {
-            preserveScroll: true,
-            onSuccess: () => {
-                // emit("imageUpdated");
-            },
-            onError: (errors) => {
-                // const errorNode = getNode("documentUpload");
-                console.log(errors);
-                // errorNode.setErrors(errors);
-                // errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
-            },
-        }
-    );
+const submitDocuments = async (document) => {
+	// console.log(document);
+	const formData = new FormData();
+	// // document.forEach((file) => {
+	formData.append("file_name", document.file_name[0].file);
+	formData.append("document_type", document.document_type);
+	formData.append(
+		"document_title",
+		document.document_title ?? document.file_name[0].name.split(".")[0],
+	);
+	formData.append("document_status", document.document_status ?? "P");
+	formData.append("document_number", document.document_number);
+	formData.append("file_type", document.file_name[0].file.type);
+	// formData.append("document_file", document.document_file);
+	// // });
+	Inertia.post(
+		route("qualification-document.update", {
+			qualification: props.qualification.id,
+		}),
+		formData,
+		{
+			preserveScroll: true,
+			onSuccess: () => {
+				emit("documentSubmitted");
+			},
+			onError: (errors) => {
+				const errorNode = getNode("evidence");
+				// console.log(errorNode);
+				const errorMsg = {
+					"evidence.document_type": errors.document_type ?? "",
+					"evidence.document_title": errors.document_title ?? "",
+					"evidence.document_status": errors.document_status ?? "",
+					"evidence.document_number": errors.document_number ?? "",
+					"evidence.file_name": errors.file_name ?? "",
+				};
+				errorNode.setErrors(["Sever side errors"], errorMsg);
+				// errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
+			},
+		},
+	);
 };
 
 const submitHandler = (data, node) => {
-    // Inertia.patch(
-    //     route("qualification.update", {
-    //         qualification: props.qualification.id,
-    //     }),
-    //     data,
-    //     {
-    //         preserveScroll: true,
-    //         onSuccess: () => {
-    //             node.reset();
-    //             emit("formSubmitted");
-    //         },
-    //         onError: (errors) => {
-    //             node.setErrors(["Sever side errors"], errors);
-    //         },
-    //     }
-    // );
-    if (data.staffQualification.evidence.documentUpload.length > 0) {
-        submitDocuments(data.staffQualification.evidence.documentUpload);
-    }
+	// console.log(data);
+	Inertia.patch(
+		route("qualification.update", {
+			qualification: props.qualification.id,
+		}),
+		data,
+		{
+			preserveScroll: true,
+			onSuccess: () => {
+				node.reset();
+				emit("formSubmitted");
+			},
+			onError: (errors) => {
+				node.setErrors(["Sever side errors"], errors);
+			},
+		},
+	);
+	if (data.staffQualification.evidence.file_name.length > 0) {
+		// console.log(data.staffQualification.evidence.file_name);
+		submitDocuments(data.staffQualification.evidence);
+	}
 };
 </script>
 
 <template>
-    <main class="bg-gray-100 dark:bg-gray-700">
-        <h1 class="text-2xl pb-4 dark:text-gray-100">Edit Qualification</h1>
-        <FormKit @submit="submitHandler" type="form" :actions="false">
-            <!-- <FormKit type="hidden" name="id" id="id" /> -->
-            <!-- <FormKit type="hidden" name="person_id" id="person_id" /> -->
-            <FormKit
-                type="multi-step"
-                name="staffQualification"
-                :allow-incomplete="true"
-                tab-style="progress"
-            >
-                <FormKit
-                    type="step"
-                    name="certification"
-                    id="certification"
-                    :value="qualification"
-                >
-                    <QualificationForm />
-                </FormKit>
-                <FormKit
-                    type="step"
-                    name="evidence"
-                    id="evidence"
-                    step-actions-class="flex justify-between"
-                >
-                    <!-- {{ qualification.documents }} -->
-                    <QualificationEvidence
-                        :documents="qualification.documents"
-                    />
-                    <template #stepNext>
-                        <FormKit type="submit" label="Save" />
-                    </template>
-                </FormKit>
-            </FormKit>
-        </FormKit>
-    </main>
+	<main class="bg-gray-100 dark:bg-gray-700">
+		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Qualification</h1>
+		<FormKit type="form" :actions="false" @submit="submitHandler">
+			<FormKit
+				type="multi-step"
+				name="staffQualification"
+				:allow-incomplete="true"
+				tab-style="progress"
+				tabs-class="my-2"
+			>
+				<FormKit
+					id="certification"
+					type="step"
+					name="certification"
+					:value="qualification"
+				>
+					<QualificationForm />
+				</FormKit>
+				<FormKit
+					id="evidence"
+					type="step"
+					name="evidence"
+					step-actions-class="flex justify-between"
+					:value="qualification.documents[0]"
+				>
+					<!-- {{ qualification.documents }} -->
+					<QualificationEvidence :document="qualification.documents[0]" />
+					<template #stepNext>
+						<FormKit type="submit" label="Save" />
+					</template>
+				</FormKit>
+			</FormKit>
+		</FormKit>
+	</main>
 </template>
