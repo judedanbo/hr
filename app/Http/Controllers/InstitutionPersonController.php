@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePersonRequest;
 use App\Enums\ContactTypeEnum;
+use App\Http\Requests\StoreInstitutionPersonRequest;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Institution;
@@ -94,28 +95,31 @@ class InstitutionPersonController extends Controller
      * @return \Illuminate\Http\Response
      */
     // public function store(StorePersonRequest $request)
-    public function store(StorePersonRequest $request)
+    public function store(StoreInstitutionPersonRequest $request)
     {
         // return ($request->validated());
-        DB::transaction(function () use ($request) {
-            $person = Person::create($request->personalInformation);
+        $staff = null;
+        $transaction  = DB::transaction(function () use ($request, $staff) {
+            $person = Person::create($request->staffData['personalInformation']);
 
             $institution = Institution::find(1);
 
-            // $institution->staff()->attach($person->id, $request->employmentInformation);
-
-            $person->institution()->attach($institution->id, $request->employmentInformation);
+            $person->institution()->attach($institution->id, $request->staffData['employmentInformation']);
             $staff = InstitutionPerson::where('person_id', $person->id)->first();
-            $person->contacts()->create($request->contactInformation);
+            $person->contacts()->create($request->staffData['contactInformation']);
             $staff->statuses()->create([
                 'status' => 'A',
                 'description' => 'Active',
                 'institution_id' => $institution->id,
                 'start_date' => Carbon::now(),
             ]);
+            return $staff;
         });
 
-        return redirect()->route('staff.index')->with('success', 'Staff created successfully');
+        if($transaction === null) {
+            return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
+        }
+        return redirect()->route('staff.show', ['staff' => $transaction->id])->with('success', "Staff created successfully" . $transaction->id );
     }
 
     /**

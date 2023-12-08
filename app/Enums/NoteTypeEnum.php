@@ -22,6 +22,7 @@ enum NoteTypeEnum: string
     case REACTIVATION = 'RA';
     case SUMMARY_DISMISSAL = 'SD';
     case END_OF_TERM = 'ET';
+    case TERMINATION = "TE";
 
 
 
@@ -45,6 +46,7 @@ enum NoteTypeEnum: string
             self::REACTIVATION => 'Reactivation',
             self::SUMMARY_DISMISSAL => 'Summary dismissal',
             self::END_OF_TERM => 'End of term',
+            self::TERMINATION => "Termination",
             self::NOT_PROVIDED => 'General',
             default => static::NOT_PROVIDED,
         };

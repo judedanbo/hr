@@ -2,7 +2,6 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import { formatDistance } from "date-fns";
-import Summary from "@/Pages/Person/Summary.vue";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
@@ -10,6 +9,9 @@ import Dependents from "../Staff/Dependents.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
+import Summary from "./Summary.vue";
+import StaffDates from "../Staff/StaffDates.vue";
+
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -156,9 +158,11 @@ let BreadcrumbLinks = [
 				<div
 					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
 				>
+					<!-- <StaffDates class="w-full lg:flex-1" :staff="staff" /> -->
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
-						<Summary class="" :person="person" />
+					
+						<Summary  :person="person" />
 						<!-- Contact information -->
 						<Address
 							:address="address"

@@ -59,22 +59,22 @@ let getAge = (dateString) => {
 				<div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
 					<div v-if="address">
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-							{{ address.address_line_1 ?? "Gender Not Specified" }}
+							{{ address.address_line_1 ?? "Address line 1 Not Specified" }}
 						</dd>
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-							{{ address.address_line_2 ?? "Gender Not Specified" }}
+							{{ address.address_line_2 ?? "Address line 2 Not Specified" }}
 						</dd>
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-							{{ address.city ?? "Gender Not Specified" }}
+							{{ address.city ?? "City Not Specified" }}
 						</dd>
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-							{{ address.region ?? "Gender Not Specified" }}
+							{{ address.region ?? "Region Not Specified" }}
 						</dd>
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-							{{ address.country ?? "Gender Not Specified" }}
+							{{ address.country ?? "Country Not Specified" }}
 						</dd>
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-							{{ address.post_code ?? "Gender Not Specified" }}
+							{{ address.post_code ?? "Post Code Not Specified" }}
 						</dd>
 					</div>
 					<div

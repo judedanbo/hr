@@ -2,15 +2,14 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\GenderEnum;
-use App\Enums\MaritalStatusEnum;
-use App\Enums\Nationality;
 use Carbon\Carbon;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\GenderEnum;
+use App\Enums\Nationality;
+use App\Enums\MaritalStatusEnum;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Foundation\Http\FormRequest;
 
-
-class UpdateStaffRequest extends FormRequest
+class UpdateInstitutionPersonRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

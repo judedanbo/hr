@@ -85,7 +85,8 @@ class PersonController extends Controller
             'user',
             'dependent',
             'dependents',
-            'institution'
+            'institution',
+            'qualifications'
         ])
             ->whereId($person)->first();
         // return $person;

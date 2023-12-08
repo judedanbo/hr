@@ -7,6 +7,8 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import PersonContacts from "./PersonContacts.vue";
 import PersonAddresses from "./PersonAddresses.vue";
 import Avatar from "./partials/Avatar.vue";
+import Summary from "./Summary.vue";
+
 const formattedDob = (dateString) => {
 	const date = new Date(dateString);
 	return format(date, "dd MMMM, yyyy");
@@ -79,6 +81,7 @@ let BreadcrumbLinks = [
 						</div>
 					</div>
 				</div>
+				<Summary :person="person" />
 				<div class="mt-4 flex justify-start items-start space-x-2">
 					<PersonContacts
 						v-if="person"

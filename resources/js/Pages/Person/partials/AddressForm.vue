@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
-const nationality = ref([]);
+const country = ref([]);
 onMounted(async () => {
-	const nationalityData = await axios.get(route("nationality.index"));
-	nationality.value = nationalityData.data;
+	const countryData = await axios.get(route("country.index"));
+	country.value = countryData.data;
 });
 </script>
 <template>
@@ -58,6 +58,6 @@ onMounted(async () => {
 		label="Country"
 		validation="required"
 		placeholder="Select one"
-		:options="nationality"
+		:options="country"
 	/>
 </template>

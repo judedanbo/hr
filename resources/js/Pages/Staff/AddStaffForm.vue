@@ -2,6 +2,10 @@
 import { Inertia } from "@inertiajs/inertia";
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import EmploymentForm from "./partials/EmploymentForm.vue";
+import PersonalInformationForm from '@/Pages/Person/partials/PersonalInformationForm.vue'
+import ContactForm from '@/Pages/Person/partials/ContactForm.vue'
+
 const emit = defineEmits(["formSubmitted"]);
 
 const contact_types = ref([]);
@@ -21,20 +25,14 @@ onMounted(async () => {
 // })
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.store"), data.staffData, {
+	Inertia.post(route("staff.store"), data , {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();
 			emit("formSubmitted");
 		},
 		onError: (errors) => {
-			node.setErrors(["there are errors"], {
-				"staffData.contactInformation.contact": "contact required",
-				"staffData.employmentInformation.staff_number": "staff number required",
-			});
-			errors.forEach((element) => {
-				console.log(element);
-			});
+			node.setErrors(["there are errors in the form"], errors);
 		},
 	});
 };
@@ -53,7 +51,6 @@ const submitHandler = (data, node) => {
 			@submit="submitHandler"
 		>
 			<!-- <Staff :steps="stepNames" /> -->
-
 			<FormKit
 				type="multi-step"
 				name="staffData"
@@ -61,147 +58,14 @@ const submitHandler = (data, node) => {
 				tab-style="progress"
 			>
 				<FormKit type="step" name="personalInformation">
-					<div class="md:flex md:gap-2 md:flex-wrap w-full">
-						<div class="w-1/4">
-							<FormKit
-								id="title"
-								type="text"
-								name="title"
-								label="Title"
-								placeholder="title"
-								validation-visibility="submit"
-								validation="length:1,10"
-								input-class="w-full"
-							/>
-						</div>
-						<div class="flex-grow">
-							<FormKit
-								id="first_name"
-								type="text"
-								name="first_name"
-								validation="required|length:2,60"
-								label="First name"
-								placeholder="First name"
-								error-visibility="submit"
-							/>
-						</div>
-						<div class="w-1/2">
-							<FormKit
-								id="surname"
-								type="text"
-								name="surname"
-								validation="required|length:2,60"
-								label="Surname"
-								placeholder="Surname"
-							/>
-						</div>
-						<div class="flex-grow">
-							<FormKit
-								id="other_names"
-								type="text"
-								name="other_names"
-								label="other Names"
-								placeholder="other names"
-								validation="length:2,100"
-							/>
-						</div>
-					</div>
-					<div class="md:flex md:gap-2">
-						<FormKit
-							id="Date_of_birth"
-							type="date"
-							name="date_of_birth"
-							value="2005-01-01"
-							min="1923-01-01"
-							max="2006-01-01"
-							label="date of birth"
-							validation="required|date_after:1923-01-01|date_before:2005-01-01"
-							validation-visibility="submit"
-						/>
-
-						<FormKit
-							id="gender"
-							name="gender"
-							type="select"
-							label="Gender"
-							validation="required"
-							placeholder="Select one"
-							:options="gender"
-						/>
-					</div>
-
-					<FormKit
-						id="marital_status"
-						type="select"
-						label="Marital Status"
-						name="marital_status"
-						placeholder="Select one"
-						validation="required"
-						:options="maritalStatus"
-						:validation-messages="{
-							required: 'Marital status is required',
-						}"
-					/>
+					<PersonalInformationForm />
 				</FormKit>
 
 				<FormKit type="step" name="contactInformation">
-					<FormKit
-						id="contact_type"
-						type="select"
-						name="contact_type"
-						label="Contact type"
-						placeholder="Select one"
-						validation="required"
-						:options="contact_types"
-					/>
-					<FormKit
-						id="contact"
-						type="text"
-						name="contact"
-						label="Contact"
-						placeholder="Contact"
-						validation="required|length:2,50"
-					/>
+					<ContactForm />
 				</FormKit>
 				<FormKit type="step" name="employmentInformation">
-					<FormKit
-						id="hire_date"
-						type="date"
-						name="hire_date"
-						value="2022-01-01"
-						min="2021-01-01"
-						max="2022-01-01"
-						label="Date of Employment"
-						validation="required|date_after:2021-01-01"
-						validation-visibility="submit"
-					/>
-
-					<FormKit
-						id="file_number"
-						type="text"
-						name="file_number"
-						label="File number"
-						placeholder="File number"
-						validation="required|length:2,10"
-					/>
-
-					<FormKit
-						id="staff_number"
-						type="text"
-						name="staff_number"
-						label="Staff employment number"
-						placeholder="Staff number"
-						validation="required|length:2,10"
-					/>
-
-					<FormKit
-						id="remarks"
-						type="textarea"
-						name="remarks"
-						label="Remarks"
-						placeholder="Remarks"
-						validation="length:2,200"
-					/>
+					<EmploymentForm />
 					<template #stepNext>
 						<FormKit type="submit" label="Add staff" />
 					</template>

@@ -89,7 +89,7 @@ class InstitutionController extends Controller
                 'units',
                 'staff',
             ])
-            ->first();
+            ->firstOrFail();
 
         $departments = Unit::query()
             ->with(['subs' => function ($query) {

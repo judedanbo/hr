@@ -13,7 +13,7 @@ class NationalityController extends Controller
         foreach (CountryEnum::cases() as $county) {
             $newNation = new \stdClass;
             $newNation->value = $county->value;
-            $newNation->label = $county->label();
+            $newNation->label = $county->nationality();
             $nationality[] = $newNation;
         }
         return $nationality;

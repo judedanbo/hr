@@ -46,7 +46,6 @@ let props = defineProps({
 	user: Object,
 	person: Object,
 	staff: Object,
-	contact_types: Array,
 	address: Object,
 	contacts: Array,
 	qualifications: Array,
@@ -192,12 +191,11 @@ let BreadcrumbLinks = [
 				>
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
-						<Summary :person="person" />
+						<Summary  @open-edit-person="toggle()" :person="person" />
 						<!-- Contact information -->
 						<Address
 							:address="address"
 							:contacts="contacts"
-							:contact_types="contact_types"
 							:person="person.id"
 						/>
 						<!-- TODO Add dependant forme and display -->

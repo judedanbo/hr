@@ -5,7 +5,7 @@ namespace App\Enums;
 enum ContactTypeEnum: int
 {
     case EMAIL = 1;
-    case pHONE = 2;
+    case PHONE = 2;
     case ADDRESS = 3;
     case GHPOSTGPS = 4;
     case EMERGENCY = 5;
@@ -14,9 +14,9 @@ enum ContactTypeEnum: int
     {
         return match ($this) {
             self::EMAIL => 'Email Address',
-            self::pHONE => 'Phone number',
+            self::PHONE => 'Phone number',
             self::ADDRESS => 'Address',
-            self::GHPOSTGPS => 'Ghana postGPS',
+            self::GHPOSTGPS => 'Ghana PostGPS',
             self::EMERGENCY => 'Emergency contact',
         };
     }

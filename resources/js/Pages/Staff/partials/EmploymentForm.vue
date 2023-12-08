@@ -1,10 +1,16 @@
+<script setup>
+import { addYears, subYears, format } from 'date-fns';
+const today =  new Date();
+</script>
 <template>
 	<FormKit
 		type="date"
 		name="hire_date"
 		id="hire_date"
+		:min="format(subYears(today, 2), 'yyyy-MM-dd')"
+		:max="format(addYears(today, 2), 'yyyy-MM-dd')"
 		label="Date of Employment"
-		validation="required|date|before_or_equal:today"
+		:validation="'required|date_before:' + addYears(today, 2) + '|date_after:' + subYears(today, 2) "
 		validation-visibility="submit"
 	/>
 

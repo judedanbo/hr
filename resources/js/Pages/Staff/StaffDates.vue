@@ -3,7 +3,7 @@ import { format, formatDistance } from "date-fns";
 
 defineProps({
 	staff: Object,
-	person: Object,
+	// person: Object,
 });
 const formattedDob = (dateString) => {
 	const date = new Date(dateString);
@@ -29,10 +29,10 @@ let getAge = (dateString) => {
 				<dt class="text-gray-500 dark:text-gray-300">Date Employed:</dt>
 				{{ " " }}
 				<dd class="px-4 text-gray-700 dark:text-gray-100">
-					<time :datetime="staff.hire_date">{{
-						formattedDob(staff.hire_date)
+					<time :datetime="staff?.hire_date">{{
+						formattedDob(staff?.hire_date)
 					}}</time>
-					<div class="text-xs">{{ getAge(staff.hire_date) }}</div>
+					<div class="text-xs">{{ getAge(staff?.hire_date) }}</div>
 				</dd>
 			</div>
 			<div class="mt-2 sm:mt-0 sm:pl-4">
@@ -43,7 +43,7 @@ let getAge = (dateString) => {
 						formattedDob(staff.retirement_date)
 					}}</time>
 					<div class="text-xs">
-						{{ getAge(staff.retirement_date) }}
+						{{ getAge(staff?.retirement_date) }}
 					</div>
 				</dd>
 			</div>
@@ -59,7 +59,7 @@ let getAge = (dateString) => {
 					<span class="font-medium text-gray-900 dark:text-white">{{
 						staff.ranks[0]?.name
 					}}</span
-					><br />{{ formattedDob(staff.ranks[0]?.start_date) }}<br />{{
+					><br />{{ formattedDob(staff?.ranks[0]?.start_date) }}<br />{{
 						staff[0]?.remarks
 					}}
 				</dd>

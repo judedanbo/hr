@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\CountryEnum;
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\EmployeeStatusEnum;
@@ -258,6 +259,17 @@ Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middle
 Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])->name('gender.index');
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
+
+Route::get('/country', function() {
+    $nationality = null;
+        foreach (CountryEnum::cases() as $county) {
+            $newNation = new \stdClass;
+            $newNation->value = $county->value;
+            $newNation->label = $county->label();
+            $nationality[] = $newNation;
+        }
+        return $nationality;
+})->middleware(['auth'])->name('country.index');
 
 Route::controller(StaffStatusController::class)->middleware(['auth'])->group(function () {
     Route::get('/staff-status', 'index')->name('staff-status.index');

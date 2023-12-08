@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
+     *p
      * @return void
      */
     public function up()
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->morphs('notable');
             $table->text('note');
-            $table->dateTime('note_date')->useCurrent();
+            $table->dateTime('note_date')->nullable()->useCurrent();
             $table->string('note_type', 3)->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->string('url')->nullable();

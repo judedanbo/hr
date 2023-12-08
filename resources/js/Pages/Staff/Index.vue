@@ -23,6 +23,10 @@ let props = defineProps({
 
 let openDialog = ref(false);
 
+const formSubmitted = () => {
+	toggle()
+	// window.location= route('staff.show', { staff: })
+}
 let toggle = useToggle(openDialog);
 
 let search = ref(props.filters.search);
@@ -266,7 +270,7 @@ let BreadCrumpLinks = [
 		</div>
 	</MainLayout>
 	<Modal @close="toggle()" :show="openDialog">
-		<AddStaffForm @form-submitted="toggle()" />
+		<AddStaffForm @form-submitted="formSubmitted()" />
 	</Modal>
 	<!-- <AddStaff @closeDialog="openDialog = false" :open="openDialog" /> -->
 </template>

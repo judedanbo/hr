@@ -4,12 +4,16 @@ import { format, subYears, addDays } from "date-fns";
 
 const gender = ref([]);
 const maritalStatus = ref([]);
+const country = ref([]);
 const nationality = ref([]);
 onMounted(async () => {
 	const genderData = await axios.get(route("gender.index"));
 	gender.value = genderData.data;
 	const maritalStatusData = await axios.get(route("marital-status.index"));
 	maritalStatus.value = maritalStatusData.data;
+
+	const countryData = await axios.get(route("country.index"));
+	country.value = countryData.data;
 
 	const nationalityData = await axios.get(route("nationality.index"));
 	nationality.value = nationalityData.data;
@@ -86,21 +90,13 @@ onMounted(async () => {
 			placeholder="Place of Birth"
 			outer-class="md:flex-grow"
 		/>
-		<!-- <FormKit
-            name="country_of_birth"
-            id="country_of_birth"
-            type="text"
-            label="Country of Birth"
-            placeholder="Place of Birth"
-            outer-class="md:flex-grow"
-        /> -->
 		<FormKit
 			name="country_of_birth"
 			id="country_of_birth"
 			type="select"
 			label="Country of Birth"
 			placeholder="Select Country of Birth"
-			:options="nationality"
+			:options="country"
 			outer-class="md:flex-grow"
 		/>
 		<FormKit

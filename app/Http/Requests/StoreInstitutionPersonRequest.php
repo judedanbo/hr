@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
-use Carbon\Carbon;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StorePersonRequest extends FormRequest
+class StoreInstitutionPersonRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -52,6 +52,7 @@ class StorePersonRequest extends FormRequest
             ],
         ];
     }
+
     public function attributes(): array
     {
         return [

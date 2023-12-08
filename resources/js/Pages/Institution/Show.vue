@@ -121,7 +121,7 @@ watch(
 							<dd
 								class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900 dark:text-gray-50"
 							>
-								{{ institution.departments.toLocaleString() }}
+								{{ institution?.departments.toLocaleString() }}
 							</dd>
 						</div>
 						<div
