@@ -70,18 +70,19 @@ let BreadcrumbLinks = [
 </script>
 
 <template>
-	<Head title="Dashboard" />
+	<Head :title="props.unit.name" />
 
 	<MainLayout>
-		<template #header>
+		<!-- <template #header>
 			<h2 class="font-semibold text-xl text-gray-800 leading-tight">
 				{{ props.unit.name }}
 			</h2>
-		</template>
-
-		<div class="py-2">
-			<div class="max-w-full mx-auto sm:px-6 lg:px-8">
+		</template> -->
+			<div class="py-2 max-w-full h-screen mx-auto sm:px-6 lg:px-8">
 				<BreadCrumpVue :links="BreadcrumbLinks" />
+				<h2 class="text-2xl md:text-3xl text-center md:text-right text-gray-900 dark:text-gray-50 m-4">
+						{{ props.unit.name}}
+				</h2>
 				<FormKit
 					v-model="search"
 					prefix-icon="search"
@@ -91,12 +92,11 @@ let BreadcrumbLinks = [
 					outer-class="md:w-1/2 xl:w-1/3 px-4 "
 				/>
 				<div
-					class="flex space-y-4 space-x-0 xl:space-x-4 xl:space-y-0 flex-col xl:flex-row items-start justify-center py-4"
+					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12 h-4/5"
 				>
-					<SubUnits v-model="dept" :type="unit.name" :subs="props.unit" />
-					<UnitStaff :unit="props.unit" />
+					<SubUnits  v-model="dept" :type="unit.name" :subs="props.unit" class="h-80 overflow-hidden xl:h-full"  />
+					<UnitStaff :unit="props.unit"  class="h-80 xl:h-full overflow-hidden" />
 				</div>
 			</div>
-		</div>
 	</MainLayout>
 </template>

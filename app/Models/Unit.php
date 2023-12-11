@@ -106,10 +106,10 @@ class Unit extends Model
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit',  'staff_id', 'unit_id')
-            ->using(StaffUnit::class);
-        // ->withPivot('start_date', 'end_date');
-        // ->wherePivot('end_date', '>=', now());
+        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit',  'unit_id', 'staff_id')
+            ->using(StaffUnit::class)
+        ->withPivot('start_date', 'end_date') //unit_id
+        ->wherePivotNull('end_date' ); //staff_id
         // ->where('status', 'Active');
     }
 

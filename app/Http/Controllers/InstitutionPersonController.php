@@ -257,7 +257,6 @@ class InstitutionPersonController extends Controller
 
                 ]) : null,
                 'units' => $staff->units->map(fn ($unit) => [
-                    'unit' =>  $unit,
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
                     'staff_id' => $unit->pivot->staff_id,

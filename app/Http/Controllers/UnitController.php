@@ -135,7 +135,7 @@ class UnitController extends Controller
             ])
             ->whereId($unit)
             ->first();
-        // return $unit->subs;
+        // return $unit;
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });

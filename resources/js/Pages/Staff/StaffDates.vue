@@ -3,7 +3,6 @@ import { format, formatDistance } from "date-fns";
 
 defineProps({
 	staff: Object,
-	// person: Object,
 });
 const formattedDob = (dateString) => {
 	const date = new Date(dateString);
@@ -17,7 +16,7 @@ let getAge = (dateString) => {
 </script>
 <template>
 	<main
-		class="px-8 py-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 xl:px-16 bg-gray-50 dark:bg-gray-500"
+		class="p-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 sm:mx-0 sm:rounded-lg bg-gray-50 dark:bg-gray-500"
 	>
 		<h2
 			class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-white"
@@ -28,7 +27,7 @@ let getAge = (dateString) => {
 			<div class="sm:pr-4">
 				<dt class="text-gray-500 dark:text-gray-300">Date Employed:</dt>
 				{{ " " }}
-				<dd class="px-4 text-gray-700 dark:text-gray-100">
+				<dd class="text-gray-700 dark:text-gray-100">
 					<time :datetime="staff?.hire_date">{{
 						formattedDob(staff?.hire_date)
 					}}</time>
@@ -38,7 +37,7 @@ let getAge = (dateString) => {
 			<div class="mt-2 sm:mt-0 sm:pl-4">
 				<dt class="text-gray-500 dark:text-gray-300">Retirement Date:</dt>
 				{{ " " }}
-				<dd class="px-4 text-gray-700 dark:text-gray-100">
+				<dd class="text-gray-700 dark:text-gray-100">
 					<time :datetime="staff.retirement_date">{{
 						formattedDob(staff.retirement_date)
 					}}</time>
@@ -79,9 +78,12 @@ let getAge = (dateString) => {
 				</dt>
 				<dd class="mt-2 text-gray-500 dark:text-gray-300">
 					<span class="font-medium text-gray-900 dark:text-white">{{
-						staff.units[0]?.name
-					}}</span
-					><br />{{ formattedDob(staff.units[0]?.start_date) }}<br />
+						staff.units[0]?.unit_name
+					}}</span>
+					<br />{{ staff.units[0]?.start_date }}<br />
+					<div class="text-xs">
+						{{ staff.units[0]?.distance }}
+					</div>
 				</dd>
 			</div>
 			<div
