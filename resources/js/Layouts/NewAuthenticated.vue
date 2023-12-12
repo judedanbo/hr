@@ -29,19 +29,19 @@ const navigation = [
 		name: "Dashboard",
 		href: route("dashboard"),
 		icon: HomeIcon,
-		current: false,
+		current: route().current('institution.show'),
 	},
 	{
 		name: "Staff",
 		href: route("staff.index"),
 		icon: UsersIcon,
-		current: false,
+		current: route().current('staff.*'),
 	},
 	{
 		name: "Departments",
 		href: route("unit.index"),
 		icon: FolderIcon,
-		current: false,
+		current: route().current('unit.*'),
 	},
 	// {
 	//   name: "Ranks",
@@ -53,7 +53,7 @@ const navigation = [
 		name: "Ranks",
 		href: route("job-category.index"),
 		icon: CalendarIcon,
-		current: false,
+		current: route().current('job.*') || route().current('job-category.*'),
 	},
 	{
 		name: "Next Promotions",
@@ -61,19 +61,19 @@ const navigation = [
 			year: format(new Date(), "yyyy"),
 		}),
 		icon: DocumentDuplicateIcon,
-		current: false,
+		current: route().current('promotion.batch.show'),
 	},
 	{
 		name: "Past Promotions",
 		href: route("promotion.index"),
 		icon: DocumentDuplicateIcon,
-		current: false,
+		current: route().current('promotion.index'),
 	},
 	{
 		name: "Reports",
 		href: route("report.index"),
 		icon: ChartPieIcon,
-		current: false,
+		current: route().current('report.*'),
 	},
 ];
 const teams = [
@@ -186,18 +186,18 @@ const closeAlert = (index) => {
 
 		<!-- Static sidebar for desktop -->
 		<div
-			class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col"
+			class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 xl:w-72 lg:flex-col"
 		>
 			<!-- Sidebar component, swap this element with another sidebar if you like -->
 			<div
-				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 dark:border-gray-900 dark:bg-gray-800"
+				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-900 dark:bg-gray-800"
 			>
 				<Link
 					:href="route('dashboard')"
-					class="flex h-16 shrink-0 items-center"
+					class="flex h-16 shrink-0 items-center pl-2"
 				>
 					<BreezeApplicationLogo class="block h-9 w-auto" />
-					<div class="mx-4">
+					<div class="mx-2">
 						<h2
 							class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50"
 						>
@@ -209,7 +209,7 @@ const closeAlert = (index) => {
 			</div>
 		</div>
 
-		<div class="lg:pl-72">
+		<div class=" lg:pl-56 xl:pl-72">
 			<div
 				class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 dark:bg-gray-800 dark:border-gray-700"
 			>

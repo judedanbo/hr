@@ -31,7 +31,7 @@ watch(search, (value) => {
 </script>
 
 <template>
-	<MainLayout class="px-8 py-4">
+	<MainLayout >
 		<h1 class="text-2xl px-4 py-4 dark:text-gray-100">Promotion List</h1>
 		<div class="sm:flex sm:items-center justify-between px-8">
 			<FormKit

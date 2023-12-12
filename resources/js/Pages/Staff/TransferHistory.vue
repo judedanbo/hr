@@ -70,7 +70,7 @@ watch(
 	<main>
 		<h2 class="sr-only">Transfer History</h2>
 		<div
-			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80"
+			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80 "
 		>
 			<dl class="flex flex-wrap">
 				<div class="flex-auto pl-6 pt-6">
@@ -92,7 +92,7 @@ watch(
 					@deleteTransfer="(model) => confirmDeleteTransfer(model)"
 					@editTransfer="(model) => editTransfer(model)"
 					:transfers="transfers"
-					class="w-full"
+					class="w-full max-h-64 overflow-y-scroll"
 				/>
 			</dl>
 		</div>

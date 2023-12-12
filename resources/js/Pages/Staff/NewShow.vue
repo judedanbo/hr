@@ -187,7 +187,7 @@ let BreadcrumbLinks = [
 
 			<div class="mx-auto max-w-7xl py-4 xl:px-8">
 				<div
-					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
+					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start lg:mx-0 px-8 lg:max-w-none lg:grid-cols-3 gap-4"
 				>
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
@@ -209,10 +209,10 @@ let BreadcrumbLinks = [
 					<div
 						class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4 items-start"
 					>
-						<div class="w-full gap-2 lg:flex flex-wrap">
+						<div class="lg:flex flex-wrap lg:gap-4">
 							<!-- important Dates -->
-							<StaffDates class="w-full lg:flex-1" :staff="staff" />
-							<div class="lg:flex-1 lg:space-y-2">
+							<StaffDates class="w-full xl:w-3/5" :staff="staff" />
+							<div class="flex-1 flex xl:flex-col xl:gap-y-4 lg:flex-row lg:gap-x-4">
 								<StaffStatus
 									:statuses="staff.statuses"
 									:staff="{

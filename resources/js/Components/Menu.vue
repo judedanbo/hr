@@ -27,7 +27,7 @@ const isOpen = ref(false);
 			class="mt-6 flex flex-col justify-start items-center w-full border-gray-50 border-b pb-5"
 		>
 			<MainMenu
-				:active="route().current('institution.show', { institution: 21 })"
+				:active="route().current('institution.show', { institution: 1 })"
 				name="Dashboard"
 				:href="route('dashboard')"
 			>
