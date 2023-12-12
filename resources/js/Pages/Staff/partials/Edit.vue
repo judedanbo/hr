@@ -88,7 +88,7 @@ const submitHandler = (data, node) => {
 					name="end_date"
 					id="end_date"
 					:value="today"
-					label="Start date"
+					label="End date"
 					validation-visibility="submit"
 					inner-class="w-1/2"
 				/>

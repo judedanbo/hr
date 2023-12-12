@@ -80,10 +80,14 @@ let getAge = (dateString) => {
 					<span class="font-medium text-gray-900 dark:text-white">{{
 						staff.units[0]?.unit_name
 					}}</span>
-					<br />{{ staff.units[0]?.start_date }}<br />
-					<div class="text-xs">
-						{{ staff.units[0]?.distance }}
-					</div>
+					<p>
+
+						{{ staff.units[0]?.start_date }}
+						<span class="text-xs">
+							{{ staff.units[0]?.distance }}
+						</span>
+					</p> 
+						
 				</dd>
 			</div>
 			<div

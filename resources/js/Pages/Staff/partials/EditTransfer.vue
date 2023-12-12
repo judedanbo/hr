@@ -83,9 +83,9 @@ const submitHandler = (data) => {
 				validation-visibility="submit"
 			/>
 		</FormKit>
-		<div v-if="transfer.old_data" class="dark:text-gray-50">
-			<p class="text-lg">Old Data</p>
-			<pre class="text-sm">{{ transfer.old_data }}</pre>
+		<div v-if="transfer.old_data" class="dark:text-gray-50 w-5/6">
+			<p class="">Old Data</p>
+			<pre class="text-sm" v-html="transfer.old_data.replace('\\n', '<')"></pre>
 		</div>
 	</main>
 </template>

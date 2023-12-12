@@ -33,7 +33,7 @@ defineProps({
 			<div class="mt-2 dark:text-gray-300">
 				<p class="text-sm">
 					You are about to delete the transfer of {{ staff }} to
-					{{ model.unit.name }}.
+					{{ model.unit_name }}.
 				</p>
 				<p>Are you sure you want to delete this transfer?</p>
 			</div>

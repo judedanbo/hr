@@ -19,7 +19,8 @@ class PromoteStaffController extends Controller
             return redirect()->back()->with('error', 'Staff ID does not match');
         }
         $jobStaff = $staff->ranks()->where('job_id', $request->rank_id)->first();
-        if ($request->rank_id === $jobStaff->pivot->job_id) {
+        // return  $jobStaff;
+        if ($request->rank_id === $jobStaff?->pivot->job_id) {
             $staff->ranks()->detach($jobStaff->pivot->job_id);
         }
         $staff->ranks()->attach($request->rank_id, [
