@@ -78,25 +78,32 @@ let BreadcrumbLinks = [
 				{{ props.unit.name }}
 			</h2>
 		</template> -->
-			<div class="py-2 max-w-full h-screen mx-auto sm:px-6 lg:px-8">
-				<BreadCrumpVue :links="BreadcrumbLinks" />
-				<h2 class="text-2xl md:text-3xl text-center md:text-right text-gray-900 dark:text-gray-50 m-4">
-						{{ props.unit.name}}
-				</h2>
-				<FormKit
-					v-model="search"
-					prefix-icon="search"
-					type="search"
-					placeholder="Search ..."
-					autofocus
-					outer-class="md:w-1/2 xl:w-1/3 px-4 "
+		<div class="py-2 max-w-full h-screen mx-auto sm:px-6 lg:px-8">
+			<BreadCrumpVue :links="BreadcrumbLinks" />
+			<h2
+				class="text-2xl md:text-3xl text-center md:text-right text-gray-900 dark:text-gray-50 m-4"
+			>
+				{{ props.unit.name }}
+			</h2>
+			<FormKit
+				v-model="search"
+				prefix-icon="search"
+				type="search"
+				placeholder="Search ..."
+				autofocus
+				outer-class="md:w-1/2 xl:w-1/3 px-4 "
+			/>
+			<div
+				class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12 h-4/5"
+			>
+				<SubUnits
+					v-model="dept"
+					:type="unit.name"
+					:subs="props.unit"
+					class="h-80 overflow-hidden xl:h-full"
 				/>
-				<div
-					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12 h-4/5"
-				>
-					<SubUnits  v-model="dept" :type="unit.name" :subs="props.unit" class="h-80 overflow-hidden xl:h-full"  />
-					<UnitStaff :unit="props.unit"  class="h-80 xl:h-full overflow-hidden" />
-				</div>
+				<UnitStaff :unit="props.unit" class="h-80 xl:h-full overflow-hidden" />
 			</div>
+		</div>
 	</MainLayout>
 </template>

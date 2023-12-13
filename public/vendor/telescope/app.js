@@ -9346,7 +9346,7 @@
 											(this.$parent && this.$parent._routerRoot) || this),
 									o(this, this);
 							},
-							destroyed: function () {
+							unmounted: function () {
 								o(this);
 							},
 						}),
@@ -9393,12 +9393,12 @@
 				("" !== window.Telescope.path && "/" !== window.Telescope.path) ||
 					((ca = "/"), (window.Telescope.basePath = ""));
 				var za = new Qr({ routes: bz, mode: "history", base: ca });
-				no.component("vue-json-pretty", ta()),
-					no.component("related-entries", n(9932).Z),
-					no.component("index-screen", n(8106).Z),
-					no.component("preview-screen", n(2986).Z),
-					no.component("alert", n(4518).Z),
-					no.component("copy-clipboard", n(7973).Z),
+				no.component("VueJsonPretty", ta()),
+					no.component("RelatedEntries", n(9932).Z),
+					no.component("IndexScreen", n(8106).Z),
+					no.component("PreviewScreen", n(2986).Z),
+					no.component("Alert", n(4518).Z),
+					no.component("CopyClipboard", n(7973).Z),
 					no.mixin(oz),
 					new no({
 						el: "#telescope",

@@ -43,13 +43,13 @@ const formattedDob = (dob) => {
 };
 
 let props = defineProps({
-	user: Object,
-	person: Object,
-	staff: Object,
-	address: Object,
-	contacts: Array,
-	qualifications: Array,
-	filters: Object,
+	user: { type: Object, default: () => null },
+	person: { type: Object, default: () => null },
+	staff: { type: Object, default: () => null },
+	address: { type: Object, default: () => null },
+	contacts: { type: Array, default: () => null },
+	qualifications: { type: Array, default: () => null },
+	filters: { type: Object, default: () => null },
 });
 
 let BreadcrumbLinks = [
@@ -191,7 +191,7 @@ let BreadcrumbLinks = [
 				>
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
-						<Summary  @open-edit-person="toggle()" :person="person" />
+						<Summary :person="person" @open-edit-person="toggle()" />
 						<!-- Contact information -->
 						<Address
 							:address="address"
@@ -212,7 +212,9 @@ let BreadcrumbLinks = [
 						<div class="lg:flex flex-wrap lg:gap-4">
 							<!-- important Dates -->
 							<StaffDates class="w-full xl:w-3/5" :staff="staff" />
-							<div class="flex-1 flex xl:flex-col xl:gap-y-4 lg:flex-row lg:gap-x-4">
+							<div
+								class="flex-1 flex xl:flex-col xl:gap-y-4 lg:flex-row lg:gap-x-4"
+							>
 								<StaffStatus
 									:statuses="staff.statuses"
 									:staff="{
@@ -276,7 +278,7 @@ let BreadcrumbLinks = [
 				</div>
 			</div>
 			<NewModal :show="openEditModal" @close="toggle()">
-				<EditStaffForm :staffId="staff.staff_id" @form-submitted="toggle()" />
+				<EditStaffForm :staff-id="staff.staff_id" @form-submitted="toggle()" />
 			</NewModal>
 		</main>
 	</MainLayout>

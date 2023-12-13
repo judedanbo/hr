@@ -97,29 +97,38 @@ class InstitutionPersonController extends Controller
     // public function store(StorePersonRequest $request)
     public function store(StoreInstitutionPersonRequest $request)
     {
-        // return ($request->validated());
+        // return $request->staffData['rank']['rank_id'];
         $staff = null;
         $transaction  = DB::transaction(function () use ($request, $staff) {
-            $person = Person::create($request->staffData['personalInformation']);
+            $person = Person::create($request->staffData['bio']);
 
             $institution = Institution::find(1);
 
-            $person->institution()->attach($institution->id, $request->staffData['employmentInformation']);
+            $person->institution()->attach($institution->id, $request->staffData['employment']);
             $staff = InstitutionPerson::where('person_id', $person->id)->first();
-            $person->contacts()->create($request->staffData['contactInformation']);
+            $person->contacts()->create($request->staffData['addressContact']);
+            $person->address()->create($request->staffData['addressContact']);
+            $person->qualifications()->create($request->staffData['qualifications']);
+            
             $staff->statuses()->create([
                 'status' => 'A',
                 'description' => 'Active',
                 'institution_id' => $institution->id,
                 'start_date' => Carbon::now(),
             ]);
+            // return $request->staffData;
+            $rank = $request->staffData['rank'];
+            $rank['job_id'] = $request->staffData['rank']['rank_id'];
+            unset($rank['rank_id']);
+            $staff->ranks()->attach($rank['job_id'],$rank);
+            $staff->units()->attach($request->staffData['unit']['unit_id'],$request->staffData['unit']);
             return $staff;
         });
 
         if($transaction === null) {
             return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
         }
-        return redirect()->route('staff.show', ['staff' => $transaction->id])->with('success', "Staff created successfully" . $transaction->id );
+        return redirect()->route('staff.show', ['staff' => $transaction['id']])->with('success', "Staff created successfully");
     }
 
     /**

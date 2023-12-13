@@ -4,27 +4,33 @@ import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
-	staff: Number,
-	institution: Number,
+	staff: {
+		type: Number,
+		required: true,
+	},
+	institution: {
+		type: Number,
+		required: true,
+	},
+});
+
+let units = ref([]);
+
+onMounted(async () => {
+	const response = await axios.get(
+		route("institution.unit-list", { institution: props.institution }),
+	);
+	units.value = response.data;
 });
 
 import { format, addDays, subYears } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 4), "yyyy-MM-dd");
-
-let ranks = ref([]);
-
-onMounted(async () => {
-	const response = await axios.get(
-		route("institution.job-list", { institution: props.institution }),
-	);
-	ranks.value = response.data;
-});
+const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.promote", { staff: data.staff_id }), data, {
+	Inertia.post(route("staff.transfer.store", { staff: data.staff_id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -39,24 +45,24 @@ const submitHandler = (data, node) => {
 
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-		<h1 class="text-2xl pb-4 dark:text-gray-100">Promote Staff</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<h1 class="text-2xl pb-4 dark:text-gray-100">Transfer Staff</h1>
+		<FormKit submit-label="Save" type="form" @submit="submitHandler">
 			<FormKit type="hidden" name="staff_id" :value="staff" />
 			<FormKit
+				id="unit_id"
+				name="unit_id"
 				type="select"
-				name="rank_id"
-				id="rank_id"
-				validation="required|integer|min:1|max:20"
-				label="New Rank"
-				placeholder="Select new Rank"
-				:options="ranks"
+				validation="required|integer|min:1|max:300"
+				label="New Location"
+				placeholder="Select new location"
+				:options="units"
 				error-visibility="submit"
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
-					type="date"
-					name="start_date"
 					id="start_date"
+					name="start_date"
+					type="date"
 					:value="today"
 					:min="end_date"
 					:max="start_date"
@@ -69,9 +75,9 @@ const submitHandler = (data, node) => {
 				/>
 			</div>
 			<FormKit
-				type="text"
-				name="remarks"
 				id="remarks"
+				name="remarks"
+				type="text"
 				label="Remarks"
 				validation="string|length:2,120"
 				validation-visibility="submit"

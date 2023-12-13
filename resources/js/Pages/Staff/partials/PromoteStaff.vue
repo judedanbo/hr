@@ -4,27 +4,27 @@ import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
-	staff: Number,
-	institution: Number,
-});
-
-let units = ref([]);
-
-onMounted(async () => {
-	const response = await axios.get(
-		route("institution.unit-list", { institution: props.institution }),
-	);
-	units.value = response.data;
+	staff: { type: Number, required: true },
+	institution: { type: Number, required: true },
 });
 
 import { format, addDays, subYears } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
+const end_date = format(subYears(new Date(), 4), "yyyy-MM-dd");
+
+let ranks = ref([]);
+
+onMounted(async () => {
+	const response = await axios.get(
+		route("institution.job-list", { institution: props.institution }),
+	);
+	ranks.value = response.data;
+});
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.transfer.store", { staff: data.staff_id }), data, {
+	Inertia.post(route("staff.promote", { staff: data.staff_id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -39,17 +39,17 @@ const submitHandler = (data, node) => {
 
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-		<h1 class="text-2xl pb-4 dark:text-gray-100">Transfer Staff</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<h1 class="text-2xl pb-4 dark:text-gray-100">Promote Staff</h1>
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit type="hidden" name="staff_id" :value="staff" />
 			<FormKit
 				type="select"
-				name="unit_id"
-				id="unit_id"
-				validation="required|integer|min:1|max:300"
-				label="New Location"
-				placeholder="Select new location"
-				:options="units"
+				name="rank_id"
+				id="rank_id"
+				validation="required|integer|min:1|max:20"
+				label="New Rank"
+				placeholder="Select new Rank"
+				:options="ranks"
 				error-visibility="submit"
 			/>
 			<div class="sm:flex gap-4">

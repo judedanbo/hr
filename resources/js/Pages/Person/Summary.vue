@@ -7,7 +7,7 @@ import {
 	FlagIcon,
 	IdentificationIcon,
 } from "@heroicons/vue/20/solid";
-const emit = defineEmits(['openEditPerson'])
+const emit = defineEmits(["openEditPerson"]);
 defineProps({
 	person: {
 		type: Object,
@@ -165,7 +165,7 @@ let getAge = (dateString) => {
 					class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 cursor-pointer"
 				>
 					Edit personal details <span aria-hidden="true">&rarr;</span>
-		</p>
+				</p>
 			</div>
 		</div>
 	</main>

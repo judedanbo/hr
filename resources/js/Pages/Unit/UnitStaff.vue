@@ -14,7 +14,7 @@ defineEmits(["update:modelValue"]);
 </script>
 
 <template>
-	<section class="w-full ">
+	<section class="w-full">
 		<header>
 			<p
 				class="font-bold text-xl px-8 py-4 text-gray-700 dark:text-white tracking-wide"

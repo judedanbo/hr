@@ -12,7 +12,6 @@ import Avatar from "../Person/partials/Avatar.vue";
 import Summary from "./Summary.vue";
 import StaffDates from "../Staff/StaffDates.vue";
 
-
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
 
@@ -161,8 +160,8 @@ let BreadcrumbLinks = [
 					<!-- <StaffDates class="w-full lg:flex-1" :staff="staff" /> -->
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
-					
-						<Summary  :person="person" />
+
+						<Summary :person="person" />
 						<!-- Contact information -->
 						<Address
 							:address="address"

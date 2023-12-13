@@ -24,9 +24,9 @@ let props = defineProps({
 let openDialog = ref(false);
 
 const formSubmitted = () => {
-	toggle()
+	toggle();
 	// window.location= route('staff.show', { staff: })
-}
+};
 let toggle = useToggle(openDialog);
 
 let search = ref(props.filters.search);
@@ -89,7 +89,7 @@ let BreadCrumpLinks = [
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 						>
 							<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-							New Staff
+							Onboard Staff
 						</a>
 					</div>
 

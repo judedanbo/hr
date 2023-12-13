@@ -6,7 +6,7 @@ import {
 } from "@heroicons/vue/20/solid";
 import SubMenu from "@/Components/SubMenu.vue";
 defineProps({
-	promotions: Array,
+	promotions: { type: Array, default: () => null },
 });
 
 const emit = defineEmits(["editPromotion", "deletePromotion"]);
@@ -74,8 +74,8 @@ const clicked = (action, model) => {
 					<td class="w-8">
 						<!-- <EllipsisVerticalIcon class="w-4 text-right" /> -->
 						<SubMenu
-							@itemClicked="(value) => clicked(value, promotion)"
 							:items="['Edit', 'Delete']"
+							@item-clicked="(value) => clicked(value, promotion)"
 						/>
 					</td>
 				</tr>

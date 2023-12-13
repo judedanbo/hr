@@ -81,13 +81,11 @@ let getAge = (dateString) => {
 						staff.units[0]?.unit_name
 					}}</span>
 					<p>
-
 						{{ staff.units[0]?.start_date }}
 						<span class="text-xs">
 							{{ staff.units[0]?.distance }}
 						</span>
-					</p> 
-						
+					</p>
 				</dd>
 			</div>
 			<div

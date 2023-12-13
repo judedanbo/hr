@@ -1,6 +1,6 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
-import Transfer from "./partials/Transfer.vue";
+import TransferStaff from "./partials/TransferStaff.vue";
 import Modal from "@/Components/NewModal.vue";
 import NewModal from "@/Components/NewModal.vue";
 import DeleteTransfer from "@/Pages/Transfer/Delete.vue";
@@ -41,9 +41,9 @@ const deleteTransfer = (staff_id, unit_id) => {
 	);
 };
 let props = defineProps({
-	transfers: Array,
-	staffName: String,
-	institution: Number,
+	transfers: { type: Array, default: () => null },
+	staffName: { type: String, default: () => null },
+	institution: { type: Number, default: () => null },
 	showTransferForm: {
 		type: Boolean,
 		default: false,
@@ -70,7 +70,7 @@ watch(
 	<main>
 		<h2 class="sr-only">Transfer History</h2>
 		<div
-			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80 "
+			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80"
 		>
 			<dl class="flex flex-wrap">
 				<div class="flex-auto pl-6 pt-6">
@@ -82,26 +82,26 @@ watch(
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleTransferModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleTransferModal()"
 					>
 						{{ transfers.length > 0 ? "Transfer" : "First Posting" }}
 					</button>
 				</div>
 				<TransferList
-					@deleteTransfer="(model) => confirmDeleteTransfer(model)"
-					@editTransfer="(model) => editTransfer(model)"
 					:transfers="transfers"
 					class="w-full max-h-64 overflow-y-scroll"
+					@delete-transfer="(model) => confirmDeleteTransfer(model)"
+					@edit-transfer="(model) => editTransfer(model)"
 				/>
 			</dl>
 		</div>
-		<Modal @close="toggleTransferModal()" :show="openTransferModal">
-			<Transfer
-				@formSubmitted="toggleTransferModal()"
+		<Modal :show="openTransferModal" @close="toggleTransferModal()">
+			<TransferStaff
 				:staff="staff"
 				:institution="institution"
 				:transfers="transfers"
+				@form-submitted="toggleTransferModal()"
 			/>
 		</Modal>
 

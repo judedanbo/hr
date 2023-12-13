@@ -2,9 +2,13 @@
 import { Inertia } from "@inertiajs/inertia";
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import AddressForm from "@/Pages/Person/partials/AddressForm.vue";
 import EmploymentForm from "./partials/EmploymentForm.vue";
-import PersonalInformationForm from '@/Pages/Person/partials/PersonalInformationForm.vue'
-import ContactForm from '@/Pages/Person/partials/ContactForm.vue'
+import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
+import ContactForm from "@/Pages/Person/partials/ContactForm.vue";
+import AssignRank from "./partials/AssignRank.vue";
+import AssignUnit from "./partials/AssignUnit.vue";
+import QualificationForm from "@/Pages/Qualification/partials/QualificationForm.vue";
 
 const emit = defineEmits(["formSubmitted"]);
 
@@ -25,7 +29,7 @@ onMounted(async () => {
 // })
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.store"), data , {
+	Inertia.post(route("staff.store"), data, {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();
@@ -38,8 +42,8 @@ const submitHandler = (data, node) => {
 };
 </script>
 <template>
-	<main class="bg-gray-100 dark:bg-gray-700 px-8 py-8">
-		<h1 class="text-2xl dark:text-gray-200">Add new Staff</h1>
+	<main class="bg-gray-100 dark:bg-gray-700">
+		<h1 class="text-2xl font-semibold tracking-wider text-green-800 dark:text-gray-600 px-10">Add new Staff</h1>
 		<FormKit
 			id="addStaffForm"
 			type="form"
@@ -56,16 +60,61 @@ const submitHandler = (data, node) => {
 				name="staffData"
 				:allow-incomplete="true"
 				tab-style="progress"
+				outer-class="px-0 mb-0"
+				wrapper-class="max-w-2xl"
+				
 			>
-				<FormKit type="step" name="personalInformation">
+				<FormKit type="step" name="bio" outer-class="p-0" >
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+						Personal Information of Staff
+					</h1>
 					<PersonalInformationForm />
 				</FormKit>
 
-				<FormKit type="step" name="contactInformation">
-					<ContactForm />
+				<FormKit type="step" name="address">
+					<div>
+						<h1
+							class="mb-4 font-semibold tracking-wider text-lg text-green-800"
+						>
+							Address of Staff
+						</h1>
+						<AddressForm />
+					</div>
 				</FormKit>
-				<FormKit type="step" name="employmentInformation">
+				<FormKit type="step" name="contact">
+					<div>
+						<h1
+							class="mb-4 font-semibold tracking-wider text-lg text-green-800"
+						>
+							Staff Contact
+						</h1>
+						<ContactForm />
+					</div>
+				</FormKit>
+
+				<FormKit type="step" name="qualifications">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+						Professional and Academic qualifications
+					</h1>
+					<QualificationForm />
+				</FormKit>
+				<FormKit type="step" name="employment">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+						Employment information
+					</h1>
 					<EmploymentForm />
+				</FormKit>
+				<FormKit type="step" name="rank">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+						Rank Employment to
+					</h1>
+					<AssignRank :institution="1" />
+				</FormKit>
+				<FormKit type="step" name="unit">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+						Unit Assigned
+					</h1>
+					<AssignUnit :institution="1" />
 					<template #stepNext>
 						<FormKit type="submit" label="Add staff" />
 					</template>
@@ -76,6 +125,17 @@ const submitHandler = (data, node) => {
 </template>
 
 <style>
+.formkit-outer[data-type="multi-step"] > [data-tab-style="progress"] > .formkit-tabs {
+	margin-top: 1em
+}
+.formkit-outer[data-type="multi-step"] > .formkit-wrapper {
+	max-width: 36em
+}
+
+.formkit-outer[data-type="multi-step"] > .formkit-wrapper > .formkit-steps {
+	padding-top: 0.5em
+}
+
 .formkit-form {
 	/* @apply mx-8 mb-4; */
 }
@@ -89,6 +149,7 @@ const submitHandler = (data, node) => {
 	> [data-tab-style="progress"]
 	> .formkit-steps {
 	@apply border-0 shadow-none;
+	@apply max-w-xl;
 }
 .formkit-tab-label {
 	@apply dark:text-gray-200;

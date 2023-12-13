@@ -29,19 +29,19 @@ const navigation = [
 		name: "Dashboard",
 		href: route("dashboard"),
 		icon: HomeIcon,
-		current: route().current('institution.show'),
+		current: route().current("institution.show"),
 	},
 	{
 		name: "Staff",
 		href: route("staff.index"),
 		icon: UsersIcon,
-		current: route().current('staff.*'),
+		current: route().current("staff.*"),
 	},
 	{
 		name: "Departments",
 		href: route("unit.index"),
 		icon: FolderIcon,
-		current: route().current('unit.*'),
+		current: route().current("unit.*"),
 	},
 	// {
 	//   name: "Ranks",
@@ -53,7 +53,7 @@ const navigation = [
 		name: "Ranks",
 		href: route("job-category.index"),
 		icon: CalendarIcon,
-		current: route().current('job.*') || route().current('job-category.*'),
+		current: route().current("job.*") || route().current("job-category.*"),
 	},
 	{
 		name: "Next Promotions",
@@ -61,19 +61,19 @@ const navigation = [
 			year: format(new Date(), "yyyy"),
 		}),
 		icon: DocumentDuplicateIcon,
-		current: route().current('promotion.batch.show'),
+		current: route().current("promotion.batch.show"),
 	},
 	{
 		name: "Past Promotions",
 		href: route("promotion.index"),
 		icon: DocumentDuplicateIcon,
-		current: route().current('promotion.index'),
+		current: route().current("promotion.index"),
 	},
 	{
 		name: "Reports",
 		href: route("report.index"),
 		icon: ChartPieIcon,
-		current: route().current('report.*'),
+		current: route().current("report.*"),
 	},
 ];
 const teams = [
@@ -209,7 +209,7 @@ const closeAlert = (index) => {
 			</div>
 		</div>
 
-		<div class=" lg:pl-56 xl:pl-72">
+		<div class="lg:pl-56 xl:pl-72">
 			<div
 				class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 dark:bg-gray-800 dark:border-gray-700"
 			>

@@ -47,7 +47,7 @@
 			/>
 		</div>
 	</div>
-	<div class="w-1/2 sm:w-1/3 xl:w-1/4">
+	<div class="w-1/2 sm:w-1/3">
 		<FormKit
 			type="text"
 			name="year"

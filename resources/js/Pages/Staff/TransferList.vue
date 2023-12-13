@@ -11,7 +11,7 @@ const subMenuClicked = (action, model) => {
 	}
 };
 let props = defineProps({
-	transfers: Array,
+	transfers: { type: Array, default: () => null },
 });
 </script>
 <template>
@@ -70,8 +70,8 @@ let props = defineProps({
 						</td>
 						<td>
 							<SubMenu
-								@itemClicked="(action) => subMenuClicked(action, transfer)"
 								:items="['Edit', 'Delete']"
+								@item-clicked="(action) => subMenuClicked(action, transfer)"
 							/>
 						</td>
 					</tr>
