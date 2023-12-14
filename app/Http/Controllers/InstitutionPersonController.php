@@ -97,7 +97,7 @@ class InstitutionPersonController extends Controller
     // public function store(StorePersonRequest $request)
     public function store(StoreInstitutionPersonRequest $request)
     {
-        // return $request->staffData['rank']['rank_id'];
+        // return $request->staffData;
         $staff = null;
         $transaction  = DB::transaction(function () use ($request, $staff) {
             $person = Person::create($request->staffData['bio']);
@@ -106,8 +106,8 @@ class InstitutionPersonController extends Controller
 
             $person->institution()->attach($institution->id, $request->staffData['employment']);
             $staff = InstitutionPerson::where('person_id', $person->id)->first();
-            $person->contacts()->create($request->staffData['addressContact']);
-            $person->address()->create($request->staffData['addressContact']);
+            $person->address()->create($request->staffData['address']);
+            $person->contacts()->create($request->staffData['contact']);
             $person->qualifications()->create($request->staffData['qualifications']);
             
             $staff->statuses()->create([
