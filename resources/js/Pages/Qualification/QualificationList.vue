@@ -23,7 +23,7 @@ const documentUrl = ref("");
 const documentFileType = ref("");
 const previewDocument = (document) => {
 	togglePreviewDocumentModal();
-	documentUrl.value = "/storage/qualifications/" + document.file_name;
+	documentUrl.value = document.file_name;
 	documentFileType.value = document.file_type;
 };
 

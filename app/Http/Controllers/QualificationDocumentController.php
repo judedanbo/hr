@@ -6,16 +6,18 @@ use App\Http\Requests\UpdateQualificationDocumentRequest;
 use App\Models\Qualification;
 use Illuminate\Http\Request;
 use App\Enums\DocumentStatusEnum;
+use Illuminate\Support\Facades\Storage;
 
 class QualificationDocumentController extends Controller
 {
     public function update(UpdateQualificationDocumentRequest $request, Qualification $qualification)
     {
         // return $request->validated();
-        $request->file('file_name')->store('public/qualifications');
+        // $request->file('file_name')->store('public/qualifications');
         if($qualification->documents->count() < 1){
             $newDocument = $request->validated();
-            $newDocument['file_name'] = $request->file('file_name')->hashName();
+            $cv =  Storage::disk('qualifications-documents')->put('/', $request->file_name);
+            $newDocument['file_name'] = $cv;
             $qualification->documents()->create($newDocument);
         }
         else {

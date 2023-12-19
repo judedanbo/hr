@@ -1,6 +1,7 @@
 <script setup>
-import { getNode, setErrors } from "@formkit/core";
 import { Inertia } from "@inertiajs/inertia";
+import { onMounted, ref } from "vue";
+import { getNode, setErrors } from "@formkit/core";
 import QualificationForm from "./partials/QualificationForm.vue";
 import QualificationEvidence from "./partials/QualificationEvidence.vue";
 const emit = defineEmits(["formSubmitted", "documentSubmitted"]);
@@ -12,6 +13,11 @@ const props = defineProps({
 	},
 });
 
+const document = ref(null);
+
+onMounted(() => {
+	document.value = props.qualification.documents ? props.qualification.documents[0] : null
+})
 const submitDocuments = async (document) => {
 	// console.log(document);
 	const formData = new FormData();
@@ -103,10 +109,10 @@ const submitHandler = (data, node) => {
 					type="step"
 					name="evidence"
 					step-actions-class="flex justify-between"
-					:value="qualification.documents[0]"
+					:value="document"
 				>
 					<!-- {{ qualification.documents }} -->
-					<QualificationEvidence :document="qualification.documents[0]" />
+					<QualificationEvidence :document="document" />
 					<template #stepNext>
 						<FormKit type="submit" label="Save" />
 					</template>

@@ -11,8 +11,8 @@ const props = defineProps({
 		<img
 			v-if="image"
 			class="flex-none rounded-full bg-gray-50"
-			:src="'/storage/images/' + image"
-			alt=""
+			:src="image"
+			:alt="initials"
 		/>
 		<div
 			v-else

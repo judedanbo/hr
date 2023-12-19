@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PersonAvatarController extends Controller
 {
@@ -27,10 +28,12 @@ class PersonAvatarController extends Controller
             'image' => ['required', 'image', 'max:2048'],
         ]);
 
-        $request->file('image')->store('public/images');
+        $avatar =  Storage::disk('avatars')->put('/', $request->image);
+        // dd($avatar);
+        // $fileName = $request->file('image')->store('public/avatar');
 
         $person->update([
-            'image' =>  $request->file('image')->hashName(),
+            'image' =>  $avatar//$request->file('image')->hashName(),
         ]);
 
         return back()->with('success', 'Image uploaded successfully');

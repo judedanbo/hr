@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class InstitutionPersonController extends Controller
@@ -48,7 +49,7 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->label(),
                 'dob' =>  $staff->person->date_of_birth->format('d M Y'),
-                'image' => $staff->person->image,
+                'image' => $staff->person->image ? Storage::url('avatars/' . $staff->person->image) : null,
                 'dob_distance' =>  $staff->person->date_of_birth->diffInYears() . " years old",
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
@@ -180,7 +181,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' => $staff->person->image,
+                'image' => Storage::url('avatars/' . $staff->person->image),
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
@@ -195,7 +196,14 @@ class InstitutionPersonController extends Controller
                 'qualification_number' => $qualification->qualification_number,
                 'level' => $qualification->level,
                 'year' => $qualification->year,
-                'documents' => $qualification->documents
+                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
+                    'document_type' => $document->document_type,
+                    'document_title' => $document->document_title,
+                    'document_status' => $document->document_status,
+                    'document_number' => $document->document_number,
+                    'file_name' => Storage::url('qualifications-documents/' .$document->file_name),
+                    'file_type' => $document->file_type,
+                ]) : null ,
             ]) : [],
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
