@@ -7,7 +7,7 @@ const today = new Date();
 		type="date"
 		name="hire_date"
 		id="hire_date"
-		:min="format(subYears(today, 2), 'yyyy-MM-dd')"
+		:min="format(subYears(today, 80), 'yyyy-MM-dd')"
 		:max="format(addYears(today, 2), 'yyyy-MM-dd')"
 		:value="format(new Date(), 'yyyy-MM-dd')"
 		label="Date of Employment"
@@ -15,7 +15,7 @@ const today = new Date();
 			'required|date_before:' +
 			addYears(today, 2) +
 			'|date_after:' +
-			subYears(today, 2)
+			subYears(today, 80)
 		"
 		validation-visibility="submit"
 	/>

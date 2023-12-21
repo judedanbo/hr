@@ -49,10 +49,9 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->label(),
                 'dob' =>  $staff->person->date_of_birth->format('d M Y'),
-                'image' => $staff->person->image ? Storage::url('avatars/' . $staff->person->image) : null,
+                'image' => $staff->person->image ? Storage::disk('avatars')->url( $staff->person->image) : null,
                 'dob_distance' =>  $staff->person->date_of_birth->diffInYears() . " years old",
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M Y'),
-                'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
                 'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
                 'current_rank' => $staff->currentRank ? [
                     'id' => $staff->currentRank->id,
@@ -149,6 +148,7 @@ class InstitutionPersonController extends Controller
                         }]);
                     }, 'person.contacts', 'person.qualifications',
                     'units.institution',
+                    'units.parent',
                     'ranks',
                     'dependents.person',
                     'statuses',
@@ -181,7 +181,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' => Storage::url('avatars/' . $staff->person->image),
+                'image' => $staff->person->image ? Storage::disk('avatars')->url( $staff->person->image) : null,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
@@ -201,7 +201,7 @@ class InstitutionPersonController extends Controller
                     'document_title' => $document->document_title,
                     'document_status' => $document->document_status,
                     'document_number' => $document->document_number,
-                    'file_name' => Storage::url('qualifications-documents/' .$document->file_name),
+                    'file_name' => $document->file_name,
                     'file_type' => $document->file_type,
                 ]) : null ,
             ]) : [],
@@ -276,6 +276,8 @@ class InstitutionPersonController extends Controller
                 'units' => $staff->units->map(fn ($unit) => [
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
+                    'department' => $unit->parent->name,
+                    'department_short_name' => $unit->parent->short_name,
                     'staff_id' => $unit->pivot->staff_id,
                     'start_date' => $unit->pivot->start_date?->format('d M Y'),
                     'start_date_unix' => $unit->pivot->start_date?->format('Y-m-d'),
@@ -302,7 +304,8 @@ class InstitutionPersonController extends Controller
                     'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
-                    'image' => $dep->person->image,
+                    'image' => $dep->person->image ? Storage::disk('avatars')->url( $dep->person->image) : null,
+                   
                 ]) : null,
             ],
         ]);
@@ -411,7 +414,7 @@ class InstitutionPersonController extends Controller
                 'religion' => $staff->person->religion,
                 'nationality' => $staff->person->nationality,
                 'ethnicity' => $staff->person->ethnicity,
-                'image' => $staff->person->image,
+                'image' => Storage::disk('avatars')->url($staff->person->image),
                 'about' => $staff->person->about,
             ]
         ];

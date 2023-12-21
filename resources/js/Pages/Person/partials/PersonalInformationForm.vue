@@ -66,14 +66,14 @@ onMounted(async () => {
 	</div>
 	<div class="md:flex md:gap-2 justify-between flex-wrap">
 		<FormKit
+			id="date_of_birth"
 			type="date"
 			name="date_of_birth"
-			id="date_of_birth"
 			:min="format(subYears(new Date(), 150), 'yyyy-MM-dd')"
 			:max="format(new Date(), 'yyyy-MM-dd')"
 			label="Date of birth"
 			:validation="
-				'required|date_after:' +
+				'date_after:' +
 				format(subYears(new Date(), 130), 'yyyy-MM-dd') +
 				'|date_before:' +
 				format(addDays(new Date(), 1), 'yyyy-MM-dd')
@@ -83,16 +83,16 @@ onMounted(async () => {
 		/>
 
 		<FormKit
-			name="place_of_birth"
 			id="place_of_birth"
+			name="place_of_birth"
 			type="text"
 			label="Place of Birth"
 			placeholder="Place of Birth"
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
-			name="country_of_birth"
 			id="country_of_birth"
+			name="country_of_birth"
 			type="select"
 			label="Country of Birth"
 			placeholder="Select Country of Birth"
@@ -100,8 +100,8 @@ onMounted(async () => {
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
-			name="gender"
 			id="gender"
+			name="gender"
 			type="select"
 			label="Gender"
 			validation="required"
@@ -110,19 +110,18 @@ onMounted(async () => {
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
-			name="nationality"
 			id="nationality"
+			name="nationality"
 			type="select"
 			label="Nationality"
-			validation="required"
 			placeholder="Select nationality"
 			:options="nationality"
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
+			id="marital_status"
 			type="select"
 			label="Marital Status"
-			id="marital_status"
 			name="marital_status"
 			placeholder="Select one"
 			validation=""
@@ -130,18 +129,18 @@ onMounted(async () => {
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
+			id="religion"
 			type="text"
 			name="religion"
-			id="religion"
 			label="Religion"
 			placeholder="religion"
 			validation="length:0,40"
 			outer-class="md:flex-grow "
 		/>
 		<FormKit
+			id="ethnicity"
 			type="text"
 			name="ethnicity"
-			id="ethnicity"
 			label="Ethnicity"
 			placeholder="Ethnicity"
 			validation="length:2,40"
@@ -149,9 +148,9 @@ onMounted(async () => {
 		/>
 	</div>
 	<FormKit
+		id="about"
 		type="textarea"
 		name="about"
-		id="about"
 		label="About"
 		placeholder="about"
 		validation="length:2,200"

@@ -34,12 +34,11 @@ class StoreDependentRequest extends FormRequest
             'first_name' => 'required|string|max:100',
             'other_names' => 'string|max:100|nullable',
             'date_of_birth' => [
-                'required',
                 'date',
                 'before_or_equal:' . Carbon::now()->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(150)->format('Y-m-d'),
             ],
-            'nationality' => ['required', new Enum(Nationality::class)],
+            'nationality' => [ new Enum(Nationality::class)],
             'gender' => ['required', new Enum(GenderEnum::class)],
             'marital_status' => [new Enum(MaritalStatusEnum::class)],
             'religion' => 'string|max:40|nullable',

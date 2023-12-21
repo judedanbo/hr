@@ -35,7 +35,6 @@ class UpdateDependentRequest extends FormRequest
             'first_name' => 'required|string|max:100',
             'other_names' => 'string|max:100|nullable',
             'date_of_birth' => [
-                'required',
                 'date',
                 'before_or_equal:' . Carbon::now()->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(150)->format('Y-m-d'),

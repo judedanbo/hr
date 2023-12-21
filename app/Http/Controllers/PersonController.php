@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Person;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules\Enum;
 
@@ -53,15 +54,14 @@ class PersonController extends Controller
         if (!$request->hasFile('image')) {
             return response()->json(['error', 'There is no file attached', 400]);
         }
-        // return $request->file('image')->hashName(); //->image();
         try {
-            $path =  $request->file('image')->store('public/images');
-            // return Person::create($request->validated());
-            if (!$path) {
+            $avatar = Storage::disk('avatars')->put('/', $request->image);
+            return Person::create($request->validated());
+            if (!$avatar) {
                 return response()->json(['error', 'the file could not be saved', 500]);
             }
             $person =  $request->validated();
-            $person['image'] = $request->file('image')->hashName();
+            $person['image'] = $avatar;
             $newPerson  = Person::create($person);
         } catch (Exception $e) {
             return response()->json(['error', "failed to add Person with message " . $e->getMessage(), 500]);

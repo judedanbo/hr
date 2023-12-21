@@ -1,5 +1,7 @@
 <script setup>
 import { format, formatDistance } from "date-fns";
+import ToolTip from "@/Components/ToolTip.vue";
+import {ChevronRightIcon} from "@heroicons/vue/20/solid";
 
 defineProps({
 	staff: Object,
@@ -77,9 +79,21 @@ let getAge = (dateString) => {
 					Current Posting
 				</dt>
 				<dd class="mt-2 text-gray-500 dark:text-gray-300">
-					<span class="font-medium text-gray-900 dark:text-white">{{
-						staff.units[0]?.unit_name
-					}}</span>
+					<div class="flex space-x-2">
+						<ToolTip
+							:tooltip="staff.units[0]?.department"
+						>
+							
+							<div class="font-xl text-gray-900 dark:text-gray-100 font-semibold tracking-wider" >
+								{{staff.units[0]?.department_short_name}}
+							</div>
+						</ToolTip> 
+						<span><ChevronRightIcon class="w-5 h-5 " /></span>
+						<span class="font-medium text-gray-900 dark:text-white">{{
+							
+							staff.units[0]?.unit_name
+						}}</span>
+					</div>
 					<p>
 						{{ staff.units[0]?.start_date }}
 						<span class="text-xs">

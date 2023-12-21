@@ -7,7 +7,7 @@ const url = ref(null);
 
 onMounted(() => {
 	url.value = props.imageUrl
-		? "/storage/images/" + props.imageUrl
+		? props.imageUrl
 		: "/images/placeholder.webp";
 });
 // const url = ref(props.imageUrl ?? "/images/placeholder.webp");

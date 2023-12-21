@@ -100,11 +100,11 @@ let BreadcrumbLinks = [
 						<div
 							class="flex flex-wrap items-center justify-between md:justify-start gap-x-6 w-full md:w-1/2"
 						>
-							<Avatar
+							<img
 								v-if="person.image"
-								:initials="person.initials"
-								:image="person.image"
-								class="w-24 h-24"
+								:src="person.image"
+								:alt="person.name"
+								class="w-24 h-24 object-cover object-center rounded-full"
 							/>
 							<div
 								v-else

@@ -151,11 +151,22 @@ let BreadCrumpLinks = [
 											>
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
-														<Avatar
-															:initials="person.initials"
-															:image="person.image"
-															class="w-12 h-12"
+														<img
+															v-if="person.image"
+															:alt="person.initials"
+															:src="person.image"
+															class="w-12 h-12 object-cover object-center rounded-full"
 														/>
+														<div
+															v-else
+															class="w-12 h-12 rounded-full bg-gray-400 dark:bg-gray-100 flex justify-center items-center"
+														>
+															<h1
+																class="text-white dark:text-gray-900 font-bold tracking-widest"
+															>
+																{{ person.initials }}
+															</h1>
+														</div>
 														<div class="ml-4">
 															<div
 																class="text-green-900 dark:text-gray-50 font-semibold"
@@ -173,14 +184,6 @@ let BreadCrumpLinks = [
 														</div>
 													</div>
 												</td>
-												<!-- <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900 dark:text-gray-200">
-                            {{ person.dob }}
-                          </div>
-                          <div class="text-xs text-gray-500 dark:text-gray-200">
-                            {{ person.dob_distance }}
-                          </div>
-                        </td> -->
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="text-green-800 dark:text-gray-200">
 														{{ person.staff_number }}

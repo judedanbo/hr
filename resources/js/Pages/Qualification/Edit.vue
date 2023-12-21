@@ -16,8 +16,10 @@ const props = defineProps({
 const document = ref(null);
 
 onMounted(() => {
-	document.value = props.qualification.documents ? props.qualification.documents[0] : null
-})
+	document.value = props.qualification.documents
+		? props.qualification.documents[0]
+		: null;
+});
 const submitDocuments = async (document) => {
 	// console.log(document);
 	const formData = new FormData();
@@ -98,20 +100,21 @@ const submitHandler = (data, node) => {
 			>
 				<FormKit
 					id="certification"
-					type="step"
 					name="certification"
+					type="step"
 					:value="qualification"
 				>
 					<QualificationForm />
 				</FormKit>
 				<FormKit
+					v-if="document"
 					id="evidence"
-					type="step"
 					name="evidence"
+					type="step"
 					step-actions-class="flex justify-between"
 					:value="document"
 				>
-					<!-- {{ qualification.documents }} -->
+					<!-- {{ document }} -->
 					<QualificationEvidence :document="document" />
 					<template #stepNext>
 						<FormKit type="submit" label="Save" />

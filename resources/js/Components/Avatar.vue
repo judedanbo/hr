@@ -29,7 +29,7 @@ const getAvatar = async () => {
 		<img
 			v-if="person?.image?.image"
 			class="flex-none rounded-full bg-gray-50"
-			:src="'/storage/images/' + person.image.image"
+			:src="person.image.image"
 			alt=""
 		/>
 		<div

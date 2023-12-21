@@ -5,22 +5,22 @@ defineProps({
 		type: String,
 		default: "",
 	},
-	text: {
-		type: String,
-		default: "",
+	options: {
+		type: Boolean,
+		default: false,
 	},
 });
 </script>
 <template>
-	<div class="relative inline-block tooltip">
-		<a to="" class="hover:text-gray-400 px-2 py-1 font-medium">
+	<div class="relative inline-block group">
+		<a to="" class="hover:text-gray-400 font-medium dark:text-gray-100">
 			<slot />
 		</a>
 		<div
-			class="flex flex-col p-4 bg-white w-60 rounded-md z-20 absolute right-0 invisible tooltip-item"
+			class="flex flex-col p-4 bg-white dark:bg-gray-700 min-w-60 max-w-96 rounded-md z-20 absolute right-0 top-0 invisible group-hover:visible "
 		>
-			<a href="" class="font-semibold pb-4">{{ tooltip }}</a>
-			<ul class="list-disc space-y-2">
+			<p href="" class="font-semibold pb-4 dark:text-gray-100 ">{{ tooltip }}</p>
+			<ul v-if="options" class="list-disc space-y-2">
 				<li class="flex items-start">
 					<p
 						href=""
@@ -43,9 +43,3 @@ defineProps({
 		</div>
 	</div>
 </template>
-
-<style>
-.tooltip:hover .tooltip-item {
-	visibility: visible;
-}
-</style>

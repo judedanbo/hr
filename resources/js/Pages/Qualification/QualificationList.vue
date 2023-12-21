@@ -142,6 +142,7 @@ const subMenuClicked = (action, model) => {
 						<ToolTip
 							v-if="qualification.documents?.length > 0"
 							:tooltip="qualification.documents[0].document_title"
+							:options="true"
 							@preview="() => previewDocument(qualification.documents[0])"
 							@delete="() => deleteDocument(qualification)"
 						>

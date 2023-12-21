@@ -35,9 +35,9 @@ return [
             'root' => storage_path('app'),
             'throw' => false,
         ],
-        'qualifications-documents' => [
+        'documents' => [
             'driver' => 'local',
-            'root' => storage_path('app/qualifications-documents'),
+            'root' => storage_path('app/documents'),
             'throw' => false,
         ],
 
@@ -50,8 +50,8 @@ return [
         ],
         'avatars' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/avatars'),
-            'url' => env('APP_URL') . '/storage/avatars',
+            'root' => storage_path('app/avatars'),
+            'url' => env('APP_URL') . '/avatars',
             'visibility' => 'public',
             'throw' => false,
         ],

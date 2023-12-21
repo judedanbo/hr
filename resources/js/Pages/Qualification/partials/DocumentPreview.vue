@@ -3,11 +3,11 @@ import { DocumentArrowUpIcon } from "@heroicons/vue/20/solid";
 const props = defineProps({
 	url: {
 		type: String,
-		default: "",
+		default: null,
 	},
 	type: {
 		type: String,
-		default: "",
+		default: null,
 	},
 });
 </script>
@@ -19,7 +19,7 @@ const props = defineProps({
 		<template v-else>
 			<img
 				:src="url"
-				alt="preview document"
+				alt="preview not available"
 				class="mx-auto object-cover object-center"
 			/>
 		</template>

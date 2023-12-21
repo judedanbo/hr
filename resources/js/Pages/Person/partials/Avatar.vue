@@ -10,7 +10,7 @@ const props = defineProps({
 		<!-- <pre>{{ person }}</pre> -->
 		<img
 			v-if="image"
-			class="flex-none rounded-full bg-gray-50"
+			class="flex-none w-56 h-56 rounded-full bg-gray-50 object-cover object-center"
 			:src="image"
 			:alt="initials"
 		/>

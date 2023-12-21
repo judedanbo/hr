@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateDependentRequest;
 use App\Models\Dependent;
 use App\Models\Person;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class DependentController extends Controller
@@ -44,8 +45,8 @@ class DependentController extends Controller
     {
         $person = $request->validated();
         if ($request->hasFile('image')) {
-            $request->file('image')->store('public/images');
-            $person['image'] = $request->file('image')->hashName();
+            $avatar =  Storage::disk('avatars')->put('/', $request->image);
+            $person['image'] = $avatar;
         }
 
         $newPerson = Person::create($person);
@@ -86,9 +87,10 @@ class DependentController extends Controller
     {
         // return $dependent->person;
         $path = '';
+        $avatar = null;
         if ($request->hasFile('image')) {
-            $request->file('image')->store('public/images');
-            $path = $request->file('image')->hashName();
+            
+            $avatar =  Storage::disk('avatars')->put('/', $request->image);
         }
         $dependent->person()->update([
             'title' => $request->title,
@@ -100,7 +102,7 @@ class DependentController extends Controller
             'marital_status' => $request->marital_status,
             'religion' => $request->religion,
             'nationality' => $request->nationality,
-            'image' => $path,
+            'image' => $avatar,
         ]);
         $dependent->update($request->validated());
         return redirect()->back()->with('success', 'Dependent updated successfully');
