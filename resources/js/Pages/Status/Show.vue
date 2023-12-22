@@ -7,7 +7,6 @@ import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon, PlusIcon } from "@heroicons/vue/20/solid";
-// import Avatar from "../Person/partials/Avatar.vue";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -128,16 +127,7 @@ let search = ref("");
 											>
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
-														<!-- <div
-                              class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-                            >
-                              {{ person.initials }}
-                            </div> -->
-
-														<!-- <Avatar
-                              :initials="person.initials"
-                              :image-url="person.image"
-                            /> -->
+														
 														<div class="ml-4">
 															<div
 																class="text-sm font-medium text-gray-900 dark:text-gray-100"

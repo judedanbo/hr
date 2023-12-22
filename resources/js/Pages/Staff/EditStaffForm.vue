@@ -59,7 +59,6 @@ const submitImage = async(image) => {
 			},
 		},
 	);
-	console.log(avatar);
 };
 
 const submitHandler = (data, node) => {

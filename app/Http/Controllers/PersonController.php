@@ -33,7 +33,7 @@ class PersonController extends Controller
                     'dob' => $person->date_of_birth,
                     // 'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
-                    'image' => $person->image,
+                    'image' => $person->image ? Storage::disk('avatars')->url($person->image) : null ,
                     'institution' => $person->institution ? [
                         'id' => $person->institution->first()?->id,
                         'name' => $person->institution->first()?->name,
@@ -103,7 +103,7 @@ class PersonController extends Controller
                 'nationality' => $person->nationality?->nationality(),
                 'religion' => $person->religion,
                 'marital_status' => $person->marital_status?->label(),
-                'image' => $person->image,
+                'image' => $person->image ? Storage::disk('avatars')->url($person->image) : null,
                 'identities' => $person->identities->count() > 0 ? $person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,

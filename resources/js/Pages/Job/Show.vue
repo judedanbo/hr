@@ -58,7 +58,7 @@ watch(
 						class="flex justify-between gap-x-6 py-2.5"
 					>
 						<div class="flex min-w-0 gap-x-4">
-							<Avatar :initials="staff.initials" :imageUrl="staff.image" />
+							<Avatar :initials="staff.initials" :image="staff.image" size="sm" />
 							<div class="min-w-0 flex-auto">
 								<p
 									class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"

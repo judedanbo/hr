@@ -71,7 +71,7 @@ defineEmits(["update:modelValue"]);
 								:href="route('staff.show', { staff: sta.id })"
 								class="flex gap-x-4"
 							>
-								<Avatar :initials="sta.initials" :imageUrl="sta.image" />
+								<Avatar :initials="sta.initials" :image="sta.image" />
 								<div
 									class="truncate text-sm font-medium leading-6 text-gray-700 dark:text-white"
 								>

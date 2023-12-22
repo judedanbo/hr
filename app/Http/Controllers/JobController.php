@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobRequest;
 use App\Models\Job;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class JobController extends Controller
@@ -85,7 +86,7 @@ class JobController extends Controller
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'initials' => $staff->person->initials,
-                    'image' => $staff->person->image,
+                    'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
                     'unit' => $staff->units?->first()?->name,

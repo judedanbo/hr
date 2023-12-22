@@ -84,12 +84,7 @@ watch(
 									>
 										<thead class="bg-gray-50">
 											<tr class="dark:bg-gray-700">
-												<!-- <th
-                          scope="col"
-                          class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-100 "
-                        >
-                          Grade
-                        </th> -->
+												
 
 												<th
 													scope="col"
@@ -125,8 +120,10 @@ watch(
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
 														<div
-															class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-														></div>
+															class="flex-shrink-0 w-14 h-14 bg-gray-200 rounded-full flex justify-center items-center"
+														>
+														{{ job.short_name }}
+													</div>
 
 														<div class="ml-4">
 															<div

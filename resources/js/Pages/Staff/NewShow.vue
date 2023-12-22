@@ -100,7 +100,8 @@ let BreadcrumbLinks = [
 						<div
 							class="flex flex-wrap items-center justify-between md:justify-start gap-x-6 w-full md:w-1/2"
 						>
-							<img
+							<Avatar :initials="person.initials" :image="person.image" size="lg" />
+							<!-- <img
 								v-if="person.image"
 								:src="person.image"
 								:alt="person.name"
@@ -111,7 +112,7 @@ let BreadcrumbLinks = [
 								class="flex justify-center items-center h-24 w-24 flex-none rounded-lg ring-1 ring-green-400/60 dark:ring-gray-400 text-5xl text-green-400/50 dark:text-gray-300 font-bold tracking-wide"
 							>
 								{{ person.initials }}
-							</div>
+							</div> -->
 							<div class="">
 								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
 									File Number

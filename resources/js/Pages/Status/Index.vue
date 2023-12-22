@@ -13,7 +13,6 @@ import NoItem from "@/Components/NoItem.vue";
 import BreezeButton from "@/Components/Button.vue";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
-// import Avatar from "../Person/partials/Avatar.vue";
 
 let props = defineProps({
 	institution: Object,
@@ -136,7 +135,6 @@ let BreadCrumpLinks = [
 											>
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
-														<!-- <Avatar :initials="person.initials" :image-url="person.image"/> -->
 														<div class="ml-4">
 															<div
 																class="text-sm font-medium text-gray-900 dark:text-gray-100"

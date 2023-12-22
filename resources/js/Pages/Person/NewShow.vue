@@ -81,7 +81,7 @@ let BreadcrumbLinks = [
 								v-if="person.image"
 								:initials="person.initials"
 								:image="person.image"
-								class="w-24 h-24"
+								size="lg"
 							/>
 							<div
 								v-else

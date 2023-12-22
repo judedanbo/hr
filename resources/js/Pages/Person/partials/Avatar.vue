@@ -1,16 +1,26 @@
 <script setup>
 const props = defineProps({
-	initials: String,
-	image: String,
+	initials: {
+		type: String,
+		default: null
+	},
+	image: {
+		type: String,
+		default: null
+	},
+	size: {
+		type: String,
+		default: 'sm'
+	},
 });
 </script>
 
 <template>
-	<div>
-		<!-- <pre>{{ person }}</pre> -->
+	<figure>
 		<img
 			v-if="image"
-			class="flex-none w-56 h-56 rounded-full bg-gray-50 object-cover object-center"
+			:class="size == 'sm' ? ' w-12 h-12' : 'w-56 h-56'"
+			class="flex-none  rounded-full bg-gray-50 object-cover object-center"
 			:src="image"
 			:alt="initials"
 		/>
@@ -22,5 +32,5 @@ const props = defineProps({
 				{{ initials }}
 			</h1>
 		</div>
-	</div>
+	</figure>
 </template>

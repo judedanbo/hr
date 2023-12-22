@@ -136,7 +136,6 @@ let BreadCrumpLinks = [
 												>
 													<div class="flex items-center">
 														<Avatar
-															class="w-12 h-12"
 															:initials="person.initials"
 															:image="person.image"
 														/>

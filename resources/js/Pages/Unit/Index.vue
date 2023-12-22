@@ -87,7 +87,7 @@ let BreadCrumpLinks = [
 							autofocus
 						/>
 						<InfoCard title="Units" :value="units.total" />
-						<BreezeButton @click="toggle()">Add New</BreezeButton>
+						<BreezeButton @click="toggle()">Add New Unit</BreezeButton>
 					</div>
 
 					<div v-if="units.total > 0" class="flex flex-col mt-2">
@@ -135,8 +135,8 @@ let BreadCrumpLinks = [
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
 														<div
-															class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex justify-center items-center"
-														></div>
+															class="flex-shrink-0 w-16 h-16 font-bold text-white dark:text-gray-600 bg-gray-400 dark:bg-gray-200 rounded-full flex justify-center items-center"
+														>{{ unit.short_name }}</div>
 
 														<div class="ml-4">
 															<div

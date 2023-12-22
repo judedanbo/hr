@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class UnitController extends Controller
@@ -46,6 +47,7 @@ class UnitController extends Controller
                     fn ($unit) => [
                         'id' => $unit->id,
                         'name' => $unit->name,
+                        'short_name' => $unit->short_name,
                         'staff' => $unit->staff_count + $unit->subs->sum('staff_count'),
                         'units' => $unit->subs_count,
                         'institution' => $unit->institution ? [
@@ -178,7 +180,7 @@ class UnitController extends Controller
                     'hire_date' => $staff->hire_date->format('d M Y'),
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
-                    'image' => $staff->person->image,
+                    'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                     'rank' => $staff->ranks->count() > 0 ? [
                         'id' => $staff->ranks->first()->id,
                         'name' => $staff->ranks->first()->name,
