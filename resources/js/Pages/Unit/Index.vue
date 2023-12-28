@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head } from "@inertiajs/inertia-vue3";
-import { ref,  computed } from "vue";
+import { ref, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import { useToggle } from "@vueuse/core";
@@ -42,8 +42,6 @@ props.units.data.map((unit) => {
 const searchUnits = (value) => {
 	useSearch(value, route("unit.index"));
 };
-
-
 
 let openUnit = (unit) => {
 	Inertia.visit(route("unit.show", { unit: unit }));
@@ -89,7 +87,7 @@ let BreadCrumpLinks = [
 				</UnitsList>
 			</div>
 		</main>
-		<Modal @close="toggle()" :show="openAddDialog">
+		<Modal :show="openAddDialog" @close="toggle()">
 			<AddUnit :units="parentUnits" :institution="units.data[0].institution" />
 		</Modal>
 	</MainLayout>

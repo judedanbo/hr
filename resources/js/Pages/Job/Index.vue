@@ -1,28 +1,27 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import BreezeInput from "@/Components/Input.vue";
-import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
-import { Inertia } from "@inertiajs/inertia";
+import { Head } from "@inertiajs/inertia-vue3";
+import { ref, computed } from "vue";
 import Pagination from "../../Components/Pagination.vue";
-import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
-import NoItem from "@/Components/NoItem.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
-
-import BreezeButton from "@/Components/Button.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
 import AddRank from "./partials/Add.vue";
-import InfoCard from "@/Components/InfoCard.vue";
+import PageHeader from "@/Components/PageHeader.vue";
+import { useNavigation } from "@/Composables/navigation";
+import { useSearch } from "@/Composables/search";
+import JobsList from "./partials/JobsList.vue";
+import { Inertia } from "@inertiajs/inertia";
+
+const navigation = computed(() => useNavigation(props.jobs));
 
 let openAddDialog = ref(false);
 
 let toggle = useToggle(openAddDialog);
 
 let props = defineProps({
-	jobs: Object,
-	filters: Object,
+	jobs: { type: Object, required: true },
+	filters: { type: Object, default: () => {} },
 });
 
 let BreadCrumpLinks = [
@@ -30,48 +29,40 @@ let BreadCrumpLinks = [
 		name: "Ranks",
 	},
 ];
+let openJob = (job) => {
+	Inertia.visit(route("job.show", { job: job }));
+};
 
 let search = ref(props.filters.search);
-
-watch(
-	search,
-	debounce(function (value) {
-		Inertia.get(
-			route("job.index"),
-			{ search: value },
-			{ preserveState: true, replace: true, preserveScroll: true },
-		);
-	}, 300),
-);
+const searchJobs = (value) => {
+	useSearch(value, route("job.index"));
+};
 </script>
 
 <template>
-	<Head title="Ranks" />
-
 	<MainLayout>
-		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-			<div class="overflow-hidden shadow-sm sm:rounded-lg">
-				<div class="p-2 border-b border-gray-200">
-					<div
-						class="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 lg:grid-cols-4"
-					></div>
-					<BreadCrumpVue :links="BreadCrumpLinks" />
-					<h2 class="text-3xl text-gray-900 dark:text-gray-50 mt-4">
-						Ranks/Grades
-					</h2>
-					<div class="sm:flex items-center justify-between my-2">
-						<FormKit
-							v-model="search"
-							prefix-icon="search"
-							type="search"
-							placeholder="Search ranks..."
-							autofocus
-						/>
-						<InfoCard title="Ranks" :value="jobs.total" />
-						<BreezeButton @click="toggle()">Add New</BreezeButton>
-					</div>
-
-					<div v-if="jobs.total > 0" class="flex flex-col mt-2">
+		<Head title="Departments" />
+		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<BreadCrumpVue :links="BreadCrumpLinks" />
+			<div
+				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
+			>
+				<PageHeader
+					title="Ranks"
+					:total="jobs.total"
+					:search="search"
+					action-text="Add Rank"
+					@action-clicked="toggle()"
+					@search-entered="(value) => searchJobs(value)"
+				/>
+				<JobsList :jobs="jobs.data" @open-job="(jobId) => openJob(jobId)">
+					<template #pagination>
+						<Pagination :navigation="navigation" />
+					</template>
+				</JobsList>
+				<!-- {{ navigation }} -->
+			</div>
+			<!-- <div v-if="jobs.total > 0" class="flex flex-col mt-2">
 						<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 							<div
 								class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
@@ -187,10 +178,8 @@ watch(
 							</div>
 						</div>
 					</div>
-					<NoItem v-else name="Rank" />
-				</div>
-			</div>
-		</div>
+					<NoItem v-else name="Rank" /> -->
+		</main>
 		<Modal @close="toggle()" :show="openAddDialog">
 			<AddRank @formSubmitted="toggle()" />
 		</Modal>
