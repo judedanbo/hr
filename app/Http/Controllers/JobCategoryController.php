@@ -102,7 +102,7 @@ class JobCategoryController extends Controller
             }])
             ->get();
         return Inertia::render('JobCategory/Show', [
-            'job_category' => [
+            'category' => [
                 'id' => $jobCategory->id,
                 'name' => $jobCategory->name,
                 'short_name' => $jobCategory->short_name,

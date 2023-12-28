@@ -1,16 +1,11 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
-import { Inertia } from "@inertiajs/inertia";
+import { Head } from "@inertiajs/inertia-vue3";
+import { ref } from "vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import BreezeButton from "@/Components/Button.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
-import InfoCard from "@/Components/InfoCard.vue";
-import CategoryTable from "./partials/CategoryTable.vue";
-import Category from "./partials/Category.vue";
+import JobCategory from "./partials/JobCategory.vue";
 import AddJobsToCategory from "./partials/AddJobsToCategory.vue";
 
 let openAddDialog = ref(false);
@@ -18,8 +13,8 @@ let openAddDialog = ref(false);
 let toggle = useToggle(openAddDialog);
 
 let props = defineProps({
-	job_category: Object,
-	filters: Object,
+	category: { type: Object, required: true },
+	filters: { type: Object, default: () => {} },
 });
 
 let BreadCrumpLinks = [
@@ -27,19 +22,6 @@ let BreadCrumpLinks = [
 		name: "Ranks Categories",
 	},
 ];
-
-// let search = ref(props.filters.search);
-
-// watch(
-//   search,
-//   debounce(function (value) {
-//     Inertia.get(
-//       route("job-category.index"),
-//       { search: value },
-//       { preserveState: true, replace: true, preserveScroll: true }
-//     );
-//   }, 300)
-// );
 </script>
 
 <template>
@@ -57,13 +39,12 @@ let BreadCrumpLinks = [
 						Ranks/Grades Categories
 					</h2>
 
-					<!-- <CategoryTable :categories="categories" /> -->
-					<Category @add-rank="toggle()" :category="job_category" />
+					<JobCategory :category="category" @add-rank="toggle()" />
 				</div>
 			</div>
 		</div>
-		<Modal @close="toggle()" :show="openAddDialog">
-			<AddJobsToCategory @formSubmitted="toggle()" />
+		<Modal :show="openAddDialog" @close="toggle()">
+			<AddJobsToCategory @form-submitted="toggle()" />
 		</Modal>
 	</MainLayout>
 </template>

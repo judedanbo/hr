@@ -87,7 +87,7 @@ let BreadCrumpLinks = [
 				</UnitsList>
 			</div>
 		</main>
-		<Modal @close="toggle()" :show="openAddDialog">
+		<Modal :show="openAddDialog" @close="toggle()">
 			<AddUnit :units="parentUnits" :institution="units.data[0].institution" />
 		</Modal>
 	</MainLayout>
