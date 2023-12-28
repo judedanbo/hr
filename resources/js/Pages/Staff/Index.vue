@@ -43,7 +43,7 @@ let BreadCrumpLinks = [
 <template>
 	<MainLayout>
 		<Head title="Staff" />
-		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="BreadCrumpLinks" />
 			<div
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
@@ -66,7 +66,7 @@ let BreadCrumpLinks = [
 					</template>
 				</StaffList>
 			</div>
-		</div>
+		</main>
 		<Modal :show="openDialog" @close="toggle()">
 			<AddStaffForm @form-submitted="toggle()" />
 		</Modal>
