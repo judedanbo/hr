@@ -174,6 +174,7 @@ class Person extends Model
             foreach ($terms as $term) {
                 $query->where(function ($searchName) use ($term) {
                     $searchName->where('first_name', 'like', "%{$term}%");
+                    $searchName->orWhere('title', 'like', "%{$term}%");
                     $searchName->orWhere('other_names', 'like', "%{$term}%");
                     $searchName->orWhere('surname', 'like', "%{$term}%");
                     $searchName->orWhere('date_of_birth', 'like', "%{$term}%");

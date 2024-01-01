@@ -1,6 +1,5 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
-import { Link } from "@inertiajs/inertia-vue3";
 
 let props = defineProps({
 	title: String,
@@ -14,7 +13,7 @@ let details = (url = props.link) => {
 </script>
 <template>
 	<div
-		class="mx-auto flex max-w-xs flex-col gap-y-4 w-20 justify-center items-center"
+		class="mx-auto flex max-w-lg flex-col gap-y-4 justify-center items-center"
 	>
 		<dt class="text-base leading-7 text-gray-600 dark:text-gray-400">
 			{{ title }}

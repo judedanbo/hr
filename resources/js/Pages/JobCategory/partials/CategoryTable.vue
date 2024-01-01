@@ -1,5 +1,4 @@
 <script setup>
-import Pagination from "@/Components/Pagination.vue";
 import NoItem from "@/Components/NoItem.vue";
 import MainTable from "@/Components/MainTable.vue";
 import TableHead from "@/Components/TableHead.vue";
@@ -7,7 +6,6 @@ import TableBody from "@/Components/TableBody.vue";
 import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
-import { Link } from "@inertiajs/inertia-vue3";
 import CategoryName from "./CategoryName.vue";
 
 const emit = defineEmits(["openCategory"]);

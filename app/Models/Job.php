@@ -40,7 +40,7 @@ class Job extends Model
      */
     public function previousRank(): BelongsTo
     {
-        return $this->belongsTo(Rank::class, 'previous_rank_id');
+        return $this->belongsTo(Job::class, 'previous_rank_id');
     }
 
     /**
@@ -49,6 +49,17 @@ class Job extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(JobCategory::class, 'job_category_id', 'id');
+    }
+
+    public function scopeManagementRanks($query)  {
+        return $query->WhereHas('category', function($whereHasQuery){
+            $whereHasQuery->where("level", "<",4);
+        });
+    }
+    public function scopeOtherRanks($query)  {
+        return $query->WhereHas('category', function($whereHasQuery){
+            $whereHasQuery->where("level", ">", 3);
+        });
     }
 
     public function scopeSearchRank($query, $search)

@@ -22,6 +22,7 @@ class InstitutionPerson extends Pivot
         'old_staff_number',
         'hire_date',
         'end_date',
+        'job_category_id'
     ];
     // protected $appends =  ['status'];
 
@@ -114,6 +115,40 @@ class InstitutionPerson extends Pivot
         }]);
     }
 
+    public function ScopeRank($query)
+    {
+        return $query->whereHas('ranks', function ($query) {
+            $query->where('job_staff.end_date', null);
+        });
+    }
+    public function ScopePromotion($query, $year )
+    {
+        return $query->whereHas('ranks', function ($query) use ($year){
+            $searchYear = $year - 3;
+            // $query->take(1);
+            $query->where('job_staff.end_date', null);
+            $query->whereRaw("YEAR(job_staff.start_date) < ?", [$searchYear]);
+        });
+    }
+
+    function scopeSearchPerson($query, $search)  {
+        return $query->whereHas('person', function ($personQuery) use ($search) {
+            $personQuery->search($search);
+        });
+        
+    }
+    function scopeSearchRank($query, $search)  {
+        return $query->orWhereHas('ranks', function ($rankQuery) use ($search) {
+            $rankQuery->searchRank($search);
+        });
+    }
+
+    function scopeSearchOtherRank($query, $search)  {
+        return $query->orWhereHas('ranks', function ($rankQuery) use ($search) {
+            $rankQuery->searchOtherRank($search);
+            // $rankQuery->searchRank($search);
+        });
+    }
     public function currentRank(): BelongsTo
     {
         return $this->BelongsTo(JobStaff::class);
@@ -130,6 +165,8 @@ class InstitutionPerson extends Pivot
             $query->with('job:id,name');
         }]);
     }
+
+
 
     // get current rank of staff
     // public function getCurrentRankAttribute()
@@ -205,6 +242,19 @@ class InstitutionPerson extends Pivot
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'notable')->latest();
+    }
+
+   
+
+    public function scopeManagement($query) {
+        return $query->whereHas('ranks', function($whereHasQuery){
+            $whereHasQuery->managementRanks();
+        });
+    }
+    public function scopeOtherRanks($query) {
+        return $query->whereHas('ranks', function($whereHasQuery){
+            $whereHasQuery->otherRanks();
+        });
     }
 
 
