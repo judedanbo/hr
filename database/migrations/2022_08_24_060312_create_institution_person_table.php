@@ -22,7 +22,7 @@ return new class extends Migration
             // $table->string('email')->nullable();
             $table->string('old_staff_number', 15)->nullable();
             // $table->string('status', 20);
-            $table->date('hire_date');
+            $table->date('hire_date')->nullable();
             $table->date('end_date')->nullable();
             $table->timestamps();
             $table->softDeletes();

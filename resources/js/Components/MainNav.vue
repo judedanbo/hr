@@ -38,7 +38,7 @@ defineProps({
 			<li class="mt-auto">
 				<Link
 					href="#"
-					class="group px-4 flex gap-x-3 rounded-md py-2 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
+					class="group flex gap-x-3 rounded-md py-2 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
 				>
 					<Cog6ToothIcon
 						class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-green-600 dark:group-hover:text-gray-700"

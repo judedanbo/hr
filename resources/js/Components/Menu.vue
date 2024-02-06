@@ -112,7 +112,7 @@ const isOpen = ref(false);
 		></MainMenu>
 
 		<div
-			class="flex flex-col justify-between items-center h-full pb-6 px-1 lg:px-6 w-full mt-48"
+			class="flex flex-col justify-between items-center h-full pb-6 px-1 lg:px-6 mt-48"
 		>
 			<div class="flex justify-between items-center w-full">
 				<div class="flex justify-center items-center space-x-2">

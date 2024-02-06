@@ -186,9 +186,9 @@ let BreadcrumbLinks = [
 				</div>
 			</header>
 
-			<div class="mx-auto max-w-7xl py-4 xl:px-8">
+			<div class="mx-auto max-w-7xl py-4">
 				<div
-					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start lg:mx-0 px-8 lg:max-w-none lg:grid-cols-3 gap-4"
+					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start lg:mx-0 px-4 lg:max-w-none lg:grid-cols-3 gap-4"
 				>
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
@@ -262,7 +262,7 @@ let BreadcrumbLinks = [
 							:staff="staff.staff_id"
 							:institution="staff.institution_id"
 							:show-promotion-form="showPromotionForm"
-							class="w-full md:flex-1"
+							class="w-full xl:flex-1"
 							@close-form="togglePromotionForm()"
 						/>
 						<!-- Posting History -->
@@ -272,7 +272,7 @@ let BreadcrumbLinks = [
 							:staff-name="person.name"
 							:institution="staff.institution_id"
 							:show-transfer-form="showTransferForm"
-							class="w-full md:flex-1 flex-1"
+							class="w-full xl:flex-1"
 							@close-form="toggleTransferForm()"
 						/>
 					</div>
