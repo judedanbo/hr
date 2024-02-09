@@ -150,7 +150,8 @@ let BreadcrumbLinks = [
 				</div>
 			</header>
 
-			<div class="mx-auto max-w-7xl py-4 xl:px-8">
+			<div class="mx-auto max-w-7xl py-4 xl:px-8 flex">
+				<div>status</div>
 				<div
 					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
 				>
@@ -165,7 +166,7 @@ let BreadcrumbLinks = [
 							:contacts="contacts"
 							:person="person.id"
 						/>
-						<Dependents :dependents="dependents" />
+						<!-- <Dependents :dependents="dependents" /> -->
 					</div>
 					<div
 						class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"

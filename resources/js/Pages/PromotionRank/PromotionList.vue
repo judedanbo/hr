@@ -209,7 +209,7 @@ const promoteSelectedStaff = () => {
 										class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
 									>
 										<div class="font-medium text-gray-900 dark:text-gray-50">
-											{{ formatDate(promotion.start_date) }}
+											{{ promotion.start_date}}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
 											{{ formatDistance(promotion.start_date) }}
@@ -229,7 +229,7 @@ const promoteSelectedStaff = () => {
 										class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
 									>
 										<div class="font-medium text-gray-900 dark:text-gray-50">
-											{{ formatDate(promotion.retirement_date) }}
+											{{ promotion.retirement_date}}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
 											{{ formatDistance(promotion.retirement_date) }}

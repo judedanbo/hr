@@ -35,7 +35,7 @@ let getAge = (dateString) => {
 <template>
 	<!-- contact History -->
 	<main class="w-full">
-		<h2 class="sr-only">Staff Contact Information</h2>
+		<h2 class="sr-only">Contact Information</h2>
 		<div
 			class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80"
 		>
@@ -44,7 +44,7 @@ let getAge = (dateString) => {
 					<dt
 						class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100"
 					>
-						Staff Address
+						Address
 					</dt>
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
