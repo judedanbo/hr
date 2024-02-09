@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobRequest;
 use App\Models\Job;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class JobController extends Controller
 {
@@ -51,28 +51,42 @@ class JobController extends Controller
 
     public function show($job)
     {
-        $job = Job::with(['staff' => function ($query) {
-            // $query->active();
-            $query->whereHas('statuses', function ($query) {
-                $query->where('status', 'A');
-            });
-            $query->where('job_staff.end_date', null);
-            $query->when(request()->search, function ($query, $search) {
-                $query->whereHas('person', function ($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%");
-                    $query->orWhere('surname', 'like', "%{$search}%");
-                });
-            });
-        }, 'staff.units', 'staff.ranks', 'institution'])
-            ->withCount(['staff' => function ($query) {
-                $query->whereHas('statuses', function ($query) {
-                    $query->where('status', 'A');
-                });
-                $query->where('job_staff.end_date', null);
+        $job = Job::query()
+            ->with([
+                'staff' => function ($query) use ($job) {
+                    $query->active();
+                    // $query->where('job_staff.end_date', null);
+                    $query->whereHas('ranks', function ($query) use ($job){
+                        $query->where('job_staff.end_date', null);
+                        $query->orderBy('job_staff.start_date', 'desc')->take(1);
+                        $query->where('job_staff.job_id', $job);
+
+                    });
+                    $query->with(['ranks'=> function ($query) use ($job){
+                        $query->where('job_staff.end_date', null);
+                        $query->orderBy('job_staff.start_date', 'desc');
+                        $query->where('job_id', $job);
+                        // $query->with('job:id,name');
+                    }]);
+                    $query->when(request()->search, function ($query, $search) {
+                        $query->whereHas('person', function ($query) use ($search) {
+                            $query->where('first_name', 'like', "%{$search}%");
+                            $query->orWhere('surname', 'like', "%{$search}%");
+                        });
+                    });
+                }, 
+                'staff.person', 
+                'institution'])
+            ->withCount([
+                'staff' => function ($query) {
+                    $query->whereHas('statuses', function ($query) {
+                        $query->where('status', 'A');
+                    });
+                    $query->where('job_staff.end_date', null);
             }])
             // ->active()
             ->find($job);
-        // dd($job);
+        // return($job);
         return Inertia::render('Job/Show', [
             'job' => [
                 'id' => $job->id,
@@ -86,11 +100,13 @@ class JobController extends Controller
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'initials' => $staff->person->initials,
+                    // ...
+
                     'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
-                    'unit' => $staff->units?->first()?->name,
-                    'unit_id' => $staff->units?->first()?->id,
+                    // 'unit' => $staff->units?->first()?->name,
+                    // 'unit_id' => $staff->units?->first()?->id,
                     'rank' => $staff->ranks?->first()?->name,
                     'rank_start' => $staff->ranks?->first()?->pivot->start_date,
                     'rank_start_text' => $staff->ranks?->first()?->pivot->start_date->format('d F Y'),

@@ -66,6 +66,8 @@ Route::get('/dashboard', function () {
 Route::controller(PersonController::class)->middleware(['auth'])->group(function () {
     Route::get('/person', 'index')->name('person.index');
     Route::get('/person/{person}', 'show')->name('person.show');
+    Route::get('/person/{person}/edit', 'edit')->name('person.edit');
+    Route::patch('/person/{person}', 'update')->name('person.update');
     Route::post('/person', 'store')->name('person.store');
     Route::post('/person/{person}/contact', 'addContact')->name('person.contact.create');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');

@@ -2,7 +2,7 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
@@ -14,10 +14,16 @@ import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import NoItem from "@/Components/NoItem.vue";
 import Avatar from "./partials/Avatar.vue";
 import Roles from "./partials/Roles.vue";
+import { useNavigation } from "@/Composables/navigation";
+
+
+
 let props = defineProps({
 	people: Object,
 	filters: Object,
 });
+
+const navigation = computed(() => useNavigation(props.people));
 
 let search = ref(props.filters.search);
 
@@ -189,7 +195,7 @@ let BreadCrumpLinks = [
 											</tr>
 										</tbody>
 									</table>
-									<Pagination :records="people" />
+									<Pagination :navigation="navigation" />
 								</div>
 								<NoItem v-else name="Person" />
 							</div>

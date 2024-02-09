@@ -10,17 +10,13 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
 import Summary from "./Summary.vue";
-import StaffDates from "../Staff/StaffDates.vue";
+import NewModal from "@/Components/NewModal.vue";
+import EditPersonForm from "@/Pages/Person/partials/EditPersonForm.vue";
 
-let showPromotionForm = ref(false);
-let showTransferForm = ref(false);
 
-let togglePromotionForm = useToggle(showPromotionForm);
-let toggleTransferForm = useToggle(showTransferForm);
-let getAge = (dateString) => {
-	const date = new Date(dateString);
-	return formatDistance(date, new Date(), { addSuffix: true });
-};
+let showEditForm = ref(false);
+
+let toggleEditForm = useToggle(showEditForm);
 
 let props = defineProps({
 	person: Object,
@@ -32,7 +28,7 @@ let props = defineProps({
 });
 
 let BreadcrumbLinks = [
-	{ name: "Staff", url: "/staff" },
+	{ name: "Person", url: "/staff" },
 	{ name: props.person.name, url: "/" },
 ];
 </script>
@@ -100,6 +96,7 @@ let BreadcrumbLinks = [
 						<div class="flex items-center gap-x-4 sm:gap-x-6">
 							<button
 								class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+								@click="toggleEditForm()"
 							>
 								Edit
 							</button>
@@ -176,5 +173,8 @@ let BreadcrumbLinks = [
 				</div>
 			</div>
 		</main>
+		<NewModal :show="showEditForm" @close="toggleEditForm()">
+				<EditPersonForm :person-id="person.id" @form-submitted="toggleEditForm()" />
+		</NewModal>
 	</MainLayout>
 </template>

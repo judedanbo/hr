@@ -57,6 +57,9 @@ const indeterminate = computed(
 		selectedStaff.value.length > 0 &&
 		selectedStaff.value.length < props.promotions.data.length,
 );
+const promoteSelectedStaff = () => {
+	Inertia.post(route("staff.promote"), { staff: selectedStaff.value });
+};
 </script>
 <template>
 	<div class="px-4 sm:px-6 lg:px-8 py-8">
@@ -64,23 +67,24 @@ const indeterminate = computed(
 			<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 				<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 					<div class="relative">
-						<!-- <div
+						<div
 							v-if="selectedStaff.length > 0"
-							class="absolute left-14 top-0 flex h-12 items-center space-x-3 bg-white dark:bg-gray-800 sm:left-12"
+							class="absolute left-14 top-0 flex h-12 items-center space-x-3 bg-white dark:bg-gray-800 sm:left-12 px-2 rounded-md"
 						>
 							<button
 								type="button"
-								class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white dark:text-gray-50"
+								class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white dark:text-gray-50 dark:hover:bg-gray-700"
 							>
 								Invite for Interview
 							</button>
 							<button
 								type=" button"
-								class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white dark:text-gray-50"
+								class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white dark:text-gray-50 dark:hover:bg-gray-700"
+								@click="promoteSelectedStaff"
 							>
 								Promote all</button
 							>
-						</div> -->
+						</div>
 						<table class="min-w-full table-fixed divide-y divide-gray-300">
 							<thead>
 								<tr>

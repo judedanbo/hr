@@ -47,7 +47,7 @@ class Person extends Model
     /// get full name of person
     public function getFullNameAttribute(): string
     {
-        return ucwords(strtolower("{$this->title} {$this->first_name} {$this->other_names} {$this->surname}"));
+        return ("{$this->title} {$this->first_name} {$this->other_names} {$this->surname}");
     }
 
     public function scopeOrderDob($query)

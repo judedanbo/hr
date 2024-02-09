@@ -146,6 +146,37 @@ class PersonController extends Controller
         ]);
     }
 
+    public function edit(Person $person){
+        return [
+            'id' => $person->id,
+            'title' => $person->title,
+            'first_name' => $person->first_name,
+            'other_names' => $person->other_names,
+            'main_name' => $person->main_name,
+            'surname' => $person->surname,
+            'date_of_birth' => $person->date_of_birth?->format('Y-m-d'),
+            'marital_status' => $person->marital_status,
+            'gender' => $person->gender,
+            'nationality' =>$person->nationality,
+            'religion' => $person->religion,
+            'place_of_birth' => $person->place_of_birth,
+            'country_of_birth' => $person->country_of_birth,
+            'about' => $person->about,
+            'image' => $person->image ? Storage::disk('avatars')->url($person->image) : null,
+
+        ];
+        // return {
+        //     // id => $person->id,
+        // }//$person;
+    }
+
+    public function update(UpdatePersonRequest $request, Person $person)
+    {
+        // return $request->validated();
+        $person->update($request->validated());
+        return redirect()->route('person.show', $person->id)->with('success', 'Person records updated');
+    }
+
     public function addContact(Request $request, Person $person)
     {
         $attribute = $request->validate([
