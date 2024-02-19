@@ -57,15 +57,13 @@ class JobController extends Controller
                     $query->active();
                     // $query->where('job_staff.end_date', null);
                     $query->whereHas('ranks', function ($query) use ($job){
-                        $query->where('job_staff.end_date', null);
-                        $query->orderBy('job_staff.start_date', 'desc')->take(1);
+                        $query->whereNull('job_staff.end_date');
                         $query->where('job_staff.job_id', $job);
-
                     });
-                    $query->with(['ranks'=> function ($query) use ($job){
+                    $query->with(['ranks'=> function ($query) {
                         $query->where('job_staff.end_date', null);
                         $query->orderBy('job_staff.start_date', 'desc');
-                        $query->where('job_id', $job);
+                        // $query->where('job_id', $job);
                         // $query->with('job:id,name');
                     }]);
                     $query->when(request()->search, function ($query, $search) {
@@ -84,7 +82,6 @@ class JobController extends Controller
                     });
                     $query->where('job_staff.end_date', null);
             }])
-            // ->active()
             ->find($job);
         // return($job);
         return Inertia::render('Job/Show', [
@@ -100,8 +97,6 @@ class JobController extends Controller
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'initials' => $staff->person->initials,
-                    // ...
-
                     'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,

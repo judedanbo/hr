@@ -12,7 +12,7 @@ import { format, addDays, subYears } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 4), "yyyy-MM-dd");
+const end_date = format(subYears(new Date(), 20), "yyyy-MM-dd");
 
 let ranks = ref([]);
 
@@ -24,7 +24,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.promote", { staff: data.staff_id }), data, {
+	Inertia.post(route("staff.promote.store", { staff: data.staff_id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -64,7 +64,6 @@ const submitHandler = (data, node) => {
 					:validation="
 						'required|date_after:' + end_date + '|date_before:' + start_date
 					"
-					validation-visibility="submit"
 					inner-class="w-1/2"
 				/>
 			</div>

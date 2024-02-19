@@ -43,6 +43,7 @@ const deleteTransfer = (staff_id, unit_id) => {
 let props = defineProps({
 	transfers: { type: Array, default: () => null },
 	staffName: { type: String, default: () => null },
+	staff: { type: Number, default: () => null },
 	institution: { type: Number, default: () => null },
 	showTransferForm: {
 		type: Boolean,

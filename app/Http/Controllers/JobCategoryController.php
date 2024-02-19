@@ -26,9 +26,7 @@ class JobCategoryController extends Controller
                 )
                 ->with(['staff' => function ($query) {
                     $query->withCount(['staff' => function ($query) {
-                        $query->whereHas('statuses', function ($query) {
-                            $query->where('status', 'A');
-                        });
+                        $query->active();
                         $query->where('job_staff.end_date', null);
                     }]);
                 }])

@@ -153,7 +153,6 @@ class InstitutionPersonController extends Controller
                     'dependents.person',
                     'statuses',
                     'notes'
-
                 ]
             )
             ->active()
@@ -276,8 +275,8 @@ class InstitutionPersonController extends Controller
                 'units' => $staff->units->map(fn ($unit) => [
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
-                    'department' => $unit->parent->name,
-                    'department_short_name' => $unit->parent->short_name,
+                    'department' => $unit->parent?->name,
+                    'department_short_name' => $unit->parent?->short_name,
                     'staff_id' => $unit->pivot->staff_id,
                     'start_date' => $unit->pivot->start_date?->format('d M Y'),
                     'start_date_unix' => $unit->pivot->start_date?->format('Y-m-d'),

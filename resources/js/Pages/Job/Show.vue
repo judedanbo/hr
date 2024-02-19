@@ -4,19 +4,20 @@ import { Head, Link } from "@inertiajs/inertia-vue3";
 import Tab from "@/Components/Tab.vue";
 import { Inertia } from "@inertiajs/inertia";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/vue/24/outline";
-
+import PageHeader from "@/Components/PageHeader.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
+import RankStaff from "./partials/RankStaff.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import InfoCard from "@/Components/InfoCard.vue";
 import Avatar from "../Person/partials/Avatar.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
+import PageTitle from "@/Components/PageTitle.vue";
 let props = defineProps({
 	job: Object,
-
 	filters: Object,
 });
 let search = ref(props.filters.search);
@@ -32,11 +33,50 @@ watch(
 		);
 	}, 300),
 );
+const changeTab = (tab) => {
+	console.log(tab);
+};
+const components = {
+	RankStaff,
+};
+
+const tabs = [
+	{ name: "Overview", component: "RankStaff", href: "#", current: true },
+	{ name: "Staff", component: "RankStaff", href: "#", current: false },
+	{
+		name: "Due for Promotion",
+		component: "RankStaff",
+		href: "#",
+		current: false,
+	},
+];
+const currentTab = ref(tabs[0]);
 </script>
 <template>
 	<Head :title="job.name" />
 	<MainLayout>
-		<div class="overflow-hidden shadow-sm sm:rounded-lg">
+		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8">
+			<PageTitle
+				:title="job.name"
+				:tabs="tabs"
+				@tab-clicked="(tab) => changeTab(tab)"
+			/>
+			<!-- <component :is="components[currentTab.component]" v-bind="{staff: job.staff}" /> -->
+			<div
+				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
+			>
+				<!-- <PageHeader
+					title="Staff"
+					:total="job.staff_count"
+					:search="search"
+					action-text="Add Rank"
+					@action-clicked="toggle()"
+					@search-entered="(value) => searchJobs(value)"
+				/> -->
+				<RankStaff :rank="job.id" />
+			</div>
+		</main>
+		<!-- <div class="overflow-hidden shadow-sm sm:rounded-lg">
 			<div class="px-6 border-b border-gray-200">
 				<div class="sm:flex items-center justify-between my-2">
 					<FormKit
@@ -150,6 +190,6 @@ watch(
 					</li>
 				</ul>
 			</div>
-		</div>
+		</div> -->
 	</MainLayout>
 </template>

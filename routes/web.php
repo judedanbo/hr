@@ -7,6 +7,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
+use App\Http\Controllers\CategoryRanks;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\GenderController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
+use App\Http\Controllers\RankStaffController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
@@ -37,6 +39,7 @@ use App\Http\Controllers\UnitTypeController;
 use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
+use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\Qualification;
 use App\Models\StaffType;
@@ -189,12 +192,48 @@ Route::controller(JobCategoryController::class)->middleware(['auth'])->group(fun
     Route::delete('/job-category/{jobCategory}', 'delete')->name('job-category.delete');
 });
 
+
+Route::controller(CategoryRanks::class)->middleware(['auth'])->group(function(){
+    Route::get('/category/{category}/ranks','show')->name('category-ranks.show');
+});
+
+Route::get('/rank/{rank}/staff',[RankStaffController::class, 'index'] )->middleware(['auth'])->name('rank-staff.index');
+
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
     Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
     Route::post('/rank', 'store')->name('job.store');
 });
+
+Route::get('/rank/{rank}/category', function (Job $rank) {
+    $rank->load('category');
+    return [
+        'id' => $rank->category->id,
+        'name' => $rank->category->name,
+        'level' => $rank->category->level,
+        'short_name' => $rank->category->short_name,
+];
+})->middleware(['auth'])->name('rank.category');
+
+Route::get('rank/{rank}/next', function (Job $rank) {
+    $nextCategoryId =  $rank->job_category_id - 1 ;
+    if($nextCategoryId < 1){
+        return null;
+    }
+    return Job::where('job_category_id', $nextCategoryId)
+        ->get()
+        ->map(fn($rank)=>[
+            'value' => $rank->id,
+            'label' => $rank->name,
+        ]);
+        //->where('id', '>', $rank->id)->first();
+})->middleware(['auth'])->name('rank.next');
+
+// Route::get('rank/{rank}/previous', function (JobCategory $rank) {
+//     $previousCategoryId =  $rank->job_category_id + 1 ;
+//     return $rank->previous;
+// })->middleware(['auth'])->name('rank.previous');
 
 Route::get('/document-types', function () {
     foreach (DocumentTypeEnum::cases() as $type) {

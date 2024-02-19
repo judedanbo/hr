@@ -43,7 +43,7 @@ const submitHandler = (data, node) => {
 </script>
 <template>
 	<main class="bg-gray-100 dark:bg-gray-700">
-		<h1 class="text-2xl font-semibold tracking-wider text-green-800 dark:text-gray-600 px-10">Add new Staff</h1>
+		<h1 class="text-2xl font-semibold tracking-wider text-green-800 dark:text-gray-50 px-10">Add new Staff</h1>
 		<FormKit
 			id="addStaffForm"
 			type="form"
@@ -65,7 +65,7 @@ const submitHandler = (data, node) => {
 				
 			>
 				<FormKit type="step" name="bio" outer-class="p-0" >
-					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">
 						Personal Information of Staff
 					</h1>
 					<PersonalInformationForm />
@@ -74,7 +74,7 @@ const submitHandler = (data, node) => {
 				<FormKit type="step" name="address">
 					<div>
 						<h1
-							class="mb-4 font-semibold tracking-wider text-lg text-green-800"
+							class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
 						>
 							Address of Staff
 						</h1>
@@ -84,7 +84,7 @@ const submitHandler = (data, node) => {
 				<FormKit type="step" name="contact">
 					<div>
 						<h1
-							class="mb-4 font-semibold tracking-wider text-lg text-green-800"
+							class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
 						>
 							Staff Contact
 						</h1>
@@ -93,25 +93,25 @@ const submitHandler = (data, node) => {
 				</FormKit>
 
 				<FormKit type="step" name="qualifications">
-					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">
 						Professional and Academic qualifications
 					</h1>
 					<QualificationForm />
 				</FormKit>
 				<FormKit type="step" name="employment">
-					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">
 						Employment information
 					</h1>
 					<EmploymentForm />
 				</FormKit>
 				<FormKit type="step" name="rank">
-					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">
 						Rank Employment to
 					</h1>
 					<AssignRank :institution="1" />
 				</FormKit>
 				<FormKit type="step" name="unit">
-					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800">
+					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">
 						Unit Assigned
 					</h1>
 					<AssignUnit :institution="1" />

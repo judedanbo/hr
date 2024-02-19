@@ -2,15 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePromoteStaffRequest;
 use App\Http\Requests\UpdatePromotionRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PromoteStaffController extends Controller
 {
-    public function store()
+    public function store(StorePromoteStaffRequest $request, InstitutionPerson $staff)
     {
+        $staff->ranks()->wherePivot('end_date', null)->update([
+            'job_staff.end_date' => Carbon::parse($request->start_date)->subDay(),
+        ]);
+        $staff->ranks()->attach($request->rank_id, [
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'remarks' => $request->remarks,
+        ]);
+        return redirect()->back()->with('success', 'Staff promoted successfully');
     }
 
     public function update(UpdatePromotionRequest $request, InstitutionPerson $staff)
