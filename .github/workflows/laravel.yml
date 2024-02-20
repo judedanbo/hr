@@ -28,6 +28,14 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
+    - name: Execute migrations
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan migrate --force
+    - name: Start the server
+      run: php artisan serve --port=80 --host=localhost --no-ansi --no-interaction --no-
+      background: true
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DB_CONNECTION: sqlite
