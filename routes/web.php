@@ -45,6 +45,7 @@ use App\Models\Qualification;
 use App\Models\StaffType;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -134,7 +135,21 @@ Route::controller(UnitController::class)->middleware(['auth'])->group(function (
     Route::get('/unit/{unit}', 'show')->name('unit.show');
     Route::delete('/unit/{unit}', 'delete')->name('unit.delete');
     Route::patch('/unit/{unit}', 'update')->name('unit.update');
+    Route::get('/unit/{unit}/details', 'details')->name('unit.details');
 });
+
+Route::get('/unit-list', function () {
+    // return 'all units';
+    $units = Unit::all();
+    return $units->map(fn ($unit) => [
+        'value' => $unit->id,
+        'label' => $unit->name,
+    ]);
+})->middleware(['auth'])->name('units.list');
+
+// Route::get('/units-stats', function () {
+// //   $stats =  DB::table()
+// })->middleware(['auth'])->name('units.stats');
 
 Route::controller(InstitutionStatusController::class)->middleware(['auth'])->group(function () {
     Route::get('/institution/{institution}/status', 'index')->name('institution-status.index');

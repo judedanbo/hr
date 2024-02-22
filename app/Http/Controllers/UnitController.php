@@ -21,6 +21,9 @@ class UnitController extends Controller
                 ->with([
                     'institution',
                     'subs' => function ($query) {
+                        $query->whereHas('staff', function ($query) {
+                            $query->active();
+                        });
                         $query->withCount([
                             'staff' => function ($query) {
                                 $query->active();
@@ -34,7 +37,11 @@ class UnitController extends Controller
                         'staff' => function ($query) {
                             $query->active();
                         },
-                        'subs'
+                        'subs' => function ($query) {
+                            $query->whereHas('staff', function ($query) {
+                                $query->active();
+                            });
+                        }
                     ]
                 )
                 ->when(request()->institution, function ($query, $search) {
@@ -54,7 +61,6 @@ class UnitController extends Controller
                             'id' => $unit->institution->id,
                             'name' => $unit->institution->name,
                         ] : null,
-
                     ]
                 ),
             'filters' => ['search' => request()->search],
@@ -63,76 +69,52 @@ class UnitController extends Controller
 
     public function show($unit)
     {
-
         $unit = Unit::query()
             ->with([
                 'institution', 'parent',
                 'staff' => function ($query) {
                     $query->with(['person', 'ranks', 'units']);
-                    $query->whereHas('statuses', function ($query) {
-                        $query->whereNull('end_date');
-                        $query->where('status', 'A');
-                    });
+                    $query->active();
+                    $query->search(request()->search);
                 },
                 'subs' => function ($query) {
+                    $query->when(request()->search, function ($query) {
+                        $query->where('name', 'like', '%' . request()->search . '%');
+                    });
+                    
+                    
+                    $query->whereHas('staff', function ($query) {
+                        $query->active();
+                        $query->search(request()->search);
+                    });
                     $query->with(['staff' => function ($query) {
                         $query->with(['person', 'ranks', 'units']);
-                        $query->whereHas('statuses', function ($query) {
-                            $query->whereNull('end_date');
-                            $query->where('status', 'A');
-                        });
+                        $query->active();
+                        $query->search(request()->search);
                     }]);
                     $query->withCount([
                         'staff' => function ($query) {
-                            $query->whereHas('statuses', function ($query) {
-                                $query->whereNull('end_date');
-                                $query->where('status', 'A');
+                            $query->active();
+                            $query->search(request()->search);
+                        },
+                        'subs' => function ($query) {
+                            $query->whereHas('staff', function ($query) {
+                                $query->active();
                             });
                         },
-                        'subs'
                     ]);
                 }
-            ])
-            // ->when(request()->search, function ($query, $search) {
-            //     $query->whereHas('staff', function ($q) use ($search) {
-            //         $q->whereHas('person', function ($per) use ($search) {
-            //             $terms = explode(' ', $search);
-            //             foreach ($terms as $term) {
-            //                 $per->where('surname', 'like', "%{$search}%");
-            //                 $per->orWhere('first_name', 'like', "%{$term}%");
-            //                 $per->orWhere('other_names', 'like', "%{$term}%");
-            //                 $per->orWhere('date_of_birth', 'like', "%{$term}%");
-            //                 $per->orWhereRaw("monthname(date_of_birth) like '%{$term}%'");
-            //             }
-            //         });
-            //     });
-            //     $query->withCount(['staff' => function ($q) use ($search) {
-            //         $q->withCount(['person' => function ($per) use ($search) {
-            //             $per->where('surname', 'like', "%{$search}%");
-            //             $per->orWhere('first_name', 'like', "%{$search}%");
-            //             $per->orWhere('other_names', 'like', "%{$search}%");
-            //             $per->orWhere('date_of_birth', 'like', "%{$search}%");
-            //             $per->orWhereRaw("monthname(date_of_birth) like '%{$search}%'");
-            //         }]);
-            //     }]);
-            // }, function ($query) {
-            //     $query->withCount([
-            //         'subs',
-            //         'staff' => function ($query) {
-            //             $query->whereHas('statuses', function ($hasQuery) {
-            //                 $hasQuery->whereNull('end_date');
-            //                 $hasQuery->where('status', 'A');
-            //             });
-            //         }
-            //     ]);
-            // })
+            ])           
             ->withCount([
-                'subs',
-                'staff' => function ($query) {
-                    $query->whereHas('statuses', function ($hasQuery) {
-                        $hasQuery->whereNull('end_date');
-                        $hasQuery->where('status', 'A');
+                'subs' => function ($query) {
+                    $query->whereHas('staff', function ($query) {
+                        $query->active();
+                        $query->search(request()->search);
                     });
+                },
+                'staff' => function ($query) {
+                    $query->active();
+                    $query->search(request()->search);
                 }
             ])
             ->whereId($unit)
@@ -141,22 +123,23 @@ class UnitController extends Controller
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
-        $sub_staff  = $unit->subs->map(fn ($sub) => $sub->staff)->flatten(1);
+        $sub_staff  = $unit?->subs?->map(fn ($sub) => $sub->staff)->flatten(1);
         // return $sub_staff;
-        $allStaff = $unit->staff->merge($sub_staff)->flatten(1);
+        $allStaff = $unit?->staff->merge($sub_staff)->flatten(1);
         // return $allStaff;
         return Inertia::render('Unit/Show', [
             'unit' => [
-                'id' => $unit->id,
-                'name' => $unit->name,
-                'staff_number' => $unit->subs ? $unit->staff_count + $unit->subs->sum('staff_count') : $unit->staff_count,
-                'institution' => $unit->institution ? [
-                    'name' => $unit->institution->name,
-                    'id' => $unit->institution->id,
+                'id' => $unit?->id,
+                'name' => $unit?->name,
+                'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum('staff_count') : $unit?->staff_count,
+                'subs_number' => $unit?->subs_count,
+                'institution' => $unit?->institution ? [
+                    'name' => $unit?->institution->name,
+                    'id' => $unit?->institution->id,
                 ] : null,
-                'parent' => $unit->parent ? [
-                    'name' => $unit->parent->name,
-                    'id' => $unit->parent->id,
+                'parent' => $unit?->parent ? [
+                    'name' => $unit?->parent->name,
+                    'id' => $unit?->parent->id,
                 ] : null,
                 // 'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
                 //     'id' => $sub->id,
@@ -171,8 +154,8 @@ class UnitController extends Controller
                 //         'initials' => $stafff->initials
                 //     ]) : null,
                 // ]) : null,
-                'type' => $unit->type->label(),
-                'staff' => $allStaff->map(fn ($staff) => [
+                'type' => $unit?->type->label(),
+                'staff' => $allStaff?->map(fn ($staff) => [
                     'id' => $staff->person->id,
                     'name' => $staff->person->full_name,
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
@@ -191,11 +174,11 @@ class UnitController extends Controller
                         'id' => $staff->units->first()->id,
                         'name' => $staff->units->first()->name,
                         'start_date' => $staff->units->first()?->pivot->start_date?->format('d M Y'),
-                        'start_date_full' => $staff->units->first()->pivot?->start_date,
+                        'start_date_full' => $staff->units->first()->pivot?->start_date?->format('d M Y'),
                         'duration' => $staff->units->first()->pivot->start_date?->diffForHumans(),
                     ] : null,
                 ]),
-                'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
+                'subs' => $unit?->subs ? $unit->subs->map(fn ($sub) => [
                     'id' => $sub->id,
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,
@@ -225,10 +208,8 @@ class UnitController extends Controller
         return redirect()->route('unit.show', $unit->id)->with('success', 'Unit created successfully');
     }
 
-    public function update(UpdateUnitRequest $request)
+    public function update(UpdateUnitRequest $request, Unit $unit)
     {
-        // return $request->validated();
-        $unit = Unit::whereId($request->id)->first();
         $unit->update($request->validated());
         return redirect()->back()->with('success', 'Unit updated successfully');
     }
@@ -238,4 +219,26 @@ class UnitController extends Controller
         $unit->delete();
         return redirect()->back()->with('success', 'Unit deleted successfully');
     }
+    public function details(Unit $unit){
+        return [
+            'id' => $unit->id,
+            'name' => $unit->name,
+            'short_name' => $unit->short_name,
+            'type' => $unit->type,
+            'institution_id' => $unit->institution_id,
+            'unit_id' => $unit->unit_id,
+            'start_date' => $unit->start_date?->format('Y-m-d'),
+            'end_date' => $unit->end_date?->format('Y-m-d'),
+        
+        ];
+        // return $unit->only(['id', 'name', 'short_name', 'type', 'institution_id', 'unit_id', 'start_date', 'end_date']);
+    }
+
+    // public function list(){
+    //     return 'unit list';
+    //     // return Unit::department()->get()->map(fn ($unit) => [
+    //     //     'value' => $unit->id,
+    //     //     'label' => $unit->name,
+    //     // ]);
+    // }
 }

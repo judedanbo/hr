@@ -1,13 +1,19 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-
+import PageHeader from "@/Components/PageHeader.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import SubUnits from "./SubUnits.vue";
 import UnitStaff from "./UnitStaff.vue";
+import InfoCard from "@/Components/InfoCard.vue";
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+import Modal from "@/Components/NewModal.vue";
+import { useToggle } from "@vueuse/core";
+import EditUnit from "./partials/Edit.vue";
+
 let props = defineProps({
 	unit: Object,
 	filters: Object,
@@ -19,13 +25,13 @@ let dept = ref(props.filters.dept);
 let staff = ref(props.filters.staff);
 
 watch(
-	dept,
+	search,
 	debounce(function (value) {
 		Inertia.get(
 			route("unit.show", {
 				unit: props.unit.id,
 			}),
-			{ dept: value },
+			{ search: value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
 	}, 300),
@@ -48,9 +54,9 @@ let num = 1;
 //
 let BreadcrumbLinks = [
 	{
-		name: props.unit.institution.name,
+		name: props.unit?.institution?.name,
 		url: route("institution.show", {
-			institution: props.unit.institution.id,
+			institution: props.unit?.institution?.id,
 		}),
 	},
 	{
@@ -67,6 +73,8 @@ let BreadcrumbLinks = [
 	},
 	{ name: props.unit.name },
 ];
+const openEditModal = ref(false);
+const toggleEditForm = useToggle(openEditModal);
 </script>
 
 <template>
@@ -78,32 +86,51 @@ let BreadcrumbLinks = [
 				{{ props.unit.name }}
 			</h2>
 		</template> -->
-		<div class="py-2 max-w-full h-screen mx-auto sm:px-6 lg:px-8">
+		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
 			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<h2
-				class="text-2xl md:text-3xl text-center md:text-right text-gray-900 dark:text-gray-50 m-4"
-			>
-				{{ props.unit.name }}
-			</h2>
-			<FormKit
-				v-model="search"
-				prefix-icon="search"
-				type="search"
-				placeholder="Search ..."
-				autofocus
-				outer-class="md:w-1/2 xl:w-1/3 px-4 "
-			/>
 			<div
-				class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12 h-4/5"
+				class="shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
-				<SubUnits
-					v-model="dept"
-					:type="unit.name"
-					:subs="props.unit"
-					class="h-80 overflow-hidden xl:h-full"
-				/>
-				<UnitStaff :unit="props.unit" class="h-80 xl:h-full overflow-hidden" />
+				<div class="flex">
+					<InfoCard title="Units" :value="props.unit.subs_number" link="#" />
+					<InfoCard title="Staff" :value="props.unit.staff_number" link="#" />
+				</div>
+				<section class="sm:flex items-center justify-between my-2">
+					<FormKit
+						v-model="search"
+						prefix-icon="search"
+						type="search"
+						placeholder="`Search unit...`"
+						autofocus
+					/>
+					<a
+						class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
+						href="#"
+						@click.prevent="toggleEditForm()"
+					>
+						<PencilSquareIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+						Edit Unit
+					</a>
+				</section>
+				<div
+					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12"
+				>
+					<SubUnits
+						
+						v-model="dept"
+						:type="unit.name"
+						:subs="props.unit"
+					/>
+					<UnitStaff
+						
+						:unit="props.unit"
+					/>
+
+				</div>
 			</div>
-		</div>
+		</main>
+		<Modal :show="openEditModal" @close="toggleEditForm()"  >
+			<EditUnit :unit="props.unit.id" @form-submitted="toggleEditForm()" />
+		</Modal>
 	</MainLayout>
 </template>

@@ -2,7 +2,7 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
@@ -15,11 +15,14 @@ import Create from "./Create.vue";
 import Edit from "./Edit.vue";
 import Delete from "./Delete.vue";
 import FlyoutMenu from "@/Components/FlyoutMenu.vue";
+import { useNavigation } from "@/Composables/navigation";
+
 
 let props = defineProps({
 	institutions: Object,
 	filters: Object,
 });
+const navigation = computed(() => useNavigation(props.institutions));
 
 const form = useForm({
 	name: null,
@@ -230,7 +233,7 @@ let BreadCrumpLinks = [
 										</tbody>
 									</table>
 
-									<Pagination :records="institutions" />
+									<Pagination :navigation="navigation" />
 								</div>
 							</div>
 						</div>

@@ -84,21 +84,41 @@ class InstitutionController extends Controller
         $institution = Institution::query()
             ->where('id', $institution)
             ->withCount([
-                'departments',
+                'departments' => function ($query) {
+                    $query->withCount(['staff' => function ($query) {
+                        $query->active();
+                    }]);
+                    $query->whereNull('end_date');
+                },
                 'divisions',
-                'units',
-                'staff',
+                'units' => function ($query) {
+                    $query->whereHas('staff', function ($query) {
+                        $query->active();
+                    });
+                    $query->whereNull('end_date');
+                },
+                'staff' => function ($query) {
+                    $query->active();
+                },
             ])
             ->firstOrFail();
 
         $departments = Unit::query()
             ->with(['subs' => function ($query) {
                 $query->withCount('subs');
-                $query->withCount('staff');
+                $query->withCount(['staff' => function ($query) {
+                    $query->active();
+                }]);
             }])
             ->withCount([
-                'subs',
-                'staff',
+                'subs'=> function ($query) {
+                    $query->whereHas('staff', function ($query) {
+                        $query->active();
+                    });
+                },
+                'staff'=> function ($query) {
+                    $query->active();
+                },
                 'divisions',
             ])
             ->where('units.type', 'DEP')

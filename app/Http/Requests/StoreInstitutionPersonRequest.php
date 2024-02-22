@@ -43,8 +43,8 @@ class StoreInstitutionPersonRequest extends FormRequest
             'staffData.address.address_line_1' => 'required|string|max:150',
             'staffData.address.address_line_2' => 'string|max:150|nullable',
             'staffData.address.post_code' => 'string|min:2|max:20|nullable',
-            'staffData.address.city' => 'required|string|max:35',
-            'staffData.address.region' => 'required|string|max:35|unique:contacts,contact',
+            'staffData.address.city' => 'string|max:35|nullable',
+            'staffData.address.region' => 'string|max:35|unique:contacts,contact|nullable',
             'staffData.address.country' => 'required|string|max:100|unique:contacts,contact',
             'staffData.contact.contact_type' => 'required|integer|unique:contacts,contact',
             'staffData.contact.contact' => 'required|string|max:100|unique:contacts,contact',
@@ -64,10 +64,10 @@ class StoreInstitutionPersonRequest extends FormRequest
             'staffData.qualifications.year' => "required|string|max:4",
             'staffData.rank.rank_id' => "required|exists:jobs,id",
             'staffData.rank.start_date' => "required|date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d'),
-            'staffData.rank.end_date' => "date|after:staffData.rank.start_date|before:" . Carbon::now()->subYear()->format('Y-m-d'),
+            'staffData.rank.end_date' => "date|after:staffData.rank.start_date|before:" . Carbon::now()->subYear()->format('Y-m-d')."|nullable",
             'staffData.unit.unit_id' => "required|exists:units,id",
             'staffData.unit.start_date' => "required|date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d'),
-            'staffData.unit.end_date' => "date|after:staffData.unit.start_date|before:" . Carbon::now()->addYear()->format('Y-m-d'),
+            'staffData.unit.end_date' => "date|after:staffData.unit.start_date|before:" . Carbon::now()->addYear()->format('Y-m-d')."|nullable",
         ];
     }
 

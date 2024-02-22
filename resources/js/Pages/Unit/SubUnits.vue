@@ -26,18 +26,18 @@ defineEmits(["update:modelValue"]);
 			</p>
 		</header>
 		<main
-			class="h-full overflow-y-scroll shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full"
+			class=" shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full max-h-screen overflow-y-auto"
 		>
 			<!-- <div " class=""> -->
 			<table
 				v-if="subs"
 				class="divide-y divide-gray-300 dark:divide-gray-600 w-full"
 			>
-				<thead>
+				<thead class="dark:bg-gray-900">
 					<tr>
 						<th
 							scope="col"
-							class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-8"
+							class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-8 "
 						>
 							Name
 						</th>
