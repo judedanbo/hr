@@ -1,5 +1,5 @@
 name: Run Feature tests
-run-name: {{github.actor}} is running feature tests
+run-name: Run ${{github.actor}} is running feature tests
 
 on:
   push:
