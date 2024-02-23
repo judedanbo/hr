@@ -116,18 +116,21 @@ class InstitutionPersonController extends Controller
                 'institution_id' => $institution->id,
                 'start_date' => Carbon::now(),
             ]);
-            // return $request->staffData;
+            // dd($request->staffData);
             $rank = $request->staffData['rank'];
             $rank['job_id'] = $request->staffData['rank']['rank_id'];
             unset($rank['rank_id']);
             $staff->ranks()->attach($rank['job_id'],$rank);
-            $staff->units()->attach($request->staffData['unit']['unit_id'],$request->staffData['unit']);
+            if(array_key_exists('unit_id',$request->staffData['unit'])){
+                $staff->units()->attach($request->staffData['unit']['unit_id'],$request->staffData['unit']);
+            }
             return $staff;
         });
 
-        if($transaction === null) {
+        if($transaction === null || $transaction['id'] === null) {
             return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
         }
+        // return $transaction;
         return redirect()->route('staff.show', ['staff' => $transaction['id']])->with('success', "Staff created successfully");
     }
 

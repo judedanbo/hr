@@ -65,8 +65,8 @@ class StoreInstitutionPersonRequest extends FormRequest
             'staffData.rank.rank_id' => "required|exists:jobs,id",
             'staffData.rank.start_date' => "required|date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d'),
             'staffData.rank.end_date' => "date|after:staffData.rank.start_date|before:" . Carbon::now()->subYear()->format('Y-m-d')."|nullable",
-            'staffData.unit.unit_id' => "required|exists:units,id",
-            'staffData.unit.start_date' => "required|date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d'),
+            'staffData.unit.unit_id' => "exists:units,id|nullable",
+            'staffData.unit.start_date' => "date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d')."|nullable",
             'staffData.unit.end_date' => "date|after:staffData.unit.start_date|before:" . Carbon::now()->addYear()->format('Y-m-d')."|nullable",
         ];
     }
