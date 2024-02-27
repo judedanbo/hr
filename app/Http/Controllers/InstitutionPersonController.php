@@ -54,8 +54,8 @@ class InstitutionPersonController extends Controller
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
                 'current_rank' => $staff->currentRank ? [
-                    'id' => $staff->currentRank->id,
-                    'name' => $staff->currentRank->job->name,
+                    'id' => $staff->currentRank?->id,
+                    'name' => $staff->currentRank?->job?->name,
                     'job_id' => $staff->currentRank->name,
                     'start_date' => $staff->currentRank->start_date?->format('d M Y'),
                     'start_date_distance' => $staff->currentRank->start_date?->diffForHumans(),

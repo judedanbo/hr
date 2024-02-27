@@ -8,7 +8,9 @@ import PageHeader from "@/Components/PageHeader.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
+import RankOverview from "./partials/RankOverview.vue";
 import RankStaff from "./partials/RankStaff.vue";
+import AllStaff from "./partials/AllStaff.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import InfoCard from "@/Components/InfoCard.vue";
@@ -16,6 +18,9 @@ import Avatar from "../Person/partials/Avatar.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import PageTitle from "@/Components/PageTitle.vue";
+import PageHeading from "@/Components/PageHeading.vue";
+import PageActions from "@/Components/PageActions.vue";
+import PageStats from "@/Components/PageStats.vue";
 let props = defineProps({
 	job: Object,
 	filters: Object,
@@ -34,34 +39,48 @@ watch(
 	}, 300),
 );
 const changeTab = (tab) => {
-	console.log(tab);
+	currentTab.value = tab;
+	tabs.map((t) => {
+		t.current = t.name === tab.name;
+	});
+	// console.log(tabs);
 };
 const components = {
+	RankOverview,
+	AllStaff,
 	RankStaff,
 };
 
 const tabs = [
-	{ name: "Overview", component: "RankStaff", href: "#", current: true },
-	{ name: "Staff", component: "RankStaff", href: "#", current: false },
+	{ name: "Overview", component: "RankOverview", href: "#", current: true },
+	{ name: "Active", component: "AllStaff", href: "#", current: false },
+	{ name: "Current Staff", component: "AllStaff", href: "#", current: false },
 	{
 		name: "Due for Promotion",
 		component: "RankStaff",
 		href: "#",
 		current: false,
 	},
+	{ name: "All Time", component: "AllStaff", href: "#", current: false },
 ];
 const currentTab = ref(tabs[0]);
+
+const reload = () => {
+	console.log('reload page')
+	this.$forceUpdate();
+};
 </script>
 <template>
 	<Head :title="job.name" />
 	<MainLayout>
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8">
+			<PageHeading :name="job.name" @search="(search) => searchStaff(search)" :search="search">
+			</PageHeading>
 			<PageTitle
-				:title="job.name"
 				:tabs="tabs"
 				@tab-clicked="(tab) => changeTab(tab)"
 			/>
-			<!-- <component :is="components[currentTab.component]" v-bind="{staff: job.staff}" /> -->
+			<component :is="components[currentTab.component]" v-bind="{rank: job.id}" />
 			<div
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
@@ -73,7 +92,7 @@ const currentTab = ref(tabs[0]);
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchJobs(value)"
 				/> -->
-				<RankStaff :rank="job.id" />
+				<!-- <RankStaff :rank="job.id" @form-submitted="reload()" /> -->
 			</div>
 		</main>
 		<!-- <div class="overflow-hidden shadow-sm sm:rounded-lg">

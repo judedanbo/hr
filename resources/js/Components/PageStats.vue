@@ -4,7 +4,7 @@
         <div v-for="item in stats" :key="item.id" class="relative overflow-hidden rounded-lg bg-white dark:bg-gray-700 px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
           <dt>
             <div class="absolute rounded-md bg-green-800 dark:bg-green-900 p-3">
-              <component :is="item.icon" class="h-6 w-6 text-white" aria-hidden="true" />
+              <component v-if="item.icon" :is="item.icon" class="h-6 w-6 text-white" aria-hidden="true" />
             </div>
             <p class="ml-16 truncate text-sm font-medium text-gray-500 dark:text-gray-300">{{ item.name }}</p>
           </dt>
@@ -31,11 +31,15 @@
   
   <script setup>
   import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/vue/20/solid'
+  import {onMounted} from 'vue'
   
-  defineProps({
+  const props = defineProps({
     stats: {
       type: Array,
       required: true
     }
+  })
+  onMounted(() => {
+    console.log(props.staff)
   })
   </script>

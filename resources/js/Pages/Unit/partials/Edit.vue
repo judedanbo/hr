@@ -86,7 +86,6 @@ const submitHandler = (data, node) => {
 					type="date"
 					name="start_date"
 					id="start_date"
-				
 					:max="start_date"
 					label="Start date"
 					:validation="

@@ -1,5 +1,6 @@
 <template>
 	<div class="px-4 sm:px-6 lg:px-8 pt-4">
+		
 		<div class="sm:flex sm:items-center">
 			<div class="sm:flex-auto">
 				<h1
@@ -26,10 +27,10 @@
 								:disabled="nextRank.length < 1"
 								@click="promoteAll"
 							>
-								Promote all
+								Promote all to {{ nextRank[0]?.label }}
 							</button>
 						</div>
-						<table class="min-w-full table-fixed divide-y divide-gray-300">
+						<table v-if="rankStaff?.data?.length>0" class="min-w-full table-fixed divide-y divide-gray-300">
 							<thead>
 								<tr>
 									<th scope="col" class="relative px-7 sm:w-12 sm:px-6">
@@ -143,13 +144,14 @@
 								</tr>
 							</tbody>
 						</table>
+						<div v-else>Loading</div>
 					</div>
 					<Pagination :navigation="navigation" />
 				</div>
 			</div>
 		</div>
 		<Modal :show="showPromoteAll" @close="togglePromoteAll()">
-			<PromoteAllForm :rank="props.rank" />
+			<PromoteAllForm :rank="props.rank" @unit-selected="(data) => submitForm(data)" :formErrors="formErrors" />
 		</Modal>
 	</div>
 </template>
@@ -162,27 +164,33 @@ import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
 import PromoteAllForm from "./PromoteAllForm.vue";
-
 const showPromoteAll = ref(false);
 const togglePromoteAll = useToggle(showPromoteAll);
-
+const emit = defineEmits(["formSubmitted"]);
 const props = defineProps({
 	rank: Number,
 });
 const rankStaff = ref({});
 const rankCategory = ref({});
 const nextRank = ref({});
+const formErrors = ref([]);
 onMounted(async () => {
-	const staff = await axios.get(
-		route("rank-staff.index", { rank: props.rank }),
-	);
-	rankStaff.value = staff.data;
+	getRankStaff()
 	// console.log(rankStaff);
 	const ranks = await axios.get(route("rank.category", { rank: props.rank }));
 	rankCategory.value = ranks.data;
 	const next = await axios.get(route("rank.next", { rank: props.rank }));
 	nextRank.value = next.data;
 });
+
+const getRankStaff = async () => {
+	const staff = (await axios.get(
+		route("rank-staff.index", { rank: props.rank }),
+	)).data;
+	rankStaff.value = staff;
+	selectedStaff.value = [];
+};
+
 const navigation = computed(() => useNavigation(rankStaff.value));
 
 const selectedStaff = ref([]);
@@ -196,5 +204,23 @@ const promoteAll = () => {
 	// 	togglePromoteAll()
 	// }
 	togglePromoteAll();
+};
+const submitForm = (promoteAll) => {
+	const staff = selectedStaff.value;
+	console.log(promoteAll);
+	Inertia.post(route("rank-staff.promote"), {staff, ...promoteAll }, {
+		preverseScroll: true,
+		onSuccess: () => {
+			togglePromoteAll();
+			getRankStaff();
+			emit("formSubmitted");
+		},
+		onError: (errors) => {
+			// node.setErrors(["there are errors"], errors);
+			// console.log(errors);
+			// formErrors.value = {...errors};
+		},
+	});
+	// togglePromoteAll();
 };
 </script>

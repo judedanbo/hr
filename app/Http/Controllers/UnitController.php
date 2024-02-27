@@ -81,7 +81,7 @@ class UnitController extends Controller
                     $query->when(request()->search, function ($query) {
                         $query->where('name', 'like', '%' . request()->search . '%');
                     });
-                    
+                        
                     
                     $query->whereHas('staff', function ($query) {
                         $query->active();

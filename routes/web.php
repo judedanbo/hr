@@ -23,6 +23,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
+use App\Http\Controllers\PromoteAllStaffController;
 use App\Http\Controllers\PromoteStaffController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
@@ -177,7 +178,9 @@ Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(fu
     Route::post('/staff/{staff}/promote', 'store')->name('staff.promote.store');
     Route::patch('/staff/{staff}/promote/{promotion}', 'update')->name('staff.promote.update');
     Route::delete('/staff/{staff}/promote/{job}', 'delete')->name('staff.promote.delete');
+
 });
+Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth'])->name('rank-staff.promote');
 
 // transfer
 Route::controller(TransferController::class)->middleware(['auth'])->group(function () {
@@ -219,6 +222,7 @@ Route::controller(JobController::class)->middleware(['auth'])->group(function ()
     Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
     Route::post('/rank', 'store')->name('job.store');
+    Route::get('rank/{job}/stats', 'stats')->name('job.stats');
 });
 
 Route::get('/rank/{rank}/category', function (Job $rank) {
@@ -296,6 +300,8 @@ Route::controller(PromotionController::class)->middleware(['auth'])->group(funct
     Route::get('/past-promotion/{year}/rank', 'byRanks')->name('promotion.ranks');
     Route::get('/past-promotion/{promotion}/export', 'export')->name('promotion.export');
 });
+
+
 
 Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');

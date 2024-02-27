@@ -1,67 +1,93 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
-import { ref, onMounted } from "vue";
-
+import { ref, onMounted, computed } from "vue";
+import { format } from "date-fns";
 const props = defineProps({
 	rank: Number,
+	formErrors: {
+		type: Object,
+		default: () => {},
+	},
+});
+const today = format(new Date(), "yyyy-MM-dd");
+
+const displayErrors = computed(() => {
+	const start_date =  props.formErrors["promoteAll.start_date"];
+	const rank_id = props.formErrors["promoteAll.rank_id"];
+	//return start_date;
+	return { start_date, rank_id };
 });
 
-const emit = defineEmits(["formSubmitted"]);
+const emit = defineEmits(["formSubmitted","unitSelected"]);
 
 const nextRank = ref([]);
 onMounted(async () => {
 	const next = await axios.get(route("rank.next", { rank: props.rank }));
 	nextRank.value = next.data;
-	console.log(nextRank.value);
+	// console.log(next);
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.store"), data, {
-		preserveState: true,
-		onSuccess: () => {
-			node.reset();
-			emit("formSubmitted");
-		},
-		onError: (errors) => {
-			node.setErrors(["there are errors in the form"], errors);
-		},
-	});
+	// console.log(data);
+	emit("unitSelected", data);
+	// Inertia.post(route("staff.promote.all"), data, {
+	// 	preserveState: true,
+	// 	onSuccess: () => {
+	// 		node.reset();
+	// 		emit("formSubmitted");
+	// 	},
+	// 	onError: (errors) => {
+	// 		console.log('errors')
+	// // 		node.setErrors(["there are errors in the form"], errors);
+	// 	},
+	// });
+	// if(displayErrors?.value?.start_date || displayErrors?.value?.rank_id){
+	// 	console.log(displayErrors);
+	// 	node.setErrors(["there are errors in the form"], displayErrors);
+	// 	// console.log(node)
+	// }
 };
+const form = ref({
+	rank_id: null,
+	start_date: null,
+});
 </script>
 <template>
 	<main class="bg-gray-100 dark:bg-gray-700">
 		<h1
 			class="text-2xl font-semibold tracking-wider text-green-800 dark:text-gray-50 px-10"
 		>
-			Add new Staff
+			Promote Staff
 		</h1>
 		<FormKit
 			id="promoteAll"
 			type="form"
 			name="promoteAll"
-			value="formData"
+			value="promoteAllData"
 			submit-label="Promote All Staff"
-			:actions="false"
 			wrapper-class="mx-auto"
 			@submit="submitHandler"
 		>
 			<h1
 				class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
 			>
-				Promote Selected Staff
+			Promote Selected Staff
+			</h1>
 				<FormKit
 					v-if="nextRank.length > 0"
 					id="rank_id"
-					v-model="nextRank[0]"
+					:value="nextRank[0].value"
 					type="select"
 					name="rank_id"
-					validation="required|integer|min:1|max:150"
 					label="Rank"
 					:options="nextRank"
+					:errors="displayErrors?.rank_id ? [displayErrors?.rank_id] : []"
 					placeholder="Select new Rank"
 					error-visibility="submit"
+					disabled
 				/>
-				<FormKit
+				{{ displayErrors?.rank_id }}
+				<!-- <FormKit
 					v-else
 					id="rank_id"
 					type="select"
@@ -71,8 +97,21 @@ const submitHandler = (data, node) => {
 					:options="nextRank"
 					placeholder="Select new Rank"
 					error-visibility="submit"
+				/> -->
+				<FormKit
+					id="start_date"
+					type="date"
+					name="start_date"
+					:value="today"
+					:max="today"
+					label="Start date"
+					:errors="displayErrors?.start_date ? [displayErrors?.start_date] : []"
+					validation-visibility="submit"
+					outer-class="flex-1"
 				/>
-			</h1>
+				<!-- <p class="text-sm text-rose-500">{{ displayErrors?.start_date }}</p>  -->
 		</FormKit>
+		<!-- {{ displayErrors }} -->
+		
 	</main>
 </template>

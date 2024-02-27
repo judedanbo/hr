@@ -77,17 +77,17 @@ const unitsStats = ref([]);
 const totalStaff = computed(() => {
 	return props.units.data.reduce((partialSum, currentNumber) => {
 		return partialSum + currentNumber.staff;
-	}, 0);
+	}, 0).toLocaleString();
 });
 const totalUnits = computed(() => {
 	return props.units.data.reduce((partialSum, currentNumber) => {
 		return partialSum + currentNumber.units;
-	}, 0);
+	}, 0).toLocaleString();
 });
 onMounted(() => {
 // unitsStats.value = Inertia.get(route("units.stats"));
 stats.value = [
-	{ id: 1, name: 'Total Department', stat: props.units.total, icon: BuildingOfficeIcon, change: '2', changeType: 'increase' },
+	{ id: 1, name: 'Total Department', stat: props.units.total.toLocaleString(), icon: BuildingOfficeIcon, change: '2', changeType: 'increase' },
 	{ id: 2, name: 'Total Staff', stat: totalStaff, icon: UserGroupIcon, change: '5.4%', changeType: 'increase' },
 	{ id: 3, name: 'Total Units', stat: totalUnits, icon: CursorArrowRaysIcon, change: '3.2%', changeType: 'decrease' },
 ]

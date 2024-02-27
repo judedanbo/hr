@@ -117,4 +117,42 @@ class JobController extends Controller
         Job::create($request->validated());
         return redirect()->route('job.index')->with('success', 'Job created.');
     }
+
+    public function stats(Job $job){
+        $job->loadCount([
+            'staff as total_staff_count',
+            'staff as active_staff_count' => function ($query) {
+                $query->active();
+            },
+            'staff as current_staff_count' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+            },
+            'staff as due_for_promotion' => function ($query) {
+                $query->active();
+                $query->where('job_staff.start_date', '<', now()->subYears(3));
+                //$query->where('job_staff.end_date', null);
+            },
+        ]);
+
+        // $jobs->withCount(['staff' => function ($query) {
+        //     $query->active();
+        //     $query->where('job_staff.end_date', null);
+        // }]); 
+        return [
+            'id' => $job->id,
+            'name' => $job->name,
+            'total_staff_count' => $job->total_staff_count,
+            'active_staff_count' => $job->active_staff_count,
+            'current_staff_count' => $job->current_staff_count,
+            'due_for_promotion' => $job->due_for_promotion,
+        ];
+        // return Inertia::render('Job/Stats', [
+        //     'jobs' => $jobs->map(fn ($job) => [
+        //         'id' => $job->id,
+        //         'name' => $job->name,
+        //         'staff' => $job->staff_count,
+        //     ]),
+        // ]);
+    }
 }
