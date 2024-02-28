@@ -160,7 +160,7 @@ class UnitController extends Controller
                     'name' => $staff->person->full_name,
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
                     'initials' => $staff->person->initials,
-                    'hire_date' => $staff->hire_date->format('d M Y'),
+                    'hire_date' => $staff->hire_date?->format('d M Y'),
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
                     'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,

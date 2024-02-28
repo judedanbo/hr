@@ -41,7 +41,7 @@ class AprilPromotions implements
     //         $staff->person->full_name,
     //         $staff->person->gender->name,
     //         $staff->person->date_of_birth->format('d F, Y'),
-    //         $staff->hire_date->format('d F, Y'),
+    //         $staff->hire_date?->format('d F, Y'),
     //         $staff->years_employed,
     //         $staff->staff_number,
     //         $staff->old_staff_number,

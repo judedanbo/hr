@@ -68,7 +68,7 @@ class PersonUnit extends Pivot
 
     public function getYearsEmployedAttribute()
     {
-        return $this->person->date_of_birth->diffInYears(Carbon::now()) > 59 ? $this->hire_date->diffInYears($this->person->date_of_birth->addYears(60)) : $this->hire_date->diffInYears(Carbon::now());
+        return $this->person->date_of_birth->diffInYears(Carbon::now()) > 59 ? $this->hire_date?->diffInYears($this->person->date_of_birth->addYears(60)) : $this->hire_date?->diffInYears(Carbon::now());
     }
 
     public function scopeActive($query)
