@@ -7,13 +7,15 @@ import debounce from "lodash/debounce";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
-
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import { useNavigation } from "@/Composables/navigation";
+
 
 let props = defineProps({
 	institutions: Object,
 	filters: Object,
 });
+const navigation = computed(() => useNavigation(props.institutions));
 
 let search = ref(props.filters.search);
 
@@ -205,7 +207,7 @@ let BreadCrumpLinks = [
 												</tr>
 											</tbody>
 										</table>
-										<Pagination :records="institutions" />
+										<Pagination :navigation="navigation" />
 									</div>
 								</div>
 							</div>

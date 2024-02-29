@@ -40,13 +40,15 @@ class RankStaffController extends Controller
         return $staff ;
     }
 
-    function promotionList ($rank){
+    function promote ($rank){
         $staff =  Job::find($rank)
                 ->staff()
                 ->active() // TODO Check for staff who has exited this ranks
                 ->whereHas('ranks', function ($query) use ($rank){
                     $query->whereNull('job_staff.end_date');
                     $query->where('job_staff.job_id', $rank);
+                    // $query->where('job_staff.job_end', $rank);
+                    
                 })
                 ->with(['person', 'units', 'ranks'])
                 ->paginate()

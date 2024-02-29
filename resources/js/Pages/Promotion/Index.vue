@@ -2,9 +2,10 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Pagination.vue";
-import { watch, ref } from "vue";
+import { watch, ref, computed } from "vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { Inertia } from "@inertiajs/inertia";
+import { useNavigation } from "@/Composables/navigation";
 
 let props = defineProps({
 	promotions: Object,
@@ -12,7 +13,7 @@ let props = defineProps({
 });
 
 let search = ref(props.filters.search);
-
+const navigation = computed(() => useNavigation(props.promotions));
 watch(search, (value) => {
 	Inertia.get(
 		route("promotion.index"),
@@ -191,7 +192,7 @@ watch(search, (value) => {
 								</template>
 							</tbody>
 						</table>
-						<Pagination :records="promotions" />
+						<Pagination :navigation="navigation" />
 					</div>
 				</div>
 			</div>

@@ -156,7 +156,7 @@ let BreadCrumpLinks = [
 											</tr>
 										</tbody>
 									</table>
-									<!-- <Pagination :records="staff" /> -->
+									<!-- <Pagination :navigation="navigation" /> -->
 								</div>
 								<!-- <NoItem v-else name="Staff" /> -->
 							</div>

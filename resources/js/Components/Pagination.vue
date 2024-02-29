@@ -1,6 +1,17 @@
 <script setup>
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
 import { Link } from "@inertiajs/inertia-vue3";
+import { Inertia } from '@inertiajs/inertia'
+const emit = defineEmits(["refreshData"]);
+const pageClicked = (link = null )=>{
+	if(link){
+		if(route().current() === 'job.show' ){
+			emit('refreshData', link);
+			return;
+		}
+		Inertia.visit(link, {preserveScroll: true});
+	}
+}
 defineProps({
 	navigation: { type: Object, required: true },
 });
@@ -14,7 +25,7 @@ defineProps({
 			<Link
 				:href="navigation.prev_page_url"
 				preserve-scroll
-				class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+				class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
 			>
 				Previous
 			</Link>
@@ -49,20 +60,18 @@ defineProps({
 					class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
 					aria-label="Pagination"
 				>
-					<Link
-						:href="navigation.prev_page_url"
-						preserve-scroll
+					<div
+						@click="pageClicked(navigation.prev_page_url)"
 						class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-50 hover:bg-gray-50"
 					>
 						<span class="sr-only">Previous</span>
 						<ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
-					</Link>
-					<Link
+					</div>
+					<div
 						v-for="(link, index) in navigation.links.slice(1, -1)"
 						:key="index"
-						:href="link.url"
-						preserve-scroll
-						class="z-10 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+						@click="pageClicked(link.url)"
+						class="z-10 relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer"
 						:class="
 							link.active
 								? 'bg-green-100 dark:bg-gray-800 border-green-500 dark:border-gray-400 text-green-600 dark:text-gray-50'
@@ -70,15 +79,15 @@ defineProps({
 						"
 					>
 						{{ link.label }}
-					</Link>
-					<Link
-						:href="navigation.next_page_url"
+				</div>
+					<div
+						@click = "pageClicked(navigation.next_page_url)"
 						preserve-scroll
-						class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-50 hover:bg-gray-50"
+						class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-50 hover:bg-gray-50 cursor-pointer"
 					>
 						<span class="sr-only">Next</span>
 						<ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
-					</Link>
+			</div>
 				</nav>
 			</div>
 		</div>

@@ -10,6 +10,7 @@ import StaffTableRow from "./StaffTableRow.vue";
 import SelectMenu from "@/Components/SelectMenu.vue";
 import debounce from "lodash/debounce";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+import { useNavigation } from "@/Composables/navigation";
 
 let props = defineProps({
 	filters: Object,
@@ -18,7 +19,7 @@ let props = defineProps({
 	active: Array,
 	retired: Array,
 });
-
+const navigation = computed(() => useNavigation(props.staff));
 const selectedRanks = ref([]);
 
 watch(
@@ -226,7 +227,7 @@ let BreadCrumpLinks = [
 													/>
 												</tbody>
 											</table>
-											<Pagination :records="staff" />
+											<Pagination :navigation="navigation" />
 										</div>
 									</div>
 								</div>

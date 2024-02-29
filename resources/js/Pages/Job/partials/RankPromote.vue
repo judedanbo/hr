@@ -191,7 +191,7 @@ const getRankStaff = async (page = null) => {
 		return;
 	}
 	const staff = (await axios.get(
-		route("rank-staff.index", { rank: props.rank }),
+		route("rank-staff.promote", { rank: props.rank }),
 	)).data;
 	rankStaff.value = staff;
 	selectedStaff.value = [];

@@ -1,7 +1,9 @@
 <script setup>
 import { Link } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Pagination.vue";
-defineProps({
+import { useNavigation } from "@/Composables/navigation";
+import { computed } from "vue";
+const props = defineProps({
 	promotions: {
 		type: Object,
 		required: true,
@@ -12,6 +14,7 @@ defineProps({
 	// rank: Number
 });
 
+const navigation = computed(() => useNavigation(props.promotions));
 const getMonth = (month) => {
 	let params = new URLSearchParams(document.location.search);
 };
@@ -132,7 +135,7 @@ const getMonth = (month) => {
 					</tbody>
 				</table>
 			</div>
-			<Pagination :records="promotions" />
+			<Pagination :navigation="navigation" />
 		</div>
 	</div>
 </template>

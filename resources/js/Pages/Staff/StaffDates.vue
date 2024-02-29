@@ -7,11 +7,13 @@ defineProps({
 	staff: Object,
 });
 const formattedDob = (dateString) => {
+	if(!dateString || dateString == null) return "Not provided";
 	const date = new Date(dateString);
 	return format(date, "dd MMMM, yyyy");
 };
 
 let getAge = (dateString) => {
+	if(!dateString || dateString == null) return "Not provided";
 	const date = new Date(dateString);
 	return formatDistance(date, new Date(), { addSuffix: true });
 };

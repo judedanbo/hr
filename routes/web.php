@@ -191,7 +191,7 @@ Route::controller(TransferController::class)->middleware(['auth'])->group(functi
 
 // dependent
 Route::controller(DependentController::class)->middleware(['auth'])->group(function () {
-    // Route::get('/dependent', 'index')->name('dependent.index');
+    Route::get('/dependent', 'index')->name('dependent.index');
     // Route::get('/dependent/create', 'create')->name('dependent.create');
     // Route::get('/dependent/{dependent}', 'show')->name('dependent.show');
     Route::post('/dependent', 'store')->name('dependent.store');
@@ -216,6 +216,7 @@ Route::controller(CategoryRanks::class)->middleware(['auth'])->group(function(){
 });
 
 Route::get('/rank/{rank}/staff',[RankStaffController::class, 'index'] )->middleware(['auth'])->name('rank-staff.index');
+Route::get('/rank/{rank}/staff',[RankStaffController::class, 'promote'] )->middleware(['auth'])->name('rank-staff.promote');
 
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');

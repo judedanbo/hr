@@ -10,6 +10,7 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
 import RankOverview from "./partials/RankOverview.vue";
 import RankStaff from "./partials/RankStaff.vue";
+import RankPromote from "./partials/RankPromote.vue";
 import AllStaff from "./partials/AllStaff.vue";
 import { ref, watch } from "vue";
 import debounce from "lodash/debounce";
@@ -49,6 +50,7 @@ const components = {
 	RankOverview,
 	AllStaff,
 	RankStaff,
+	RankPromote
 };
 
 const tabs = [
@@ -57,7 +59,7 @@ const tabs = [
 	{ name: "Current Staff", component: "AllStaff", href: "#", current: false },
 	{
 		name: "Due for Promotion",
-		component: "RankStaff",
+		component: "RankPromote",
 		href: "#",
 		current: false,
 	},

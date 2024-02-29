@@ -2,8 +2,9 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Pagination from "@/Components/Pagination.vue";
 import QualificationList from "./QualificationList.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
+import { useNavigation } from "@/Composables/navigation";
 let props = defineProps({
 	qualifications: {
 		type: Object,
@@ -14,7 +15,7 @@ let props = defineProps({
 		default: null,
 	},
 });
-
+const navigation = computed(() => useNavigation(props.qualifications));
 const searchQualification = (value) => {
 	Inertia.get(
 		route("qualification.index"),
@@ -31,6 +32,6 @@ const searchQualification = (value) => {
 			:qualifications="qualifications.data"
 			@update:model-value="searchQualification"
 		/>
-		<Pagination :records="qualifications" />
+		<Pagination :navigation="navigation" />
 	</MainLayout>
 </template>
