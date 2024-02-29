@@ -180,7 +180,7 @@ Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(fu
     Route::delete('/staff/{staff}/promote/{job}', 'delete')->name('staff.promote.delete');
 
 });
-Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth'])->name('rank-staff.promote');
+Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth'])->name('rank-staff.promote-all');
 
 // transfer
 Route::controller(TransferController::class)->middleware(['auth'])->group(function () {
@@ -216,7 +216,9 @@ Route::controller(CategoryRanks::class)->middleware(['auth'])->group(function(){
 });
 
 Route::get('/rank/{rank}/staff',[RankStaffController::class, 'index'] )->middleware(['auth'])->name('rank-staff.index');
-Route::get('/rank/{rank}/staff',[RankStaffController::class, 'promote'] )->middleware(['auth'])->name('rank-staff.promote');
+Route::get('/rank/{rank}/promote',[RankStaffController::class, 'promote'] )->middleware(['auth'])->name('rank-staff.promote');
+Route::get('/rank/{rank}/active',[RankStaffController::class, 'active'] )->middleware(['auth'])->name('rank-staff.active');
+Route::get('/rank/{rank}/all',[RankStaffController::class, 'all'] )->middleware(['auth'])->name('rank-staff.all');
 
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');

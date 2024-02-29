@@ -130,9 +130,23 @@ class JobController extends Controller
             },
             'staff as due_for_promotion' => function ($query) {
                 $query->active();
-                $query->where('job_staff.start_date', '<', now()->subYears(3));
-                //$query->where('job_staff.end_date', null);
+                $query->whereYear('job_staff.start_date', '<=', now()->subYears(3)->year);
+                $query->where('job_staff.end_date', null);
             },
+            'staff as male_staff_count' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+                $query->whereHas('person', function ($query) {
+                    $query->where('gender', 'M');
+                });
+            },
+            'staff as female_staff_count' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+                $query->whereHas('person', function ($query) {
+                    $query->where('gender', 'F');
+                });
+            }
         ]);
 
         // $jobs->withCount(['staff' => function ($query) {
@@ -143,9 +157,10 @@ class JobController extends Controller
             'id' => $job->id,
             'name' => $job->name,
             'total_staff_count' => $job->total_staff_count,
-            'active_staff_count' => $job->active_staff_count,
             'current_staff_count' => $job->current_staff_count,
             'due_for_promotion' => $job->due_for_promotion,
+            'active_male_staff_count' => $job->male_staff_count,
+            'active_female_staff_count' => $job->female_staff_count,
         ];
         // return Inertia::render('Job/Stats', [
         //     'jobs' => $jobs->map(fn ($job) => [

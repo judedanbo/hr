@@ -9,7 +9,7 @@
             <p class="ml-16 truncate text-sm font-medium text-gray-500 dark:text-gray-300">{{ item.name }}</p>
           </dt>
           <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-            <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ item.stat }}</p>
+            <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ item.stat?.toLocaleString() }}</p>
             <p :class="[item.changeType === 'increase' ? 'text-green-600' : 'text-red-600', 'ml-2 flex items-baseline text-sm font-semibold']">
               <ArrowUpIcon v-if="item.changeType === 'increase'" class="h-5 w-5 flex-shrink-0 self-center text-green-500" aria-hidden="true" />
               <ArrowDownIcon v-else class="h-5 w-5 flex-shrink-0 self-center text-red-500" aria-hidden="true" />
@@ -38,8 +38,5 @@
       type: Array,
       required: true
     }
-  })
-  onMounted(() => {
-    console.log(props.staff)
   })
   </script>

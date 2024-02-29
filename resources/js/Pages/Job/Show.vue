@@ -10,6 +10,7 @@ import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
 import RankOverview from "./partials/RankOverview.vue";
 import RankStaff from "./partials/RankStaff.vue";
+// import RankActive from "./partials/RankActive.vue";
 import RankPromote from "./partials/RankPromote.vue";
 import AllStaff from "./partials/AllStaff.vue";
 import { ref, watch } from "vue";
@@ -55,8 +56,8 @@ const components = {
 
 const tabs = [
 	{ name: "Overview", component: "RankOverview", href: "#", current: true },
-	{ name: "Active", component: "AllStaff", href: "#", current: false },
-	{ name: "Current Staff", component: "AllStaff", href: "#", current: false },
+	// { name: "Active", component: "RankActive", href: "#", current: false },
+	{ name: "Current Staff", component: "RankStaff", href: "#", current: false },
 	{
 		name: "Due for Promotion",
 		component: "RankPromote",

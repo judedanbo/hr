@@ -15,13 +15,12 @@ const props = defineProps({
 const unitsStats = ref([]);
 onMounted(async() => {
     unitsStats.value = (await axios.get(route("job.stats",{job: props.rank}))).data;
-    console.log(unitsStats.value);
 })
 const totalStaffCount =  computed(() =>{
     return unitsStats.value.total_staff_count
 });
-const activeStaffCount =  computed(() =>{
-    return unitsStats.value.active_staff_count
+const dueForPromotion =  computed(() =>{
+    return unitsStats.value.due_for_promotion
 });
 const currentStaffCount =  computed(() =>{
     return unitsStats.value.current_staff_count
@@ -30,9 +29,9 @@ const currentStaffCount =  computed(() =>{
 
 const stats = ref([]);
 stats.value = [
-    { id: 3, name: 'Current Units', stat: currentStaffCount, icon: UsersIcon, change: '3.2%', changeType: 'decrease' },
-    { id: 2, name: 'Active Staff', stat: activeStaffCount, icon: UsersIcon, change: '5.4%', changeType: 'increase' },
+    { id: 3, name: 'Current Staff', stat: currentStaffCount, icon: UsersIcon, change: '3.2%', changeType: 'decrease' },
     { id: 1, name: 'All Time Staff', stat: totalStaffCount , icon: UserGroupIcon, change: '2', changeType: 'increase' },
+    { id: 2, name: 'Due for promotion', stat: dueForPromotion, icon: UsersIcon, change: '5.4%', changeType: 'increase' },
 ]
 </script>
 <template>

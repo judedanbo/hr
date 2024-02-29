@@ -112,7 +112,7 @@ let BreadCrumpLinks = [
 											<div class="flex items-center justify-between">
 												<p
 													tabindex="0"
-													class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800"
+													class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800 dark:text-gray-50"
 												>
 													Year and Number Recruited
 												</p>
@@ -136,7 +136,7 @@ let BreadCrumpLinks = [
 										</div>
 										<div class="flex gap-4">
 											<div
-												class="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10 w-full lg:w-1/2"
+												class="bg-gray-50 py-4 md:py-7 px-4 md:px-8 xl:px-10 w-full lg:w-1/2 dark:bg-gray-700 xl:rounded-lg"
 											>
 												<div
 													class="sm:flex items-center justify-between justify-items-start"
@@ -148,13 +148,13 @@ let BreadCrumpLinks = [
 														>
 															<div
 																:class="{
-																	' bg-green-100 text-green-700 font-bold':
+																	' bg-green-100 dark:bg-gray-900 text-green-700 dark:text-gray-50 font-bold':
 																		route().current('report.recruitment', {
 																			retired: null,
 																			active: null,
 																		}),
 																}"
-																class="py-2 px-8 rounded-full"
+																class="py-2 px-8 rounded-full dark:text-gray-50 dark:bg-gray-600 dark:hover:bg-gray-900"
 															>
 																<p>All</p>
 															</div>
@@ -165,12 +165,12 @@ let BreadCrumpLinks = [
 														>
 															<div
 																:class="{
-																	'bg-green-100 text-green-700 font-bold':
+																	'bg-green-100 dark:bg-gray-900 text-green-700 dark:text-gray-50 font-bold':
 																		route().current('report.recruitment', {
 																			active: 'true',
 																		}),
 																}"
-																class="py-2 px-8 text-gray-600 hover:text-green-700 hover:bg-green-100 rounded-full"
+																class="py-2 px-8 rounded-full dark:text-gray-50 dark:bg-gray-600 dark:hover:bg-gray-900"
 															>
 																<p>Active</p>
 															</div>
@@ -178,7 +178,7 @@ let BreadCrumpLinks = [
 														<div
 															@click="getRetired"
 															:class="{
-																'bg-green-100 text-green-700 font-bold':
+																'bg-green-100 dark:bg-gray-900 text-green-700 dark:text-gray-50 font-bold':
 																	route().current('report.recruitment', {
 																		retired: 'true',
 																	}),
@@ -186,7 +186,7 @@ let BreadCrumpLinks = [
 															class="rounded-full focus:outline-none focus:ring-2 focus:bg-green-50 focus:ring-green-800 ml-4 sm:ml-8 cursor-pointer"
 														>
 															<div
-																class="py-2 px-8 text-gray-600 hover:text-green-700 hover:bg-green-100 rounded-full"
+																class="py-2 px-8 rounded-full dark:text-gray-50 dark:bg-gray-600 dark:hover:bg-gray-900"
 															>
 																<p>Retired</p>
 															</div>
@@ -196,7 +196,7 @@ let BreadCrumpLinks = [
 												<div class="mt-7 overflow-x-auto">
 													<table class="w-full whitespace-nowrap">
 														<thead>
-															<tr>
+															<tr class="dark:text-gray-50">
 																<th>Year</th>
 																<th class="text-right">Male</th>
 																<th class="text-right">Female</th>
@@ -209,12 +209,12 @@ let BreadCrumpLinks = [
 																v-for="data in recruitment"
 																:key="data.year"
 																tabindex="0"
-																class="focus:outline-none h-10 border border-gray-100 rounded"
+																class="focus:outline-none h-10 border border-gray-100 dark:border-gray-600 rounded"
 															>
 																<td class="">
 																	<div class="flex items-center pl-5">
 																		<p
-																			class="text-base font-medium leading-none text-gray-700 mr-2"
+																			class="text-base font-medium leading-none text-gray-700 dark:text-gray-50 mr-2"
 																		>
 																			{{ data.year }}
 																		</p>
@@ -224,7 +224,7 @@ let BreadCrumpLinks = [
 																<td class="pl-5">
 																	<div class="flex items-center justify-end">
 																		<p
-																			class="text-sm leading-none text-gray-600 ml-2"
+																			class="text-sm leading-none text-gray-600 dark:text-gray-50 ml-2"
 																		>
 																			{{ data.male ?? 0 }}
 																		</p>
@@ -233,7 +233,7 @@ let BreadCrumpLinks = [
 																<td class="pl-5">
 																	<div class="flex items-center justify-end">
 																		<p
-																			class="text-sm leading-none text-gray-600 ml-2"
+																			class="text-sm leading-none text-gray-600 dark:text-gray-50 ml-2"
 																		>
 																			{{ data.female ?? 0 }}
 																		</p>
@@ -242,7 +242,7 @@ let BreadCrumpLinks = [
 																<td class="pl-5">
 																	<div class="flex items-center justify-end">
 																		<p
-																			class="text-sm leading-none text-gray-600 ml-2"
+																			class="text-sm leading-none text-gray-600 dark:text-gray-50 ml-2"
 																		>
 																			{{ data.total }}
 																		</p>
@@ -255,20 +255,20 @@ let BreadCrumpLinks = [
 												<div class="flex space-x-3 justify-center mt-4">
 													<Link
 														:href="route('report.recruitment.details')"
-														class="cursor-pointer px-4 py-1 rounded-full border-2 border-green-500 hover:text-white hover:bg-green-800 hover:border-white"
+														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white "
 													>
 														Details
 													</Link>
 													<a
 														:href="route('report.recruitment.export-summary')"
-														class="cursor-pointer px-4 py-1 rounded-full border-2 border-green-500 hover:text-white hover:bg-green-800 hover:border-white"
+														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Download Data
 													</a>
 												</div>
 											</div>
 
-											<div class="bg-white w-1/2 rounded px-4 py-8">
+											<div class="bg-gray-50 dark:bg-gray-700 w-1/2 rounded px-4 py-8">
 												<RecruitmentChart
 													:recruitment="recruitment"
 													title="Last Ten Recruitment"
@@ -276,13 +276,13 @@ let BreadCrumpLinks = [
 												<div class="flex space-x-3 justify-center mt-4">
 													<Link
 														:href="route('report.recruitment.chart')"
-														class="cursor-pointer px-4 py-1 rounded-full border-2 border-green-500 hover:text-white hover:bg-green-800 hover:border-white"
+														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Full Chart
 													</Link>
 													<div
 														@click="download"
-														class="cursor-pointer px-4 py-1 rounded-full border-2 border-green-500 hover:text-white hover:bg-green-800 hover:border-white"
+														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Download Chart
 													</div>

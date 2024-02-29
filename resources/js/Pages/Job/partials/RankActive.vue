@@ -6,7 +6,7 @@
 				<h1
 					class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50"
 				>
-					Due for Promotion
+					Active Staff
 				</h1>
 				<p class="mt-2 text-sm text-gray-700 dark:text-gray-200">
 					A list of staff who have been at the role form three years or more.
@@ -17,41 +17,14 @@
 			<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 				<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 					<div class="relative">
-						<div
-							v-if="selectedStaff.length > 0"
-							class="absolute left-14 top-0 flex h-12 items-center space-x-3 bg-white dark:bg-gray-800 sm:left-12 px-4 rounded-md"
-						>
-							<button
-								type="button"
-								class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
-								:disabled="nextRank.length < 1"
-								@click="promoteAll"
-							>
-								Promote all to {{ nextRank[0]?.label }}
-							</button>
-						</div>
+						
 						<table v-if="rankStaff?.data?.length>0" class="min-w-full table-fixed divide-y divide-gray-300">
 							<thead>
 								<tr>
-									<th scope="col" class="relative px-7 sm:w-12 sm:px-6">
-										<input
-											type="checkbox"
-											class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
-											:checked="
-												indeterminate ||
-												selectedStaff.length === rankStaff.total
-											"
-											:indeterminate="indeterminate"
-											@change="
-												selectedStaff = $event.target.checked
-													? rankStaff.data.map((staff) => staff.id)
-													: []
-											"
-										/>
-									</th>
+									
 									<th
 										scope="col"
-										class="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
+										class="min-w-[12rem] py-3.5 pr-3 pl-8 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
 										Name
 									</th>
@@ -79,19 +52,10 @@
 										selectedStaff.includes(staff.id) &&
 											'bg-green-50 dark:bg-gray-950',
 									]"
+									class="cursor-pointer"
+									@click="showStaff(staff.id)"
 								>
-									<td class="relative px-7 sm:w-12 sm:px-6">
-										<div
-											v-if="selectedStaff.includes(staff.id)"
-											class="absolute inset-y-0 left-0 w-0.5 bg-green-600"
-										></div>
-										<input
-											type="checkbox"
-											class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
-											:value="staff.id"
-											v-model="selectedStaff"
-										/>
-									</td>
+								
 									<td
 										:class="[
 											'whitespace-nowrap py-4 pr-3 text-sm font-medium',
@@ -101,14 +65,8 @@
 										]"
 									>
 										<div class="flex items-center">
-											<!-- <div class="h-11 w-11 flex-shrink-0">
-											<img
-												class="h-11 w-11 rounded-full"
-												:src="person.image"
-												alt=""
-											/>
-										</div> -->
-											<div class="ml-4">
+											
+											<div class="ml-8">
 												<div
 													class="font-medium text-gray-900 dark:text-gray-50"
 												>
@@ -191,7 +149,7 @@ const getRankStaff = async (page = null) => {
 		return;
 	}
 	const staff = (await axios.get(
-		route("rank-staff.promote", { rank: props.rank }),
+		route("rank-staff.active", { rank: props.rank }),
 	)).data;
 	rankStaff.value = staff;
 	selectedStaff.value = [];
@@ -213,17 +171,27 @@ const promoteAll = () => {
 };
 const submitForm = (promoteAll) => {
 	const staff = selectedStaff.value;
-	Inertia.post(route("rank-staff.promote-all"), {staff, ...promoteAll }, {
+	console.log(promoteAll);
+	Inertia.post(route("rank-staff.promote"), {staff, ...promoteAll }, {
 		preverseScroll: true,
 		onSuccess: () => {
 			togglePromoteAll();
 			getRankStaff();
 			emit("formSubmitted");
 		},
+		onError: (errors) => {
+			// node.setErrors(["there are errors"], errors);
+			// console.log(errors);
+			// formErrors.value = {...errors};
+		},
 	});
+	// togglePromoteAll();
 };
 
 const refreshData = (page) => {
 	getRankStaff(page)
+}
+const showStaff = (staff) => {
+	Inertia.visit(route('staff.show', {staff: staff}));
 }
 </script>
