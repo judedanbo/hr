@@ -36,6 +36,9 @@ const currentStaffCount = computed(() => {
 const genderStats = computed(() => {
 	return unitsStats.value.gender_stats;
 });
+const chartTitle = computed(() => {
+	return unitsStats.value.name;
+});
 
 const stats = ref([]);
 stats.value = [
@@ -71,7 +74,7 @@ stats.value = [
 		<BaseChart
 			v-if="genderStats?.length > 0"
 			type="bar"
-			title="Staff by Gender"
+			:title="chartTitle + ' by gender'"
 			:labels="['Male', 'Female']"
 			:datasets="genderStats"
 		/>

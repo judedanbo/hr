@@ -45,7 +45,6 @@ const changeTab = (tab) => {
 	tabs.map((t) => {
 		t.current = t.name === tab.name;
 	});
-	// console.log(tabs);
 };
 const components = {
 	RankOverview,
@@ -73,7 +72,6 @@ const startSearch = (value) => {
 };
 
 const reload = () => {
-	// console.log("reload page");
 	this.$forceUpdate();
 };
 </script>

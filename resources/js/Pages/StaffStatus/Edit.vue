@@ -9,7 +9,6 @@ defineProps({
 	institution: Number,
 });
 const submitHandler = (data, node) => {
-	console.log("submit form");
 	Inertia.patch(
 		route("staff-status.update", {
 			staff: data.id,

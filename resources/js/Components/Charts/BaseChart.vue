@@ -8,7 +8,7 @@ const props = defineProps({
 	},
 	title: {
 		type: String,
-		default: "Chart.js Line Chart",
+		default: "HRMIS Chart",
 	},
 	labels: {
 		type: Array,
@@ -74,7 +74,6 @@ const config = reactive({
 });
 
 onMounted(() => {
-	console.log(props.datasets);
 	const ctx = document.getElementById("hrChart");
 	const hrChart = new Chart(ctx, config);
 });

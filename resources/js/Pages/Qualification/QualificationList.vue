@@ -39,7 +39,6 @@ const deleteDocument = (qualification) => {
 			},
 			onError: (errors) => {
 				// const errorNode = getNode("documentUpload");
-				console.log(errors);
 				// errorNode.setErrors(errors);
 				// errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
 			},

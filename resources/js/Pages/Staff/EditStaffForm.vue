@@ -62,13 +62,11 @@ const submitImage = async(image) => {
 };
 
 const submitHandler = (data, node) => {
-	// console.log(data.staffData.image);
 
 	Inertia.patch(route("staff.update", { staff: props.staffId }), data, {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();
-			console.log('form submitted')
 			emit("formSubmitted");
 		},
 		onError: (errors) => {
@@ -79,7 +77,6 @@ const submitHandler = (data, node) => {
 
 	if (data.staffData.image.image[0]?.file) {
 		if(submitImage(data.staffData.image.image[0].file)) {
-			console.log('Image uploaded')
 			emit("formSubmitted");
 		};
 	}

@@ -36,10 +36,10 @@ onMounted(async () => {
 
 let formData = ref(null);
 
-const submitImage = async(image) => {
+const submitImage = async (image) => {
 	formData.value = new FormData();
 	formData.value.append("image", image);
-	const avatar =  await Inertia.post(
+	const avatar = await Inertia.post(
 		route("person.avatar.update", { person: person.value.id }),
 		formData.value,
 		{
@@ -61,34 +61,34 @@ const submitImage = async(image) => {
 };
 
 const submitHandler = (data, node) => {
-	// console.log(data.personData.image);
+	Inertia.patch(
+		route("person.update", { person: props.personId }),
+		data.personData.personalInformation,
+		{
+			preserveState: true,
+			onSuccess: () => {
+				node.reset();
+				emit("formSubmitted");
+			},
+			onError: (errors) => {
+				const formErrors = {};
 
-	Inertia.patch(route("person.update", { person: props.personId }), data.personData.personalInformation, {
-		preserveState: true,
-		onSuccess: () => {
-			node.reset();
-			console.log('form submitted')
-			emit("formSubmitted");
+				for (const key in errors) {
+					if (Object.hasOwnProperty.call(errors, key)) {
+						const element = errors[key];
+						formErrors["personData.personalInformation." + key] = element;
+					}
+				}
+				node.setErrors(["there are errors"], formErrors);
+			},
+			onFinish: () => {},
 		},
-		onError: (errors) => {
-            const formErrors = {}
-
-            for (const key in errors) {
-                if (Object.hasOwnProperty.call(errors, key)) {
-                    const element = errors[key];
-                    formErrors['personData.personalInformation.' + key] = element
-                }
-            }
-          	node.setErrors(["there are errors"], formErrors);
-		},
-		onFinish: () => {},
-	});
+	);
 
 	if (data.personData.image.image[0]?.file) {
-		if(submitImage(data.personData.image.image[0].file)) {
-			console.log('Image uploaded')
+		if (submitImage(data.personData.image.image[0].file)) {
 			emit("formSubmitted");
-		};
+		}
 	}
 };
 </script>
@@ -105,7 +105,12 @@ const submitHandler = (data, node) => {
 			wrapper-class="mx-auto"
 			@submit="submitHandler"
 		>
-			<FormKit id="person_id" type="hidden" name="person_id" :value="person.id" />
+			<FormKit
+				id="person_id"
+				type="hidden"
+				name="person_id"
+				:value="person.id"
+			/>
 			<FormKit
 				type="multi-step"
 				name="personData"
@@ -118,10 +123,9 @@ const submitHandler = (data, node) => {
 				</FormKit>
 
 				<FormKit id="image" type="step" name="image">
-					
 					<ImageUpload :image-url="person.image" />
 					<FormKitMessages />
-                    <template #stepNext>
+					<template #stepNext>
 						<FormKit type="submit" label="Save" />
 					</template>
 				</FormKit>

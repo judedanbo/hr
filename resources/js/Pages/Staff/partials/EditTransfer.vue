@@ -30,7 +30,6 @@ const submitHandler = (data) => {
 				emit("formSubmitted");
 			},
 			onError: (errors) => {
-				console.log(errors);
 			},
 		},
 	);

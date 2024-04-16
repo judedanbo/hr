@@ -157,7 +157,7 @@ class JobController extends Controller
         //     $query->where('job_staff.end_date', null);
         // }]); 
         $stats = new \stdClass();
-        $stats->label = "Gender Statistics for $job->name";
+        $stats->label = "Gender Statistics";
         $stats->data = [
             $job->male_staff_count,
             $job->female_staff_count,
@@ -171,5 +171,9 @@ class JobController extends Controller
             'due_for_promotion' => $job->due_for_promotion,
             'gender_stats' => [$stats]
         ];
+    }
+    public function units(Job $job)
+    {
+        return $job->loadCount('staff');
     }
 }

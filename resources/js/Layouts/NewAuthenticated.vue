@@ -93,7 +93,6 @@ const toggleAlert = useToggle(alertOpen);
 const alert = ref(null);
 // onMounted(() => {
 //     alert.value = usePage().props.value.flash;
-//     console.log(alert.value);
 //     // if (alert) {
 //     //     toggleAlert();
 //     //     setTimeout(() => {
@@ -104,7 +103,6 @@ const alert = ref(null);
 
 onUpdated(() => {
 	alert.value = usePage().props.value.flash;
-	// console.log(alert.value);
 	// setTimeout(() => {
 	//     alert.value = null;
 	// }, 3000);

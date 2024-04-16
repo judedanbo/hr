@@ -21,7 +21,6 @@ onMounted(() => {
 		: null;
 });
 const submitDocuments = async (document) => {
-	// console.log(document);
 	const formData = new FormData();
 	// // document.forEach((file) => {
 	formData.append("file_name", document.file_name[0].file);
@@ -47,7 +46,6 @@ const submitDocuments = async (document) => {
 			},
 			onError: (errors) => {
 				const errorNode = getNode("evidence");
-				// console.log(errorNode);
 				const errorMsg = {
 					"evidence.document_type": errors.document_type ?? "",
 					"evidence.document_title": errors.document_title ?? "",
@@ -63,7 +61,6 @@ const submitDocuments = async (document) => {
 };
 
 const submitHandler = (data, node) => {
-	// console.log(data);
 	Inertia.patch(
 		route("qualification.update", {
 			qualification: props.qualification.id,
@@ -81,7 +78,6 @@ const submitHandler = (data, node) => {
 		},
 	);
 	if (data.staffQualification.evidence.file_name.length > 0) {
-		// console.log(data.staffQualification.evidence.file_name);
 		submitDocuments(data.staffQualification.evidence);
 	}
 };

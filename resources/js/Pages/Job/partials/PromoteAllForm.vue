@@ -12,23 +12,21 @@ const props = defineProps({
 const today = format(new Date(), "yyyy-MM-dd");
 
 const displayErrors = computed(() => {
-	const start_date =  props.formErrors["promoteAll.start_date"];
+	const start_date = props.formErrors["promoteAll.start_date"];
 	const rank_id = props.formErrors["promoteAll.rank_id"];
 	//return start_date;
 	return { start_date, rank_id };
 });
 
-const emit = defineEmits(["formSubmitted","unitSelected"]);
+const emit = defineEmits(["formSubmitted", "unitSelected"]);
 
 const nextRank = ref([]);
 onMounted(async () => {
 	const next = await axios.get(route("rank.next", { rank: props.rank }));
 	nextRank.value = next.data;
-	// console.log(next);
 });
 
 const submitHandler = (data, node) => {
-	// console.log(data);
 	emit("unitSelected", data);
 	// Inertia.post(route("staff.promote.all"), data, {
 	// 	preserveState: true,
@@ -37,14 +35,11 @@ const submitHandler = (data, node) => {
 	// 		emit("formSubmitted");
 	// 	},
 	// 	onError: (errors) => {
-	// 		console.log('errors')
 	// // 		node.setErrors(["there are errors in the form"], errors);
 	// 	},
 	// });
 	// if(displayErrors?.value?.start_date || displayErrors?.value?.rank_id){
-	// 	console.log(displayErrors);
 	// 	node.setErrors(["there are errors in the form"], displayErrors);
-	// 	// console.log(node)
 	// }
 };
 const form = ref({
@@ -71,23 +66,23 @@ const form = ref({
 			<h1
 				class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
 			>
-			Promote Selected Staff
+				Promote Selected Staff
 			</h1>
-				<FormKit
-					v-if="nextRank.length > 0"
-					id="rank_id"
-					:value="nextRank[0].value"
-					type="select"
-					name="rank_id"
-					label="Rank"
-					:options="nextRank"
-					:errors="displayErrors?.rank_id ? [displayErrors?.rank_id] : []"
-					placeholder="Select new Rank"
-					error-visibility="submit"
-					disabled
-				/>
-				{{ displayErrors?.rank_id }}
-				<!-- <FormKit
+			<FormKit
+				v-if="nextRank.length > 0"
+				id="rank_id"
+				:value="nextRank[0].value"
+				type="select"
+				name="rank_id"
+				label="Rank"
+				:options="nextRank"
+				:errors="displayErrors?.rank_id ? [displayErrors?.rank_id] : []"
+				placeholder="Select new Rank"
+				error-visibility="submit"
+				disabled
+			/>
+			{{ displayErrors?.rank_id }}
+			<!-- <FormKit
 					v-else
 					id="rank_id"
 					type="select"
@@ -98,20 +93,19 @@ const form = ref({
 					placeholder="Select new Rank"
 					error-visibility="submit"
 				/> -->
-				<FormKit
-					id="start_date"
-					type="date"
-					name="start_date"
-					:value="today"
-					:max="today"
-					label="Start date"
-					:errors="displayErrors?.start_date ? [displayErrors?.start_date] : []"
-					validation-visibility="submit"
-					outer-class="flex-1"
-				/>
-				<!-- <p class="text-sm text-rose-500">{{ displayErrors?.start_date }}</p>  -->
+			<FormKit
+				id="start_date"
+				type="date"
+				name="start_date"
+				:value="today"
+				:max="today"
+				label="Start date"
+				:errors="displayErrors?.start_date ? [displayErrors?.start_date] : []"
+				validation-visibility="submit"
+				outer-class="flex-1"
+			/>
+			<!-- <p class="text-sm text-rose-500">{{ displayErrors?.start_date }}</p>  -->
 		</FormKit>
 		<!-- {{ displayErrors }} -->
-		
 	</main>
 </template>

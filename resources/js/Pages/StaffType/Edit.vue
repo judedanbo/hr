@@ -12,7 +12,6 @@ const props = defineProps({
 });
 
 const submitHandler = (data, node) => {
-	console.log(data);
 	Inertia.patch(
 		route("staff-type.update", {
 			staff: data.staff_id,

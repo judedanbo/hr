@@ -167,7 +167,6 @@ const nextRank = ref({});
 const formErrors = ref([]);
 onMounted(async () => {
 	getRankStaff();
-	// console.log(rankStaff);
 	const ranks = await axios.get(route("rank.category", { rank: props.rank }));
 	rankCategory.value = ranks.data;
 	const next = await axios.get(route("rank.next", { rank: props.rank }));
@@ -225,7 +224,6 @@ const promoteAll = () => {
 };
 const submitForm = (promoteAll) => {
 	const staff = selectedStaff.value;
-	console.log(promoteAll);
 	Inertia.post(
 		route("rank-staff.promote"),
 		{ staff, ...promoteAll },
@@ -238,7 +236,6 @@ const submitForm = (promoteAll) => {
 			},
 			onError: (errors) => {
 				// node.setErrors(["there are errors"], errors);
-				// console.log(errors);
 				// formErrors.value = {...errors};
 			},
 		},
