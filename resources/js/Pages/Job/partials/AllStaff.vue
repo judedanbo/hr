@@ -1,6 +1,5 @@
 <template>
 	<div class="px-4 sm:px-6 lg:px-8 pt-4">
-		
 		<div class="sm:flex sm:items-center">
 			<div class="sm:flex-auto">
 				<h1
@@ -9,7 +8,8 @@
 					All Current and past staff
 				</h1>
 				<p class="mt-2 text-sm text-gray-700 dark:text-gray-200">
-					A list of all staff who have held this position including their name, title, id and role.
+					A list of all staff who have held this position including their name,
+					title, id and role.
 				</p>
 			</div>
 		</div>
@@ -17,7 +17,10 @@
 			<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 				<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 					<div class="relative">
-						<table v-if="rankStaff?.data?.length>0" class="min-w-full table-fixed divide-y divide-gray-300">
+						<table
+							v-if="rankStaff?.data?.length > 0"
+							class="min-w-full table-fixed divide-y divide-gray-300"
+						>
 							<thead>
 								<tr>
 									<th
@@ -40,9 +43,10 @@
 									</th>
 									<th
 										scope="col"
-										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
+										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
+									>
 										Status
-										</th>
+									</th>
 								</tr>
 							</thead>
 							<tbody
@@ -100,47 +104,79 @@
 											}}
 										</div>
 									</td>
-                                    <td>
-                                       <Roles :person="staff.person_id" />
-                                    </td>
+									<td>
+										<Roles :person="staff.person_id" />
+									</td>
 								</tr>
 							</tbody>
 						</table>
-						<div v-else>Loading</div>
+						<div
+							v-else-if="rankStaff?.total == 0"
+							class="bg-white w-full py-10 text-center rounded-lg dark:bg-gray-800"
+						>
+							<h2
+								class="text-2xl font-bold tracking-widest dark:text-gray-100 text-gray-800"
+							>
+								No Staff
+							</h2>
+							<p
+								v-if="search != ''"
+								class="dark:text-gray-100 text-gray-800 tracking-widest mt-3"
+							>
+								No staff information matched the search criteria
+							</p>
+						</div>
+						<div v-else class="grid place-content-center h-48">
+							<Spinner
+								class="w-24 h-24 animate-spin animate-duration-500"
+								fill="fill-gray-100"
+							/>
+						</div>
 					</div>
-					<Pagination :navigation="navigation" @refresh-data="(page) => refreshData(page)"/>
+					<Pagination
+						:navigation="navigation"
+						@refresh-data="(page) => refreshData(page)"
+					/>
 				</div>
 			</div>
 		</div>
 		<Modal :show="showPromoteAll" @close="togglePromoteAll()">
-			<PromoteAllForm :rank="props.rank" @unit-selected="(data) => submitForm(data)" :formErrors="formErrors" />
+			<PromoteAllForm
+				:rank="props.rank"
+				@unit-selected="(data) => submitForm(data)"
+				:formErrors="formErrors"
+			/>
 		</Modal>
 	</div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUpdated, watch } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
 import PromoteAllForm from "./PromoteAllForm.vue";
-import Roles from "@/Pages/Person/partials/Roles.vue"
-
+import Roles from "@/Pages/Person/partials/Roles.vue";
+import Spinner from "@/Components/Spinner.vue";
 
 const showPromoteAll = ref(false);
 const togglePromoteAll = useToggle(showPromoteAll);
 const emit = defineEmits(["formSubmitted"]);
 const props = defineProps({
-	rank: Number,
+	rank: { type: Number, required: true },
+	search: {
+		type: String,
+		default: "",
+	},
 });
 const rankStaff = ref({});
 const rankCategory = ref({});
 const nextRank = ref({});
 const formErrors = ref([]);
 onMounted(async () => {
-	getRankStaff()
+	getRankStaff();
 	// console.log(rankStaff);
 	const ranks = await axios.get(route("rank.category", { rank: props.rank }));
 	rankCategory.value = ranks.data;
@@ -149,15 +185,21 @@ onMounted(async () => {
 });
 
 const getRankStaff = async (page = null) => {
-	if(page){
-		const staff = (await axios.get(page)).data;
+	if (page) {
+		const staff = (
+			await axios.get(page, {
+				params: { search: props.search },
+			})
+		).data;
 		rankStaff.value = staff;
 		selectedStaff.value = [];
 		return;
 	}
-	const staff = (await axios.get(
-		route("rank-staff.all", { rank: props.rank }),
-	)).data;
+	const staff = (
+		await axios.get(route("rank-staff.all", { rank: props.rank }), {
+			params: { search: props.search },
+		})
+	).data;
 	rankStaff.value = staff;
 	selectedStaff.value = [];
 };
@@ -179,27 +221,39 @@ const promoteAll = () => {
 const submitForm = (promoteAll) => {
 	const staff = selectedStaff.value;
 	console.log(promoteAll);
-	Inertia.post(route("rank-staff.promote"), {staff, ...promoteAll }, {
-		preverseScroll: true,
-		onSuccess: () => {
-			togglePromoteAll();
-			getRankStaff();
-			emit("formSubmitted");
+	Inertia.post(
+		route("rank-staff.promote"),
+		{ staff, ...promoteAll },
+		{
+			preverseScroll: true,
+			onSuccess: () => {
+				togglePromoteAll();
+				getRankStaff();
+				emit("formSubmitted");
+			},
+			onError: (errors) => {
+				// node.setErrors(["there are errors"], errors);
+				// console.log(errors);
+				// formErrors.value = {...errors};
+			},
 		},
-		onError: (errors) => {
-			// node.setErrors(["there are errors"], errors);
-			// console.log(errors);
-			// formErrors.value = {...errors};
-		},
-	});
+	);
 	// togglePromoteAll();
 };
 
 const refreshData = (page) => {
-	getRankStaff(page)
-}
+	getRankStaff(page);
+};
 
 const showStaff = (staff) => {
-	Inertia.visit(route('staff.show', {staff: staff}));
-}
+	Inertia.visit(route("staff.show", { staff: staff }));
+};
+const searchValue = ref(props.search);
+onUpdated(() => {
+	searchValue.value = props.search;
+});
+
+watch(searchValue, async () => {
+	await getRankStaff();
+});
 </script>

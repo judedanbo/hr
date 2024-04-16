@@ -9,12 +9,12 @@
 	"devDependencies": {
 		"@inertiajs/inertia": "^0.11.0",
 		"@inertiajs/inertia-vue3": "^0.6.0",
-		"@inertiajs/progress": "^0.2.7",
+		"@inertiajs/progress": "^0.1.2",
 		"@tailwindcss/forms": "^0.5.2",
 		"@tailwindcss/typography": "^0.5.10",
 		"@vitejs/plugin-vue": "^3.0.0",
 		"autoprefixer": "^10.4.2",
-		"axios": "^0.27",
+		"axios": "^0.28",
 		"eslint": "^8.52.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-vue": "^9.18.0",
@@ -34,8 +34,8 @@
 		"@headlessui/vue": "^1.7.0",
 		"@heroicons/vue": "^2.0.8",
 		"@vueuse/core": "^10.1.0",
-		"chart.js": "^3.9.1",
+		"chart.js": "^4.4.2",
 		"date-fns": "^2.29.1",
-		"vue-chart-3": "^3.1.8"
+		"vue-chartjs": "^5.3.0"
 	}
 }

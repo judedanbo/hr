@@ -33,7 +33,7 @@ class PersonController extends Controller
                     'dob' => $person->date_of_birth,
                     // 'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
-                    'image' => $person->image ? Storage::disk('avatars')->url($person->image) : null ,
+                    'image' => $person->image ? Storage::disk('avatars')->url($person->image) : null,
                     'institution' => $person->institution ? [
                         'id' => $person->institution->first()?->id,
                         'name' => $person->institution->first()?->name,
@@ -41,7 +41,7 @@ class PersonController extends Controller
                     ] : null,
                     'dependent' => $person->dependent ? [
                         'staff_id' => $person->dependent->staff_id,
-                    ] : null,
+                    ] : null, p
                 ]),
             'contact_types' => [],
             'filters' => ['search' => request()->search],
@@ -146,7 +146,8 @@ class PersonController extends Controller
         ]);
     }
 
-    public function edit(Person $person){
+    public function edit(Person $person)
+    {
         return [
             'id' => $person->id,
             'title' => $person->title,
@@ -157,7 +158,7 @@ class PersonController extends Controller
             'date_of_birth' => $person->date_of_birth?->format('Y-m-d'),
             'marital_status' => $person->marital_status,
             'gender' => $person->gender,
-            'nationality' =>$person->nationality,
+            'nationality' => $person->nationality,
             'religion' => $person->religion,
             'place_of_birth' => $person->place_of_birth,
             'country_of_birth' => $person->country_of_birth,

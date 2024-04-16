@@ -1,5 +1,5 @@
 <template>
-	<BarChart :ref="chartRef" :chartData="chartData" :options="options" />
+	<!-- <BarChart :ref="chartRef" :chartData="chartData" :options="options" /> -->
 </template>
 
 <script lang="ts">
@@ -11,7 +11,7 @@ import {
 	ref,
 	computed,
 } from "vue";
-import { BarChart } from "vue-chart-3";
+// import { BarChart } from "vue-chart-3";
 import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);

@@ -11,6 +11,7 @@ import differenceInYears from "date-fns/differenceInYears";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import ReportCard from "@/Components/ReportCard.vue";
 import RecruitmentChart from "./Recruitment/Chart.vue";
+import BaseChart from "@/Components/Charts/BaseChart.vue";
 
 let BreadCrumpLinks = [
 	{
@@ -18,6 +19,16 @@ let BreadCrumpLinks = [
 		url: "",
 	},
 ];
+const datasets = [
+	{
+		label: "My First Dataset",
+		data: [65, 59, 80, 81, 56, 55, 40],
+		fill: true,
+		borderColor: "rgb(75, 192, 192)",
+		tension: 0.1,
+	},
+];
+const labels = ["January", "February", "March", "April", "May", "June", "July"];
 </script>
 
 <template>
@@ -54,6 +65,13 @@ let BreadCrumpLinks = [
                                     :data="[50, 52]"
                                     :label="['jan', 'dec']"
                                 /> -->
+								<BaseChart
+									class="h-1/2"
+									type="bar"
+									title="HRMIS Chart"
+									:labels="labels"
+									:datasets="datasets"
+								/>
 							</div>
 						</div>
 					</div>

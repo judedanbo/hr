@@ -1,50 +1,63 @@
 <script setup>
-import { Link } from '@inertiajs/inertia-vue3'
-import NewBreadcrumb from './NewBreadcrumb.vue'
-import SearchInput from './SearchInput.vue'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid'
+import { Link } from "@inertiajs/inertia-vue3";
+import NewBreadcrumb from "./NewBreadcrumb.vue";
+import SearchInput from "./SearchInput.vue";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 
 defineProps({
-  name: {
-    type: String,
-    required: true
-  },
-  backLink: {
-    type: String,
-    required: false,
-    default: () => route('dashboard')
-  },
-  links: {
-    type: Array,
-    required: false,
-    default: () => []
-  },
-  search: {
-    type: String,
-    required: false,
-    default: () => ''
-  }
-})
-const emit = defineEmits(['search'])
+	name: {
+		type: String,
+		required: true,
+	},
+	backLink: {
+		type: String,
+		required: false,
+		default: () => route("dashboard"),
+	},
+	links: {
+		type: Array,
+		required: false,
+		default: () => [],
+	},
+	search: {
+		type: String,
+		required: false,
+		default: () => "",
+	},
+});
+const emit = defineEmits(["search"]);
 </script>
 <template>
-    <div>
-      <div class="pt-4">
-        <nav class="sm:hidden" aria-label="Back">
-          <Link :href="backLink" class="flex items-center text-sm font-medium text-gray-400 hover:text-gray-200">
-            <ChevronLeftIcon class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-500" aria-hidden="true" />
-            Back
-          </Link>
-        </nav>
-       <slot name="breadcrumb" />
-      </div>
-      <div class="mt-2 md:flex md:items-center md:justify-between">
-        <div class="min-w-0 flex-1">
-          <h2 class="text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight">{{name}}</h2>
-        </div>
-        <SearchInput :search="search" @search="(search) => emit('search', search)"/>
-        <slot name="actions" />
-    </div>
-    <slot name="stats" />
-    </div>
-  </template>
+	<div>
+		<div class="pt-4">
+			<nav class="sm:hidden" aria-label="Back">
+				<Link
+					:href="backLink"
+					class="flex items-center text-sm font-medium text-gray-400 hover:text-gray-200"
+				>
+					<ChevronLeftIcon
+						class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-500"
+						aria-hidden="true"
+					/>
+					Back
+				</Link>
+			</nav>
+			<slot name="breadcrumb" />
+		</div>
+		<div class="mt-2 md:flex md:items-center md:justify-between">
+			<div class="min-w-0 flex-1">
+				<h2
+					class="text-2xl font-bold leading-7 text-gray-700 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight"
+				>
+					{{ name }}
+				</h2>
+			</div>
+			<SearchInput
+				:search="search"
+				@search="(search) => emit('search', search)"
+			/>
+			<slot name="actions" />
+		</div>
+		<slot name="stats" />
+	</div>
+</template>

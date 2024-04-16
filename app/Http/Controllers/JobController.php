@@ -56,11 +56,11 @@ class JobController extends Controller
                 'staff' => function ($query) use ($job) {
                     $query->active();
                     // $query->where('job_staff.end_date', null);
-                    $query->whereHas('ranks', function ($query) use ($job){
+                    $query->whereHas('ranks', function ($query) use ($job) {
                         $query->whereNull('job_staff.end_date');
                         $query->where('job_staff.job_id', $job);
                     });
-                    $query->with(['ranks'=> function ($query) {
+                    $query->with(['ranks' => function ($query) {
                         $query->where('job_staff.end_date', null);
                         $query->orderBy('job_staff.start_date', 'desc');
                         // $query->where('job_id', $job);
@@ -72,16 +72,18 @@ class JobController extends Controller
                             $query->orWhere('surname', 'like', "%{$search}%");
                         });
                     });
-                }, 
-                'staff.person', 
-                'institution'])
+                },
+                'staff.person',
+                'institution'
+            ])
             ->withCount([
                 'staff' => function ($query) {
                     $query->whereHas('statuses', function ($query) {
                         $query->where('status', 'A');
                     });
                     $query->where('job_staff.end_date', null);
-            }])
+                }
+            ])
             ->find($job);
         // return($job);
         return Inertia::render('Job/Show', [
@@ -118,7 +120,8 @@ class JobController extends Controller
         return redirect()->route('job.index')->with('success', 'Job created.');
     }
 
-    public function stats(Job $job){
+    public function stats(Job $job)
+    {
         $job->loadCount([
             'staff as total_staff_count',
             'staff as active_staff_count' => function ($query) {
@@ -153,21 +156,20 @@ class JobController extends Controller
         //     $query->active();
         //     $query->where('job_staff.end_date', null);
         // }]); 
+        $stats = new \stdClass();
+        $stats->label = "Gender Statistics for $job->name";
+        $stats->data = [
+            $job->male_staff_count,
+            $job->female_staff_count,
+        ];
+
         return [
             'id' => $job->id,
             'name' => $job->name,
             'total_staff_count' => $job->total_staff_count,
             'current_staff_count' => $job->current_staff_count,
             'due_for_promotion' => $job->due_for_promotion,
-            'active_male_staff_count' => $job->male_staff_count,
-            'active_female_staff_count' => $job->female_staff_count,
+            'gender_stats' => [$stats]
         ];
-        // return Inertia::render('Job/Stats', [
-        //     'jobs' => $jobs->map(fn ($job) => [
-        //         'id' => $job->id,
-        //         'name' => $job->name,
-        //         'staff' => $job->staff_count,
-        //     ]),
-        // ]);
     }
 }

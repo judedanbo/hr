@@ -1,6 +1,5 @@
 <template>
 	<div class="px-4 sm:px-6 lg:px-8 pt-4">
-		
 		<div class="sm:flex sm:items-center">
 			<div class="sm:flex-auto">
 				<h1
@@ -30,7 +29,10 @@
 								Promote all to {{ nextRank[0]?.label }}
 							</button>
 						</div>
-						<table v-if="rankStaff?.data?.length>0" class="min-w-full table-fixed divide-y divide-gray-300">
+						<table
+							v-if="rankStaff?.data?.length > 0"
+							class="min-w-full table-fixed divide-y divide-gray-300"
+						>
 							<thead>
 								<tr>
 									<th scope="col" class="relative px-7 sm:w-12 sm:px-6">
@@ -144,38 +146,72 @@
 								</tr>
 							</tbody>
 						</table>
-						<div v-else>Loading</div>
+						<div
+							v-else-if="rankStaff?.total == 0"
+							class="bg-white w-full py-10 text-center rounded-lg dark:bg-gray-800"
+						>
+							<h2
+								class="text-2xl font-bold tracking-widest dark:text-gray-100 text-gray-800"
+							>
+								No Staff
+							</h2>
+							<p
+								v-if="search != ''"
+								class="dark:text-gray-100 text-gray-800 tracking-widest mt-3"
+							>
+								No staff information matched the search criteria
+							</p>
+						</div>
+						<div v-else class="grid place-content-center h-48">
+							<Spinner
+								class="w-24 h-24 animate-spin animate-duration-500"
+								fill="fill-gray-100"
+							/>
+						</div>
 					</div>
-					<Pagination :navigation="navigation" @refresh-data="(page) => refreshData(page)"/>
+					<Pagination
+						:navigation="navigation"
+						@refresh-data="(page) => refreshData(page)"
+					/>
 				</div>
 			</div>
 		</div>
 		<Modal :show="showPromoteAll" @close="togglePromoteAll()">
-			<PromoteAllForm :rank="props.rank" @unit-selected="(data) => submitForm(data)" :formErrors="formErrors" />
+			<PromoteAllForm
+				:rank="props.rank"
+				@unit-selected="(data) => submitForm(data)"
+				:formErrors="formErrors"
+			/>
 		</Modal>
 	</div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUpdated, watch } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
 import PromoteAllForm from "./PromoteAllForm.vue";
+import Spinner from "@/Components/Spinner.vue";
+
 const showPromoteAll = ref(false);
 const togglePromoteAll = useToggle(showPromoteAll);
 const emit = defineEmits(["formSubmitted"]);
 const props = defineProps({
-	rank: Number,
+	rank: { type: Number, required: true },
+	search: {
+		type: String,
+		default: "",
+	},
 });
 const rankStaff = ref({});
 const rankCategory = ref({});
 const nextRank = ref({});
 const formErrors = ref([]);
 onMounted(async () => {
-	getRankStaff()
+	getRankStaff();
 	// console.log(rankStaff);
 	const ranks = await axios.get(route("rank.category", { rank: props.rank }));
 	rankCategory.value = ranks.data;
@@ -184,15 +220,17 @@ onMounted(async () => {
 });
 
 const getRankStaff = async (page = null) => {
-	if(page){
+	if (page) {
 		const staff = (await axios.get(page)).data;
 		rankStaff.value = staff;
 		selectedStaff.value = [];
 		return;
 	}
-	const staff = (await axios.get(
-		route("rank-staff.promote", { rank: props.rank }),
-	)).data;
+	const staff = (
+		await axios.get(route("rank-staff.promote", { rank: props.rank }), {
+			params: { search: props.search },
+		})
+	).data;
 	rankStaff.value = staff;
 	selectedStaff.value = [];
 };
@@ -213,17 +251,29 @@ const promoteAll = () => {
 };
 const submitForm = (promoteAll) => {
 	const staff = selectedStaff.value;
-	Inertia.post(route("rank-staff.promote-all"), {staff, ...promoteAll }, {
-		preverseScroll: true,
-		onSuccess: () => {
-			togglePromoteAll();
-			getRankStaff();
-			emit("formSubmitted");
+	Inertia.post(
+		route("rank-staff.promote-all"),
+		{ staff, ...promoteAll },
+		{
+			preverseScroll: true,
+			onSuccess: () => {
+				togglePromoteAll();
+				getRankStaff();
+				emit("formSubmitted");
+			},
 		},
-	});
+	);
 };
 
 const refreshData = (page) => {
-	getRankStaff(page)
-}
+	getRankStaff(page);
+};
+const searchValue = ref(props.search);
+onUpdated(() => {
+	searchValue.value = props.search;
+});
+
+watch(searchValue, async () => {
+	await getRankStaff();
+});
 </script>

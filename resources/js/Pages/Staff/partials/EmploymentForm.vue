@@ -35,7 +35,6 @@ const today = new Date();
 		id="staff_number"
 		label="Staff number"
 		placeholder="Staff number"
-		
 		validation="required|length:2,10"
 	/>
 
