@@ -3,7 +3,7 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch, computed } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import format from "date-fns/format";
@@ -16,8 +16,6 @@ import Avatar from "./partials/Avatar.vue";
 import Roles from "./partials/Roles.vue";
 import { useNavigation } from "@/Composables/navigation";
 
-
-
 let props = defineProps({
 	people: Object,
 	filters: Object,
@@ -27,15 +25,16 @@ const navigation = computed(() => useNavigation(props.people));
 
 let search = ref(props.filters.search);
 
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("person.index"),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 
 let formatDate = (dateString) => {

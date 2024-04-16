@@ -14,7 +14,7 @@ import RankStaff from "./partials/RankStaff.vue";
 import RankPromote from "./partials/RankPromote.vue";
 import AllStaff from "./partials/AllStaff.vue";
 import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import InfoCard from "@/Components/InfoCard.vue";
 import Avatar from "../Person/partials/Avatar.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
@@ -28,17 +28,18 @@ let props = defineProps({
 	filters: Object,
 });
 let search = ref(props.filters.search);
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("job.show", {
 				job: props.job.id,
 			}),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 const changeTab = (tab) => {
 	currentTab.value = tab;
@@ -81,7 +82,7 @@ const reload = () => {
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8">
 			<PageHeading
 				:name="job.name"
-				@search="(search) => startSearch(search)"
+				@searchStaff="(searchValue) => startSearch(searchValue)"
 				:search="search"
 			>
 			</PageHeading>

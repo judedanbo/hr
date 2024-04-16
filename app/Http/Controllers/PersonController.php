@@ -41,7 +41,7 @@ class PersonController extends Controller
                     ] : null,
                     'dependent' => $person->dependent ? [
                         'staff_id' => $person->dependent->staff_id,
-                    ] : null, p
+                    ] : null,
                 ]),
             'contact_types' => [],
             'filters' => ['search' => request()->search],

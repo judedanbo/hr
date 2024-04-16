@@ -24,7 +24,7 @@ watch(
 	debounce(function (value) {
 		Inertia.get(
 			route("institution.index"),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
 	}, 300),

@@ -1,5 +1,5 @@
 <script setup>
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 
 import { ref, watch } from "vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
@@ -22,15 +22,16 @@ const props = defineProps({
 	},
 	search: {
 		type: String,
-		default: ""
-	}
+		default: "",
+	},
 });
 const search = ref(props.search);
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		emit("searchEntered", value);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 </script>
 <template>

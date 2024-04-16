@@ -50,18 +50,21 @@ class Job extends Model
     {
         return $this->belongsTo(JobCategory::class, 'job_category_id', 'id');
     }
-    public function next(){
+    public function next()
+    {
         return $this->category();
         // return $this->hasMany(Job::class, 'next_rank_id');
     }
 
-    public function scopeManagementRanks($query)  {
-        return $query->WhereHas('category', function($whereHasQuery){
-            $whereHasQuery->where("level", "<",4);
+    public function scopeManagementRanks($query)
+    {
+        return $query->WhereHas('category', function ($whereHasQuery) {
+            $whereHasQuery->where("level", "<", 4);
         });
     }
-    public function scopeOtherRanks($query)  {
-        return $query->WhereHas('category', function($whereHasQuery){
+    public function scopeOtherRanks($query)
+    {
+        return $query->WhereHas('category', function ($whereHasQuery) {
             $whereHasQuery->where("level", ">", 3);
         });
     }

@@ -1,10 +1,11 @@
 <script setup>
+import { ref } from "vue";
 import { Link } from "@inertiajs/inertia-vue3";
 import NewBreadcrumb from "./NewBreadcrumb.vue";
 import SearchInput from "./SearchInput.vue";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
 
-defineProps({
+const props = defineProps({
 	name: {
 		type: String,
 		required: true,
@@ -21,11 +22,16 @@ defineProps({
 	},
 	search: {
 		type: String,
-		required: false,
 		default: () => "",
 	},
 });
-const emit = defineEmits(["search"]);
+const searchValue = ref(props.search);
+const emit = defineEmits(["searchStaff"]);
+
+const emitSearch = (value) => {
+	searchValue.value = value;
+	emit("searchStaff", value);
+};
 </script>
 <template>
 	<div>
@@ -53,8 +59,8 @@ const emit = defineEmits(["search"]);
 				</h2>
 			</div>
 			<SearchInput
-				:search="search"
-				@search="(search) => emit('search', search)"
+				:search="searchValue"
+				@search="(searchValue) => emitSearch(searchValue)"
 			/>
 			<slot name="actions" />
 		</div>

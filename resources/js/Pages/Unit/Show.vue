@@ -4,7 +4,7 @@ import { Head, Link } from "@inertiajs/inertia-vue3";
 import PageHeader from "@/Components/PageHeader.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import { Inertia } from "@inertiajs/inertia";
 import SubUnits from "./SubUnits.vue";
 import UnitStaff from "./UnitStaff.vue";
@@ -24,29 +24,31 @@ let search = ref(props.filters.search);
 let dept = ref(props.filters.dept);
 let staff = ref(props.filters.staff);
 
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("unit.show", {
 				unit: props.unit.id,
 			}),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
-watch(
+debouncedWatch(
 	staff,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("unit.show", {
 				unit: props.unit.id,
 			}),
-			{ staff: value },
+			{ staff: staf.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 
 let num = 1;
@@ -86,11 +88,9 @@ const toggleEditForm = useToggle(openEditModal);
 				{{ props.unit.name }}
 			</h2>
 		</template> -->
-		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
+		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<div
-				class="shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
-			>
+			<div class="shadow-sm sm:rounded-lg px-6 border-b border-gray-200">
 				<div class="flex">
 					<InfoCard title="Units" :value="props.unit.subs_number" link="#" />
 					<InfoCard title="Staff" :value="props.unit.staff_number" link="#" />
@@ -115,21 +115,12 @@ const toggleEditForm = useToggle(openEditModal);
 				<div
 					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12"
 				>
-					<SubUnits
-						
-						v-model="dept"
-						:type="unit.name"
-						:subs="props.unit"
-					/>
-					<UnitStaff
-						
-						:unit="props.unit"
-					/>
-
+					<SubUnits v-model="dept" :type="unit.name" :subs="props.unit" />
+					<UnitStaff :unit="props.unit" />
 				</div>
 			</div>
 		</main>
-		<Modal :show="openEditModal" @close="toggleEditForm()"  >
+		<Modal :show="openEditModal" @close="toggleEditForm()">
 			<EditUnit :unit="props.unit.id" @form-submitted="toggleEditForm()" />
 		</Modal>
 	</MainLayout>

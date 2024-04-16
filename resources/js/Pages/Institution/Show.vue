@@ -6,7 +6,7 @@ import { Inertia } from "@inertiajs/inertia";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 
 import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import UnitCard from "../Unit/UnitCard.vue";
 import Modal from "@/Components/NewModal.vue";
 
@@ -67,17 +67,18 @@ let deleteUnit = (id) => {
 
 let search = ref(props.filters.search);
 
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("institution.show", {
 				institution: props.institution.id,
 			}),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 </script>
 

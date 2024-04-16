@@ -3,7 +3,7 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch, computed } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
@@ -16,7 +16,6 @@ import Edit from "./Edit.vue";
 import Delete from "./Delete.vue";
 import FlyoutMenu from "@/Components/FlyoutMenu.vue";
 import { useNavigation } from "@/Composables/navigation";
-
 
 let props = defineProps({
 	institutions: Object,
@@ -65,15 +64,16 @@ const submitForm = () => {
 
 let search = ref(props.filters.search);
 
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("institution.index"),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 
 let BreadCrumpLinks = [

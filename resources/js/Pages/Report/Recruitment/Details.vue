@@ -8,7 +8,7 @@ import RecruitmentChart from "./Chart.vue";
 import Pagination from "@/Components/Pagination.vue";
 import StaffTableRow from "./StaffTableRow.vue";
 import SelectMenu from "@/Components/SelectMenu.vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import { useNavigation } from "@/Composables/navigation";
 
@@ -22,9 +22,9 @@ let props = defineProps({
 const navigation = computed(() => useNavigation(props.staff));
 const selectedRanks = ref([]);
 
-watch(
+debouncedWatch(
 	selectedRanks,
-	debounce(function (value) {
+	() => {
 		let data = ref({
 			ranks: selectedRanks.value.map((item) => item).join("|"),
 		});
@@ -34,7 +34,8 @@ watch(
 			replace: true,
 			preserveScroll: true,
 		});
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 
 let selectedYears = ref(new Set());

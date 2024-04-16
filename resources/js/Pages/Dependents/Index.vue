@@ -3,7 +3,7 @@ import MainLayout from "@/Layouts/HrAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "../../Components/Pagination.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
@@ -19,15 +19,16 @@ const navigation = computed(() => useNavigation(props.institutions));
 
 let search = ref(props.filters.search);
 
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("institution.index"),
-			{ search: value },
+			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 
 let BreadCrumpLinks = [

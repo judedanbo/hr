@@ -8,7 +8,7 @@ import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
-import debounce from "lodash/debounce";
+import { debouncedWatch } from "@vueuse/core";
 import InfoCard from "@/Components/InfoCard.vue";
 
 let props = defineProps({
@@ -25,9 +25,9 @@ let BreadcrumbLinks = [
 
 let search = ref(props.filters.search);
 
-watch(
+debouncedWatch(
 	search,
-	debounce(function (value) {
+	() => {
 		Inertia.get(
 			route("institution.jobs", {
 				institution: props.institution.id,
@@ -35,7 +35,8 @@ watch(
 			{ search: value },
 			{ preserveState: true, replace: true, preserveScroll: true },
 		);
-	}, 300),
+	},
+	{ debounce: 300 },
 );
 </script>
 
