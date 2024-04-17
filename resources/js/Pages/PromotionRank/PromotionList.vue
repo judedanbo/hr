@@ -82,8 +82,8 @@ const promoteSelectedStaff = () => {
 								class="inline-flex items-center rounded bg-white dark:bg-gray-800 px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white dark:text-gray-50 dark:hover:bg-gray-700"
 								@click="promoteSelectedStaff"
 							>
-								Promote all</button
-							>
+								Promote all
+							</button>
 						</div>
 						<table class="min-w-full table-fixed divide-y divide-gray-300">
 							<thead>
@@ -209,7 +209,7 @@ const promoteSelectedStaff = () => {
 										class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
 									>
 										<div class="font-medium text-gray-900 dark:text-gray-50">
-											{{ promotion.start_date}}
+											{{ promotion.start_date }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
 											{{ formatDistance(promotion.start_date) }}
@@ -229,7 +229,7 @@ const promoteSelectedStaff = () => {
 										class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
 									>
 										<div class="font-medium text-gray-900 dark:text-gray-50">
-											{{ promotion.retirement_date}}
+											{{ promotion.retirement_date }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
 											{{ formatDistance(promotion.retirement_date) }}

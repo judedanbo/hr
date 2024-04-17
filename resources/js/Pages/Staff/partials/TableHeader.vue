@@ -29,7 +29,7 @@ const search = ref(props.search);
 debouncedWatch(
 	search,
 	() => {
-		emit("searchEntered", value);
+		emit("searchEntered", search.value);
 	},
 	{ debounce: 300 },
 );

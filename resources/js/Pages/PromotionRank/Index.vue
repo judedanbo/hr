@@ -2,13 +2,12 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Pagination from "@/Components/Pagination.vue";
 import PromotionList from "./PromotionList.vue";
-import { ref, watch, computed } from "vue";
+import { ref, computed } from "vue";
 import { Head } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import PageHeader from "@/Components/PageHeader.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { format } from "date-fns";
 let props = defineProps({
 	promotions: Object,
 	filters: Object,
