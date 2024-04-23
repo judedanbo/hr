@@ -9,11 +9,6 @@ use Inertia\Inertia;
 
 class JobCategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return Inertia::render('JobCategory/Index', [
@@ -24,12 +19,22 @@ class JobCategoryController extends Controller
                         'jobs'
                     ]
                 )
-                ->with(['staff' => function ($query) {
-                    $query->withCount(['staff' => function ($query) {
-                        $query->active();
-                        $query->where('job_staff.end_date', null);
-                    }]);
-                }])
+                ->with([
+                    'staff' => function ($query) {
+                        $query->withCount([
+                            'staff as active_count' => function ($query) {
+                                $query->active();
+                                $query->where('job_staff.end_date', null);
+                            },
+                            'staff as promotion_count' => function ($query) {
+                                $query->active();
+                                $query->where('job_staff.end_date', null);
+                                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                            },
+                            'staff as all_count',
+                        ]);
+                    },
+                ])
                 ->when(request()->search, function ($query, $search) {
                     $query->where('name', "like", "%" . $search . "%");
                     $query->orWhere('short_name', 'like', "%$search%");
@@ -43,13 +48,14 @@ class JobCategoryController extends Controller
                     'short_name' => $jobCategory->short_name,
                     'level' => $jobCategory->level,
                     'jobs' => $jobCategory->jobs_count,
-                    // 'staff' => $jobCategory->staff_count,
                     'parent' => $jobCategory->parent ? [
                         'name' => $jobCategory->parent->name,
                         'id' => $jobCategory->parent->id
                     ] : '',
                     'institution' => $jobCategory->institution->name,
-                    'staff' => $jobCategory->staff->sum('staff_count'),
+                    'staff' => $jobCategory->staff->sum('active_count'),
+                    'promotion' => $jobCategory->staff->sum('promotion_count'),
+                    'all' => $jobCategory->staff->sum('all_count'),
 
                 ]),
             'filters' => request()->all([
@@ -58,47 +64,45 @@ class JobCategoryController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
         return JobCategory::select(['id as value', 'name as label'])
             ->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreJobCategoryRequest  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(StoreJobCategoryRequest $request)
     {
         $jobCategory = JobCategory::create($request->all());
         return redirect()->route('job-category.index')->with('success', 'Job Category created.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\JobCategory  $jobCategory
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(JobCategory $jobCategory)
     {
         $jobCategory->load(['parent', 'jobs', 'institution'])
             ->load(['jobs' => function ($query) {
-                $query->withCount(['staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->where('status', 'A');
-                    });
-                    $query->where('job_staff.end_date', null);
-                }]);
+                $query->withCount([
+                    'activeStaff' => function ($query) {
+                        $query->active();
+                    },
+                    'activeStaff as promotion' => function ($query) {
+                        $query->active();
+                        $query->whereHas('ranks', function ($query) {
+                            $query->whereNull('job_staff.end_date');
+                            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                        });
+                    },
+                    'staff as all'
+
+                ]);
             }])
             ->get();
+        // dd($jobCategory->jobs);
+        if ($jobCategory->jobs->count() === 1) {
+            return redirect()->route('job.show', ['job' => $jobCategory->jobs->first()->id]);
+        }
         return Inertia::render('JobCategory/Show', [
             'category' => [
                 'id' => $jobCategory->id,
@@ -108,7 +112,9 @@ class JobCategoryController extends Controller
                 'jobs' => $jobCategory->jobs ? $jobCategory->jobs->map(fn ($job) => [
                     'id' => $job->id,
                     'name' => $job->name,
-                    'staff' => $job->staff_count,
+                    'staff_count' => $job->active_staff_count,
+                    'promotion_count' => $job->promotion,
+                    'all_count' => $job->all,
                 ]) : '',
                 'parent' => $jobCategory->parent ? [
                     'id' => $jobCategory->parent->id,

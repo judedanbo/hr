@@ -18,7 +18,7 @@ class JobController extends Controller
                 ->with(['category', 'institution'])
                 ->withCount(['staff' => function ($query) {
                     $query->active();
-                    $query->where('job_staff.end_date', null);
+                    $query->whereNull('job_staff.end_date');
                 }])
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
@@ -124,17 +124,20 @@ class JobController extends Controller
     {
         $job->loadCount([
             'staff as total_staff_count',
-            'staff as active_staff_count' => function ($query) {
+            'staff as active_staff_count' => function ($query) use ($job) {
                 $query->active();
+                $query->where('job_staff.job_id', $job->id);
+                $query->whereNull('job_staff.end_date');
             },
-            'staff as current_staff_count' => function ($query) {
+            'staff as current_staff_count' => function ($query) use ($job) {
                 $query->active();
-                $query->where('job_staff.end_date', null);
+                $query->where('job_staff.job_id', $job->id);
+                $query->whereNull('job_staff.end_date');
             },
             'staff as due_for_promotion' => function ($query) {
                 $query->active();
                 $query->whereYear('job_staff.start_date', '<=', now()->subYears(3)->year);
-                $query->where('job_staff.end_date', null);
+                $query->whereNull('job_staff.end_date');
             },
             'staff as male_staff_count' => function ($query) {
                 $query->active();

@@ -1,28 +1,15 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import Tab from "@/Components/Tab.vue";
 import { Inertia } from "@inertiajs/inertia";
-import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/vue/24/outline";
-import PageHeader from "@/Components/PageHeader.vue";
-import { format, differenceInYears } from "date-fns";
-import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import BreezeInput from "@/Components/Input.vue";
 import RankOverview from "./partials/RankOverview.vue";
 import RankStaff from "./partials/RankStaff.vue";
-// import RankActive from "./partials/RankActive.vue";
 import RankPromote from "./partials/RankPromote.vue";
 import AllStaff from "./partials/AllStaff.vue";
 import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import InfoCard from "@/Components/InfoCard.vue";
-import Avatar from "../Person/partials/Avatar.vue";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import PageTitle from "@/Components/PageTitle.vue";
 import PageHeading from "@/Components/PageHeading.vue";
-import PageActions from "@/Components/PageActions.vue";
-import PageStats from "@/Components/PageStats.vue";
 let props = defineProps({
 	job: Object,
 	filters: Object,
@@ -75,6 +62,10 @@ const startSearch = (value) => {
 const reload = () => {
 	this.$forceUpdate();
 };
+const selectedStaff = ref([]);
+const updateStaffList = (staffList) => {
+	selectedStaff.value = staffList;
+};
 </script>
 <template>
 	<Head :title="job.name" />
@@ -93,8 +84,10 @@ const reload = () => {
 			/>
 			<component
 				:is="components[currentTab.component]"
-				v-bind="{ rank: job.id, search }"
+				v-bind="{ rank: job.id, search, staffList: selectedStaff }"
+				@updateStaffList="(staffList) => updateStaffList(staffList)"
 			/>
 		</main>
+		<!-- {{ selectedStaff }} -->
 	</MainLayout>
 </template>

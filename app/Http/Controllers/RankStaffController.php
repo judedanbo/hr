@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RankAllListExport;
+use App\Exports\RankPromotionListExport;
+use App\Exports\RanksStaffExport;
 use App\Models\Job;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class RankStaffController extends Controller
 {
     public function index($rank)
     {
         $staff =  Job::find($rank)
-            ->staff()
+            ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
             ->when(request()->search, function ($query, $search) {
                 $query->whereHas('person', function ($query) use ($search) {
@@ -44,13 +47,14 @@ class RankStaffController extends Controller
 
             ]);
         // Inertia::render('')
+        // $staff->data = $staff->data->unique();
         return $staff;
     }
 
     function promote($rank)
     {
         $staff =  Job::find($rank)
-            ->staff()
+            ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
             ->when(request()->search, function ($query, $search) {
                 $query->whereHas('person', function ($query) use ($search) {
@@ -88,10 +92,11 @@ class RankStaffController extends Controller
     function active($rank)
     {
         $staff =  Job::find($rank)
-            ->staff()
+            ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
             ->whereHas('ranks', function ($query) use ($rank) {
                 $query->where('job_staff.job_id', $rank);
+                $query->whereNull('job_staff.end_date');
             })
             ->with(['person', 'units', 'ranks'])
             ->paginate()
@@ -138,13 +143,21 @@ class RankStaffController extends Controller
                 'staff_number' => $staff->staff_number,
                 'name' => $staff->person?->full_name,
                 'person_id' => $staff->person?->id,
+                // 'current_rank' => [
+                //     'id' => $staff->ranks->first()?->id,
+                //     'name' => $staff->ranks->first()?->name,
+                //     'start_date' => $staff->ranks->first()?->pivot->start_date->format('d M, Y'),
+                //     'remarks' => $staff->ranks->first()?->pivot->remarks,
+                // ],
                 'current_unit' => [
                     'id' => $staff->units->first()?->id,
                     'name' => $staff->units->first()?->name,
                     'start_date' => $staff->units->first()?->pivot->start_date->format('d M, Y'),
-                    'remarks' => $staff->ranks->first()?->pivot->remarks,
+                    'remarks' => $staff->units->first()?->pivot->remarks,
                 ],
                 'last_promotion' => [
+                    'id' => $staff->ranks->first()?->id,
+                    'name' => $staff->ranks->first()?->name,
                     'start_date' => $staff->ranks->first()?->pivot->start_date->format('d M, Y'),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ]
@@ -152,5 +165,18 @@ class RankStaffController extends Controller
             ]);
         // Inertia::render('')
         return $staff;
+    }
+
+    function exportRank(Job $rank)
+    {
+        return Excel::download(new RanksStaffExport($rank), $rank->name . ' staff.xlsx');
+    }
+    function exportPromotion(Job $rank)
+    {
+        return Excel::download(new RankPromotionListExport($rank), Str::of($rank->name)->plural() . ' promotion list.xlsx');
+    }
+    function exportAll(Job $rank)
+    {
+        return Excel::download(new RankAllListExport($rank), Str::of($rank->name)->plural() . ' all time list.xlsx');
     }
 }

@@ -42,9 +42,21 @@ function addRank() {
 								</th>
 								<th
 									scope="col"
-									class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+									class="px-3 py-3.5 text-sm font-semibold text-gray-900 text-right"
 								>
 									Staff
+								</th>
+								<th
+									scope="col"
+									class="px-3 py-3.5 text-sm font-semibold text-gray-900 text-right"
+								>
+									Due for Promotion
+								</th>
+								<th
+									scope="col"
+									class="px-3 py-3.5 text-sm font-semibold text-gray-900 text-right"
+								>
+									All time
 								</th>
 
 								<th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
@@ -67,8 +79,18 @@ function addRank() {
 									</div>
 								</td>
 								<td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-									<div class="text-gray-900">
-										{{ job.staff }}
+									<div class="text-gray-900 text-right">
+										{{ job.staff_count.toLocaleString() }}
+									</div>
+								</td>
+								<td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+									<div class="text-gray-900 text-right">
+										{{ job.promotion_count.toLocaleString() }}
+									</div>
+								</td>
+								<td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+									<div class="text-gray-900 text-right">
+										{{ job.all_count.toLocaleString() }}
 									</div>
 								</td>
 

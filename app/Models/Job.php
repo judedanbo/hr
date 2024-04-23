@@ -34,6 +34,11 @@ class Job extends Model
             'remarks'
         );
     }
+    public function activeStaff(): BelongsToMany
+    {
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')
+            ->wherePivotNull('end_date');
+    }
 
     /**
      * Get the previousRank associated with the Job

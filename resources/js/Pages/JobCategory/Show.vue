@@ -38,7 +38,6 @@ let BreadCrumpLinks = [
 					<h2 class="text-3xl text-gray-900 dark:text-gray-50 mt-4">
 						Ranks/Grades Categories
 					</h2>
-
 					<JobCategory :category="category" @add-rank="toggle()" />
 				</div>
 			</div>

@@ -12,7 +12,14 @@ const emit = defineEmits(["openCategory"]);
 defineProps({
 	categories: { type: Object, required: true },
 });
-const tableCols = ["Harmonized Grade", "Level/Category", "Grades", "No. Staff"];
+const tableCols = [
+	"Harmonized Grade",
+	"Level/Category",
+	"No. of Grades",
+	"Active Staff",
+	"Due for Promotion",
+	"All time",
+];
 </script>
 <template>
 	<section class="flex flex-col mt-6 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -39,7 +46,15 @@ const tableCols = ["Harmonized Grade", "Level/Category", "Grades", "No. Staff"];
 								<TableData align="center">
 									{{ category.jobs }}
 								</TableData>
-								<TableData align="center"> {{ category.staff }}</TableData>
+								<TableData align="center">
+									{{ category.staff.toLocaleString() }}</TableData
+								>
+								<TableData align="center">
+									{{ category.promotion.toLocaleString() }}</TableData
+								>
+								<TableData align="center">
+									{{ category.all.toLocaleString() }}</TableData
+								>
 							</TableRow>
 						</template>
 					</TableBody>

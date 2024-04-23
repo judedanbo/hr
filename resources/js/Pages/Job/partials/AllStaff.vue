@@ -12,6 +12,13 @@
 					title, id and role.
 				</p>
 			</div>
+			<a
+				class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+				:href="route('rank-staff.export-rank-all', { rank: props.rank })"
+			>
+				<ArrowDownTrayIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+				Download
+			</a>
 		</div>
 		<div class="mt-8 flow-root">
 			<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -85,21 +92,22 @@
 									</td>
 									<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
 										<div class="text-gray-900 dark:text-gray-50">
-											{{ staff.last_promotion.start_date }}
+											{{ staff.last_promotion?.name }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-400">
-											{{ staff.last_promotion.remarks }}
+											{{ staff.last_promotion?.start_date }} |
+											{{ staff.last_promotion?.remarks }}
 										</div>
 									</td>
 									<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
 										<div class="text-gray-900 dark:text-gray-50">
-											{{ staff.current_unit.name }}
+											{{ staff.current_unit?.name }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-400">
-											{{ staff.current_unit.start_date }}
+											{{ staff.current_unit?.start_date }}
 											{{
-												staff.current_unit.remarks
-													? " | " + staff.current_unit.remarks
+												staff.current_unit?.remarks
+													? " | " + staff.current_unit?.remarks
 													: ""
 											}}
 										</div>
@@ -160,7 +168,7 @@ import { useToggle } from "@vueuse/core";
 import PromoteAllForm from "./PromoteAllForm.vue";
 import Roles from "@/Pages/Person/partials/Roles.vue";
 import Spinner from "@/Components/Spinner.vue";
-
+import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 const showPromoteAll = ref(false);
 const togglePromoteAll = useToggle(showPromoteAll);
 const emit = defineEmits(["formSubmitted"]);

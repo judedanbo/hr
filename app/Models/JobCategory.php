@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Institution;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobCategory extends Model
 {
@@ -23,7 +24,7 @@ class JobCategory extends Model
     /**
      * Get all of the jobs for the JobCategory
      */
-    public function jobs()
+    public function jobs(): HasMany
     {
         return $this->hasMany(Job::class);
     }

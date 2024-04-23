@@ -178,7 +178,6 @@ Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(fu
     Route::post('/staff/{staff}/promote', 'store')->name('staff.promote.store');
     Route::patch('/staff/{staff}/promote/{promotion}', 'update')->name('staff.promote.update');
     Route::delete('/staff/{staff}/promote/{job}', 'delete')->name('staff.promote.delete');
-
 });
 Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth'])->name('rank-staff.promote-all');
 
@@ -211,14 +210,17 @@ Route::controller(JobCategoryController::class)->middleware(['auth'])->group(fun
 });
 
 
-Route::controller(CategoryRanks::class)->middleware(['auth'])->group(function(){
-    Route::get('/category/{category}/ranks','show')->name('category-ranks.show');
+Route::controller(CategoryRanks::class)->middleware(['auth'])->group(function () {
+    Route::get('/category/{category}/ranks', 'show')->name('category-ranks.show');
 });
 
-Route::get('/rank/{rank}/staff',[RankStaffController::class, 'index'] )->middleware(['auth'])->name('rank-staff.index');
-Route::get('/rank/{rank}/promote',[RankStaffController::class, 'promote'] )->middleware(['auth'])->name('rank-staff.promote');
-Route::get('/rank/{rank}/active',[RankStaffController::class, 'active'] )->middleware(['auth'])->name('rank-staff.active');
-Route::get('/rank/{rank}/all',[RankStaffController::class, 'all'] )->middleware(['auth'])->name('rank-staff.all');
+Route::get('/rank/{rank}/staff', [RankStaffController::class, 'index'])->middleware(['auth'])->name('rank-staff.index');
+Route::get('/rank/{rank}/promote', [RankStaffController::class, 'promote'])->middleware(['auth'])->name('rank-staff.promote');
+Route::get('/rank/{rank}/active', [RankStaffController::class, 'active'])->middleware(['auth'])->name('rank-staff.active');
+Route::get('/rank/{rank}/all', [RankStaffController::class, 'all'])->middleware(['auth'])->name('rank-staff.all');
+Route::get('/rank/{rank}/export', [RankStaffController::class, 'exportRank'])->middleware(['auth'])->name('rank-staff.export-rank');
+Route::get('/rank/{rank}/export/promotion-list', [RankStaffController::class, 'exportPromotion'])->middleware(['auth'])->name('rank-staff.export-rank-promote');
+Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth'])->name('rank-staff.export-rank-all');
 
 Route::controller(JobController::class)->middleware(['auth'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
@@ -235,21 +237,21 @@ Route::get('/rank/{rank}/category', function (Job $rank) {
         'name' => $rank->category->name,
         'level' => $rank->category->level,
         'short_name' => $rank->category->short_name,
-];
+    ];
 })->middleware(['auth'])->name('rank.category');
 
 Route::get('rank/{rank}/next', function (Job $rank) {
-    $nextCategoryId =  $rank->job_category_id - 1 ;
-    if($nextCategoryId < 1){
+    $nextCategoryId =  $rank->job_category_id - 1;
+    if ($nextCategoryId < 1) {
         return null;
     }
     return Job::where('job_category_id', $nextCategoryId)
         ->get()
-        ->map(fn($rank)=>[
+        ->map(fn ($rank) => [
             'value' => $rank->id,
             'label' => $rank->name,
         ]);
-        //->where('id', '>', $rank->id)->first();
+    //->where('id', '>', $rank->id)->first();
 })->middleware(['auth'])->name('rank.next');
 
 // Route::get('rank/{rank}/previous', function (JobCategory $rank) {
@@ -325,15 +327,15 @@ Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])-
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
 
-Route::get('/country', function() {
+Route::get('/country', function () {
     $nationality = null;
-        foreach (CountryEnum::cases() as $county) {
-            $newNation = new \stdClass;
-            $newNation->value = $county->value;
-            $newNation->label = $county->label();
-            $nationality[] = $newNation;
-        }
-        return $nationality;
+    foreach (CountryEnum::cases() as $county) {
+        $newNation = new \stdClass;
+        $newNation->value = $county->value;
+        $newNation->label = $county->label();
+        $nationality[] = $newNation;
+    }
+    return $nationality;
 })->middleware(['auth'])->name('country.index');
 
 Route::controller(StaffStatusController::class)->middleware(['auth'])->group(function () {

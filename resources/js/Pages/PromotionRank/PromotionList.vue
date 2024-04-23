@@ -92,7 +92,7 @@ const promoteSelectedStaff = () => {
 										scope="col"
 										class="relative px-7 sm:w-12 sm:px-6 text-left"
 									>
-										<input
+										<!-- <input
 											@change="
 												selectedStaff = $event.target.checked
 													? promotions.data.map((p) => p.staff_number)
@@ -105,39 +105,32 @@ const promoteSelectedStaff = () => {
 												selectedStaff.length === promotions.data.length
 											"
 											class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-green-600 dark:text-gray-900 focus:ring-green-600 dark:focus:ring-gray-600"
-										/>
+										/> -->
 									</th>
 									<th
 										scope="col"
 										class="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Name
+										Year
 									</th>
 									<th
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Current Rank
+										April
 									</th>
 									<th
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Last Promotion
+										October
 									</th>
 									<th
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Current Posting
+										Rank
 									</th>
-									<th
-										scope="col"
-										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
-									>
-										Retirement Date
-									</th>
-
 									<th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
 										<span class="sr-only">Edit</span>
 									</th>
@@ -248,9 +241,11 @@ const promoteSelectedStaff = () => {
 										</p>
 									</td>
 								</tr>
+								-->
 							</tbody>
 						</table>
 						<slot name="pagination" />
+						{{ promotions.data }}
 					</div>
 				</div>
 			</div>
