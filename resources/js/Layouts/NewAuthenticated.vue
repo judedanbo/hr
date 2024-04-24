@@ -57,9 +57,7 @@ const navigation = [
 	},
 	{
 		name: "Next Promotions",
-		href: route("promotion.batch.show", {
-			year: format(new Date(), "yyyy"),
-		}),
+		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,
 		current: route().current("promotion.batch.show"),
 	},

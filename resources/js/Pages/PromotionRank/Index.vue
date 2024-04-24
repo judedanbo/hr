@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Pagination from "@/Components/Pagination.vue";
-import PromotionList from "./PromotionList.vue";
+import CurrentPromotions from "./partials/CurrentPromotions.vue";
 import { ref, computed } from "vue";
 import { Head } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
@@ -41,7 +41,13 @@ const navigation = computed(() => useNavigation(props.promotions));
 // 	);
 // });
 const exportToExcel = () => {
-	window.location = route("export.promotion");
+	window.location = route("export.promotion-list");
+};
+
+const openPromotion = (job_id, year = new Date().getFullYear()) => {
+	Inertia.get(route("promotion.batch.show", { year: year }), {
+		rank: job_id,
+	});
 };
 </script>
 
@@ -49,7 +55,6 @@ const exportToExcel = () => {
 	<MainLayout>
 		<Head title="Next Promotion list" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-			<!-- <BreadCrumpVue :links="BreadCrumpLinks" /> -->
 			<div
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
@@ -62,16 +67,15 @@ const exportToExcel = () => {
 					@search-entered="(value) => searchStaff(value)"
 				/>
 			</div>
-			<PromotionList @update:model-value="searchStaff" :promotions="promotions">
+			<CurrentPromotions
+				@update:model-value="searchStaff"
+				@openPromotion="(job_id) => openPromotion(job_id)"
+				:promotions="promotions"
+			>
 				<template #pagination>
 					<Pagination :navigation="navigation" />
 				</template>
-			</PromotionList>
+			</CurrentPromotions>
 		</main>
 	</MainLayout>
 </template>
-<style>
-input::placeholder {
-	@apply dark:text-gray-300;
-}
-</style>

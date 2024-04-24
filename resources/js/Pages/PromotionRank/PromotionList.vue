@@ -111,28 +111,34 @@ const promoteSelectedStaff = () => {
 										scope="col"
 										class="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Year
+										Staff
 									</th>
 									<th
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										April
+										Current Rank
 									</th>
 									<th
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										October
+										Promotion date
 									</th>
 									<th
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Rank
+										Posting
+									</th>
+									<th
+										scope="col"
+										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
+									>
+										Transfer date
 									</th>
 									<th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
-										<span class="sr-only">Edit</span>
+										<span class="sr-only">action</span>
 									</th>
 								</tr>
 							</thead>
@@ -241,11 +247,10 @@ const promoteSelectedStaff = () => {
 										</p>
 									</td>
 								</tr>
-								-->
 							</tbody>
 						</table>
 						<slot name="pagination" />
-						{{ promotions.data }}
+						<!-- {{ promotions.data }} -->
 					</div>
 				</div>
 			</div>

@@ -11,19 +11,28 @@ class PromotionBatchController extends Controller
     public function index()
     {
         return Inertia::render('PromotionRank/Index', [
-            'promotions' => JobStaff::query()
-                ->with(['job'])
-                ->selectRaw('Year(start_date) year, job_id, count(case when month(start_date) <= 6 then 1 end) as april, count(case when month(start_date) > 6 then 1 end) as october')
-                ->groupByRaw('year, job_id')
-                ->orderByRaw('year desc')
-
-                // ->where('remarks', '<>' ,'1st Appointment')
-
+            'promotions' =>  InstitutionPerson::query()
+                ->active()
+                ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
+                ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
+                ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+                ->when(request()->search, function ($query, $search) {
+                    $terms = explode(' ', $search);
+                    foreach ($terms as $term) {
+                        $query->where(function ($searchName) use ($term) {
+                            $searchName->where('jobs.name', 'like', "%{$term}%");
+                        });
+                    }
+                })
+                ->selectRaw('jobs.name as job_name, job_staff.job_id as job_id, count(case when month(job_staff.start_date) <= 4 then 1 end) as april, count(case when month(job_staff.start_date) > 4 then 1 end) as october, count(*) as staff')
+                ->groupByRaw('job_name, job_id')
+                ->orderByRaw('job_categories.level')
+                ->whereNull('jobs.deleted_at')
+                ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3)
                 ->paginate()
                 ->withQueryString(),
             'filters' => [
                 'search' => Request()->search,
-                // "year" => 
             ],
         ]);
     }
@@ -42,8 +51,13 @@ class PromotionBatchController extends Controller
                 });
             })
             ->with([
+                'institution',
                 'person',
+                'units',
                 'ranks' => function ($query) {
+                    $query->when(request()->rank, function ($searchQuery, $rank) {
+                        $searchQuery->where('job_staff.job_id', $rank);
+                    });
                     // $query->take(1);
                     // $query->where('name', 'like', '%principal%');
                     // $query->whereRaw('start_date');

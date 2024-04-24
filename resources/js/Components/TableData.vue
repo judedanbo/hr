@@ -1,5 +1,4 @@
 <script setup>
-import TableHead from "@/Components/TableHead.vue";
 defineProps({
 	align: {
 		type: String,

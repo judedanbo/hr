@@ -294,7 +294,8 @@ Route::get('report/recruitment/export/all', [RecruitmentController::class, 'expo
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');
 
 // promotion report
-Route::get('/promotion/export', [PromotionExportController::class, 'show'])->middleware(['auth'])->name('export.promotion');
+Route::get('/export/promotion', [PromotionExportController::class, 'show'])->middleware(['auth'])->name('export.promotion');
+Route::get('/export/promotion/list', [PromotionExportController::class, 'list'])->middleware(['auth'])->name('export.promotion-list');
 
 Route::get('/report/promotion', [PromotionController::class, 'index'])->middleware(['auth'])->name('report.promotion');
 Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth'])->name('report.promotion.year');
@@ -310,7 +311,7 @@ Route::controller(PromotionController::class)->middleware(['auth'])->group(funct
 
 Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
-    Route::get('/next-promotions/{year}', 'show')->name('promotion.batch.show');
+    Route::get('/next-promotions/{year?}', 'show')->name('promotion.batch.show');
 });
 
 Route::controller(QualificationController::class)->middleware(['auth'])->group(function () {
