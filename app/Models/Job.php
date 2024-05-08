@@ -64,7 +64,7 @@ class Job extends Model
     public function scopeManagementRanks($query)
     {
         return $query->WhereHas('category', function ($whereHasQuery) {
-            $whereHasQuery->where("level", "<", 4);
+            $whereHasQuery->where("level", "<", 3);
         });
     }
     public function scopeOtherRanks($query)

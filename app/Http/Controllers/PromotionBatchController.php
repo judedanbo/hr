@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\InstitutionPerson;
 use App\Models\JobStaff;
+use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 
 class PromotionBatchController extends Controller
@@ -28,7 +29,8 @@ class PromotionBatchController extends Controller
                 ->groupByRaw('job_name, job_id')
                 ->orderByRaw('job_categories.level')
                 ->whereNull('jobs.deleted_at')
-                ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3)
+                ->whereNull('job_staff.end_date')
+                ->whereRaw("year(job_staff.start_date) < ?",  [date('Y') - 3])
                 ->paginate()
                 ->withQueryString(),
             'filters' => [
@@ -39,29 +41,69 @@ class PromotionBatchController extends Controller
 
     public function show($year)
     {
+        // return InstitutionPerson::query()
+        //     ->active()
+        //     ->promotion($year)
+        //     ->unit()
+        //     ->rank()
+        //     ->with([
+        //         'institution',
+        //         'person',
+        //         'units' => function ($query) {
+        //             $query->whereNull('staff_unit.end_date');
+        //         },
+        //         'ranks' => function ($query) {
+        //             $query->whereNull('job_staff.end_date');
+        //         }
+        //     ])
+        //     ->paginate();
+        // return InstitutionPerson::query()
+        //     // ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
+        //     // ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
+        //     // ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+        //     ->active()
+        //     ->promotion($year)
+        //     ->unit()
+        //     ->rank()
+        //     ->with([
+        //         'institution',
+        //         'person',
+        //         'units' => function ($query) {
+        //             $query->whereNull('staff_unit.end_date');
+        //         },
+        //         'ranks' => function ($query) {
+        //             $query->whereNull('job_staff.end_date');
+        //         }
+        //     ])
+        //     // ->select(
+        //     //     'institution_person.id as staff_id',
+        //     //     'institution_person.staff_number',
+        //     //     'institution_person.file_number',
+        //     //     'jobs.id  as rank_id',
+        //     //     'jobs.name  as rank_name',
+        //     //     'job_staff.start_date  as promotion_date',
+        //     //     'job_categories.level  as level',
+        //     //     'units.id as unit_id',
+        //     //     'units.name as unit_name',
+        //     // )
+        //     // ->whereNull('jobs.deleted_at')
+        //     // ->whereNull('job_staff.end_date')
+        //     // ->whereRaw("year(job_staff.start_date) < ?",  [date('Y') - 3])
+        //     // ->orderBy('job_categories.level')
+        //     ->paginate(2);
+
+
         $promotionList = InstitutionPerson::query()
             ->active()
-            // ->otherRanks()
             ->promotion($year)
-
-            ->when(request()->search, function ($searchQuery, $search) {
-                $searchQuery->where(function ($whereQuery) use ($search) {
-                    $whereQuery->searchPerson($search);
-                    $whereQuery->searchRank($search);
-                });
-            })
+            ->otherRanks()
+            ->rank()
             ->with([
                 'institution',
                 'person',
                 'units',
                 'ranks' => function ($query) {
-                    $query->when(request()->rank, function ($searchQuery, $rank) {
-                        $searchQuery->where('job_staff.job_id', $rank);
-                    });
-                    // $query->take(1);
-                    // $query->where('name', 'like', '%principal%');
-                    // $query->whereRaw('start_date');
-                    $query->wherePivotNull('end_date');
+                    $query->whereNull('job_staff.end_date');
                 }
             ])
             ->paginate()

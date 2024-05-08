@@ -115,35 +115,43 @@ class InstitutionPerson extends Pivot
         }]);
     }
 
-    public function ScopeRank($query)
+    public function scopeRank($query)
     {
         return $query->whereHas('ranks', function ($query) {
-            $query->where('job_staff.end_date', null);
+            $query->whereNull('job_staff.end_date');
         });
     }
-    public function ScopePromotion($query, $year )
+    function scopeUnit($query)
     {
-        return $query->whereHas('ranks', function ($query) use ($year){
-            $searchYear = $year - 3;
-            // $query->take(1);
-            $query->where('job_staff.end_date', null);
+        return $query->whereHas('units', function ($query) {
+            $query->whereNull('staff_unit.end_date');
+        });
+    }
+    public function scopePromotion($query, $year = Null)
+    {
+        return $query->whereHas('ranks', function ($query) use ($year) {
+            $searchYear = $year  ?? $year - 3;
+            $query->whereHas('category');
+            $query->whereNull('job_staff.end_date');
             $query->whereRaw("YEAR(job_staff.start_date) < ?", [$searchYear]);
         });
     }
 
-    function scopeSearchPerson($query, $search)  {
+    function scopeSearchPerson($query, $search)
+    {
         return $query->whereHas('person', function ($personQuery) use ($search) {
             $personQuery->search($search);
         });
-        
     }
-    function scopeSearchRank($query, $search)  {
+    function scopeSearchRank($query, $search)
+    {
         return $query->orWhereHas('ranks', function ($rankQuery) use ($search) {
             $rankQuery->searchRank($search);
         });
     }
 
-    function scopeSearchOtherRank($query, $search)  {
+    function scopeSearchOtherRank($query, $search)
+    {
         return $query->orWhereHas('ranks', function ($rankQuery) use ($search) {
             $rankQuery->searchOtherRank($search);
             // $rankQuery->searchRank($search);
@@ -244,15 +252,17 @@ class InstitutionPerson extends Pivot
         return $this->morphMany(Note::class, 'notable')->latest();
     }
 
-   
 
-    public function scopeManagement($query) {
-        return $query->whereHas('ranks', function($whereHasQuery){
+
+    public function scopeManagement($query)
+    {
+        return $query->whereHas('ranks', function ($whereHasQuery) {
             $whereHasQuery->managementRanks();
         });
     }
-    public function scopeOtherRanks($query) {
-        return $query->whereHas('ranks', function($whereHasQuery){
+    public function scopeOtherRanks($query)
+    {
+        return $query->whereHas('ranks', function ($whereHasQuery) {
             $whereHasQuery->otherRanks();
         });
     }
