@@ -9,10 +9,11 @@ import { Inertia } from "@inertiajs/inertia";
 import SubUnits from "./SubUnits.vue";
 import UnitStaff from "./UnitStaff.vue";
 import InfoCard from "@/Components/InfoCard.vue";
-import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+import { PencilSquareIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
 import EditUnit from "./partials/Edit.vue";
+import AddSubUnit from "./partials/AddSubUnit.vue";
 
 let props = defineProps({
 	unit: Object,
@@ -77,6 +78,8 @@ let BreadcrumbLinks = [
 ];
 const openEditModal = ref(false);
 const toggleEditForm = useToggle(openEditModal);
+const openAddSubUnitModal = ref(false);
+const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 </script>
 
 <template>
@@ -103,14 +106,24 @@ const toggleEditForm = useToggle(openEditModal);
 						placeholder="`Search unit...`"
 						autofocus
 					/>
-					<a
-						class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
-						href="#"
-						@click.prevent="toggleEditForm()"
-					>
-						<PencilSquareIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-						Edit Unit
-					</a>
+					<div class="flex gap-x-2">
+						<a
+							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
+							href="#"
+							@click.prevent="toggleEditForm()"
+						>
+							<PencilSquareIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+							Edit Unit
+						</a>
+						<a
+							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
+							href="#"
+							@click.prevent="toggleAddUnitForm()"
+						>
+							<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+							Add sub Unit
+						</a>
+					</div>
 				</section>
 				<div
 					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12"
@@ -122,6 +135,10 @@ const toggleEditForm = useToggle(openEditModal);
 		</main>
 		<Modal :show="openEditModal" @close="toggleEditForm()">
 			<EditUnit :unit="props.unit.id" @form-submitted="toggleEditForm()" />
+		</Modal>
+		<Modal :show="openAddSubUnitModal" @close="toggleAddUnitForm()">
+			<!-- subunit -->
+			<AddSubUnit :unit="props.unit.id" @form-submitted="toggleAddUnitForm()" />
 		</Modal>
 	</MainLayout>
 </template>

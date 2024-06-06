@@ -43,17 +43,18 @@ const navigation = [
 		icon: FolderIcon,
 		current: route().current("unit.*"),
 	},
-	// {
-	//   name: "Ranks",
-	//   href: route("job.index"),
-	//   icon: CalendarIcon,
-	//   current: false,
-	// },
 	{
 		name: "Ranks",
+		href: route("job.index"),
+		icon: CalendarIcon,
+		current: route().current("job.*") || route().current("job.*"),
+	},
+	{
+		name: "Harmonized ranks",
 		href: route("job-category.index"),
 		icon: CalendarIcon,
-		current: route().current("job.*") || route().current("job-category.*"),
+		current:
+			route().current("job-category.*") || route().current("job-category.*"),
 	},
 	{
 		name: "Next Promotions",

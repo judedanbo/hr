@@ -49,7 +49,7 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender->label(),
                 'dob' =>  $staff->person->date_of_birth->format('d M Y'),
-                'image' => $staff->person->image ? Storage::disk('avatars')->url( $staff->person->image) : null,
+                'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                 'dob_distance' =>  $staff->person->date_of_birth->diffInYears() . " years old",
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
@@ -109,7 +109,7 @@ class InstitutionPersonController extends Controller
             $person->address()->create($request->staffData['address']);
             $person->contacts()->create($request->staffData['contact']);
             $person->qualifications()->create($request->staffData['qualifications']);
-            
+
             $staff->statuses()->create([
                 'status' => 'A',
                 'description' => 'Active',
@@ -120,14 +120,14 @@ class InstitutionPersonController extends Controller
             $rank = $request->staffData['rank'];
             $rank['job_id'] = $request->staffData['rank']['rank_id'];
             unset($rank['rank_id']);
-            $staff->ranks()->attach($rank['job_id'],$rank);
-            if(array_key_exists('unit_id',$request->staffData['unit'])){
-                $staff->units()->attach($request->staffData['unit']['unit_id'],$request->staffData['unit']);
+            $staff->ranks()->attach($rank['job_id'], $rank);
+            if (array_key_exists('unit_id', $request->staffData['unit'])) {
+                $staff->units()->attach($request->staffData['unit']['unit_id'], $request->staffData['unit']);
             }
             return $staff;
         });
 
-        if($transaction === null || $transaction['id'] === null) {
+        if ($transaction === null || $transaction['id'] === null) {
             return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
         }
         // return $transaction;
@@ -183,7 +183,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' => $staff->person->image ? Storage::disk('avatars')->url( $staff->person->image) : null,
+                'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
@@ -205,7 +205,7 @@ class InstitutionPersonController extends Controller
                     'document_number' => $document->document_number,
                     'file_name' => $document->file_name,
                     'file_type' => $document->file_type,
-                ]) : null ,
+                ]) : null,
             ]) : [],
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
@@ -278,6 +278,8 @@ class InstitutionPersonController extends Controller
                 'units' => $staff->units->map(fn ($unit) => [
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
+                    'status' => $unit->pivot->status?->label(),
+                    'status_color' => $unit->pivot->status?->color(),
                     'department' => $unit->parent?->name,
                     'department_short_name' => $unit->parent?->short_name,
                     'staff_id' => $unit->pivot->staff_id,
@@ -306,8 +308,8 @@ class InstitutionPersonController extends Controller
                     'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
-                    'image' => $dep->person->image ? Storage::disk('avatars')->url( $dep->person->image) : null,
-                   
+                    'image' => $dep->person->image ? Storage::disk('avatars')->url($dep->person->image) : null,
+
                 ]) : null,
             ],
         ]);

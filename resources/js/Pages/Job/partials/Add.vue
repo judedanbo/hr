@@ -48,7 +48,7 @@ const submitHandler = (data, node) => {
 				type="text"
 				name="name"
 				id="name"
-				label="Unit name"
+				label="Rank name"
 				validation="required|string|length:2,150"
 				validation-visibility="submit"
 			/>
@@ -77,8 +77,8 @@ const submitHandler = (data, node) => {
 				name="job_category_id"
 				id="job_category_id"
 				validation="number|min:1|max:30"
-				label="Previous job"
-				placeholder="Select a category"
+				label="Harmonized grade"
+				placeholder="Select harmonized grade"
 				:options="categories"
 				error-visibility="submit"
 			/>

@@ -137,6 +137,7 @@ Route::controller(UnitController::class)->middleware(['auth'])->group(function (
     Route::delete('/unit/{unit}', 'delete')->name('unit.delete');
     Route::patch('/unit/{unit}', 'update')->name('unit.update');
     Route::get('/unit/{unit}/details', 'details')->name('unit.details');
+    Route::post('/unit/{unit}/details', 'addSub')->name('unit.add-sub');
 });
 
 Route::get('/unit-list', function () {
@@ -186,6 +187,7 @@ Route::controller(TransferController::class)->middleware(['auth'])->group(functi
     Route::post('/staff/{staff}/transfer', 'store')->name('staff.transfer.store');
     Route::patch('/staff/{staff}/transfer/{unit}', 'update')->name('staff.transfer.update');
     Route::delete('/staff/{staff}/transfer/{unit}', 'delete')->name('staff.transfer.delete');
+    Route::patch('/staff/{staff}/transfer/{unit}', 'approve')->name('staff.transfer.approve');
 });
 
 // dependent

@@ -25,7 +25,7 @@ class StorePromotionListRequest extends FormRequest
     {
         return [
             'staff.*' => 'required|integer|exists:institution_person,id',
-            'rank_id' => 'required|integer|exists:jobs,id',
+            'rank_id' => 'required|exists::App\Models\Job,id',
             'start_date' => 'required|date|before_or_equal:today',
             'end_date' => 'date|after:start_date|nullable',
             'remarks' => 'string|nullable',
@@ -37,7 +37,8 @@ class StorePromotionListRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function messages(){
+    public function messages()
+    {
         return [
             'staff.*.required' => 'Staff ID is required',
             'staff.*.integer' => 'Staff ID must be an integer',
@@ -54,7 +55,8 @@ class StorePromotionListRequest extends FormRequest
         ];
     }
 
-    public function attributes(){
+    public function attributes()
+    {
         return [
             'staff.*' => 'Staff ID',
             'promoteAll.rank_id' => 'Rank',

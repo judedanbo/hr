@@ -12,7 +12,6 @@ enum UnitType: string
     case BRANCH = 'BRH';
     case REGION = 'REG';
     case DISTRICT = 'DIS';
-    case NOT_PROVIDED = '';
 
     public function label(): string
     {
@@ -24,8 +23,7 @@ enum UnitType: string
             self::BRANCH => 'Branch',
             self::REGION => 'Regional Office',
             self::DISTRICT => 'District Office',
-            self::NOT_PROVIDED => 'Unit type not Provided',
-            default => "Unit type not Provided",
+            self::UNIT => 'Management unit'
         };
     }
 }

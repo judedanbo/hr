@@ -18,6 +18,10 @@ const editTransfer = (model) => {
 	editModel.value = model;
 	toggleEditTransferModal();
 };
+const approveTransfer = (model) => {
+	editModel.value = model;
+	toggleEditTransferModal();
+};
 
 const openDeleteTransferModal = ref(false);
 const toggleDeleteTransferModal = useToggle(openDeleteTransferModal);
@@ -94,6 +98,7 @@ watch(
 					class="w-full max-h-64 overflow-y-scroll"
 					@delete-transfer="(model) => confirmDeleteTransfer(model)"
 					@edit-transfer="(model) => editTransfer(model)"
+					@approve-transfer="(model) => approveTransfer(model)"
 				/>
 			</dl>
 		</div>

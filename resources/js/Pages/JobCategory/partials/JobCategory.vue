@@ -53,7 +53,7 @@ function addRank() {
 					</div>
 				</div>
 			</div>
-			<div class="ml-4 mt-4 flex flex-shrink-0">
+			<!-- <div class="ml-4 mt-4 flex flex-shrink-0">
 				<button
 					type="button"
 					class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -64,7 +64,7 @@ function addRank() {
 					/>
 					<span>Add rank</span>
 				</button>
-			</div>
+			</div> -->
 		</div>
 		<Ranks @add-rank="addRank()" :jobs="category.jobs" class="mt-4" />
 	</div>

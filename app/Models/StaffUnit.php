@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TransferStatusEnum;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -10,12 +11,18 @@ class StaffUnit extends Pivot
     protected $fillable = [
         'unit_id',
         'staff_id',
+        'status',
         'start_date',
         'end_date',
         'remarks'
     ];
 
-    protected $casts = ['start_date' => 'date', 'end_date' => 'date'];
+
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'status' => TransferStatusEnum::class
+    ];
 
     /**
      * Get the unit that owns the StaffUnit

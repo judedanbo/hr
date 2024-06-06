@@ -81,8 +81,8 @@ class UnitController extends Controller
                     $query->when(request()->search, function ($query) {
                         $query->where('name', 'like', '%' . request()->search . '%');
                     });
-                        
-                    
+
+
                     $query->whereHas('staff', function ($query) {
                         $query->active();
                         $query->search(request()->search);
@@ -104,7 +104,7 @@ class UnitController extends Controller
                         },
                     ]);
                 }
-            ])           
+            ])
             ->withCount([
                 'subs' => function ($query) {
                     $query->whereHas('staff', function ($query) {
@@ -219,7 +219,8 @@ class UnitController extends Controller
         $unit->delete();
         return redirect()->back()->with('success', 'Unit deleted successfully');
     }
-    public function details(Unit $unit){
+    public function details(Unit $unit)
+    {
         return [
             'id' => $unit->id,
             'name' => $unit->name,
@@ -229,9 +230,22 @@ class UnitController extends Controller
             'unit_id' => $unit->unit_id,
             'start_date' => $unit->start_date?->format('Y-m-d'),
             'end_date' => $unit->end_date?->format('Y-m-d'),
-        
+
         ];
         // return $unit->only(['id', 'name', 'short_name', 'type', 'institution_id', 'unit_id', 'start_date', 'end_date']);
+    }
+
+    public function addSub(Request $request, Unit $unit)
+    {
+        $newSub = $request->only(
+            ['name', 'short_name', 'type', 'unit_id', 'start_date', 'end_date']
+        );
+        $newSub['institution_id'] = $unit->institution_id;
+
+        $unit->subs()->create($newSub);
+
+        // $unit->subs()->attach($request->sub_id, ['start_date' => $request->start_date]);
+        return redirect()->back()->with('success', 'Sub unit added successfully');
     }
 
     // public function list(){

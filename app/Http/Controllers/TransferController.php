@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TransferStatusEnum;
 use App\Http\Requests\StoreTransferRequest;
 use App\Http\Requests\UpdateTransferRequest;
 use App\Models\InstitutionPerson;
@@ -43,5 +44,14 @@ class TransferController extends Controller
     {
         $staff->units()->detach($unit);
         return redirect()->back()->with('success', 'Transfer has  been successfully deleted ');
+    }
+
+    public function approve(InstitutionPerson $staff, $unit)
+    {
+        return $staff->units()->updateExistingPivot($unit, [
+            'status' => TransferStatusEnum::Approved
+        ]);
+        // dd($approve);
+        // return redirect()->back(); //->with('success', 'Transfer has  been successfully approved ');
     }
 }

@@ -1,6 +1,7 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-const emit = defineEmits(["editTransfer", "deleteTransfer"]);
+import Alert from "@/Components/Alert.vue";
+const emit = defineEmits(["editTransfer", "deleteTransfer", "approveTransfer"]);
 
 const subMenuClicked = (action, model) => {
 	if (action == "Edit") {
@@ -8,6 +9,21 @@ const subMenuClicked = (action, model) => {
 	}
 	if (action == "Delete") {
 		emit("deleteTransfer", model);
+	}
+	if ((action = "Approve")) {
+		let approve = axios
+			.patch(
+				route("staff.transfer.approve", {
+					staff: model.staff_id,
+					unit: model.unit_id,
+				}),
+			)
+			.then(function (response) {
+				if (response.data) {
+					window.location.reload();
+				}
+			});
+		// emit("approveTransfer", model);
 	}
 };
 let props = defineProps({
@@ -42,6 +58,12 @@ let props = defineProps({
 						>
 							End
 						</th>
+						<th
+							scope="col"
+							class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+						>
+							Status
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -68,9 +90,15 @@ let props = defineProps({
 						>
 							{{ transfer.end_date }}
 						</td>
+						<td
+							:class="transfer.status_color"
+							class="hidden p-1 text-right text-xs sm:table-cell w-1/4"
+						>
+							{{ transfer.status }}
+						</td>
 						<td>
 							<SubMenu
-								:items="['Edit', 'Delete']"
+								:items="['Approve', 'Edit', 'Delete']"
 								@item-clicked="(action) => subMenuClicked(action, transfer)"
 							/>
 						</td>
@@ -84,5 +112,6 @@ let props = defineProps({
 				No transfers found.
 			</div>
 		</div>
+		<!-- <Alert alert=""/> -->
 	</main>
 </template>

@@ -46,7 +46,7 @@ const submitHandler = (data, node) => {
 				type="select"
 				name="rank_id"
 				id="rank_id"
-				validation="required|integer|min:1|max:20"
+				validation="required|integer|min:1|max:2000"
 				label="New Rank"
 				placeholder="Select new Rank"
 				:options="ranks"
