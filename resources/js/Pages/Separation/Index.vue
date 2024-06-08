@@ -44,7 +44,8 @@ let props = defineProps({
 let search = ref(props.filters.search);
 
 const searchUnits = (value) => {
-	useSearch(value, route("unit.index"));
+	console.log("seearch");
+	useSearch(value, route("separation.index"));
 };
 
 const breadCrumbLinks = [
@@ -121,7 +122,7 @@ onMounted(() => {
 			<!-- <BreadCrumpVue :links="BreadCrumpLinks" /> -->
 			<PageHeading
 				name="Separation"
-				@search="(search) => searchUnits(search)"
+				@searchStaff="(search) => searchUnits(search)"
 				:search="search"
 			>
 				<template #breadcrumb>
