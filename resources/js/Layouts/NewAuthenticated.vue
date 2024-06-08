@@ -38,6 +38,12 @@ const navigation = [
 		current: route().current("staff.*"),
 	},
 	{
+		name: "Separations",
+		href: route("separation.index"),
+		icon: UsersIcon,
+		current: route().current("separation.*"),
+	},
+	{
 		name: "Departments",
 		href: route("unit.index"),
 		icon: FolderIcon,

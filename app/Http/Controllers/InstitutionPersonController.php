@@ -140,7 +140,7 @@ class InstitutionPersonController extends Controller
      * @param  \App\Models\InstitutionPerson  $institutionPerson
      * @return \Illuminate\Http\Response
      */
-    public function show($staff)
+    public function show($staffId)
     {
         $staff = InstitutionPerson::query()
             ->with(
@@ -150,8 +150,12 @@ class InstitutionPersonController extends Controller
                             $query->whereNull('valid_end');
                         }]);
                     }, 'person.contacts', 'person.qualifications',
-                    'units.institution',
-                    'units.parent',
+                    // 'units.institution',
+                    // 'units.parent',
+                    'units' => function ($query) {
+                        $query->orderBy('created_at', 'desc');
+                        $query->with(['institution', 'parent']);
+                    },
                     'ranks',
                     'dependents.person',
                     'statuses',
@@ -159,10 +163,10 @@ class InstitutionPersonController extends Controller
                 ]
             )
             ->active()
-            ->whereId($staff)
+            ->whereId($staffId)
             ->first();
         if (!$staff) {
-            return redirect()->route('staff.index')->with('error', 'Staff not found');
+            return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
         return Inertia::render('Staff/NewShow', [
             'user' => [
@@ -276,6 +280,7 @@ class InstitutionPersonController extends Controller
 
                 ]) : null,
                 'units' => $staff->units->map(fn ($unit) => [
+                    'unit' => $unit,
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
                     'status' => $unit->pivot->status?->label(),

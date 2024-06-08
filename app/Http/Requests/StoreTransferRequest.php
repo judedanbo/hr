@@ -29,7 +29,7 @@ class StoreTransferRequest extends FormRequest
         return [
             'staff_id' => ['required', 'exists:institution_person,id'],
             'unit_id' => ['required', 'exists:units,id'],
-            'start_date' => ['required', 'date', 'after_or_equal:' . $startDate],
+            'start_date' => ['date', 'after_or_equal:' . $startDate, 'nullable'],
             'end_date' => ['nullable', 'date', 'after:start_date', 'before_or_equal:' . $endDate],
             'remarks' => ['nullable', 'string'],
         ];

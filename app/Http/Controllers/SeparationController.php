@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\InstitutionPerson;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+
+class SeparationController extends Controller
+{
+    public function index()
+    {
+        $separated = InstitutionPerson::query()
+            ->retired()
+            ->with(['person', 'statuses',])
+            ->withCurrentUnit()
+            ->withCurrentRank()
+            ->search(request()->search)
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($staff) => [
+                'id' => $staff->id,
+                'statuses' => $staff->statuses->map(function ($status) {
+                    return [
+                        'status' => $status->status->label(),
+                        'start_date' => $status->start_date?->format('d M Y'),
+                        'end_date' => $status->end_date?->format('d M Y'),
+                        'remarks' => $status->remarks,
+                        'description' => $status->description,
+                    ];
+                }),
+                'file_number' => $staff->file_number,
+                'staff_number' => $staff->staff_number,
+                'old_staff_number' => $staff->old_staff_number,
+                'hire_date' => $staff->hire_date?->format('d M Y'),
+                'hire_date_distance' => $staff->hire_date?->diffForHumans(),
+                'initials' => $staff->person->initials,
+                'name' => $staff->person->full_name,
+                'gender' => $staff->person->gender?->label(),
+                'dob' =>  $staff->person->date_of_birth?->format('d M Y'),
+                'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
+                'dob_distance' =>  $staff->person->date_of_birth?->diffInYears() . " years old",
+                'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
+                'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+                'current_rank' => $staff->currentRank ? [
+                    'id' => $staff->currentRank?->id,
+                    'name' => $staff->currentRank?->job?->name,
+                    'job_id' => $staff->currentRank->name,
+                    'start_date' => $staff->currentRank->start_date?->format('d M Y'),
+                    'start_date_distance' => $staff->currentRank->start_date?->diffForHumans(),
+                    'end_date' => $staff->currentRank->end_date?->format('d M Y'),
+                    'remarks' => $staff->currentRank->remarks,
+                ] : null,
+
+            ]);
+        return  Inertia::render('Separation/Index', [
+            'separated' => $separated,
+            'filters' => ['search' => request()->search],
+        ]);
+    }
+
+    public function show()
+    {
+        return  Inertia::render('Separation/Show', []);
+    }
+}

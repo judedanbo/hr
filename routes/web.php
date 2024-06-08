@@ -33,6 +33,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
 use App\Http\Controllers\RankStaffController;
+use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
@@ -173,6 +174,13 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
     Route::post('/staff/{staff}/write-note', 'writeNote')->name('staff.write-note');
+});
+
+// separation
+Route::controller(SeparationController::class)->middleware(['auth'])->group(function () {
+    Route::get('/separation', 'index')->name('separation.index');
+    Route::get('/separation/{staff}', 'show')->name('separation.show');
+    // Route::delete('/staff/{staff}/separation/{separation}', 'delete')->name('staff.separation.delete');
 });
 //  promote
 Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(function () {

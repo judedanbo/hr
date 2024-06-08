@@ -66,6 +66,7 @@ class InstitutionPerson extends Pivot
             ->withPivot('start_date', 'end_date', 'remarks', 'status', 'old_data')
             ->using(StaffUnit::class)
             ->orderByPivot('start_date', 'desc')
+            ->withTimestamps()
             // ->wherePivotNull('end_date')
             // ->whereNull('units.end_date');
             ->latest();
@@ -81,11 +82,13 @@ class InstitutionPerson extends Pivot
             'job_staff',
             'staff_id',
             'job_id'
-        )->withPivot(
-            'start_date',
-            'end_date',
-            'remarks'
         )
+            ->withPivot(
+                'start_date',
+                'end_date',
+                'remarks'
+            )
+            ->withTimestamps()
             ->using(JobStaff::class)
             ->orderByPivot('start_date', 'desc')
             // ->wherePivotNull('end_date')
@@ -193,15 +196,6 @@ class InstitutionPerson extends Pivot
 
     public function scopeActive($query)
     {
-        // return $query->addSelect([
-        //     'staff_status' => Status::select('status')
-        //         ->whereColumn('institution_person.id', 'status.staff_id')
-        //         // ->whereNull('status.end_date')
-        //         // ->whereNotNull('status.status')
-        //         ->where('status.status', 'A')
-        //         ->latest('status.start_date')
-        //         ->take(1)
-        // ]);
         return $query->whereHas('statuses', function ($query) {
             $query->whereNull('end_date');
             $query->where('status', 'A');
