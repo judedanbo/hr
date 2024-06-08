@@ -13,7 +13,8 @@ class SeparationController extends Controller
     {
         $separated = InstitutionPerson::query()
             ->retired()
-            ->with(['person', 'statuses',])
+            // ->where('status')
+            ->with(['person', 'statuses', 'notes'])
             ->withCurrentUnit()
             ->withCurrentRank()
             ->search(request()->search)
@@ -21,8 +22,14 @@ class SeparationController extends Controller
             ->withQueryString()
             ->through(fn ($staff) => [
                 'id' => $staff->id,
+                'note' => [
+                    'date' => $staff->notes->first()?->note_date,
+                    'note' => $staff->notes->first()?->note,
+                    'type' => $staff->notes->first()?->note_type->label()
+                ],
                 'statuses' => $staff->statuses->map(function ($status) {
                     return [
+                        'stat' => $status,
                         'status' => $status->status->label(),
                         'start_date' => $status->start_date?->format('d M Y'),
                         'end_date' => $status->end_date?->format('d M Y'),
@@ -54,6 +61,7 @@ class SeparationController extends Controller
                 ] : null,
 
             ]);
+        // dd($separated);
         return  Inertia::render('Separation/Index', [
             'separated' => $separated,
             'filters' => ['search' => request()->search],

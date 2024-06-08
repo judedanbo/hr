@@ -13,7 +13,7 @@ defineProps({
 	separated: { type: Array, required: true },
 });
 const emit = defineEmits(["openSeparation"]);
-const tableCols = ["Name", "Separation", "Staff"];
+const tableCols = ["Name", "Separation"];
 </script>
 
 <template>
@@ -37,10 +37,9 @@ const tableCols = ["Name", "Separation", "Staff"];
 								<TableData>
 									<StaffNameCard :staff="staff" />
 								</TableData>
-								<TableData align="right">
-									<!-- {{ unit.units.toLocaleString() }} -->
+								<!-- <TableData align="right">
 									<StaffRetirementCard :staff="staff" />
-								</TableData>
+								</TableData> -->
 								<TableData align="right">
 									<!-- {{ staff.statuses }} -->
 									<div v-for="status in staff.statuses">
@@ -49,8 +48,8 @@ const tableCols = ["Name", "Separation", "Staff"];
 											{{ status.start_date }} |
 											{{ status.end_date }}
 										</p>
-										<p>
-											{{ status.description }}
+										<p class="text-sm">
+											{{ staff.note?.note }}
 										</p>
 									</div>
 								</TableData>

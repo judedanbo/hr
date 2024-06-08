@@ -204,10 +204,14 @@ class InstitutionPerson extends Pivot
 
     public function scopeRetired($query)
     {
-        return $query->with(['statuses' => function ($query) {
+        return $query->whereHas('statuses', function ($query) {
             $query->whereNull('end_date');
             $query->where('status', '<>', 'A');
-        }]);
+        });
+        // return $query->with(['statuses' => function ($query) {
+        //     $query->whereNull('end_date');
+        //     $query->where('status', '<>', 'A');
+        // }]);
     }
 
     public function scopeCurrentStatus($query)
