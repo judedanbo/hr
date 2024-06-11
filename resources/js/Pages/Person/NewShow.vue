@@ -9,22 +9,24 @@ import Dependents from "../Staff/Dependents.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
+import StaffDetails from "./partials/StaffDetails.vue";
 import Summary from "./Summary.vue";
 import NewModal from "@/Components/NewModal.vue";
 import EditPersonForm from "@/Pages/Person/partials/EditPersonForm.vue";
-
+import RolesDetail from "./partials/RolesDetail.vue";
 
 let showEditForm = ref(false);
 
 let toggleEditForm = useToggle(showEditForm);
 
 let props = defineProps({
-	person: Object,
-	address: Object,
-	contacts: Array,
-	filters: Object,
-	dependents: Array,
-	staff: Object,
+	person: { type: Object, required: true },
+	address: { type: Object, required: true },
+	contacts: { type: Array, required: true },
+	filters: { type: Object, default: () => null },
+	dependents: { type: Array, required: true },
+	staff: { type: Object, required: true },
+	dependant: { type: Object, required: true },
 });
 
 let BreadcrumbLinks = [
@@ -150,32 +152,26 @@ let BreadcrumbLinks = [
 				</div>
 			</header>
 
-			<div class="mx-auto max-w-7xl py-4 xl:px-8 flex">
-				<div>status</div>
-				<div
-					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
-				>
-					<!-- <StaffDates class="w-full lg:flex-1" :staff="staff" /> -->
-					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
-						<!-- Employment summary -->
-
-						<Summary :person="person" />
-						<!-- Contact information -->
-						<Address
-							:address="address"
-							:contacts="contacts"
-							:person="person.id"
-						/>
-						<!-- <Dependents :dependents="dependents" /> -->
-					</div>
-					<div
-						class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4"
-					></div>
+			<div class="mx-auto max-w-7xl py-4 xl:px-8 flex gap-2 align-start">
+				<div class="flex flex-wrap gap-y-3 w-1/3">
+					<Summary :person="person" />
+					<Address
+						:address="address"
+						:contacts="contacts"
+						:person="person.id"
+					/>
 				</div>
+				<div class="flex gap-2 flex-wrap flex-col">
+					<StaffDetails class="" :staff="staff" />
+				</div>
+				<RolesDetail :person="person.id" />
 			</div>
 		</main>
 		<NewModal :show="showEditForm" @close="toggleEditForm()">
-				<EditPersonForm :person-id="person.id" @form-submitted="toggleEditForm()" />
+			<EditPersonForm
+				:person-id="person.id"
+				@form-submitted="toggleEditForm()"
+			/>
 		</NewModal>
 	</MainLayout>
 </template>

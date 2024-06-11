@@ -7,8 +7,8 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(addYears(new Date(), 3), "yyyy-MM-dd");
 
 const props = defineProps({
-	institution: Number,
-	hire_date: String,
+	institution: { type: Number, required: true },
+	hireDate: { type: String, required: true },
 });
 let types = ref([]);
 
@@ -21,15 +21,15 @@ onMounted(async () => {
 </script>
 <template>
 	<FormKit
-		type="hidden"
 		id="hire_date"
+		type="hidden"
 		name="hire_date"
 		:value="props.hire_date"
 	/>
 	<FormKit
+		id="staff_type"
 		type="select"
 		name="staff_type"
-		id="staff_type"
 		validation="required|string"
 		label="Staff type"
 		placeholder="Select staff type"
@@ -38,19 +38,20 @@ onMounted(async () => {
 	/>
 	<div class="sm:flex gap-4">
 		<FormKit
+			id="start_date"
 			type="date"
 			name="start_date"
 			:max="today"
-			id="start_date"
 			label="Start date"
+			:value="today"
 			:validation="'required|date_before:' + start_date"
 			validation-visibility="submit"
 			outer-class="sm:flex-1"
 		/>
 		<FormKit
+			id="end_date"
 			type="date"
 			name="end_date"
-			id="end_date"
 			:max="end_date"
 			label="End date"
 			:validation="'date_before:' + end_date"

@@ -82,6 +82,7 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 });
 Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->name('person.avatar');
 Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
+Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->name('person-roles.dependent');
 Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth'])->name('person.avatar.update');
 
 // Institution

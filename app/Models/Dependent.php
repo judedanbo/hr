@@ -18,21 +18,14 @@ class Dependent extends Model
         'relation',
     ];
 
-    /**
-     * Get the person associated with the Dependent
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
     public function person(): BelongsTo
     {
         return $this->BelongsTo(Person::class);
     }
 
-    /**
-     * Get the staff associated with the Dependent
-     */
-    public function staff(): HasOne
+
+    public function staff(): BelongsTo
     {
-        return $this->hasOne(InstitutionPerson::class, 'staff_id');
+        return $this->belongsTo(InstitutionPerson::class, 'staff_id');
     }
 }

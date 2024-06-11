@@ -5,8 +5,8 @@ const emit = defineEmits(["formSubmitted"]);
 import StaffTypeForm from "@/Pages/StaffType/partials/StaffTypeForm.vue";
 
 const props = defineProps({
-	staff: Object,
-	institution: Number,
+	staff: { type: Object, required: true },
+	institution: { type: Number, required: true },
 });
 
 let types = ref([]);
@@ -41,7 +41,7 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Change Staff Type</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit type="hidden" name="staff_id" :value="staff.id" />
 			<FormKit type="hidden" name="institution_id" :value="institution" />
 			<StaffTypeForm :institution="institution" :hire_date="staff.hire_date" />

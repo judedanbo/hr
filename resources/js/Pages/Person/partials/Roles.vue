@@ -1,9 +1,8 @@
 <script setup>
 import axios from "axios";
-import { Link } from "@inertiajs/inertia-vue3";
 import { onMounted, ref } from "vue";
 let props = defineProps({
-	person: Number,
+	person: { type: Number, required: true },
 });
 let roles = ref(null);
 onMounted(async () => {

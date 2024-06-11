@@ -49,7 +49,7 @@ class Institution extends Model
      */
     public function staff(): HasMany
     {
-        return $this->hasMany(InstitutionPerson::class)->active();
+        return $this->hasMany(InstitutionPerson::class, 'person_id')->active();
     }
 
     /**

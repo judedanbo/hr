@@ -37,7 +37,7 @@ let getAge = (dateString) => {
 	<main class="w-full">
 		<h2 class="sr-only">Contact Information</h2>
 		<div
-			class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-300/80"
+			class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-400/50"
 		>
 			<dl class="flex flex-wrap">
 				<div class="flex-auto pl-6 pt-6">

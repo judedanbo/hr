@@ -33,4 +33,16 @@ class PersonRolesController extends Controller
 
         return compact('staff', 'dependent', 'user');
     }
+    public function dependent(Person $person)
+    {
+        $person->load([
+            'dependent.staff.person',
+        ]);
+        return [
+            'staff_id' => [$person->dependent->staff->id],
+            'staff_number' => [$person->dependent->staff->staff_number],
+            'file_number' => [$person->dependent->staff->file_number],
+            'staff_name' => [$person->dependent->staff->person->full_name,]
+        ];
+    }
 }

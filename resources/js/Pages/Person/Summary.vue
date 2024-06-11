@@ -1,5 +1,4 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
 import { Link } from "@inertiajs/inertia-vue3";
 import {
 	CalendarDaysIcon,
@@ -14,18 +13,6 @@ defineProps({
 		default: () => ({}),
 	},
 });
-const formattedDob = (dob) => {
-	return new Date(dob).toLocaleDateString("en-GB", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
-};
-
-let getAge = (dateString) => {
-	const date = new Date(dateString);
-	return differenceInYears(new Date(), date);
-};
 </script>
 <template>
 	<!-- Personal Details summary -->

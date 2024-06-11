@@ -7,7 +7,7 @@ import {
 } from "@heroicons/vue/20/solid";
 
 defineProps({
-	items: Array,
+	items: { type: Array, default: () => [] },
 });
 const emit = defineEmits(["itemClicked"]);
 </script>
@@ -35,10 +35,10 @@ const emit = defineEmits(["itemClicked"]);
 				class="absolute right-5 -top-3 z-50 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-500 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
 			>
 				<MenuItem
-					@click="emit('itemClicked', item)"
 					v-for="item in items"
 					:key="item"
 					v-slot="{ active }"
+					@click="emit('itemClicked', item)"
 				>
 					<button
 						type="button"

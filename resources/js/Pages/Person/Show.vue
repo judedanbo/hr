@@ -1,9 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head } from "@inertiajs/inertia-vue3";
-import Tab from "@/Components/Tab.vue";
 import { format, differenceInYears } from "date-fns";
-import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import PersonContacts from "./PersonContacts.vue";
 import PersonAddresses from "./PersonAddresses.vue";
 import Avatar from "./partials/Avatar.vue";
@@ -20,11 +18,11 @@ let getAge = (dateString) => {
 };
 
 let props = defineProps({
-	person: Object,
-	contacts: Object,
-	contact_types: Array,
-	filters: Object,
-	address: Object,
+	person: { type: Object, required: true },
+	contacts: { type: Object, required: true },
+	contactTypes: { type: Array, required: true },
+	filters: { type: Object, required: true },
+	address: { type: Object, required: true },
 });
 
 let tabs = [

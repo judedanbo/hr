@@ -11,9 +11,9 @@ import StaffStatusHistory from "./partials/StaffStatusHistory.vue";
 const emit = defineEmits(["closeForm", "editHistory", "deleteHistory"]);
 
 let props = defineProps({
-	statuses: Array,
-	staff: Object,
-	institution: Number,
+	statuses: { type: Array, required: true },
+	staff: { type: Object, required: true },
+	institution: { type: Number, required: true },
 });
 
 let openStatusModal = ref(false);
@@ -56,7 +56,7 @@ const deleteStaffStatus = () => {
 	<main>
 		<h2 class="sr-only">Status History</h2>
 		<div
-			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80"
+			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-400/50"
 		>
 			<dl class="flex flex-wrap">
 				<div class="flex-auto pl-6 pt-6">
@@ -68,45 +68,45 @@ const deleteStaffStatus = () => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleStatusModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleStatusModal()"
 					>
 						{{ "Change" }}
 					</button>
 				</div>
 				<StaffStatusHistory
-					@editStaffStatus="(model) => editStaffStatus(model)"
-					@deleteStaffStatus="(model) => confirmDelete(model)"
 					:statuses="statuses"
+					@edit-staff-status="(model) => editStaffStatus(model)"
+					@delete-staff-status="(model) => confirmDelete(model)"
 				/>
 			</dl>
 		</div>
-		<Modal @close="toggleStatusModal()" :show="openStatusModal">
+		<Modal :show="openStatusModal" @close="toggleStatusModal()">
 			<Create
-				@formSubmitted="toggleStatusModal()"
 				:staff="staff"
 				:institution="institution"
 				:statuses="statuses"
+				@form-submitted="toggleStatusModal()"
 			/>
 		</Modal>
 		<!-- Edit staff History Modal -->
-		<Modal @close="toggleEditStaffStatusModal()" :show="openEditStaffModal">
+		<Modal :show="openEditStaffModal" @close="toggleEditStaffStatusModal()">
 			<EditStaffStatus
-				@formSubmitted="toggleEditStaffStatusModal()"
 				:institution="institution"
-				:staffStatus="staffStatus"
+				:staff-status="staffStatus"
 				:staff="staff"
+				@form-submitted="toggleEditStaffStatusModal()"
 			/>
 		</Modal>
 
 		<!-- Delete staff History Modal -->
 		<Modal
-			@close="toggleDeleteStaffStatusModal()"
 			:show="openDeleteStaffStatusModal"
+			@close="toggleDeleteStaffStatusModal()"
 		>
 			<DeleteStaffStatus
 				@close="toggleDeleteStaffStatusModal()"
-				@deleteConfirmed="deleteStaffStatus()"
+				@delete-confirmed="deleteStaffStatus()"
 			/>
 		</Modal>
 	</main>

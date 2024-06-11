@@ -9,11 +9,10 @@ import DeleteStaffType from "./Delete.vue";
 import { Inertia } from "@inertiajs/inertia";
 
 const emit = defineEmits(["closeForm", "editType", "deleteType"]);
-
 let props = defineProps({
-	types: Array,
-	staff: Object,
-	institution: Number,
+	types: { type: Array, required: true },
+	staff: { type: Object, required: true },
+	institution: { type: Number, required: true },
 });
 
 let openStaffTypeModal = ref(false);
@@ -57,7 +56,7 @@ const deleteStaffType = () => {
 	<main>
 		<h2 class="sr-only">Staff Type</h2>
 		<div
-			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80"
+			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-400/50"
 		>
 			<dl class="flex flex-wrap">
 				<div class="flex-auto pl-6 pt-6">
@@ -69,8 +68,8 @@ const deleteStaffType = () => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleStaffTypeModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleStaffTypeModal()"
 					>
 						{{ "Change" }}
 					</button>
@@ -127,10 +126,10 @@ const deleteStaffType = () => {
 								>
 									{{ type.end_date_display }}
 								</td>
-								<td>
+								<td class="flex justify-end">
 									<SubMenu
-										@itemClicked="(action) => subMenuClicked(action, type)"
 										:items="['Edit', 'Delete']"
+										@item-clicked="(action) => subMenuClicked(action, type)"
 									/>
 								</td>
 							</tr>
@@ -145,32 +144,32 @@ const deleteStaffType = () => {
 				</div>
 			</dl>
 		</div>
-		<Modal @close="toggleStaffTypeModal()" :show="openStaffTypeModal">
+		<Modal :show="openStaffTypeModal" @close="toggleStaffTypeModal()">
 			<Create
-				@formSubmitted="toggleStaffTypeModal()"
 				:staff="staff"
-				:staffType="staffType"
+				:staff-type="staffType"
 				:institution="institution"
+				@form-submitted="toggleStaffTypeModal()"
 			/>
 		</Modal>
 		<!-- Edit staff Type Modal -->
-		<Modal @close="toggleEditStaffTypeModal()" :show="openEditStaffTypeModal">
+		<Modal :show="openEditStaffTypeModal" @close="toggleEditStaffTypeModal()">
 			<EditStaffType
-				@formSubmitted="toggleEditStaffTypeModal()"
 				:staff="staff"
 				:institution="institution"
-				:staffType="staffType"
+				:staff-type="staffType"
+				@form-submitted="toggleEditStaffTypeModal()"
 			/>
 		</Modal>
 
 		<!-- Delete staff type Modal -->
 		<Modal
-			@close="toggleDeleteStaffTypeModal()"
 			:show="openDeleteStaffTypeModal"
+			@close="toggleDeleteStaffTypeModal()"
 		>
 			<DeleteStaffType
 				@close="toggleDeleteStaffTypeModal()"
-				@deleteConfirmed="deleteStaffType()"
+				@delete-confirmed="deleteStaffType()"
 			/>
 		</Modal>
 	</main>
