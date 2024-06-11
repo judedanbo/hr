@@ -8,6 +8,7 @@ import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 import TransferList from "./TransferList.vue";
 import EditTransfer from "./partials/EditTransfer.vue";
+import ApproveTransfer from "./partials/ApproveTransfer.vue";
 
 const emit = defineEmits(["closeForm"]);
 const openEditTransferModal = ref(false);
@@ -18,9 +19,13 @@ const editTransfer = (model) => {
 	editModel.value = model;
 	toggleEditTransferModal();
 };
+
+const openApproveTransferModal = ref(false);
+const toggleApproveTransferModal = useToggle(openApproveTransferModal);
+const approveModel = ref(null);
 const approveTransfer = (model) => {
-	editModel.value = model;
-	toggleEditTransferModal();
+	approveModel.value = model;
+	toggleApproveTransferModal();
 };
 
 const openDeleteTransferModal = ref(false);
@@ -111,24 +116,34 @@ watch(
 			/>
 		</Modal>
 
-		<NewModal @close="toggleEditTransferModal()" :show="openEditTransferModal">
+		<NewModal :show="openEditTransferModal" @close="toggleEditTransferModal()">
 			<EditTransfer
-				@formSubmitted="toggleEditTransferModal()"
 				:institution="institution"
 				:transfer="editModel"
+				@form-submitted="toggleEditTransferModal()"
 			/>
 		</NewModal>
 
 		<NewModal
-			@close="toggleDeleteTransferModal()"
 			:show="openDeleteTransferModal"
+			@close="toggleDeleteTransferModal()"
 		>
 			<DeleteTransfer
-				@deleteConfirmed="
-					deleteTransfer(deleteModel.staff_id, deleteModel.unit_id)
-				"
 				:model="deleteModel"
 				:staff="staffName"
+				@delete-confirmed="
+					deleteTransfer(deleteModel.staff_id, deleteModel.unit_id)
+				"
+			/>
+		</NewModal>
+		<NewModal
+			:show="openApproveTransferModal"
+			@close="toggleApproveTransferModal()"
+		>
+			<ApproveTransfer
+				:institution="institution"
+				:transfer="approveModel"
+				@form-submitted="toggleApproveTransferModal()"
 			/>
 		</NewModal>
 	</main>

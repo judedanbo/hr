@@ -10,20 +10,20 @@ const subMenuClicked = (action, model) => {
 	if (action == "Delete") {
 		emit("deleteTransfer", model);
 	}
-	if ((action = "Approve")) {
-		let approve = axios
-			.patch(
-				route("staff.transfer.approve", {
-					staff: model.staff_id,
-					unit: model.unit_id,
-				}),
-			)
-			.then(function (response) {
-				if (response.data) {
-					window.location.reload();
-				}
-			});
-		// emit("approveTransfer", model);
+	if (action == "Approve") {
+		// let approve = axios
+		// 	.patch(
+		// 		route("staff.transfer.approve", {
+		// 			staff: model.staff_id,
+		// 			unit: model.unit_id,
+		// 		}),
+		// 	)
+		// 	.then(function (response) {
+		// 		if (response.data) {
+		// 			window.location.reload();
+		// 		}
+		// 	});
+		emit("approveTransfer", model);
 	}
 };
 let props = defineProps({

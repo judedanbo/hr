@@ -19,7 +19,7 @@ onMounted(async () => {
 
 const submitHandler = (data) => {
 	Inertia.patch(
-		route("staff.transfer.update", {
+		route("staff.transfer.approve", {
 			staff: props.transfer.staff_id,
 			unit: props.transfer.unit_id,
 		}),
@@ -37,7 +37,7 @@ const submitHandler = (data) => {
 
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Staff Transfer</h1>
+		<h1 class="text-2xl pb-4 dark:text-gray-100">Approve Staff Transfer</h1>
 
 		<FormKit
 			type="form"
@@ -61,16 +61,17 @@ const submitHandler = (data) => {
 				placeholder="Select new location"
 				:options="units"
 				error-visibility="submit"
+				disabled="true"
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
 					id="start_date"
 					type="date"
 					name="start_date"
-					label="Start date"
+					label="Assumption date"
+					validation="required|date"
 					validation-visibility="submit"
 				/>
-				<FormKit id="end_date" type="date" name="end_date" label="End date" />
 			</div>
 			<FormKit
 				id="remarks"
@@ -87,3 +88,17 @@ const submitHandler = (data) => {
 		</div>
 	</main>
 </template>
+
+<style scoped>
+.formkit-outer {
+	@apply w-full;
+}
+
+.formkit-submit {
+	@apply justify-self-end;
+}
+
+.formkit-actions {
+	@apply flex justify-end;
+}
+</style>

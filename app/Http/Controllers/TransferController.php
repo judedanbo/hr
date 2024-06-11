@@ -15,9 +15,12 @@ class TransferController extends Controller
 {
     public function store(StoreTransferRequest $request, InstitutionPerson $staff)
     {
-        $staff->units()->wherePivot('end_date', null)->update([
-            'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
-        ]);
+        // dd($request->start_date);
+        $staff->units()->wherePivot('end_date', null)
+            ->wherePivot('unit_id', '<>', $request->unit_id)
+            ->update([
+                'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
+            ]);
 
         $staff->units()->attach($request->unit_id, [
             'start_date' => $request->start_date,
@@ -25,7 +28,14 @@ class TransferController extends Controller
             'remarks' => $request->remarks,
         ]);
 
-        return redirect()->back()->with('success', 'Staff promoted successfully');
+        if($request->start_date !== null){
+            $staff->units()->updateExistingPivot($request->unit_id, [
+                'status' => TransferStatusEnum::Approved,
+                ]);
+            return redirect()->back()->with('success', 'Staff promoted successfully');
+        }
+
+        return redirect()->back()->with('success', 'Staff promotion record created successfully');
     }
     public function update(UpdateTransferRequest $request, InstitutionPerson $staff, $unit)
     {
@@ -46,12 +56,17 @@ class TransferController extends Controller
         return redirect()->back()->with('success', 'Transfer has  been successfully deleted ');
     }
 
-    public function approve(InstitutionPerson $staff, $unit)
+    public function approve(UpdateTransferRequest $request, InstitutionPerson $staff, $unit)
     {
-        return $staff->units()->updateExistingPivot($unit, [
-            'status' => TransferStatusEnum::Approved
+        $staff->units()->wherePivot('end_date', null)
+            ->wherePivot('unit_id', '<>',$request->unit_id)
+            ->update([
+                'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
+            ]);
+        $staff->units()->updateExistingPivot($unit, [
+            'status' => TransferStatusEnum::Approved,
+            'start_date' => $request->start_date,
         ]);
-        // dd($approve);
-        // return redirect()->back(); //->with('success', 'Transfer has  been successfully approved ');
+        return redirect()->back()->with('success', 'Transfer has  been successfully approved ');
     }
 }
