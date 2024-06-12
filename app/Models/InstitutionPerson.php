@@ -106,7 +106,7 @@ class InstitutionPerson extends Pivot
         return $this->BelongsTo(StaffUnit::class);
     }
 
-    public function scopeWithCurrentUnit($query)
+    public function scopeCurrentUnit($query)
     {
         $query->addSelect([
             'current_unit_id' => StaffUnit::select('id')
@@ -165,7 +165,7 @@ class InstitutionPerson extends Pivot
         return $this->BelongsTo(JobStaff::class);
     }
 
-    public function scopeWithCurrentRank($query)
+    public function scopeCurrentRank($query)
     {
         $query->addSelect([
             'current_rank_id' => JobStaff::select('id')
@@ -212,6 +212,13 @@ class InstitutionPerson extends Pivot
         //     $query->whereNull('end_date');
         //     $query->where('status', '<>', 'A');
         // }]);
+    }
+
+    function scopeToRetire($query)
+    {
+        return $query->whereHas('person', function ($query) {
+            $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 57');
+        });
     }
 
     public function scopeCurrentStatus($query)

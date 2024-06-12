@@ -38,6 +38,7 @@ use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitTypeController;
+use App\Http\Controllers\StaffReportController;
 use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -301,6 +302,11 @@ Route::get('/report', [RecruitmentController::class, 'index'])->middleware(['aut
 Route::get('/report/recruitment', [RecruitmentController::class, 'recruitment'])->middleware(['auth'])->name('report.recruitment');
 Route::get('/report/recruitment/chart', [RecruitmentController::class, 'recruitmentChart'])->middleware(['auth'])->name('report.recruitment.chart');
 Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth'])->name('report.recruitment.details');
+
+// staff
+Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth'])->name('report.staff');
+Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth'])->name('report.staff-details');
+Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth'])->name('report.staff-retirement');
 
 Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');

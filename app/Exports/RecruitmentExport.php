@@ -4,9 +4,7 @@ namespace App\Exports;
 
 use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
-// use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -44,17 +42,17 @@ class RecruitmentExport implements
     {
         return [
             $staff->person->full_name,
-            $staff->person->gender->name,
-            $staff->person->date_of_birth->format('d F, Y'),
+            $staff->person->gender?->name,
+            $staff->person->date_of_birth?->format('d F, Y'),
             $staff->hire_date?->format('d F, Y'),
             $staff->years_employed,
             $staff->staff_number,
             $staff->old_staff_number,
             $staff->status,
             $staff->ranks->count() > 0 ? $staff->ranks->first()->name : null,
-            $staff->ranks->count() > 0 ? $staff->ranks->first()->pivot->start_date->format('d F, Y') : null,
+            $staff->ranks->count() > 0 ? $staff->ranks->first()->pivot->start_date?->format('d F, Y') : null,
             $staff->units->count() > 0 ? $staff->units->first()->name : null,
-            $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date->format('d F, Y') : null,
+            $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date?->format('d F, Y') : null,
         ];
     }
 

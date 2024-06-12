@@ -23,7 +23,6 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	console.log(props.contact.id);
 	Inertia.post(
 		route("person.contact.update", {
 			person: props.person,
@@ -47,7 +46,6 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Contacts</h1>
-		{{ props.contact }}
 		<FormKit
 			:value="props.contact"
 			type="form"

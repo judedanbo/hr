@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUpdated } from "vue";
 import MainNav from "../Components/MainNav.vue";
+import NewNav from "../Components/NewNav.vue";
 import TopMenu from "@/Components/TopMenu.vue";
 import { Link, usePage } from "@inertiajs/inertia-vue3";
 import Alert from "@/Components/Alert.vue";
@@ -79,6 +80,33 @@ const navigation = [
 		href: route("report.index"),
 		icon: ChartPieIcon,
 		current: route().current("report.*"),
+		children: [
+			{
+				name: "Staff position",
+				href: route("report.staff"),
+				current: route().current("report.promotion"),
+			},
+			{
+				name: "Promotion Report",
+				// href: route("report.promotion"),
+				current: route().current("report.promotion"),
+			},
+			{
+				name: "Staff Report",
+				// href: route("report.staff"),
+				current: route().current("report.staff"),
+			},
+			{
+				name: "Separation Report",
+				// href: route("report.separation"),
+				current: route().current("report.separation"),
+			},
+			{
+				name: "Unit Report",
+				// href: route("report.unit"),
+				current: route().current("report.unit"),
+			},
+		],
 	},
 ];
 const teams = [
@@ -179,7 +207,8 @@ const closeAlert = (index) => {
 								<div class="flex h-16 shrink-0 items-center">
 									<BreezeApplicationLogo class="block h-9 w-auto" />
 								</div>
-								<MainNav :navigation="navigation" :team="team" />
+								<MainNav :navigation="navigation" />
+								<!-- <NewNav :navigation="navigation" /> -->
 							</div>
 						</DialogPanel>
 					</TransitionChild>
@@ -208,7 +237,8 @@ const closeAlert = (index) => {
 						</h2>
 					</div>
 				</Link>
-				<MainNav :navigation="navigation" :teams="teams" />
+				<NewNav :navigation="navigation" />
+				<!-- <MainNav :navigation="navigation" :teams="teams" /> -->
 			</div>
 		</div>
 

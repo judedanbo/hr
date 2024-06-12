@@ -2,7 +2,7 @@
 import { Link } from "@inertiajs/inertia-vue3";
 import { Cog6ToothIcon } from "@heroicons/vue/24/outline";
 defineProps({
-	navigation: Array,
+	navigation: { type: Array, required: true },
 });
 </script>
 <template>
