@@ -7,7 +7,7 @@ import AddDependentForm from "./Create.vue";
 
 const emit = defineEmits(["formSubmitted"]);
 defineProps({
-	staff_id: {
+	staffId: {
 		type: Number,
 		required: true,
 	},

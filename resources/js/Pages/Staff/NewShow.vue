@@ -24,6 +24,7 @@ import {
 import Avatar from "../Person/partials/Avatar.vue";
 import NewModal from "@/Components/NewModal.vue";
 import EditStaffForm from "./EditStaffForm.vue";
+import EditContactForm from "./EditContactForm.vue";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -56,6 +57,13 @@ let BreadcrumbLinks = [
 	{ name: "Staff", url: "/staff" },
 	{ name: props.person.name, url: "/" },
 ];
+const openEditContact = ref(false);
+const toggleEditContactModal = useToggle(openEditContact);
+// const confirmDelete = useToggle(openEditModal);
+
+const editContactModal = () => {
+	openEditContact.value = !openEditContact.value;
+};
 </script>
 <template>
 	<Head :title="person.name" />
@@ -202,10 +210,11 @@ let BreadcrumbLinks = [
 							:address="address"
 							:contacts="contacts"
 							:person="person.id"
+							@edit-contact="toggleEditContactModal()"
 						/>
 						<!-- TODO Add dependant forme and display -->
 						<Dependents
-							:staff_id="staff.staff_id"
+							:staff-id="staff.staff_id"
 							:dependents="staff.dependents"
 						/>
 						<!-- <StaffDependents v-if="staff" :staff="staff" class="" /> -->
@@ -284,6 +293,14 @@ let BreadcrumbLinks = [
 			</div>
 			<NewModal :show="openEditModal" @close="toggle()">
 				<EditStaffForm :staff-id="staff.staff_id" @form-submitted="toggle()" />
+			</NewModal>
+
+			<NewModal :show="openEditContact" @close="toggleEditContactModal()">
+				<!-- {{ contact }} -->
+				<EditContactForm
+					:contact="staff.staff_id"
+					@form-submitted="(model) => editContactModal(model)"
+				/>
 			</NewModal>
 		</main>
 	</MainLayout>

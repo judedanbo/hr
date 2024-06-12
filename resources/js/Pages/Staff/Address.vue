@@ -1,17 +1,31 @@
 <script setup>
-import { differenceInYears } from "date-fns";
-import { Link } from "@inertiajs/inertia-vue3";
 import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
 import { useToggle } from "@vueuse/core";
 import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
+import EditContact from "../Person/partials/EditContact.vue";
+import SubMenu from "@/Components/SubMenu.vue";
 
 defineProps({
-	address: Object,
-	contacts: Array,
-	person: Number,
+	address: { type: Object, required: true },
+	contacts: { type: Array, required: true },
+	person: { type: Number, required: true },
 });
+
+const emit = defineEmits(["editContact", "deleteDependent"]);
+const contactModel = ref(null);
+const subMenuClicked = (action, model) => {
+	console.log(action, model);
+	if (action == "Edit") {
+		contactModel.value = model;
+		toggleEditContactModal();
+		// emit("editContact", model);
+	}
+	if (action == "Delete") {
+		emit("deleteDependent", model);
+	}
+};
 
 let openAddressModal = ref(false);
 let toggleAddressModal = useToggle(openAddressModal);
@@ -19,21 +33,12 @@ let toggleAddressModal = useToggle(openAddressModal);
 let openContactModal = ref(false);
 let toggleContactModal = useToggle(openContactModal);
 
-const formattedDob = (dob) => {
-	return new Date(dob).toLocaleDateString("en-GB", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
-};
-
-let getAge = (dateString) => {
-	const date = new Date(dateString);
-	return differenceInYears(new Date(), date);
-};
+let openEditContactModal = ref(false);
+let toggleEditContactModal = useToggle(openEditContactModal);
 </script>
 <template>
 	<!-- contact History -->
+	<!-- {{ contacts }} -->
 	<main class="w-full">
 		<h2 class="sr-only">Staff Contact Information</h2>
 		<div
@@ -49,8 +54,8 @@ let getAge = (dateString) => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleAddressModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleAddressModal()"
 					>
 						Change address
 					</button>
@@ -95,8 +100,8 @@ let getAge = (dateString) => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleContactModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleContactModal()"
 					>
 						Add Contact
 					</button>
@@ -124,6 +129,7 @@ let getAge = (dateString) => {
 								>
 									Details
 								</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -134,13 +140,19 @@ let getAge = (dateString) => {
 							>
 								<td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
 									<div class="font-medium text-gray-900 dark:text-gray-100">
-										{{ contact.contact_type }}
+										{{ contact.contact_type_dis }}
 									</div>
 								</td>
 								<td
 									class="hidden px-3 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
 								>
 									{{ contact.contact }}
+								</td>
+								<td>
+									<SubMenu
+										:items="['Edit', 'Delete']"
+										@item-clicked="(action) => subMenuClicked(action, contact)"
+									/>
 								</td>
 							</tr>
 						</tbody>
@@ -154,11 +166,19 @@ let getAge = (dateString) => {
 				</div>
 			</dl>
 		</div>
-		<Modal @close="toggleAddressModal()" :show="openAddressModal">
-			<AddAddress @formSubmitted="toggleAddressModal()" :person="person" />
+		<Modal :show="openAddressModal" @close="toggleAddressModal()">
+			<AddAddress :person="person" @form-submitted="toggleAddressModal()" />
 		</Modal>
-		<Modal @close="toggleContactModal()" :show="openContactModal">
-			<AddContact @formSubmitted="toggleContactModal()" :person="person" />
+		<Modal :show="openContactModal" @close="toggleContactModal()">
+			<AddContact :person="person" @form-submitted="toggleContactModal()" />
+		</Modal>
+
+		<Modal :show="openEditContactModal" @close="toggleEditContactModal()">
+			<EditContact
+				:contact="contactModel"
+				:person="person"
+				@form-submitted="toggleEditContactModal()"
+			/>
 		</Modal>
 	</main>
 </template>

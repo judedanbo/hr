@@ -9,18 +9,18 @@ onMounted(async () => {
 </script>
 <template>
 	<FormKit
+		id="contact_type"
 		type="select"
 		name="contact_type"
-		id="contact_type"
 		label="Contact type"
 		placeholder="Select one"
 		validation="required"
 		:options="contact_types"
 	/>
 	<FormKit
+		id="contact"
 		type="text"
 		name="contact"
-		id="contact"
 		label="Contact"
 		placeholder="Contact"
 		validation="required|length:2,50"

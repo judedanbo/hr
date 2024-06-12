@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ContactTypeEnum;
 use App\Http\Requests\UpdatePersonRequest;
+use App\Models\Contact;
 use App\Models\Person;
 use Exception;
 use Illuminate\Http\Request;
@@ -136,7 +137,7 @@ class PersonController extends Controller
                     'end_date' => $status->end_date?->format('Y-m-d'),
                     'end_date_display' => $status->end_date?->format('d M Y'),
                 ]),
-                'type' =>  $inst->staff->type->map(function($type) {
+                'type' =>  $inst->staff->type->map(function ($type) {
                     return [
                         'id' => $type->id,
                         'type' => $type->staff_type,
@@ -146,7 +147,7 @@ class PersonController extends Controller
                         'start_date_display' => $type->start_date?->format('d M Y'),
                         'end_date_display' => $type->end_date?->format('d M Y'),
                     ];
-                } ),
+                }),
                 'units' =>  [
                     'unit_id' => $inst->staff->units?->first()->id,
                     'unit_name' => $inst->staff->units?->first()->name,
@@ -158,7 +159,7 @@ class PersonController extends Controller
                     'end_date' => $inst->staff->units?->first()->pivot->end_date?->format('d M Y'),
                     'remarks' => $inst->staff->units?->first()->pivot->remarks,
                 ],
-           
+
                 'ranks' => [ //$inst->staff->ranks->first(),
                     'id' => $inst->staff->ranks?->first()->id,
                     'name' => $inst->staff->ranks?->first()->name,
@@ -167,7 +168,7 @@ class PersonController extends Controller
                     'start_date_distance' => $inst->staff->ranks?->first()->start_date?->diffForHumans(),
                     'end_date' => $inst->staff->ranks?->first()->end_date?->format('d M Y'),
                     'remarks' => $inst->staff->ranks?->first()->remarks,
-                ] ,
+                ],
                 'institution_name' =>  $inst->name,
                 'institution_id' =>  $inst->id,
                 'staff_id' =>  $inst->staff->id,
@@ -228,11 +229,17 @@ class PersonController extends Controller
             'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:30',
         ]);
-
-
         $person->contacts()->create($attribute);
-
         return redirect()->back();
+    }
+    public function updateContact(Request $request,  $person, $contact)
+    {  
+        $attribute = $request->validate([
+            'contact_type' => [new Enum(ContactTypeEnum::class)],
+            'contact' => 'required|min:7|max:30',
+            ]);
+        $contact = Contact::find($contact)->update($attribute);
+        return redirect()->back()->with('success', 'Contact updated');
     }
 
     public function addAddress(Request $request, Person $person)

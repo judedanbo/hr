@@ -3,7 +3,7 @@ import SubMenu from "@/Components/SubMenu.vue";
 const emit = defineEmits(["editDependent", "deleteDependent"]);
 
 defineProps({
-	dependents: Array,
+	dependents: { type: Array, default: () => [] },
 });
 
 const subMenuClicked = (action, model) => {
@@ -64,8 +64,8 @@ const subMenuClicked = (action, model) => {
 					</td>
 					<td>
 						<SubMenu
-							@itemClicked="(action) => subMenuClicked(action, dependent)"
 							:items="['Edit', 'Delete']"
+							@item-clicked="(action) => subMenuClicked(action, dependent)"
 						/>
 					</td>
 				</tr>

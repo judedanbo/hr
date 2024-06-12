@@ -76,6 +76,7 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
     Route::patch('/person/{person}', 'update')->name('person.update');
     Route::post('/person', 'store')->name('person.store');
     Route::post('/person/{person}/contact', 'addContact')->name('person.contact.create');
+    Route::post('/person/{person}/contact/{contact}', 'updateContact')->name('person.contact.update');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
     // Route::get('/person/avatar', 'avatar')->name('person.ava');

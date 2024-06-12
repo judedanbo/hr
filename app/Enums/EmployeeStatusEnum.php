@@ -16,6 +16,7 @@ enum EmployeeStatusEnum: String
     case Dismissed = 'M';
     case leavePay = 'P';
     case leaveNoPay = 'N';
+    case Vacation = 'C';
 
     public  function label(): string
     {
@@ -32,6 +33,7 @@ enum EmployeeStatusEnum: String
             self::Dismissed => 'Dismissed',
             self::leavePay => 'Leave with pay',
             self::leaveNoPay => 'Leave without pay',
+            self::Vacation => 'Vacation of post',
         };
     }
 }

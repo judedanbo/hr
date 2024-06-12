@@ -2,7 +2,6 @@
 import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
 import { Inertia } from "@inertiajs/inertia";
-
 import { useToggle } from "@vueuse/core";
 import AddDependant from "./Add.vue";
 import EditDependant from "./Edit.vue";
@@ -10,8 +9,8 @@ import DeleteDependant from "./Delete.vue";
 import List from "./partials/List.vue";
 
 defineProps({
-	dependents: Array,
-	staff_id: Number,
+	dependents: { type: Array, default: () => [] },
+	staffId: { type: Number, required: true },
 });
 const selectedDependent = ref(null);
 
@@ -67,38 +66,37 @@ const deleteDependent = () => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						v-if="staff_id"
-						@click.prevent="toggleAddDependantFrom()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click.prevent="toggleAddDependantFrom()"
 					>
 						Add dependent
 					</button>
 				</div>
 				<List
-					@editDependent="(model) => editDependent(model)"
-					@deleteDependent="(model) => confirmDelete(model)"
 					:dependents="dependents"
+					@edit-dependent="(model) => editDependent(model)"
+					@delete-dependent="(model) => confirmDelete(model)"
 				/>
 			</dl>
 		</div>
-		<Modal @close="toggleAddDependantFrom()" :show="showAddDependantForm">
+		<Modal :show="showAddDependantForm" @close="toggleAddDependantFrom()">
 			<AddDependant
-				@formSubmitted="toggleAddDependantFrom()"
-				:staff_id="staff_id"
+				:staff-id="staffId"
+				@form-submitted="toggleAddDependantFrom()"
 			/>
 		</Modal>
-		<Modal @close="toggleEditDependent()" :show="showEditModel">
+		<Modal :show="showEditModel" @close="toggleEditDependent()">
 			<EditDependant
-				@formSubmitted="toggleEditDependent()"
-				:staff_id="staff_id"
+				:staff-id="staffId"
 				:dependent="selectedDependent"
+				@form-submitted="toggleEditDependent()"
 			/>
 		</Modal>
-		<Modal @close="toggleDeleteDependent()" :show="showDeleteModel">
+		<Modal :show="showDeleteModel" @close="toggleDeleteDependent()">
 			<DeleteDependant
-				@close="toggleDeleteDependent()"
-				@deleteConfirmed="deleteDependent()"
 				:person="selectedDependent.name"
+				@delete-confirmed="deleteDependent()"
+				@close="toggleDeleteDependent()"
 			/>
 		</Modal>
 	</main>

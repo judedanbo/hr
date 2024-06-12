@@ -214,7 +214,8 @@ class InstitutionPersonController extends Controller
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
-                'contact_type' => $contact->contact_type->label(),
+                'contact_type' => $contact->contact_type,
+                'contact_type_dis' => $contact->contact_type->label(),
                 'valid_end' => $contact->valid_end,
             ]) : null,
 
