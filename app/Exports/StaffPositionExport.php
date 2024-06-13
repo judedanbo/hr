@@ -41,7 +41,8 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person', 'ranks.category'])
+            ->join('rank_staff', 'institution_person.id', '=', 'rank_staff.staff_id')
+            ->with(['person'])
             ->currentRank()
             ->currentUnit()
             ->active();

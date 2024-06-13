@@ -115,7 +115,7 @@ class PromotionBatchController extends Controller
                 'staff_name' => $staff->person->full_name,
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M, Y'),
                 'institution' => $staff->institution->name,
-                'unit' => $staff->units ? [
+                'unit' => $staff->units->count() > 0 ? [
                     'id' => $staff->units?->first()?->id,
                     'name' => $staff->units?->first()?->name,
                     'start_date' => $staff->units?->first()?->pivot->start_date?->format('d M, Y'),

@@ -46,15 +46,17 @@ const submitHandler = (data, node) => {
 			/>
 			<FormKit
 				type="hidden"
-				name="institution_id"
-				id="institution_id"
-				label="institution_id"
+				name="unit_id"
+				id="unit_id"
+				label="Unit"
 				:value="unit"
 				validation="required|integer|min:1|max:150"
 				validation-visibility="submit"
 				disabled
 			/>
+			{{ institution }}
 			<!-- <FormKit
+
 				type="hidden"
 				name="institution"
 				id="institution"

@@ -148,7 +148,7 @@ class PersonController extends Controller
                         'end_date_display' => $type->end_date?->format('d M Y'),
                     ];
                 }),
-                'units' =>  [
+                'units' => $inst->staff->units->count() > 1 ? [
                     'unit_id' => $inst->staff->units?->first()->id,
                     'unit_name' => $inst->staff->units?->first()->name,
                     'status' => $inst->staff->units?->first()->pivot->status?->label(),
@@ -158,9 +158,9 @@ class PersonController extends Controller
                     'start_date' => $inst->staff->units?->first()->pivot->start_date?->format('d M Y'),
                     'end_date' => $inst->staff->units?->first()->pivot->end_date?->format('d M Y'),
                     'remarks' => $inst->staff->units?->first()->pivot->remarks,
-                ],
+                ] : null,
 
-                'ranks' => [ //$inst->staff->ranks->first(),
+                'ranks' => $inst->staff->ranks->count() > 0 ? [ //$inst->staff->ranks->first(),
                     'id' => $inst->staff->ranks?->first()->id,
                     'name' => $inst->staff->ranks?->first()->name,
                     'job_id' => $inst->staff->ranks?->first()->id,
@@ -168,7 +168,7 @@ class PersonController extends Controller
                     'start_date_distance' => $inst->staff->ranks?->first()->start_date?->diffForHumans(),
                     'end_date' => $inst->staff->ranks?->first()->end_date?->format('d M Y'),
                     'remarks' => $inst->staff->ranks?->first()->remarks,
-                ],
+                ] : null,
                 'institution_name' =>  $inst->name,
                 'institution_id' =>  $inst->id,
                 'staff_id' =>  $inst->staff->id,
@@ -233,11 +233,11 @@ class PersonController extends Controller
         return redirect()->back();
     }
     public function updateContact(Request $request,  $person, $contact)
-    {  
+    {
         $attribute = $request->validate([
             'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:30',
-            ]);
+        ]);
         $contact = Contact::find($contact)->update($attribute);
         return redirect()->back()->with('success', 'Contact updated');
     }

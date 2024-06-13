@@ -21,8 +21,8 @@ class PersonRolesController extends Controller
 
                 'institution_id' => $inst->id,
                 'institution_name' => $inst->name,
-                'status_id' => $inst->staff->statuses->first()->id,
-                'status' => $inst->staff->statuses->first()->status->label(),
+                'status_id' => $inst->staff->statuses->first()?->id,
+                'status' => $inst->staff->statuses->first()?->status->label(),
             ]);
         }
         // $person->institution->first()?->staff->statuses->map(fn ($status) => [
