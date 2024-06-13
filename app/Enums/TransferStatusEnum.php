@@ -12,7 +12,7 @@ enum TransferStatusEnum: string
   {
     return match ($this) {
       self::Pending => 'Pending',
-      self::Approved => 'Approved',
+      self::Approved => 'Resumed',
       // self::Rejected => 'Rejected',
     };
   }

@@ -110,6 +110,15 @@ onMounted(async () => {
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
+			id="maiden_name"
+			name="maiden_name"
+			type="text"
+			label="Maiden name"
+			validation="required"
+			placeholder="Maiden name"
+			outer-class="md:flex-grow"
+		/>
+		<FormKit
 			id="nationality"
 			name="nationality"
 			type="select"

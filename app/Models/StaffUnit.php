@@ -17,7 +17,6 @@ class StaffUnit extends Pivot
         'remarks'
     ];
 
-
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',

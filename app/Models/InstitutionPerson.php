@@ -173,7 +173,7 @@ class InstitutionPerson extends Pivot
                 ->latest('job_staff.start_date')
                 ->take(1)
         ])->with(['currentRank' => function ($query) {
-            $query->with('job:id,name');
+            $query->with(['job.category', 'job:id,name']);
         }]);
     }
 

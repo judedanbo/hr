@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -23,6 +24,8 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'Full Name',
             'Date of Birth',
             'Age',
+            'Appointment Date',
+            'Years Served',
             'Current Rank',
             'Current Unit',
             'Retirement Date',
@@ -38,6 +41,8 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
             $staff->person->date_of_birth?->diffInYears() . " years",
+            $staff->hire_date?->format('d F, Y'),
+            $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->person->date_of_birth?->addYears(60)->format('d F Y'),

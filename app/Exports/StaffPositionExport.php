@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -21,6 +22,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'File Number',
             'Staff Number',
             'Full Name',
+            'Years Served',
             'Current Rank',
             'Current Unit',
         ];
@@ -31,6 +33,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->file_number,
             $staff->staff_number,
             $staff->person->full_name,
+            $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
         ];
@@ -38,7 +41,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person'])
+            ->with(['person', 'ranks.category'])
             ->currentRank()
             ->currentUnit()
             ->active();
