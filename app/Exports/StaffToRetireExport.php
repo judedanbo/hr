@@ -54,11 +54,17 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
     {
         return InstitutionPerson::query()
             ->join('people', 'institution_person.person_id', '=', 'people.id')
+            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
+            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
+            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+            ->whereNull('job_staff.end_date')
             ->active()
             ->with(['person'])
             ->currentRank()
             ->currentUnit()
             ->toRetire()
-            ->orderBy('people.date_of_birth', 'asc');
+            ->orderBy('people.date_of_birth', 'asc')
+            ->orderBy('job_categories.level', 'asc')
+            ->orderBy('job_staff.start_date', 'asc');
     }
 }

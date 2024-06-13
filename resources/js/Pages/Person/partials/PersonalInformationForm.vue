@@ -114,7 +114,6 @@ onMounted(async () => {
 			name="maiden_name"
 			type="text"
 			label="Maiden name"
-			validation="required"
 			placeholder="Maiden name"
 			outer-class="md:flex-grow"
 		/>
