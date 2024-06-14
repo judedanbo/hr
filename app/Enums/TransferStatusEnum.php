@@ -19,7 +19,7 @@ enum TransferStatusEnum: string
   public function color(): string
   {
     return match ($this) {
-      self::Pending => 'text-gray-100',
+      self::Pending => 'dark:text-gray-100 text-gray-700',
       self::Approved => 'text-green-500',
       // self::Rejected => 'text-red-500',
     };

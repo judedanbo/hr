@@ -148,7 +148,7 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 								>
 									{{ contact.contact }}
 								</td>
-								<td>
+								<td class="flex justify-end">
 									<SubMenu
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, contact)"

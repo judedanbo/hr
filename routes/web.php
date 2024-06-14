@@ -307,6 +307,7 @@ Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail
 Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth'])->name('report.staff');
 Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth'])->name('report.staff-details');
 Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth'])->name('report.staff-retirement');
+Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth'])->name('report.staff-pending-transfer');
 
 Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');

@@ -27,7 +27,7 @@ enum EmployeeStatusEnum: String
             self::Left => 'Separated staff',
             self::Termination => 'Appointment Terminated',
             self::Resignation => 'Resigned staff',
-            self::Voluntary => 'Voluntary Resignation',
+            self::Voluntary => 'Voluntary Retirement',
             self::Deceased => 'Deceased',
             self::Retired => 'Statutory Retirement',
             self::Dismissed => 'Dismissed',

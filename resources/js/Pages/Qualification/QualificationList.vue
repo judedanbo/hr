@@ -66,6 +66,16 @@ const subMenuClicked = (action, model) => {
 						scope="col"
 						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
 					>
+						Staff
+					</th>
+					<th
+						scope="col"
+						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
+					></th>
+					<th
+						scope="col"
+						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
+					>
 						Institution
 					</th>
 					<th
@@ -92,12 +102,12 @@ const subMenuClicked = (action, model) => {
 					>
 						Year
 					</th>
-					<th
+					<!-- <th
 						scope="col"
 						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
 					>
 						Documents
-					</th>
+					</th> -->
 					<th><div class="sr-only">Actions</div></th>
 				</tr>
 			</thead>
@@ -107,6 +117,12 @@ const subMenuClicked = (action, model) => {
 					:key="qualification.id"
 					class="border-b border-gray-200 dark:border-gray-400/30"
 				>
+					<td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
+						<div class="font-medium text-gray-900 dark:text-gray-50">
+							{{ qualification.person }}
+						</div>
+						{{ qualification.staff_number }}
+					</td>
 					<td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
 						<div class="font-medium text-gray-900 dark:text-gray-50">
 							{{ qualification.institution }}
@@ -136,9 +152,9 @@ const subMenuClicked = (action, model) => {
 					>
 						{{ qualification.year }}
 					</td>
-					<td class="w-8">
-						<!-- {{ qualification.documents[0].document_title }} -->
-						<ToolTip
+					<!-- <td class="w-8"> -->
+					<!-- {{ qualification.documents[0].document_title }} -->
+					<!-- <ToolTip
 							v-if="qualification.documents?.length > 0"
 							:tooltip="qualification.documents[0].document_title"
 							:options="true"
@@ -149,9 +165,9 @@ const subMenuClicked = (action, model) => {
 								v-if="qualification.documents?.length > 0"
 								class="mx-auto w-8 h-8 text-gray-400 dark:text-gray-50 hover:text-green-700 dark:hover:text-white cursor-pointer hover:bg-green-100 dark:hover:bg-gray-800 rounded-full p-1"
 							/>
-						</ToolTip>
-					</td>
-					<td>
+						</ToolTip> -->
+					<!-- </td> -->
+					<td class="flex justify-end">
 						<SubMenu
 							:items="['Edit', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, qualification)"

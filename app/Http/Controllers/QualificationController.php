@@ -19,14 +19,18 @@ class QualificationController extends Controller
     {
         return Inertia::render('Qualification/Index', [
             'qualifications' => Qualification::query()
-                ->with('person')
+                ->with(['person.institution'])
                 ->orderBy('created_at', 'desc')
+                ->whereHas('person', function ($query) {
+                    $query->whereHas('institution');
+                })
                 ->paginate()
                 ->withQueryString()
                 ->through(function ($qualification) {
                     return [
                         'id' => $qualification->id,
                         'person' => $qualification->person->full_name,
+                        'staff_number' => $qualification->person->institution->first()->staff->staff_number,
                         'course' => $qualification->course,
                         'institution' => $qualification->institution,
                         'qualification' => $qualification->qualification,
@@ -89,7 +93,7 @@ class QualificationController extends Controller
     public function update(UpdateQualificationRequest $request, Qualification $qualification)
     {
         // return $request->validated();
-        if($request->validated()){
+        if ($request->validated()) {
             $qualification->update($request->validated()['staffQualification']['certification']);
             return redirect()->back()->with('success', 'Qualification updated.');
         }

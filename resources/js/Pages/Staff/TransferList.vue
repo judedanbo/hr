@@ -96,7 +96,7 @@ let props = defineProps({
 						>
 							{{ transfer.status }}
 						</td>
-						<td>
+						<td class="flex justify-end">
 							<SubMenu
 								:items="['Approve', 'Edit', 'Delete']"
 								@item-clicked="(action) => subMenuClicked(action, transfer)"

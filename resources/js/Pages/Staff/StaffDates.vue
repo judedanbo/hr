@@ -59,12 +59,17 @@ let getAge = (dateString) => {
 					Current Rank
 				</dt>
 				<dd class="mt-2 text-gray-500 dark:text-gray-300">
-					<span class="font-medium text-gray-900 dark:text-white">{{
-						staff.ranks[0]?.name
-					}}</span
-					><br />{{ formattedDob(staff?.ranks[0]?.start_date) }}<br />{{
-						staff[0]?.remarks
-					}}
+					<span class="font-medium text-gray-900 dark:text-white">
+						{{ staff.ranks[0]?.name }}
+					</span>
+
+					<br />
+					{{ formattedDob(staff?.ranks[0]?.start_date) }}
+					<span class="text-xs">
+						{{ staff.ranks[0]?.distance }}
+					</span>
+					<br />
+					{{ staff[0]?.remarks }}
 				</dd>
 			</div>
 			<div

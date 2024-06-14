@@ -28,18 +28,7 @@ const subMenuClicked = (action, model) => {
 					>
 						Status
 					</th>
-					<th
-						scope="col"
-						class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-					>
-						Start
-					</th>
-					<th
-						scope="col"
-						class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-					>
-						End
-					</th>
+
 					<th><div class="sr-only">Actions</div></th>
 				</tr>
 			</thead>
@@ -53,18 +42,16 @@ const subMenuClicked = (action, model) => {
 						<div class="font-medium text-gray-900 dark:text-gray-50">
 							{{ status.status_display }}
 						</div>
+						<div class="mt-1 truncate text-gray-500 dark:text-gray-100 text-xs">
+							{{ status.start_date_display }}
+							{{
+								status.end_date_display?.length > 0
+									? " - " + status.end_date_display
+									: " to date"
+							}}
+						</div>
 					</td>
-					<td
-						class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-					>
-						{{ status.start_date_display }}
-					</td>
-					<td
-						class="hidden px-1 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-					>
-						{{ status.end_date_display }}
-					</td>
-					<td>
+					<td class="flex justify-end">
 						<SubMenu
 							@itemClicked="(action) => subMenuClicked(action, status)"
 							:items="['Edit', 'Delete']"

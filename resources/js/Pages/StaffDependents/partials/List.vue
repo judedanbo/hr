@@ -62,7 +62,7 @@ const subMenuClicked = (action, model) => {
 					>
 						{{ dependent.relation }}
 					</td>
-					<td>
+					<td class="flex justify-end">
 						<SubMenu
 							:items="['Edit', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, dependent)"

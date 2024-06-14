@@ -28,6 +28,7 @@ class Unit extends Model
         'institution_id',
         'start_date',
         'end_date',
+        'region_id'
     ];
 
     /**
@@ -48,6 +49,10 @@ class Unit extends Model
         return $this->belongsTo(Unit::class, 'unit_id');
     }
 
+    public function region(): BelongsToMany
+    {
+        return $this->belongsToMany(Region::class);
+    }
     /**
      * Get all of the subs for the Unit
      */
@@ -108,8 +113,8 @@ class Unit extends Model
     {
         return $this->belongsToMany(InstitutionPerson::class, 'staff_unit',  'unit_id', 'staff_id')
             ->using(StaffUnit::class)
-        ->withPivot('start_date', 'end_date') //unit_id
-        ->wherePivotNull('end_date' ); //staff_id
+            ->withPivot('start_date', 'end_date') //unit_id
+            ->wherePivotNull('end_date'); //staff_id
         // ->where('status', 'Active');
     }
 

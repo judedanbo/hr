@@ -88,18 +88,6 @@ const deleteStaffType = () => {
 								>
 									Type
 								</th>
-								<th
-									scope="col"
-									class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-								>
-									Start
-								</th>
-								<th
-									scope="col"
-									class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
-								>
-									End
-								</th>
 								<th><div class="sr-only">Actions</div></th>
 							</tr>
 						</thead>
@@ -115,16 +103,16 @@ const deleteStaffType = () => {
 									>
 										{{ type.type_label }}
 									</div>
-								</td>
-								<td
-									class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/5"
-								>
-									{{ type.start_date_display }}
-								</td>
-								<td
-									class="hidden px-1 py-5 text-right text-xs text-gray-500 dark:text-gray-100 sm:table-cell w-1/5"
-								>
-									{{ type.end_date_display }}
+									<div
+										class="mt-1 truncate text-gray-500 dark:text-gray-100 text-xs"
+									>
+										{{ type.start_date_display }}
+										{{
+											type.end_date_display?.length > 0
+												? " - " + status.end_date_display
+												: " to date"
+										}}
+									</div>
 								</td>
 								<td class="flex justify-end">
 									<SubMenu

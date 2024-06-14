@@ -108,7 +108,7 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 								>
 									{{ type.end_date_display }}
 								</td>
-								<td>
+								<td class="flex justify-end">
 									<SubMenu
 										@itemClicked="(action) => subMenuClicked(action, type)"
 										:items="['Edit', 'Delete']"

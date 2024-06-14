@@ -71,7 +71,7 @@ const clicked = (action, model) => {
 					>
 						{{ promotion.end_date }}
 					</td>
-					<td class="w-8">
+					<td class="w-8 flex justify-end">
 						<!-- <EllipsisVerticalIcon class="w-4 text-right" /> -->
 						<SubMenu
 							:items="['Edit', 'Delete']"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PendingTransferExport;
 use App\Exports\StaffPositionExport;
 use App\Exports\StaffDetailsExport;
 use App\Exports\StaffToRetireExport;
@@ -20,5 +21,9 @@ class StaffReportController extends Controller
     function retirement(Excel $excel)
     {
         return $excel->download(new StaffToRetireExport, 'staff-to-retire.xlsx');
+    }
+    function pending(Excel $excel)
+    {
+        return $excel->download(new PendingTransferExport, 'staff-pending-transfer.xlsx');
     }
 }

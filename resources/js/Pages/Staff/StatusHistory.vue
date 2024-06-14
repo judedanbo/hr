@@ -120,7 +120,7 @@ const deleteStaffHistory = () => {
 								>
 									{{ status.end_date }}
 								</td>
-								<td>
+								<td class="flex justify-end">
 									<SubMenu
 										@itemClicked="(action) => subMenuClicked(action, status)"
 										:items="['Edit', 'Delete']"
