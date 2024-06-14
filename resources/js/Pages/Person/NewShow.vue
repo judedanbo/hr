@@ -24,9 +24,9 @@ let props = defineProps({
 	address: { type: Object, required: true },
 	contacts: { type: Array, required: true },
 	filters: { type: Object, default: () => null },
-	dependents: { type: Array, required: true },
+	dependents: { type: Array, default: () => null },
 	staff: { type: Object, required: true },
-	dependant: { type: Object, required: true },
+	dependant: { type: Object, default: () => null },
 });
 
 let BreadcrumbLinks = [

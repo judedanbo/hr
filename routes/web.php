@@ -309,6 +309,19 @@ Route::get('/report-staff-details/', [StaffReportController::class, 'details'])-
 Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth'])->name('report.staff-retirement');
 Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth'])->name('report.staff-pending-transfer');
 
+// retires exports
+
+Route::get('/report-retirements/', [StaffReportController::class, 'retirements'])->middleware(['auth'])->name('report.retirements');
+Route::get('/report-all-retirements/', [StaffReportController::class, 'allRetirements'])->middleware(['auth'])->name('report.retirements-all');
+Route::get('/report-deceased-retirements/', [StaffReportController::class, 'deceased'])->middleware(['auth'])->name('report.retirements-deceased');
+Route::get('/report-terminated-retirements/', [StaffReportController::class, 'terminated'])->middleware(['auth'])->name('report.retirements-terminated');
+Route::get('/report-resignation/', [StaffReportController::class, 'resignation'])->middleware(['auth'])->name('report.resignation');
+Route::get('/report-suspended/', [StaffReportController::class, 'suspended'])->middleware(['auth'])->name('report.suspended');
+Route::get('/report-vol-retirement/', [StaffReportController::class, 'volRetirement'])->middleware(['auth'])->name('report.vol-retirement');
+Route::get('/report-dismissed/', [StaffReportController::class, 'dismissed'])->middleware(['auth'])->name('report.dismissed');
+Route::get('/report-vacation-of-post/', [StaffReportController::class, 'vacatedPost'])->middleware(['auth'])->name('report.vacation-of-post');
+Route::get('/report-leave-with-pay/', [StaffReportController::class, 'leaveWithPay'])->middleware(['auth'])->name('report.leave-pay');
+Route::get('/report-leave-without-pay/', [StaffReportController::class, 'leaveWithoutPay'])->middleware(['auth'])->name('report.leave-without-pay');
 Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
 Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');
 

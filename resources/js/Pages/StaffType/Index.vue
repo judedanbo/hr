@@ -109,7 +109,7 @@ const deleteStaffType = () => {
 										{{ type.start_date_display }}
 										{{
 											type.end_date_display?.length > 0
-												? " - " + status.end_date_display
+												? " - " + type.end_date_display
 												: " to date"
 										}}
 									</div>
