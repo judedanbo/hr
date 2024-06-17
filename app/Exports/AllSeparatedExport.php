@@ -27,7 +27,7 @@ class AllSeparatedExport implements FromQuery, WithMapping, WithHeadings, Should
             'Separation Date',
             'Years served',
             'Contact',
-            'Emergency contact',
+            'Type'
 
         ];
     }
@@ -43,6 +43,7 @@ class AllSeparatedExport implements FromQuery, WithMapping, WithHeadings, Should
             $staff->person->contacts->filter(function ($contact) {
                 return $contact->contact_type ==  ContactTypeEnum::PHONE;
             })->first()?->contact ?? '',
+            $staff->statuses->first()->status->label(),
             $staff->person->contacts->filter(function ($contact) {
                 return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
             })->first()?->contact ?? '',

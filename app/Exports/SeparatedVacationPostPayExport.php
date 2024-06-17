@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Enums\ContactTypeEnum;
 use App\Enums\EmployeeStatusEnum;
 use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,13 +37,18 @@ class SeparatedVacationPostPayExport implements FromQuery, WithMapping, WithHead
             $staff->currentRank?->job?->name,
             // $staff->statuses?->first()->status->label(),
             $staff->statuses->first()->start_date?->format('d F, Y'),
-            $staff->person->contacts,
+            $staff->person->contacts->filter(function ($contact) {
+                return $contact->contact_type ==  ContactTypeEnum::PHONE;
+            })->first()?->contact ?? '',
+            $staff->person->contacts->filter(function ($contact) {
+                return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
+            })->first()?->contact ?? '',
         ];
     }
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person', 'contacts', 'statuses' => function ($query) {
+            ->with(['person.contacts', 'statuses' => function ($query) {
                 $query->latest('start_date');
             }])
             ->currentRank()
