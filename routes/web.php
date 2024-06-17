@@ -239,6 +239,8 @@ Route::controller(JobController::class)->middleware(['auth'])->group(function ()
     Route::get('/rank', 'index')->name('job.index');
     Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
+    Route::patch('/rank/{job}', 'update')->name('job.update');
+    Route::delete('/rank/{job}', 'delete')->name('job.delete');
     Route::post('/rank', 'store')->name('job.store');
     Route::get('rank/{job}/stats', 'stats')->name('job.stats');
 });

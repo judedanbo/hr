@@ -10,6 +10,10 @@ import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import PageTitle from "@/Components/PageTitle.vue";
 import PageHeading from "@/Components/PageHeading.vue";
+import Modal from "@/Components/NewModal.vue";
+import EditRank from "./partials/EditRank.vue";
+import { useToggle } from "@vueuse/core";
+import DeleteJob from "./partials/DeleteJob.vue";
 let props = defineProps({
 	job: Object,
 	filters: Object,
@@ -66,6 +70,17 @@ const selectedStaff = ref([]);
 const updateStaffList = (staffList) => {
 	selectedStaff.value = staffList;
 };
+
+const emit = defineEmits(["addRank", "editRank", "deleteRank"]);
+const openEditDialog = ref(false);
+const toggleEditModal = useToggle(openEditDialog);
+
+const openConfirmDeleteDialog = ref(false);
+const toggleDeleteModal = useToggle(openConfirmDeleteDialog);
+
+const deleteJob = () => {
+	Inertia.delete(route("job.delete", { job: props.job.id }));
+};
 </script>
 <template>
 	<Head :title="job.name" />
@@ -75,8 +90,24 @@ const updateStaffList = (staffList) => {
 				:name="job.name"
 				@searchStaff="(searchValue) => startSearch(searchValue)"
 				:search="search"
-			>
-			</PageHeading>
+			/>
+			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+				<button
+					type="button"
+					class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+					@click="toggleEditModal()"
+				>
+					Edit rank
+				</button>
+
+				<button
+					type="button"
+					class="block rounded-md bg-rose-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900"
+					@click="toggleDeleteModal()"
+				>
+					Delete rank
+				</button>
+			</div>
 			<PageTitle
 				:tabs="tabs"
 				@tab-clicked="(tab) => changeTab(tab)"
@@ -88,6 +119,15 @@ const updateStaffList = (staffList) => {
 				@updateStaffList="(staffList) => updateStaffList(staffList)"
 			/>
 		</main>
-		<!-- {{ selectedStaff }} -->
+		<Modal @close="toggleEditModal()" :show="openEditDialog">
+			<EditRank :job="job" @formSubmitted="toggleEditModal()" />
+		</Modal>
+		<Modal :show="openConfirmDeleteDialog" @close="toggleDeleteModal()">
+			<DeleteJob
+				:job="job"
+				@close="toggleDeleteModal()"
+				@delete-confirmed="deleteJob()"
+			/>
+		</Modal>
 	</MainLayout>
 </template>

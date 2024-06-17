@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobRequest;
+use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Job;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -90,6 +91,10 @@ class JobController extends Controller
             'job' => [
                 'id' => $job->id,
                 'name' => $job->name,
+                'category' => $job->category ? [
+                    'name' => $job->category->name,
+                    'id' => $job->category->id,
+                ] : '',
                 'staff_count' => $job->staff_count,
                 'institution' => $job->institution ? [
                     'name' => $job->institution->name,
@@ -178,5 +183,17 @@ class JobController extends Controller
     public function units(Job $job)
     {
         return $job->loadCount('staff');
+    }
+
+    public function update(StoreJobRequest $request, Job $job)
+    {
+        $job->update($request->validated());
+        return redirect()->route('job.index')->with('success', 'Rank updated.');
+    }
+
+    public function delete(Job $job)
+    {
+        $job->delete();
+        return redirect()->route('job.index')->with('success', 'Rank updated.');
     }
 }
