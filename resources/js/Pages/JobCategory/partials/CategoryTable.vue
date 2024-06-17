@@ -61,7 +61,7 @@ const tableCols = [
 				</MainTable>
 				<slot name="pagination" />
 			</div>
-			<NoItem v-else name="Job categories" />
+			<NoItem v-else name="Harmonized Grades" />
 		</div>
 	</section>
 </template>

@@ -1,15 +1,22 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
 import { onMounted, ref } from "vue";
 import { format, addDays, subYears } from "date-fns";
-const emit = defineEmits(["formSubmitted"]);
-defineProps({
-	institution: {
-		type: Number,
+import { Inertia } from "@inertiajs/inertia";
+
+const values = ref([]);
+
+let jobs = ref([]);
+onMounted(async () => {
+	const response = await axios.get(route("job.create"));
+	jobs.value = response.data;
+});
+
+const props = defineProps({
+	category: {
+		type: Object,
 		required: true,
 	},
 });
-
 let categories = ref([]);
 // let institution = ref([]);
 onMounted(async () => {
@@ -17,43 +24,36 @@ onMounted(async () => {
 	categories.value = response.data;
 });
 
-// onMounted(async () => {
-// 	const response = await axios.get(route("institution.create"));
-// 	institution.value = response.data;
-// });
-
+const emit = defineEmits(["formSubmitted"]);
+const submitHandler = (data, node) => {
+	Inertia.patch(
+		route("job-category.update", { jobCategory: props.category.id }),
+		data,
+		{
+			preserveScroll: true,
+			onSuccess: () => {
+				node.reset();
+				emit("formSubmitted");
+			},
+			onError: (errors) => {
+				node.setErrors(["Error on submission"], errors);
+			},
+		},
+	);
+};
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
-
-const submitHandler = (data, node) => {
-	Inertia.post(route("job-category.store"), data, {
-		preserveScroll: true,
-		onSuccess: () => {
-			node.reset();
-			emit("formSubmitted");
-		},
-		onError: (errors) => {
-			node.setErrors(["Error on submission"], errors);
-		},
-	});
-};
 </script>
-
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Harmonized Grade</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
-			<!-- <FormKit
-				type="select"
-				name="institution_id"
-				id="institution_id"
-				validation="number|min:1|max:1000"
-				placeholder="Select institution"
-				label="Institution"
-				:options="institution"
-				error-visibility="submit"
-			/> -->
+		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Harmonized Grade</h1>
+		<FormKit
+			@submit="submitHandler"
+			type="form"
+			:value="category"
+			submit-label="Save"
+		>
 			<FormKit
 				type="text"
 				name="name"
@@ -66,7 +66,6 @@ const submitHandler = (data, node) => {
 				type="hidden"
 				name="institution_id"
 				id="institution_id"
-				:value="institution"
 				validation-visibility="submit"
 			/>
 			<FormKit
@@ -109,21 +108,8 @@ const submitHandler = (data, node) => {
 					label="Start date"
 					:validation="'date_after:' + end_date + '|date_before:' + start_date"
 					validation-visibility="submit"
-					inner-class="w-1/2"
 				/>
 			</div>
 		</FormKit>
 	</main>
 </template>
-
-<style scoped>
-.formkit-outer {
-	@apply w-full;
-}
-.formkit-submit {
-	@apply justify-self-end;
-}
-.formkit-actions {
-	@apply flex justify-end;
-}
-</style>

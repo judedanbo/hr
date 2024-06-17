@@ -26,7 +26,7 @@ let props = defineProps({
 
 let BreadCrumpLinks = [
 	{
-		name: "Ranks/Categories",
+		name: "Harmonized Grades",
 	},
 ];
 
@@ -42,6 +42,7 @@ let openCategory = (categoryId) => {
 
 <template>
 	<MainLayout>
+		<!-- {{ categories.data[0].institution_id }} -->
 		<Head title="Harmonized Categories" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="BreadCrumpLinks" />
@@ -49,10 +50,10 @@ let openCategory = (categoryId) => {
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
 				<PageHeader
-					title="Ranks/Grade Categories"
+					title="Harmonized Grades"
 					:total="categories.total"
 					:search="search"
-					action-text="Add Rank"
+					action-text="Add Harmonized Grade"
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchCategories(value)"
 				/>
@@ -68,7 +69,10 @@ let openCategory = (categoryId) => {
 			</div>
 		</main>
 		<Modal :show="openAddDialog" @close="toggle()">
-			<AddCategory @form-submitted="toggle()" />
+			<AddCategory
+				:institution="categories.data[0].institution_id"
+				@form-submitted="toggle()"
+			/>
 		</Modal>
 	</MainLayout>
 </template>

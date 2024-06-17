@@ -9,15 +9,13 @@ import Ranks from "./Ranks.vue";
 defineProps({
 	category: Object,
 });
-const emit = defineEmits(["add-rank"]);
-
-function addRank() {
-	emit("add-rank");
-}
+const emit = defineEmits(["addRank", "editRank", "deleteRank"]);
 </script>
 
 <template>
-	<div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+	<div
+		class="border-b border-gray-200 bg-white dark:bg-gray-700 px-4 py-5 sm:px-6 rounded-lg"
+	>
 		<div
 			class="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap"
 		>
@@ -27,14 +25,19 @@ function addRank() {
 						<QueueListIcon class="h-12 w-12 rounded-full text-gray-400" />
 					</div>
 					<div class="ml-4">
-						<h3 class="text-base font-semibold leading-6 text-gray-900">
+						<h3
+							class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50"
+						>
 							{{ category.name }}
 							{{ category.short_name ? "(" + category.short_name + ")" : "" }}
 						</h3>
-						<p class="text-sm text-gray-500">
-							<a href="#">{{ category.jobs.length }} grades</a>
+						<p class="text-sm text-gray-500 dark:text-gray-400">
+							<a href="#">{{ category.jobs.length }} rank(s)</a>
 						</p>
-						<p v-if="category.parent" class="text-sm text-gray-500">
+						<p
+							v-if="category.parent"
+							class="text-sm text-gray-500 dark:text-gray-400"
+						>
 							Next Grade
 							<Link
 								:href="
@@ -53,19 +56,13 @@ function addRank() {
 					</div>
 				</div>
 			</div>
-			<!-- <div class="ml-4 mt-4 flex flex-shrink-0">
-				<button
-					type="button"
-					class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-				>
-					<PlusIcon
-						class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400"
-						aria-hidden="true"
-					/>
-					<span>Add rank</span>
-				</button>
-			</div> -->
 		</div>
-		<Ranks @add-rank="addRank()" :jobs="category.jobs" class="mt-4" />
+		<Ranks
+			@add-rank="emit('addRank')"
+			@edit-rank="emit('editRank')"
+			@delete-rank="emit('deleteRank')"
+			:jobs="category.jobs"
+			class="mt-4"
+		/>
 	</div>
 </template>

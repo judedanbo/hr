@@ -26,7 +26,7 @@ class StoreJobCategoryRequest extends FormRequest
         return [
             'name' => 'required|string|max:100',
             'short_name' => 'string|max:10|unique:job_categories,id|nullable',
-            'level' => 'required|integer:between:1,100',
+            'level' => 'required|unique:job_categories,level|integer:between:1,100',
             'job_category_id' => 'nullable|integer|exists:job_categories,id',
             'description' => 'nullable|string',
             'institution_id' => 'required|integer|exists:institutions,id',

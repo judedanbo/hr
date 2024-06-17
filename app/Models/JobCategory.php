@@ -13,6 +13,10 @@ class JobCategory extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = ['name', 'short_name', 'level', 'job_category_id', 'description', 'institution_id', 'start_date', 'end_date'];
 
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
     /**
      * Get the institution that owns the JobCategory
      */

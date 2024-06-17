@@ -53,6 +53,7 @@ class JobCategoryController extends Controller
                         'id' => $jobCategory->parent->id
                     ] : '',
                     'institution' => $jobCategory->institution->name,
+                    'institution_id' => $jobCategory->institution->id,
                     'staff' => $jobCategory->staff->sum('active_count'),
                     'promotion' => $jobCategory->staff->sum('promotion_count'),
                     'all' => $jobCategory->staff->sum('all_count'),
@@ -100,15 +101,19 @@ class JobCategoryController extends Controller
             }])
             ->get();
         // dd($jobCategory->jobs);
-        if ($jobCategory->jobs->count() === 1) {
-            return redirect()->route('job.show', ['job' => $jobCategory->jobs->first()->id]);
-        }
+        // if ($jobCategory->jobs->count() === 1) {
+        //     return redirect()->route('job.show', ['job' => $jobCategory->jobs->first()->id]);
+        // }
         return Inertia::render('JobCategory/Show', [
             'category' => [
                 'id' => $jobCategory->id,
                 'name' => $jobCategory->name,
                 'short_name' => $jobCategory->short_name,
                 'job_categories' => $jobCategory->parent,
+                'institution_id' => $jobCategory->institution_id,
+                'level' => $jobCategory->level,
+                'job_category_id' => $jobCategory->job_category_id,
+                'start_date' => $jobCategory->start_date?->format('Y-m-d'),
                 'jobs' => $jobCategory->jobs ? $jobCategory->jobs->map(fn ($job) => [
                     'id' => $job->id,
                     'name' => $job->name,
@@ -155,6 +160,12 @@ class JobCategoryController extends Controller
     {
         $jobCategory->update($request->all());
         return redirect()->route('job-category.index')->with('success', 'Job Category updated.');
+    }
+
+    public function delete(JobCategory $jobCategory)
+    {
+        $jobCategory->delete();
+        return redirect()->route('job-category.index')->with('success', 'Job Category deleted.');
     }
 
     /**

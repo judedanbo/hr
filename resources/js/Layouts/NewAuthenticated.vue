@@ -57,7 +57,7 @@ const navigation = [
 		current: route().current("job.*") || route().current("job.*"),
 	},
 	{
-		name: "Harmonized ranks",
+		name: "Harmonized Grades",
 		href: route("job-category.index"),
 		icon: CalendarIcon,
 		current:
