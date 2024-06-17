@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Enums\ContactTypeEnum;
 use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -22,7 +23,9 @@ class RetiredStaffExport implements FromQuery, WithMapping, WithHeadings, Should
             'Full Name',
             'Rank',
             'Status',
-            'Old Unit',
+            'Date Retired',
+            'contact',
+            'Emergency Contact',
         ];
     }
     public function map($staff): array
@@ -33,7 +36,13 @@ class RetiredStaffExport implements FromQuery, WithMapping, WithHeadings, Should
             $staff->person->full_name,
             $staff->currentRank?->job?->name,
             $staff->statuses?->first()->status->label(),
-            $staff->statuses->first()->start_date?->format('d F, Y')
+            $staff->statuses->first()->start_date?->format('d F, Y'),
+            $staff->person->contacts->filter(function ($contact) {
+                return $contact->contact_type ==  ContactTypeEnum::PHONE;
+            })->first()?->contact ?? '',
+            $staff->person->contacts->filter(function ($contact) {
+                return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
+            })->first()?->contact ?? '',
         ];
     }
     function query()
