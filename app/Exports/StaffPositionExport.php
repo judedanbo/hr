@@ -25,6 +25,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'Years Served',
             'Current Rank',
             'Current Unit',
+            // 'level'
         ];
     }
     public function map($staff): array
@@ -36,6 +37,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
+            // $staff->currentUnit?->level->label(),
 
         ];
     }
@@ -46,6 +48,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
             ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
             ->whereNull('job_staff.end_date')
+            ->whereNull('jobs.deleted_at')
             ->with(['person', 'ranks.category'])
             ->currentRank()
             ->currentUnit()
