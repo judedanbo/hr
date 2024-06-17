@@ -48,7 +48,7 @@ class SeparatedLeaveWithPayExport implements FromQuery, WithMapping, WithHeading
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person', 'contacts', 'statuses' => function ($query) {
+            ->with(['person.contacts', 'statuses' => function ($query) {
                 $query->latest('start_date');
             }])
             ->currentRank()
