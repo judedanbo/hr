@@ -97,6 +97,10 @@ let BreadcrumbLinks = [
 						</div>
 						<div class="flex items-center gap-x-4 sm:gap-x-6">
 							<button
+								v-if="
+									$page.props.permissions.includes('update staff') ||
+									$page.props.permissions.includes('delete staff')
+								"
 								class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 								@click="toggleEditForm()"
 							>
@@ -164,7 +168,7 @@ let BreadcrumbLinks = [
 				<div class="flex gap-2 flex-wrap flex-col">
 					<StaffDetails class="" :staff="staff" />
 				</div>
-				<RolesDetail :person="person.id" />
+				<!-- <RolesDetail :person="person.id" /> -->
 			</div>
 		</main>
 		<NewModal :show="showEditForm" @close="toggleEditForm()">

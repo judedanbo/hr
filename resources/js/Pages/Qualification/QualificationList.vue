@@ -169,6 +169,9 @@ const subMenuClicked = (action, model) => {
 					<!-- </td> -->
 					<td class="flex justify-end">
 						<SubMenu
+							v-if="
+								$page.props.permissions.includes('create staff qualification')
+							"
 							:items="['Edit', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, qualification)"
 						/>

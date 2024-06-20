@@ -53,6 +53,10 @@ const subMenuClicked = (action, model) => {
 					</td>
 					<td class="flex justify-end">
 						<SubMenu
+							v-if="
+								$page.props.permissions.includes('update staff') ||
+								$page.props.permissions.includes('delete staff')
+							"
 							@itemClicked="(action) => subMenuClicked(action, status)"
 							:items="['Edit', 'Delete']"
 						/>

@@ -54,6 +54,10 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
+						v-if="
+							$page.props.permissions.includes('update staff') ||
+							$page.props.permissions.includes('delete staff')
+						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleAddressModal()"
 					>
@@ -100,13 +104,16 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
+						v-if="
+							$page.props.permissions.includes('update staff') ||
+							$page.props.permissions.includes('delete staff')
+						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleContactModal()"
 					>
 						Add Contact
 					</button>
 				</div>
-
 				<div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
 					<table v-if="contacts" class="min-w-full">
 						<colgroup>
@@ -150,6 +157,10 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 								</td>
 								<td class="flex justify-end">
 									<SubMenu
+										v-if="
+											$page.props.permissions.includes('update staff') ||
+											$page.props.permissions.includes('delete staff')
+										"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, contact)"
 									/>

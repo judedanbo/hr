@@ -58,7 +58,6 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
             ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
             ->whereNull('job_staff.end_date')
-            ->whereNull('jobs.deleted_at')
             ->with(['person'])
             ->currentRank()
             ->currentUnit()

@@ -68,6 +68,10 @@ const deleteStaffType = () => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
+						v-if="
+							$page.props.permissions.includes('update staff') ||
+							$page.props.permissions.includes('delete staff')
+						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleStaffTypeModal()"
 					>
@@ -116,6 +120,10 @@ const deleteStaffType = () => {
 								</td>
 								<td class="flex justify-end">
 									<SubMenu
+										v-if="
+											$page.props.permissions.includes('update staff') ||
+											$page.props.permissions.includes('delete staff')
+										"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, type)"
 									/>

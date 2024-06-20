@@ -20,9 +20,11 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PromoteAllStaffController;
 use App\Http\Controllers\PromoteStaffController;
 use App\Http\Controllers\PromotionBatchController;
@@ -33,12 +35,14 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
 use App\Http\Controllers\RankStaffController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\StaffReportController;
+use App\Http\Controllers\UserController;
 use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
@@ -62,6 +66,33 @@ Route::get('/', function () {
         'logo' => asset('images/inner-logo.png'),
     ]);
 });
+
+Route::controller(UserController::class)->middleware(['auth'])->group(function () {
+    Route::get('/user', 'index')->name('user.index');
+    Route::get('/user/{user}', 'show')->name('user.show');
+    Route::post('/user/', 'store')->name('user.store');
+    Route::patch('/user/{user}', 'update')->name('user.update');
+    Route::delete('/user', 'delete')->name('user.delete');
+});
+Route::controller(RoleController::class)->middleware(['auth'])->group(function () {
+    Route::get('/role', 'index')->name('role.index');
+    Route::get('/roles-list', 'list')->name('roles.list');
+    Route::get('/role/{role}', 'show')->name('role.show');
+    // Route::patch('/user/{user}', 'update')->name('user.update');
+    // Route::delete('/user', 'delete')->name('user.delete');
+    Route::post('/user/{user}/add-role', 'addRole')->name('user.add.roles');
+    Route::patch('/user/{user}/revoke-role', 'revokeRole')->name('user.revoke.roles');
+});
+Route::controller(PermissionController::class)->middleware(['auth'])->group(function () {
+    Route::get('/permission', 'index')->name('permission.index');
+    Route::get('/permission-list', 'list')->name('permission.list');
+    // Route::get('/user/{user}', 'show')->name('user.show');
+    // Route::patch('/user/{user}', 'update')->name('user.update');
+    // Route::delete('/user', 'delete')->name('user.delete');
+    Route::post('/user/{user}/add-permission', 'addPermission')->name('user.add.permissions');
+    Route::patch('/user/{user}/revoke-permission', 'revokePermission')->name('user.revoke.permissions');
+});
+
 
 Route::get('/dashboard', function () {
     return redirect()->route('institution.show', [1]);
@@ -420,3 +451,13 @@ Route::get('/note-types', function () {
     //     'label' => $type->name,
     // ]);
 })->middleware(['auth'])->name('note-types');
+
+
+Route::controller(PositionController::class)->middleware(['auth'])->group(function () {
+    Route::get('/position', 'index')->name('position.index');
+    Route::get('/position/create', 'create')->name('position.create');
+    Route::post('/position', 'store')->name('position.store');
+    Route::get('/position/{position}', 'show')->name('position.show');
+    Route::patch('/position/{position}', 'update')->name('position.update');
+    Route::delete('/position/{position}', 'delete')->name('position.delete');
+});

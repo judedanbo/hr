@@ -26,6 +26,7 @@ const navigation = computed(() => useNavigation(props.separated));
 import {
 	CursorArrowRaysIcon,
 	BuildingOfficeIcon,
+	ArrowDownTrayIcon,
 	UserGroupIcon,
 } from "@heroicons/vue/24/outline";
 

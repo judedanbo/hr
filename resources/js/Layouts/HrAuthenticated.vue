@@ -6,14 +6,6 @@ import BreezeDropdownLink from "@/Components/DropdownLink.vue";
 import BreezeNavLink from "@/Components/NavLink.vue";
 import BreezeResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link } from "@inertiajs/inertia-vue3";
-import {
-	Squares2X2Icon,
-	UserIcon,
-	Cog8ToothIcon,
-	ChevronUpIcon,
-	ChevronDownIcon,
-	Bars3Icon,
-} from "@heroicons/vue/24/outline";
 
 import AppMenu from "@/Components/Menu.vue";
 

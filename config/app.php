@@ -201,6 +201,8 @@ return [
 
         // Laravel Excel
         Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        Spatie\Permission\PermissionServiceProvider::class,
     ],
 
     /*

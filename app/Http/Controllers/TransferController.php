@@ -6,7 +6,6 @@ use App\Enums\TransferStatusEnum;
 use App\Http\Requests\StoreTransferRequest;
 use App\Http\Requests\UpdateTransferRequest;
 use App\Models\InstitutionPerson;
-use App\Models\Unit;
 use Carbon\Carbon;
 
 // use Illuminate\Http\Request;
@@ -15,7 +14,6 @@ class TransferController extends Controller
 {
     public function store(StoreTransferRequest $request, InstitutionPerson $staff)
     {
-        // dd($request->start_date);
         $staff->units()->wherePivot('end_date', null)
             ->wherePivot('unit_id', '<>', $request->unit_id)
             ->update([
@@ -28,10 +26,10 @@ class TransferController extends Controller
             'remarks' => $request->remarks,
         ]);
 
-        if($request->start_date !== null){
+        if ($request->start_date !== null) {
             $staff->units()->updateExistingPivot($request->unit_id, [
                 'status' => TransferStatusEnum::Approved,
-                ]);
+            ]);
             return redirect()->back()->with('success', 'Staff promoted successfully');
         }
 
@@ -59,7 +57,7 @@ class TransferController extends Controller
     public function approve(UpdateTransferRequest $request, InstitutionPerson $staff, $unit)
     {
         $staff->units()->wherePivot('end_date', null)
-            ->wherePivot('unit_id', '<>',$request->unit_id)
+            ->wherePivot('unit_id', '<>', $request->unit_id)
             ->update([
                 'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
             ]);

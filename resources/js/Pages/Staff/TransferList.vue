@@ -98,6 +98,10 @@ let props = defineProps({
 						</td>
 						<td class="flex justify-end">
 							<SubMenu
+								v-if="
+									$page.props.permissions.includes('update staff') ||
+									$page.props.permissions.includes('delete staff')
+								"
 								:items="['Approve', 'Edit', 'Delete']"
 								@item-clicked="(action) => subMenuClicked(action, transfer)"
 							/>

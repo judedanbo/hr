@@ -45,11 +45,15 @@ const formattedDob = (dob) => {
 
 				<div class="-mx-4 flow-root sm:mx-0 w-full px-4">
 					<NewNote
+						v-if="$page.props.permissions.includes('create staff notes')"
 						:notable_id="notable_id"
 						:notable_type="notable_type"
 						:user="user"
 					/>
-					<NotesDetails :notes="notes" />
+					<NotesDetails
+						v-if="$page.props.permissions.includes('view staff notes')"
+						:notes="notes"
+					/>
 					<!-- <div v-else class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center ">No notes found.</div> -->
 				</div>
 			</dl>

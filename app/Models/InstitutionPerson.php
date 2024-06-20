@@ -72,6 +72,15 @@ class InstitutionPerson extends Pivot
             ->latest();
     }
 
+    public function positions(): BelongsToMany
+    {
+        return $this->belongsToMany(Position::class, 'position_staff', 'staff_id', 'position_id')
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps()
+            ->orderByPivot('start_date', 'desc')
+            ->latest();
+    }
+
     /**
      * The ranks that belong to the InstitutionPerson
      */

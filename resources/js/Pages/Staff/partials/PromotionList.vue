@@ -74,6 +74,10 @@ const clicked = (action, model) => {
 					<td class="w-8 flex justify-end">
 						<!-- <EllipsisVerticalIcon class="w-4 text-right" /> -->
 						<SubMenu
+							v-if="
+								$page.props.permissions.includes('update staff') ||
+								$page.props.permissions.includes('delete_staff')
+							"
 							:items="['Edit', 'Delete']"
 							@item-clicked="(value) => clicked(value, promotion)"
 						/>

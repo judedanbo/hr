@@ -51,6 +51,7 @@ let props = defineProps({
 	contacts: { type: Array, default: () => null },
 	qualifications: { type: Array, default: () => null },
 	filters: { type: Object, default: () => null },
+	permissions: { type: Object, default: () => null },
 });
 
 let BreadcrumbLinks = [
@@ -171,6 +172,9 @@ const editContactModal = () => {
 							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
 						>
 							<button
+								v-if="
+									$page.props.permissions.includes('create staff promotion')
+								"
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="togglePromotionForm()"
@@ -178,14 +182,17 @@ const editContactModal = () => {
 								Promote
 							</button>
 							<button
+								v-if="
+									$page.props.permissions.includes('create staff transfers')
+								"
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="toggleTransferForm()"
 							>
 								Transfer
 							</button>
-
 							<a
+								v-if="$page.props.permissions.includes('edit staff')"
 								href="#"
 								class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 								@click.prevent="toggle()"

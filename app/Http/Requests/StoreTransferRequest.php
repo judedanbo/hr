@@ -24,7 +24,7 @@ class StoreTransferRequest extends FormRequest
      */
     public function rules()
     {
-        $startDate = Carbon::now()->subYears(20)->format('Y-m-d');
+        $startDate = Carbon::now()->subYears(50)->format('Y-m-d');
         $endDate = Carbon::now()->addYears(5)->format('Y-m-d');
         return [
             'staff_id' => ['required', 'exists:institution_person,id'],

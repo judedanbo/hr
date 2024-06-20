@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTransferRequest extends FormRequest
@@ -23,11 +24,13 @@ class UpdateTransferRequest extends FormRequest
      */
     public function rules()
     {
+        $startDate = Carbon::now()->subYears(50)->format('Y-m-d');
+        $endDate = Carbon::now()->addYears(5)->format('Y-m-d');
         return [
             'staff_id' => 'required|exists:institution_person,id',
             'unit_id' => 'required|exists:units,id',
-            'start_date' => 'required|date|',
-            'end_date' => 'date|after:start_date|nullable',
+            'start_date' => ['date', 'after_or_equal:' . $startDate, 'nullable'],
+            'end_date' => ['nullable', 'date', 'after:start_date', 'before_or_equal:' . $endDate],
             'remarks' => 'string|max:100|nullable',
         ];
     }
