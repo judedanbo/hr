@@ -30,7 +30,8 @@ defineProps({
 				{{ " " }}
 				<dd class="text-gray-700 dark:text-gray-100">
 					<time :datetime="staff.retirement_date">{{
-						staff.retirement_date)					}}</time>
+						staff.retirement_date
+					}}</time>
 					<div class="text-xs">
 						{{ staff?.retirement_date }}
 					</div>
