@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StorePositionRequest extends FormRequest
+class StoreStaffPositionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +14,7 @@ class StorePositionRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('create position');
+        return auth()->user()->can('create staff position');
     }
 
     /**
@@ -24,7 +25,10 @@ class StorePositionRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:positions,name'],
+            'staff_id' => ['required', 'integer', 'exists:institution_person,id'],
+            'position_id' => ['required', 'integer', 'exists:positions,id'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
         ];
     }
 }

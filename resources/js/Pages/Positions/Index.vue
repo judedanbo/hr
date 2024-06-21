@@ -6,10 +6,10 @@ import { Inertia } from "@inertiajs/inertia";
 import Pagination from "@/Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
-// import AddPositionForm from "./partials/AddPositionForm.vue";
+import AddPositionForm from "./partials/AddPositionForm.vue";
 import { useToggle } from "@vueuse/core";
 import TableHeader from "@/Components/TableHeader.vue";
-// import PositionList from "./partials/PositionList.vue";
+import PositionList from "./partials/PositionList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 

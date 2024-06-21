@@ -208,6 +208,9 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
     Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
     Route::post('/staff/{staff}/write-note', 'writeNote')->name('staff.write-note');
+    Route::post('/staff/{staff}/position', 'assignPosition')->name('staff.position.store');
+    Route::patch('/staff/{staff}/position', 'updatePosition')->name('staff.position.update');
+    Route::delete('/staff/{staff}/position', 'deletePosition')->name('staff.position.delete');
 });
 
 // separation
@@ -460,4 +463,5 @@ Route::controller(PositionController::class)->middleware(['auth'])->group(functi
     Route::get('/position/{position}', 'show')->name('position.show');
     Route::patch('/position/{position}', 'update')->name('position.update');
     Route::delete('/position/{position}', 'delete')->name('position.delete');
+    Route::get('/position-list', 'list')->name('position.list');
 });

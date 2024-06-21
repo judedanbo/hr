@@ -137,7 +137,12 @@ onMounted(() => {
 			<div
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
-				<div class="flex flex-wrap gap-5 mt-4 items-center justify-center">
+				<div
+					v-if="
+						$page.props.permissions.includes('download separated staff data')
+					"
+					class="flex flex-wrap gap-5 mt-4 items-center justify-center"
+				>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 						:href="route('report.retirements-all')"

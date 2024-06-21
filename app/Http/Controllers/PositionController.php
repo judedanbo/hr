@@ -19,7 +19,14 @@ class PositionController extends Controller
         return Inertia::render('Positions/Index', [
             'positions' => Position::query()
                 ->with(['staff' => fn ($query) => $query->wherePivot('end_date', null)])
-                ->orderBy('name')->get(),
+                ->orderBy('name')
+                ->paginate()
+                ->withQueryString()
+                ->through(fn ($position) => [
+                    'id' => $position->id,
+                    'name' => $position->name,
+                    'current_staff' => $position->staff?->first()?->name ?? 'vacant',
+                ]),
             'filters' => request()->all('search', 'trashed')
         ]);
     }
@@ -42,7 +49,8 @@ class PositionController extends Controller
      */
     public function store(StorePositionRequest $request)
     {
-        //
+        Position::create($request->validated());
+        return redirect()->route('position.index')->with('success', 'Position created.');
     }
 
     /**
@@ -88,5 +96,10 @@ class PositionController extends Controller
     public function destroy(Position $position)
     {
         //
+    }
+
+    public function list()
+    {
+        return Position::select('id as value', 'name as label')->get();
     }
 }

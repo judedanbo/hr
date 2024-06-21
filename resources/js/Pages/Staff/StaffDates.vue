@@ -20,7 +20,7 @@ let getAge = (dateString) => {
 </script>
 <template>
 	<main
-		class="p-8 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 sm:mx-0 sm:rounded-lg bg-gray-50 dark:bg-gray-500"
+		class="p-4 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 sm:mx-0 sm:rounded-lg bg-gray-50 dark:bg-gray-500"
 	>
 		<h2
 			class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-white"

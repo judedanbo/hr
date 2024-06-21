@@ -17,7 +17,7 @@ class Position extends Model
 
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(InstitutionPerson::class)
+        return $this->belongsToMany(InstitutionPerson::class, 'position_staff', 'position_id', 'staff_id')
             ->withPivot('start_date', 'end_date')
             ->withTimestamps()
             ->orderByPivot('start_date', 'desc');

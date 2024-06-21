@@ -9,30 +9,24 @@ const end_date = format(addYears(new Date(), 3), "yyyy-MM-dd");
 const props = defineProps({
 	institution: { type: Number, required: true },
 });
-let types = ref([]);
+let positions = ref([]);
 
 onMounted(async () => {
 	const response = await axios.get(
-		route("institution.staff-types", { institution: props.institution }),
+		route("position.list", { institution: props.institution }),
 	);
-	types.value = response.data;
+	positions.value = response.data;
 });
 </script>
 <template>
 	<FormKit
-		id="hire_date"
-		type="hidden"
-		name="hire_date"
-		:value="props.hire_date"
-	/>
-	<FormKit
-		id="staff_type"
+		id="position_id"
 		type="select"
-		name="staff_type"
+		name="position_id"
 		validation="required|string"
-		label="Staff type"
-		placeholder="Select staff type"
-		:options="types"
+		label="Staff position"
+		placeholder="Select staff position"
+		:options="positions"
 		error-visibility="submit"
 	/>
 	<div class="sm:flex gap-4">
@@ -43,7 +37,7 @@ onMounted(async () => {
 			:max="today"
 			label="Start date"
 			:value="today"
-			:validation="'required|date_before:' + start_date"
+			:validation="'date_before:' + start_date"
 			validation-visibility="submit"
 			outer-class="sm:flex-1"
 		/>

@@ -8,6 +8,7 @@ import PromotionHistory from "./PromotionHistory.vue";
 import TransferHistory from "./TransferHistory.vue";
 import StaffStatus from "../StaffStatus/Index.vue";
 import StaffType from "../StaffType/Index.vue";
+import StaffPosition from "../StaffPosition/Index.vue";
 import Qualifications from "./PersonQualifications.vue";
 import Dependents from "@/Pages/StaffDependents/Index.vue";
 // import Dependents from "./Dependents.vue";
@@ -114,18 +115,6 @@ const editContactModal = () => {
 								:image="person.image"
 								size="lg"
 							/>
-							<!-- <img
-								v-if="person.image"
-								:src="person.image"
-								:alt="person.name"
-								class="w-24 h-24 object-cover object-center rounded-full"
-							/>
-							<div
-								v-else
-								class="flex justify-center items-center h-24 w-24 flex-none rounded-lg ring-1 ring-green-400/60 dark:ring-gray-400 text-5xl text-green-400/50 dark:text-gray-300 font-bold tracking-wide"
-							>
-								{{ person.initials }}
-							</div> -->
 							<div class="">
 								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
 									File Number
@@ -151,19 +140,15 @@ const editContactModal = () => {
 								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
 									Current Status
 									<span class="text-gray-700 dark:text-gray-100">{{
-										staff.statuses[0]?.status
+										staff.statuses[0]?.status_display
 									}}</span>
 								</div>
+							</div>
+							<div class="mt-4 md:mt-0">
 								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-									Description
+									Current position
 									<span class="text-gray-700 dark:text-gray-100">{{
-										staff.statuses[0]?.description
-									}}</span>
-								</div>
-								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-									Start date
-									<span class="text-gray-700 dark:text-gray-100">{{
-										staff.statuses[0]?.start_date
+										staff.positions[0]?.name
 									}}</span>
 								</div>
 							</div>
@@ -192,7 +177,7 @@ const editContactModal = () => {
 								Transfer
 							</button>
 							<a
-								v-if="$page.props.permissions.includes('edit staff')"
+								v-if="$page.props.permissions.includes('update staff')"
 								href="#"
 								class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 								@click.prevent="toggle()"
@@ -207,9 +192,9 @@ const editContactModal = () => {
 
 			<div class="mx-auto max-w-7xl py-4">
 				<div
-					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start lg:mx-0 px-4 lg:max-w-none lg:grid-cols-3 gap-4"
+					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start lg:mx-0 px-4 lg:max-w-none lg:grid-cols-4 gap-4"
 				>
-					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
+					<div class="lg:col-start-4 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
 						<Summary :person="person" @open-edit-person="toggle()" />
 						<!-- Contact information -->
@@ -219,18 +204,14 @@ const editContactModal = () => {
 							:person="person.id"
 							@edit-contact="toggleEditContactModal()"
 						/>
-						<!-- TODO Add dependant forme and display -->
-						<Dependents
-							:staff-id="staff.staff_id"
-							:dependents="staff.dependents"
-						/>
+
 						<!-- <StaffDependents v-if="staff" :staff="staff" class="" /> -->
 					</div>
 
 					<div
-						class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 flex flex-wrap gap-4 items-start"
+						class="col-start-1 col-span-3 lg:col-span-3 lg:row-span-3 lg:row-end-2 flex flex-wrap gap-4 items-start"
 					>
-						<div class="lg:flex flex-wrap lg:gap-4">
+						<div class="lg:flex flex-grow flex-wrap lg:gap-4 items-start">
 							<!-- important Dates -->
 							<StaffDates class="w-full xl:w-3/5" :staff="staff" />
 							<div
@@ -248,6 +229,16 @@ const editContactModal = () => {
 								/>
 								<StaffType
 									:types="staff.staff_type"
+									:staff="{
+										id: staff.staff_id,
+										hire_date: staff.hire_date,
+									}"
+									:institution="staff.institution_id"
+									class="flex-1"
+									@close-form="toggleTransferForm()"
+								/>
+								<StaffPosition
+									:positions="staff.positions"
 									:staff="{
 										id: staff.staff_id,
 										hire_date: staff.hire_date,
@@ -294,6 +285,11 @@ const editContactModal = () => {
 							:show-transfer-form="showTransferForm"
 							class="w-full xl:flex-1"
 							@close-form="toggleTransferForm()"
+						/>
+						<!-- TODO Add dependant forme and display -->
+						<Dependents
+							:staff-id="staff.staff_id"
+							:dependents="staff.dependents"
 						/>
 					</div>
 				</div>

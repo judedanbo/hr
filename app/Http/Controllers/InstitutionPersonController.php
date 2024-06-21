@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePersonRequest;
-use App\Enums\ContactTypeEnum;
 use App\Http\Requests\StoreInstitutionPersonRequest;
 use App\Http\Requests\StoreNoteRequest;
+use App\Http\Requests\StoreStaffPositionRequest;
+use App\Http\Requests\UpdateStaffPositionRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
-use App\Models\Job;
-use App\Models\JobStaff;
 use App\Models\Person;
-use App\Models\StaffUnit;
-use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -159,7 +154,8 @@ class InstitutionPersonController extends Controller
                     'ranks',
                     'dependents.person',
                     'statuses',
-                    'notes'
+                    'notes',
+                    'positions',
                 ]
             )
             ->active()
@@ -257,6 +253,14 @@ class InstitutionPersonController extends Controller
                     'end_date' => $type->end_date?->format('Y-m-d'),
                     'end_date_display' => $type->end_date?->format('d M Y'),
                 ]),
+                'positions' => $staff->positions?->map(fn ($position) => [
+                    'id' => $position->id,
+                    'name' => $position->name,
+                    'start_date' => $position->pivot->start_date,
+                    'end_date' => $position->pivot->end_date,
+                    'start_date_display' => $position->pivot->start_date ? Carbon::parse($position->pivot->start_date)->format('d M Y') : null,
+                    'end_date_display' => $position->pivot->end_date ? Carbon::parse($position->pivot->end_date)->format('d M Y') : null,
+                ]),
                 'ranks' => $staff->ranks->map(fn ($rank) => [
                     'id' => $rank->id,
                     'name' => $rank->name,
@@ -315,7 +319,6 @@ class InstitutionPersonController extends Controller
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
                     'image' => $dep->person->image ? Storage::disk('avatars')->url($dep->person->image) : null,
-
                 ]) : null,
             ],
         ]);
@@ -465,5 +468,29 @@ class InstitutionPersonController extends Controller
         $validated['created_by'] = auth()->user()->id;
         $staff->writeNote($validated);
         return redirect()->back()->with('success', 'Note added successfully.');
+    }
+
+    public function assignPosition(StoreStaffPositionRequest $request, InstitutionPerson $staff)
+    {
+        $validated = $request->validated();
+        $staff->positions()->attach($validated['position_id'], [
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
+        ]);
+        return redirect()->back()->with('success', 'Position assigned successfully.');
+    }
+    public function updatePosition(UpdateStaffPositionRequest $request, InstitutionPerson $staff)
+    {
+        $validated = $request->validated();
+        $staff->positions()->syncWithPivotValues($validated['position_id'], [
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
+        ]);
+        return redirect()->back()->with('success', 'Position updated successfully.');
+    }
+    public function deletePosition(InstitutionPerson $staff)
+    {
+        $staff->positions()->detach(request('position_id'));
+        return redirect()->back()->with('success', 'Position updated successfully.');
     }
 }

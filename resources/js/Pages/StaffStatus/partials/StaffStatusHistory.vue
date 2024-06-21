@@ -15,7 +15,7 @@ const subMenuClicked = (action, model) => {
 };
 </script>
 <template>
-	<div class="-mx-4 flow-root sm:mx-0 w-full p-4 overflow-y-auto">
+	<div class="-mx-4 flow-root sm:mx-0 w-full px-4 overflow-y-auto">
 		<table v-if="statuses.length > 0" class="min-w-full">
 			<colgroup></colgroup>
 			<thead
@@ -24,7 +24,7 @@ const subMenuClicked = (action, model) => {
 				<tr>
 					<th
 						scope="col"
-						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
+						class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
 					>
 						Status
 					</th>
