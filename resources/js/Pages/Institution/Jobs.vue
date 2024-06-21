@@ -1,15 +1,12 @@
 <script setup>
 import MainLayout from "@/Layouts/HrAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import Tab from "@/Components/Tab.vue";
 import { Inertia } from "@inertiajs/inertia";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
-import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import InfoCard from "@/Components/InfoCard.vue";
 
 let props = defineProps({
 	institution: Object,

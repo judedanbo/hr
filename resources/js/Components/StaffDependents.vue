@@ -2,8 +2,6 @@
 import { Link } from "@inertiajs/inertia-vue3";
 import DeleteDependentModal from "@/Components/DeleteDependentModal.vue";
 import AddDependentModal from "@/Pages/Staff/AddDependentModal.vue";
-import { format, differenceInYears } from "date-fns";
-
 import { MagnifyingGlassIcon, UserPlusIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import { Inertia } from "@inertiajs/inertia";
@@ -22,16 +20,6 @@ let deleteDependents = (id) => {
 	showDeleteDepModal.value = true;
 };
 let editDependent = (id) => {};
-
-const formattedDob = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
-
-let getAge = (dateString) => {
-	const date = new Date(dateString);
-	return differenceInYears(new Date(), date);
-};
 
 let showPerson = (id) => {
 	Inertia.get(route("person.show", { person: id }));
@@ -181,11 +169,7 @@ let showPerson = (id) => {
 								<div v-text="person.name" class="text-base font-semibold"></div>
 								<div class="font-normal text-gray-500">
 									{{ person.gender }} |
-									{{
-										getAge(person.dob) > 0
-											? getAge(person.dob) + " years old"
-											: "Less than 1 year"
-									}}
+									{{ person.dob }}
 								</div>
 							</div>
 						</th>

@@ -53,8 +53,8 @@ class PromotionListExport implements
         return [
             $staff->staff_number,
             $staff->file_number,
-            $staff->person->full_name,
-            $staff->person->date_of_birth ? $staff->person->date_of_birth->addYears(60)->format('d M Y') : null,
+            $staff->person?->full_name,
+            $staff->person?->date_of_birth ? $staff->person->date_of_birth->addYears(60)->format('d M Y') : null,
             $staff->units?->first()?->name,
             $staff->units?->first() ? $staff->units?->first()->pivot?->start_date?->format('d M Y') : null,
             $staff->ranks?->first()?->name,
@@ -75,18 +75,14 @@ class PromotionListExport implements
     public function query()
     {
         return InstitutionPerson::query()
-            ->whereHas('ranks', function ($query) {
-                $query->whereNull('end_date');
-                $query->whereYear('start_date', '<', Date('Y') - 3);
-                $query->whereNotIn('job_id', [16, 35, 49, 65, 71]);
-            })
-            ->whereHas('statuses', function ($query) {
-                $query->where('status', 'A');
-            })
-            ->with(['person', 'institution', 'units' => function ($query) {
-                $query->whereNull('staff_unit.end_date');
-            }, 'ranks' => function ($query) {
-                $query->whereNull('end_date');
-            }]);
+            ->active()
+            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
+            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
+            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+            ->with(['person', 'ranks', 'units'])
+            ->orderByRaw('job_categories.level')
+            ->whereNull('jobs.deleted_at')
+            ->whereNull('job_staff.end_date')
+            ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3);
     }
 }

@@ -1,7 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import { formatDistance } from "date-fns";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";

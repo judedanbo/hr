@@ -1,6 +1,5 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-import Alert from "@/Components/Alert.vue";
 const emit = defineEmits(["editTransfer", "deleteTransfer", "approveTransfer"]);
 
 const subMenuClicked = (action, model) => {

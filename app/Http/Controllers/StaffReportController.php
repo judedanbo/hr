@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\AllSeparatedExport;
 use App\Exports\PendingTransferExport;
+use App\Exports\PositionsExport;
 use App\Exports\RetiredStaffExport;
 use App\Exports\SeparatedDeceasedExport;
 use App\Exports\SeparatedDismissedExport;
@@ -82,5 +83,9 @@ class StaffReportController extends Controller
     public function vacatedPost(Excel $excel)
     {
         return $excel->download(new SeparatedVoluntaryExport, 'vacation-of-post.xls');
+    }
+    public function positions(Excel $excel)
+    {
+        return $excel->download(new PositionsExport, 'positions.xls');
     }
 }

@@ -1,14 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import BreezeInput from "@/Components/Input.vue";
-import { ref, watch } from "vue";
-import { Inertia } from "@inertiajs/inertia";
-import Pagination from "../../Components/Pagination.vue";
-import { format, differenceInYears, formatDistanceStrict } from "date-fns";
-import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import InfoCard from "@/Components/InfoCard.vue";
-import NoItem from "@/Components/NoItem.vue";
 import AddStaffForm from "./AddStaffForm.vue";
 </script>
 

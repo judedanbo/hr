@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed } from "vue";
-import { format, formatDistanceStrict } from "date-fns";
 import { Link, Inertia } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Pagination.vue";
 import PromotionList from "../Staff/partials/PromotionList.vue";
@@ -13,13 +12,6 @@ let props = defineProps({
 	promotions: Object,
 });
 
-const formatDate = (date) => {
-	if (date === null) {
-		return "";
-	}
-	return format(new Date(date), "dd MMM, yyyy");
-};
-
 const staffPromotions = ref(null);
 
 const showPromotionList = async (staff) => {
@@ -28,17 +20,6 @@ const showPromotionList = async (staff) => {
 	);
 	staffPromotions.value = await res.data;
 	toggleStaffPromotionsModal();
-};
-
-const formatDistance = (date) => {
-	if (date === null) {
-		return "";
-	}
-	return formatDistanceStrict(
-		new Date(date),
-		new Date(props.promotions.data[0].now),
-		{ addSuffix: true },
-	);
 };
 
 const selectedStaff = ref([]);
@@ -135,7 +116,7 @@ const promoteSelectedStaff = () => {
 										scope="col"
 										class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
 									>
-										Transfer date
+										Retirement date
 									</th>
 									<th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
 										<span class="sr-only">action</span>
@@ -211,7 +192,7 @@ const promoteSelectedStaff = () => {
 											{{ promotion.start_date }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
-											{{ formatDistance(promotion.start_date) }}
+											{{ promotion.start_date_diff }}
 										</div>
 									</td>
 									<td
@@ -221,7 +202,7 @@ const promoteSelectedStaff = () => {
 											{{ promotion.unit.name }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
-											{{ formatDistance(promotion.unit.start_date) }}
+											{{ promotion.unit.start_date }}
 										</div>
 									</td>
 									<td
@@ -231,7 +212,7 @@ const promoteSelectedStaff = () => {
 											{{ promotion.retirement_date }}
 										</div>
 										<div class="mt-1 text-gray-500 dark:text-gray-200">
-											{{ formatDistance(promotion.retirement_date) }}
+											{{ promotion.retirement_date_diff }}
 										</div>
 									</td>
 									<td

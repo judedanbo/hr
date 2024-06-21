@@ -5,12 +5,9 @@ import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { Inertia } from "@inertiajs/inertia";
-import Pagination from "../../Components/Pagination.vue";
-import { format, differenceInYears, formatDistanceStrict } from "date-fns";
+import { format } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import NoItem from "@/Components/NoItem.vue";
-import BreezeButton from "@/Components/Button.vue";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
 
@@ -48,11 +45,6 @@ let formatDate = (dateString) => {
 	// return new Intl.DateTimeFormat("en-GB", { dateStyle: "full" }).format(date);
 };
 
-let getAge = (dateString) => {
-	const date = new Date(dateString);
-
-	return differenceInYears(new Date(), date);
-};
 let BreadCrumpLinks = [
 	{
 		name: "Staff",

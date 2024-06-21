@@ -1,9 +1,4 @@
 <script setup>
-import {
-	EllipsisVerticalIcon,
-	PlusIcon,
-	EllipsisHorizontalIcon,
-} from "@heroicons/vue/20/solid";
 import SubMenu from "@/Components/SubMenu.vue";
 defineProps({
 	promotions: { type: Array, default: () => null },

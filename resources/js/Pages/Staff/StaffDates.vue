@@ -1,22 +1,10 @@
 <script setup>
-import { format, formatDistance } from "date-fns";
 import ToolTip from "@/Components/ToolTip.vue";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 
 defineProps({
 	staff: { type: Object, required: true },
 });
-const formattedDob = (dateString) => {
-	if (!dateString || dateString == null) return "Not provided";
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
-
-let getAge = (dateString) => {
-	if (!dateString || dateString == null) return "Not provided";
-	const date = new Date(dateString);
-	return formatDistance(date, new Date(), { addSuffix: true });
-};
 </script>
 <template>
 	<main
@@ -32,10 +20,8 @@ let getAge = (dateString) => {
 				<dt class="text-gray-500 dark:text-gray-300">Date Employed:</dt>
 				{{ " " }}
 				<dd class="text-gray-700 dark:text-gray-100">
-					<time :datetime="staff?.hire_date">{{
-						formattedDob(staff?.hire_date)
-					}}</time>
-					<div class="text-xs">{{ getAge(staff?.hire_date) }}</div>
+					<time :datetime="staff?.hire_date">{{ staff?.hire_date }}</time>
+					<div class="text-xs">{{ staff?.hire_date_display }}</div>
 				</dd>
 			</div>
 			<div class="mt-2 sm:mt-0 sm:pl-4">
@@ -43,10 +29,10 @@ let getAge = (dateString) => {
 				{{ " " }}
 				<dd class="text-gray-700 dark:text-gray-100">
 					<time :datetime="staff.retirement_date">{{
-						formattedDob(staff.retirement_date)
+						staff.retirement_date
 					}}</time>
 					<div class="text-xs">
-						{{ getAge(staff?.retirement_date) }}
+						{{ staff?.retirement_date_display }}
 					</div>
 				</dd>
 			</div>
@@ -64,7 +50,7 @@ let getAge = (dateString) => {
 					</span>
 
 					<br />
-					{{ formattedDob(staff?.ranks[0]?.start_date) }}
+					{{ staff?.ranks[0]?.start_date }}
 					<span class="text-xs">
 						{{ staff.ranks[0]?.distance }}
 					</span>

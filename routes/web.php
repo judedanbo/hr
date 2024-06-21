@@ -344,6 +344,7 @@ Route::get('/report-staff/', [StaffReportController::class, 'export'])->middlewa
 Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth'])->name('report.staff-details');
 Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth'])->name('report.staff-retirement');
 Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth'])->name('report.staff-pending-transfer');
+Route::get('/report-staff-positions/', [StaffReportController::class, 'positions'])->middleware(['auth'])->name('report.staff-positions');
 
 // retires exports
 

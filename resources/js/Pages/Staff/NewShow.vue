@@ -1,7 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import { formatDistance } from "date-fns";
+import { Head } from "@inertiajs/inertia-vue3";
 import StaffDates from "./StaffDates.vue";
 import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
@@ -16,12 +15,7 @@ import Address from "./Address.vue";
 import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import {
-	EllipsisVerticalIcon,
-	PlusIcon,
-	EllipsisHorizontalIcon,
-} from "@heroicons/vue/20/solid";
+import { PlusIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
 import NewModal from "@/Components/NewModal.vue";
 import EditStaffForm from "./EditStaffForm.vue";

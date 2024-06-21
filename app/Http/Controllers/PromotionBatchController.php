@@ -25,14 +25,20 @@ class PromotionBatchController extends Controller
                         });
                     }
                 })
-                ->selectRaw('jobs.name as job_name, job_staff.job_id as job_id, count(case when month(job_staff.start_date) <= 4 then 1 end) as april, count(case when month(job_staff.start_date) > 4 then 1 end) as october, count(*) as staff')
+                ->selectRaw('jobs.name as job_name, job_staff.job_id as job_id, count(case when month(job_staff.start_date) in (1,2,3,4,11,12) then 1 end) as april, count(case when month(job_staff.start_date) in (5,6,7,8,9,10) then 1 end) as october, count(*) as staff')
                 ->groupByRaw('job_name, job_id')
                 ->orderByRaw('job_categories.level')
                 ->whereNull('jobs.deleted_at')
                 ->whereNull('job_staff.end_date')
                 ->whereRaw("year(job_staff.start_date) < ?",  [date('Y') - 3])
                 ->paginate()
-                ->withQueryString(),
+                ->withQueryString()
+                ->through(fn ($promotion) => [
+                    'job_name' => $promotion->job_name,
+                    'april' => $promotion->april,
+                    'october' => $promotion->october,
+                    'staff' => $promotion->staff,
+                ]),
             'filters' => [
                 'search' => Request()->search,
             ],
@@ -95,17 +101,14 @@ class PromotionBatchController extends Controller
 
         $promotionList = InstitutionPerson::query()
             ->active()
-            ->promotion($year)
-            ->otherRanks()
-            ->rank()
-            ->with([
-                'institution',
-                'person',
-                'units',
-                'ranks' => function ($query) {
-                    $query->whereNull('job_staff.end_date');
-                }
-            ])
+            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
+            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
+            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+            ->with(['person', 'ranks', 'units'])
+            ->orderByRaw('job_categories.level')
+            ->whereNull('jobs.deleted_at')
+            ->whereNull('job_staff.end_date')
+            ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3)
             ->paginate()
             ->withQueryString()
             ->through(fn ($staff) => [
@@ -114,16 +117,19 @@ class PromotionBatchController extends Controller
                 'file_number' => $staff->file_number,
                 'staff_name' => $staff->person->full_name,
                 'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M, Y'),
+                'retirement_date_diff' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
                 'institution' => $staff->institution->name,
                 'unit' => $staff->units->count() > 0 ? [
                     'id' => $staff->units?->first()?->id,
                     'name' => $staff->units?->first()?->name,
                     'start_date' => $staff->units?->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date_diff' => $staff->units?->first()?->pivot->start_date?->diffForHumans(),
                 ] : [],
                 'rank_id' => $staff->ranks?->first()?->id,
                 'rank_name' => $staff->ranks?->first()?->name,
                 'remarks' => $staff->ranks?->first()?->pivot->remarks,
                 'start_date' => $staff->ranks?->first()?->pivot->start_date?->format('d M, Y'),
+                'start_date_diff' => $staff->ranks?->first()?->pivot->start_date?->diffForHumans(),
                 'now' => date('Y-m-d'),
             ]);
 

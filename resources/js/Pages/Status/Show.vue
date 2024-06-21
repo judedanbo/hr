@@ -5,14 +5,11 @@ import { formatDistance } from "date-fns";
 
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { EllipsisVerticalIcon, PlusIcon } from "@heroicons/vue/20/solid";
+import { PlusIcon } from "@heroicons/vue/20/solid";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
 
-let togglePromotionForm = useToggle(showPromotionForm);
-let toggleTransferForm = useToggle(showTransferForm);
 let getAge = (dateString) => {
 	const date = new Date(dateString);
 	return formatDistance(date, new Date(), { addSuffix: true });
@@ -127,7 +124,6 @@ let search = ref("");
 											>
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
-														
 														<div class="ml-4">
 															<div
 																class="text-sm font-medium text-gray-900 dark:text-gray-100"
