@@ -44,7 +44,7 @@ class PositionsExport implements
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->positions->first()?->name,
-            Carbon::parse($staff->positions->first()?->pivot->start_date?->format('d M, Y'),
+            Carbon::parse($staff->positions->first()?->pivot->start_date)?->format('d M, Y'),
 
         ];
     }
