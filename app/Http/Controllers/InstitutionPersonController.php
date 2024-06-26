@@ -148,7 +148,6 @@ class InstitutionPersonController extends Controller
                     // 'units.institution',
                     // 'units.parent',
                     'units' => function ($query) {
-                        $query->orderBy('created_at', 'desc');
                         $query->with(['institution', 'parent']);
                     },
                     'ranks',

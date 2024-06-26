@@ -29,7 +29,7 @@ const searchPosition = (value) => {
 };
 
 let openPosition = (position) => {
-	// console.log(position);
+	console.log(position);
 	Inertia.visit(route("position.show", { position: position }));
 };
 

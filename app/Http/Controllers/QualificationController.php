@@ -92,12 +92,12 @@ class QualificationController extends Controller
      */
     public function update(UpdateQualificationRequest $request, Qualification $qualification)
     {
-        // return $request->validated();
+        // dd($request->validated());
         if ($request->validated()) {
-            $qualification->update($request->validated()['staffQualification']['certification']);
+            $qualification->update($request->validated());
             return redirect()->back()->with('success', 'Qualification updated.');
         }
-        return redirect()->back();
+        return redirect()->back()->with('error', 'Qualification not updated.');
     }
     public function delete($qualification)
     {

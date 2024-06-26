@@ -32,7 +32,7 @@ class RanksStaffExport implements
             'File Number',
             'Staff Number',
             'Full Name',
-            $this->rank->name . ' Date',
+            'Promotion Date',
             'Current Posting',
             'Posting Date',
         ];

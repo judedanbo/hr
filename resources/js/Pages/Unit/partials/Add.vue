@@ -88,13 +88,10 @@ const submitHandler = (data, node) => {
 					type="date"
 					name="start_date"
 					id="start_date"
-					:value="today"
 					:min="end_date"
 					:max="start_date"
 					label="Start date"
-					:validation="
-						'required|date_after:' + end_date + '|date_before:' + start_date
-					"
+					:validation="'date_after:' + end_date + '|date_before:' + start_date"
 					validation-visibility="submit"
 					inner-class="w-1/2"
 				/>

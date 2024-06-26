@@ -65,6 +65,7 @@ class InstitutionPerson extends Pivot
         return $this->belongsToMany(Unit::class, 'staff_unit', 'staff_id', 'unit_id')
             ->withPivot('start_date', 'end_date', 'remarks', 'status', 'old_data')
             ->using(StaffUnit::class)
+            ->orderByPivot('created_at', 'desc')
             ->orderByPivot('start_date', 'desc')
             ->withTimestamps()
             // ->wherePivotNull('end_date')
@@ -99,6 +100,7 @@ class InstitutionPerson extends Pivot
             )
             ->withTimestamps()
             ->using(JobStaff::class)
+            ->orderByPivot('created_at', 'desc')
             ->orderByPivot('start_date', 'desc')
             // ->wherePivotNull('end_date')
             ->latest();

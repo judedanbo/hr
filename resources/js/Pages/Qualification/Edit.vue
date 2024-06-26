@@ -77,46 +77,25 @@ const submitHandler = (data, node) => {
 			},
 		},
 	);
-	if (data.staffQualification.evidence.file_name.length > 0) {
-		submitDocuments(data.staffQualification.evidence);
-	}
+	// if (data.staffQualification.evidence.file_name.length > 0) {
+	// 	submitDocuments(data.staffQualification.evidence);
+	// }
 };
 </script>
 
 <template>
-	<main class="bg-gray-100 dark:bg-gray-700">
+	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Qualification</h1>
-		<FormKit type="form" :actions="false" @submit="submitHandler">
-			<FormKit
-				type="multi-step"
-				name="staffQualification"
-				:allow-incomplete="true"
-				tab-style="progress"
-				tabs-class="my-2"
-			>
-				<FormKit
-					id="certification"
-					name="certification"
-					type="step"
-					:value="qualification"
-				>
-					<QualificationForm />
-				</FormKit>
-				<FormKit
-					v-if="document"
-					id="evidence"
-					name="evidence"
-					type="step"
-					step-actions-class="flex justify-between"
-					:value="document"
-				>
-					<!-- {{ document }} -->
-					<QualificationEvidence :document="document" />
-					<template #stepNext>
-						<FormKit type="submit" label="Save" />
-					</template>
-				</FormKit>
-			</FormKit>
+		<FormKit
+			type="form"
+			@submit="submitHandler"
+			submit-label="Save"
+			:value="qualification"
+		>
+			<QualificationForm />
+
+			<!-- {{ document }} -->
+			<!-- <QualificationEvidence :document="document" /> -->
 		</FormKit>
 	</main>
 </template>

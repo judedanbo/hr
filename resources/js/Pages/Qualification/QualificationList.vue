@@ -65,12 +65,6 @@ const subMenuClicked = (action, model) => {
 					<th
 						scope="col"
 						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
-					>
-						Staff
-					</th>
-					<th
-						scope="col"
-						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
 					></th>
 					<th
 						scope="col"
@@ -98,7 +92,7 @@ const subMenuClicked = (action, model) => {
 					</th>
 					<th
 						scope="col"
-						class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+						class="hidden px-3 py-3.5 text-sm text-center font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
 					>
 						Year
 					</th>
@@ -148,7 +142,7 @@ const subMenuClicked = (action, model) => {
 						</div>
 					</td>
 					<td
-						class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
+						class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell text-right"
 					>
 						{{ qualification.year }}
 					</td>

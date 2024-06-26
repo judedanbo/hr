@@ -18,14 +18,17 @@ class PositionController extends Controller
     {
         return Inertia::render('Positions/Index', [
             'positions' => Position::query()
-                ->with(['staff' => fn ($query) => $query->wherePivot('end_date', null)])
+                ->with(['staff' => function ($query) {
+                    $query->with('person');
+                    $query->wherePivotNull('end_date');
+                }])
                 ->orderBy('name')
                 ->paginate()
                 ->withQueryString()
                 ->through(fn ($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
-                    'current_staff' => $position->staff?->first()?->name ?? 'vacant',
+                    'current_staff' => $position->staff?->first()?->person->full_name ?? 'vacant',
                 ]),
             'filters' => request()->all('search', 'trashed')
         ]);
@@ -61,7 +64,10 @@ class PositionController extends Controller
      */
     public function show(Position $position)
     {
-        //
+        return Inertia::render('Positions/Show', [
+            'position' => $position->load('staff.person'),
+            'filters' => ['search' => request()->search],
+        ]);
     }
 
     /**
