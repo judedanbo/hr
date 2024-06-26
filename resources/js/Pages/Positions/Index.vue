@@ -7,10 +7,12 @@ import Pagination from "@/Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
 import AddPositionForm from "./partials/AddPositionForm.vue";
+import EditPositionForm from "./partials/EditPositionForm.vue";
 import { useToggle } from "@vueuse/core";
 import TableHeader from "@/Components/TableHeader.vue";
 import PositionList from "./partials/PositionList.vue";
 import { useNavigation } from "@/Composables/navigation";
+import Delete from "./Delete.vue";
 import { useSearch } from "@/Composables/search";
 
 const navigation = computed(() => useNavigation(props.positions));
@@ -19,6 +21,27 @@ let props = defineProps({
 	positions: { type: Object, required: true },
 	filters: { type: Object, default: () => {} },
 });
+
+const openEditDialog = ref(false);
+
+let toggleEditDialog = useToggle(openEditDialog);
+
+const selectedPosition = ref(null);
+
+const editDialog = (model) => {
+	selectedPosition.value = model;
+	// console.log(model);
+	toggleEditDialog();
+};
+
+const openDeleteDialog = ref(false);
+
+const deletePosition = (model) => {
+	selectedPosition.value = model;
+	toggleDeleteModal();
+};
+
+let toggleDeleteModal = useToggle(openDeleteDialog);
 
 let openDialog = ref(false);
 
@@ -39,6 +62,14 @@ let BreadCrumpLinks = [
 		url: "",
 	},
 ];
+const deletePositionConfirmed = (position) => {
+	Inertia.delete(route("position.delete", { position: position }), {
+		PreserveScroll: true,
+		onSuccess: () => {
+			toggleDeleteModal();
+		},
+	});
+};
 </script>
 
 <template>
@@ -93,6 +124,8 @@ let BreadCrumpLinks = [
 				<PositionList
 					:positions="positions.data"
 					@open-position="(positionId) => openPosition(positionId)"
+					@edit-position="(model) => editDialog(model)"
+					@delete-position="(model) => deletePosition(model)"
 				>
 					<template #pagination>
 						<Pagination :navigation="navigation" />
@@ -102,6 +135,18 @@ let BreadCrumpLinks = [
 		</main>
 		<Modal :show="openDialog" @close="toggle()">
 			<AddPositionForm @form-submitted="toggle()" />
+		</Modal>
+		<Modal :show="openEditDialog" @close="toggleEditDialog()">
+			<EditPositionForm
+				:position="selectedPosition"
+				@form-submitted="toggleEditDialog()"
+			/>
+		</Modal>
+		<Modal :show="openDeleteDialog" @close="toggleDeleteModal()">
+			<Delete
+				@cancel-delete="toggleDeleteModal()"
+				@deleted-position="deletePositionConfirmed(selectedPosition.id)"
+			/>
 		</Modal>
 	</MainLayout>
 </template>

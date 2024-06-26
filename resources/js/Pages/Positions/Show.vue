@@ -46,16 +46,21 @@ const components = {
 };
 
 const tabs = [
-	{ name: "Overview", component: "PositionOverview", href: "#", current: true },
-	// { name: "Active", component: "RankActive", href: "#", current: false },
-	{ name: "Current Staff", component: "RankStaff", href: "#", current: false },
 	{
-		name: "Due for Promotion",
-		component: "RankPromote",
+		name: "Occupants",
+		component: "PositionOverview",
 		href: "#",
-		current: false,
+		current: true,
 	},
-	{ name: "All Time", component: "AllStaff", href: "#", current: false },
+	// { name: "Active", component: "RankActive", href: "#", current: false },
+	// { name: "Current Staff", component: "RankStaff", href: "#", current: false },
+	// {
+	// 	name: "Due for Promotion",
+	// 	component: "RankPromote",
+	// 	href: "#",
+	// 	current: false,
+	// },
+	// { name: "All Time", component: "AllStaff", href: "#", current: false },
 ];
 const currentTab = ref(tabs[0]);
 
@@ -115,8 +120,9 @@ const deletePosition = () => {
 			/>
 			<component
 				:is="components[currentTab.component]"
-				v-bind="{ rank: position.id, search, staffList: selectedStaff }"
+				v-bind="{ staff: position.staff, search, staffList: selectedStaff }"
 				@updateStaffList="(staffList) => updateStaffList(staffList)"
+				class="mt-4"
 			/>
 		</main>
 		<Modal @close="toggleEditModal()" :show="openEditDialog">

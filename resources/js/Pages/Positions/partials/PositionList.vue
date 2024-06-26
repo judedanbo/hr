@@ -6,8 +6,9 @@ import TableBody from "@/Components/TableBody.vue";
 import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
+import SubMenu from "@/Components/SubMenu.vue";
 
-const emit = defineEmits(["openPosition"]);
+const emit = defineEmits(["openPosition", "editPosition", "deletePosition"]);
 const props = defineProps({
 	positions: {
 		type: Object,
@@ -15,7 +16,16 @@ const props = defineProps({
 	},
 });
 
-const tableCols = ["Name", "current occupants"];
+const subMenuClicked = (action, model) => {
+	if (action == "Edit") {
+		emit("editPosition", model);
+	}
+	if (action == "Delete") {
+		emit("deletePosition", model);
+	}
+};
+
+const tableCols = ["Name", "current occupants", "Contact", "Action"];
 </script>
 
 <template>
@@ -32,13 +42,36 @@ const tableCols = ["Name", "current occupants"];
 					</TableHead>
 					<TableBody>
 						<template v-for="position in positions" :key="position.id">
-							<TableRow @click="emit('openPosition', position.id)">
+							<TableRow>
 								<TableData>
 									{{ position.name }}
 									<!-- nPositionNameCard :position="position" /> -->
 								</TableData>
 								<TableData>
 									{{ position.current_staff }}
+								</TableData>
+								<TableData>
+									<div
+										class="text-sm"
+										v-for="contact in position.contacts"
+										:key="contact.id"
+									>
+										{{ contact.contact }}
+									</div>
+								</TableData>
+								<TableData>
+									<td class="flex justify-end">
+										<SubMenu
+											v-if="
+												$page.props.permissions.includes('update staff') ||
+												$page.props.permissions.includes('delete staff')
+											"
+											@itemClicked="
+												(action) => subMenuClicked(action, position)
+											"
+											:items="['Edit', 'Delete']"
+										/>
+									</td>
 								</TableData>
 							</TableRow>
 						</template>

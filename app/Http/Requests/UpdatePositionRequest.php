@@ -13,7 +13,7 @@ class UpdatePositionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return auth()->user()->can('update position');
     }
 
     /**
@@ -24,7 +24,8 @@ class UpdatePositionRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'id' => ['required', 'integer', 'exists:positions,id'], // 'exists' rule is used to check if the value exists in the database table 'positions' under the column 'id
+            'name' => ['required', 'string', 'max:255', 'unique:positions,name'],
         ];
     }
 }

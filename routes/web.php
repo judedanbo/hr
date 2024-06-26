@@ -465,4 +465,5 @@ Route::controller(PositionController::class)->middleware(['auth'])->group(functi
     Route::patch('/position/{position}', 'update')->name('position.update');
     Route::delete('/position/{position}', 'delete')->name('position.delete');
     Route::get('/position-list', 'list')->name('position.list');
+    Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
