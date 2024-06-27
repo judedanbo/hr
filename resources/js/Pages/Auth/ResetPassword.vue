@@ -4,7 +4,9 @@ import BreezeGuestLayout from "@/Layouts/Guest.vue";
 import BreezeInput from "@/Components/Input.vue";
 import BreezeInputError from "@/Components/InputError.vue";
 import BreezeLabel from "@/Components/Label.vue";
+import { useDark, useToggle } from "@vueuse/core";
 import { Head, useForm } from "@inertiajs/inertia-vue3";
+import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
 	email: String,
@@ -17,6 +19,10 @@ const form = useForm({
 	password: "",
 	password_confirmation: "",
 });
+
+const dark = useDark();
+
+const toggle = useToggle(dark);
 
 const submit = () => {
 	form.post(route("password.update"), {
@@ -73,7 +79,15 @@ const submit = () => {
 				/>
 			</div>
 
-			<div class="flex items-center justify-end mt-4">
+			<div class="flex items-center justify-between mt-4">
+				<div>
+					<SunIcon
+						@click="toggle()"
+						v-if="dark"
+						class="w-5 h-5 rounded-full bg-white"
+					/>
+					<MoonIcon @click="toggle()" v-else class="w-5 h-5 rounded-full" />
+				</div>
 				<BreezeButton
 					:class="{ 'opacity-25': form.processing }"
 					:disabled="form.processing"

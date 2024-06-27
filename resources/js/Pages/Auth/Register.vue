@@ -5,6 +5,8 @@ import BreezeInput from "@/Components/Input.vue";
 import BreezeInputError from "@/Components/InputError.vue";
 import BreezeLabel from "@/Components/Label.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
+import { useDark, useToggle } from "@vueuse/core";
+import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
 const form = useForm({
 	name: "",
@@ -19,6 +21,9 @@ const submit = () => {
 		onFinish: () => form.reset("password", "password_confirmation"),
 	});
 };
+const dark = useDark();
+
+const toggle = useToggle(dark);
 </script>
 
 <template>

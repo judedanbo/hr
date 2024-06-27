@@ -4,7 +4,7 @@ import { Head } from "@inertiajs/inertia-vue3";
 import Summary from "@/Pages/Person/Summary.vue";
 import UserRoles from "./partials/UserRoles.vue";
 import UserPermissions from "./partials/UserPermissions.vue";
-
+import { PlusIcon } from "@heroicons/vue/24/outline";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
 

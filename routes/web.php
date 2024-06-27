@@ -53,6 +53,7 @@ use App\Models\StaffType;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -467,3 +468,10 @@ Route::controller(PositionController::class)->middleware(['auth'])->group(functi
     Route::get('/position-list', 'list')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
+
+// Route::get('/test', function () {
+//     Mail::to('jude@gmail.con')->send(
+//         new \App\Mail\UserCreated(auth()->user(), 'password')
+//     );
+//     return 'email sent';
+// });

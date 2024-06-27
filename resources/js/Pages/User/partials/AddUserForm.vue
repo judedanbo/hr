@@ -2,35 +2,12 @@
 import { Inertia } from "@inertiajs/inertia";
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import AddressForm from "@/Pages/Person/partials/AddressForm.vue";
-// import EmploymentForm from "./partials/EmploymentForm.vue";
-import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
-import ContactForm from "@/Pages/Person/partials/ContactForm.vue";
-// import AssignRank from "./partials/AssignRank.vue";
-// import AssignUnit from "./partials/AssignUnit.vue";
-import QualificationForm from "@/Pages/Qualification/partials/QualificationForm.vue";
+import UserRoleForm from "./UserRoleForm.vue";
 import { FormKit } from "@formkit/vue";
 
 const emit = defineEmits(["formSubmitted"]);
 
-const contact_types = ref([]);
-const gender = ref([]);
-const maritalStatus = ref([]);
-onMounted(async () => {
-	const { data } = await axios.get(route("contact-type.index"));
-	contact_types.value = data;
-	const genderData = await axios.get(route("gender.index"));
-	gender.value = genderData.data;
-	const maritalStatusData = await axios.get(route("marital-status.index"));
-	maritalStatus.value = maritalStatusData.data;
-});
-
-// onMounted(async() =>{
-//   const {gender} = await axios.get(route('gender.index'))
-// })
-
 const submitHandler = (data, node) => {
-	// console.log(data);
 	Inertia.post(route("user.store"), data, {
 		preserveState: true,
 		onSuccess: () => {
@@ -81,6 +58,7 @@ const submitHandler = (data, node) => {
 						type="text"
 						label="Name of User"
 						validation="required"
+						autofocus
 					/>
 					<FormKit
 						id="email"
@@ -91,42 +69,13 @@ const submitHandler = (data, node) => {
 					/>
 					<!-- <PersonalInformationForm /> -->
 				</FormKit>
-
-				<!-- <FormKit type="step" name="address">
-					<div>
-						<h1
-							class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
-						>
-							Address of Staff
-						</h1>
-						<AddressForm />
-					</div>
-				</FormKit>
-				<FormKit type="step" name="contact">
-					<div>
-						<h1
-							class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
-						>
-							Staff Contact
-						</h1>
-						<ContactForm />
-					</div>
-				</FormKit> -->
-				<FormKit type="step" name="permissions">
-					<h1
-						class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
-					>
-						Permissions
-					</h1>
-					<!-- <AssignRank :institution="1" /> -->
-				</FormKit>
 				<FormKit type="step" name="roles">
 					<h1
 						class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
 					>
 						Roles
 					</h1>
-					<!-- <AssignUnit :institution="1" /> -->
+					<UserRoleForm />
 					<template #stepNext>
 						<FormKit type="submit" label="Add staff" />
 					</template>

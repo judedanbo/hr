@@ -6,6 +6,7 @@ import TableBody from "@/Components/TableBody.vue";
 import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
+import SubMenu from "@/Components/SubMenu.vue";
 
 const emit = defineEmits(["openUser"]);
 const props = defineProps({
@@ -14,8 +15,23 @@ const props = defineProps({
 		required: true,
 	},
 });
+const subMenuClicked = (action, model) => {
+	if (action == "Edit") {
+		emit("editPosition", model);
+	}
+	if (action == "Delete") {
+		emit("deletePosition", model);
+	}
+};
 
-const tableCols = ["Name", "Email Address", "Verified", "Roles", "Permissions"];
+const tableCols = [
+	"Name",
+	"Email Address",
+	"Verified",
+	"Roles",
+	"Permissions",
+	"Action",
+];
 </script>
 
 <template>
@@ -49,6 +65,16 @@ const tableCols = ["Name", "Email Address", "Verified", "Roles", "Permissions"];
 								</TableData>
 								<TableData>
 									{{ user.permissions }}
+								</TableData>
+								<TableData class="flex justify-end">
+									<SubMenu
+										v-if="
+											$page.props.permissions.includes('update staff') ||
+											$page.props.permissions.includes('delete staff')
+										"
+										@itemClicked="(action) => subMenuClicked(action, position)"
+										:items="['Edit', 'Delete']"
+									/>
 								</TableData>
 							</TableRow>
 						</template>

@@ -1,4 +1,5 @@
 <script setup>
+import UserRoleForm from "./UserRoleForm.vue";
 import { Inertia } from "@inertiajs/inertia";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
@@ -25,7 +26,8 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("user.add.roles", { user: data.user }), data, {
+	console.log(data);
+	Inertia.post(route("user.add.roles", { user: props.user }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -43,18 +45,7 @@ const userRoles = ref([]);
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Roles</h1>
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
-			<FormKit type="hidden" id="user" name="user" :value="user" />
-			<FormKit
-				v-model="userRoles"
-				type="checkbox"
-				name="roles"
-				id="roles"
-				validation="required|integer|min:1|max:2000"
-				label="New role"
-				placeholder="Select new Rank"
-				:options="roles"
-				error-visibility="submit"
-			/>
+			<UserRoleForm />
 		</FormKit>
 	</main>
 </template>

@@ -208,8 +208,12 @@ class InstitutionPerson extends Pivot
     public function scopeActive($query)
     {
         return $query->whereHas('statuses', function ($query) {
-            $query->whereNull('end_date');
             $query->where('status', 'A');
+            $query->where(function ($query) {
+                $query->whereNull('end_date');
+                $query->orWhere('end_date', '>', now());
+            });
+            // $query->whereNull('end_date');
         });
     }
 
