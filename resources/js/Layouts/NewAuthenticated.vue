@@ -114,8 +114,9 @@ const teams = [
 	{ id: 3, name: "Workcation", href: "#", initial: "W", current: false },
 ];
 const userNavigation = [
-	{ name: "Your profile", href: "#" },
-	{ name: "Sign out", href: route("logout") },
+	// { name: "Your profile", href: "#" },
+	{ name: "Change password", href: route("change-password.index") },
+	{ name: "Sign out", href: route("logout"), method: "post" },
 ];
 
 const sidebarOpen = ref(false);

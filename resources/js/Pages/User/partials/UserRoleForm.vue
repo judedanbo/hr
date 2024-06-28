@@ -1,7 +1,11 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-const userRoles = ref([]);
+const props = defineProps({
+	userRoles: {
+		type: Array,
+	},
+});
 const selectedRoles = ref([]);
 let roles = ref([]);
 
@@ -11,9 +15,9 @@ onMounted(async () => {
 });
 </script>
 <template>
+	<!-- {{ userRoles }} -->
 	<div>
 		<FormKit
-			v-model="userRoles"
 			type="checkbox"
 			name="roles"
 			id="roles"
@@ -37,3 +41,9 @@ onMounted(async () => {
 		</fieldset> -->
 	</div>
 </template>
+
+<style>
+.formkit-decorator {
+	@apply peer-checked:bg-green-500;
+}
+</style>

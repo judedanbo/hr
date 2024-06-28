@@ -35,6 +35,7 @@ class Person extends Model
         'ethnicity',
         'religion',
         'about',
+
     ];
 
     protected $casts = [

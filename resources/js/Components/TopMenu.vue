@@ -90,7 +90,7 @@ defineProps({
 					leave-to-class="transform opacity-0 scale-95"
 				>
 					<MenuItems
-						class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+						class="absolute right-0 z-10 mt-2.5 origin-top-right rounded-md bg-white dark:bg-gray-700 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
 					>
 						<MenuItem
 							v-for="item in userNavigation"
@@ -99,7 +99,7 @@ defineProps({
 						>
 							<Link
 								:href="item.href"
-								method="post"
+								:method="item.method"
 								as="button"
 								:class="[
 									active ? 'bg-gray-50' : '',

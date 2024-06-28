@@ -42,7 +42,7 @@ class InstitutionPersonController extends Controller
                 'hire_date_distance' => $staff->hire_date?->diffForHumans(),
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
-                'gender' => $staff->person->gender->label(),
+                'gender' => $staff->person->gender?->label(),
                 'dob' =>  $staff->person->date_of_birth?->format('d M Y'),
                 'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                 'dob_distance' =>  $staff->person->date_of_birth?->diffInYears() . " years old",

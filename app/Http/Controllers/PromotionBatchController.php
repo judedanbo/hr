@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\InstitutionPerson;
 use App\Models\JobStaff;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PromotionBatchController extends Controller
@@ -34,6 +35,7 @@ class PromotionBatchController extends Controller
                 ->paginate()
                 ->withQueryString()
                 ->through(fn ($promotion) => [
+                    'job_id' => $promotion->job_id,
                     'job_name' => $promotion->job_name,
                     'april' => $promotion->april,
                     'october' => $promotion->october,
@@ -45,8 +47,9 @@ class PromotionBatchController extends Controller
         ]);
     }
 
-    public function show($year)
+    public function show(Request $request, $year)
     {
+        // dd($request->rank);
         // return InstitutionPerson::query()
         //     ->active()
         //     ->promotion($year)
@@ -108,6 +111,7 @@ class PromotionBatchController extends Controller
             ->orderByRaw('job_categories.level')
             ->whereNull('jobs.deleted_at')
             ->whereNull('job_staff.end_date')
+            ->where('job_staff.job_id', $request->rank)
             ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3)
             ->paginate()
             ->withQueryString()

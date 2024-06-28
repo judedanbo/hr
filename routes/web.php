@@ -7,6 +7,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
+use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanks;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
@@ -68,14 +69,22 @@ Route::get('/', function () {
     ]);
 });
 
-Route::controller(UserController::class)->middleware(['auth'])->group(function () {
+
+Route::controller(ChangePasswordController::class)->middleware(['auth'])->group(function () {
+    Route::get('/change-password', 'index')->name('change-password.index');
+    Route::post('/change-password', 'store')->name('change-password.store');
+});
+// Route::get('/change-password', [ChangePasswordController::class, 'index'])->middleware(['auth'])->name('change-password');
+
+Route::controller(UserController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/user', 'index')->name('user.index');
     Route::get('/user/{user}', 'show')->name('user.show');
     Route::post('/user/', 'store')->name('user.store');
     Route::patch('/user/{user}', 'update')->name('user.update');
     Route::delete('/user', 'delete')->name('user.delete');
+    Route::get('/user/{user}/roles', 'roles')->name('user.roles');
 });
-Route::controller(RoleController::class)->middleware(['auth'])->group(function () {
+Route::controller(RoleController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/role', 'index')->name('role.index');
     Route::get('/roles-list', 'list')->name('roles.list');
     Route::get('/role/{role}', 'show')->name('role.show');
@@ -84,7 +93,7 @@ Route::controller(RoleController::class)->middleware(['auth'])->group(function (
     Route::post('/user/{user}/add-role', 'addRole')->name('user.add.roles');
     Route::patch('/user/{user}/revoke-role', 'revokeRole')->name('user.revoke.roles');
 });
-Route::controller(PermissionController::class)->middleware(['auth'])->group(function () {
+Route::controller(PermissionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/permission', 'index')->name('permission.index');
     Route::get('/permission-list', 'list')->name('permission.list');
     // Route::get('/user/{user}', 'show')->name('user.show');
@@ -97,12 +106,12 @@ Route::controller(PermissionController::class)->middleware(['auth'])->group(func
 
 Route::get('/dashboard', function () {
     return redirect()->route('institution.show', [1]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
 // })->name('dashboard');
 
 // Application Routes
 // person
-Route::controller(PersonController::class)->middleware(['auth'])->group(function () {
+Route::controller(PersonController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/person', 'index')->name('person.index');
     Route::get('/person/{person}', 'show')->name('person.show');
     Route::get('/person/{person}/edit', 'edit')->name('person.edit');
@@ -117,10 +126,10 @@ Route::controller(PersonController::class)->middleware(['auth'])->group(function
 Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->name('person.avatar');
 Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
 Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->name('person-roles.dependent');
-Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth'])->name('person.avatar.update');
+Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth', 'password_changed'])->name('person.avatar.update');
 
 // Institution
-Route::controller(InstitutionController::class)->middleware(['auth'])->group(function () {
+Route::controller(InstitutionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/create', 'create')->name('institution.create');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
@@ -132,7 +141,7 @@ Route::controller(InstitutionController::class)->middleware(['auth'])->group(fun
     Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');
 });
 // InstitutionRankController::class;
-Route::get('/institution/{institution}/ranks', [InstitutionRankController::class, 'index'])->middleware(['auth'])->name('institution.job-list');
+Route::get('/institution/{institution}/ranks', [InstitutionRankController::class, 'index'])->middleware(['auth', 'password_changed'])->name('institution.job-list');
 
 Route::get('/institution/{institution}/units', function (Institution $institution) {
     $institution->load('allUnits');
@@ -140,7 +149,7 @@ Route::get('/institution/{institution}/units', function (Institution $institutio
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
-})->middleware(['auth'])->name('institution.unit-list');
+})->middleware(['auth', 'password_changed'])->name('institution.unit-list');
 // unit
 Route::get('/institution/{institution}/statuses', function (Institution $institution) {
 
@@ -166,7 +175,7 @@ Route::get('/institution/{institution}/staff-types', function (Institution $inst
     return $types;
 })->name('institution.staff-types');
 
-Route::controller(UnitController::class)->middleware(['auth'])->group(function () {
+Route::controller(UnitController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/unit', 'index')->name('unit.index');
     Route::post('/unit', 'store')->name('unit.store');
     Route::get('/unit/{unit}', 'show')->name('unit.show');
@@ -183,19 +192,19 @@ Route::get('/unit-list', function () {
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
-})->middleware(['auth'])->name('units.list');
+})->middleware(['auth', 'password_changed'])->name('units.list');
 
 // Route::get('/units-stats', function () {
 // //   $stats =  DB::table()
-// })->middleware(['auth'])->name('units.stats');
+// })->middleware(['auth','password_changed'])->name('units.stats');
 
-Route::controller(InstitutionStatusController::class)->middleware(['auth'])->group(function () {
+Route::controller(InstitutionStatusController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/institution/{institution}/status', 'index')->name('institution-status.index');
     Route::get('/institution/{institution}/status/{status}', 'show')->name('institution-status.show');
 });
 
 // staff
-Route::controller(InstitutionPersonController::class)->middleware(['auth'])->group(function () {
+Route::controller(InstitutionPersonController::class)->middleware(['auth', 'password_changed', 'password_changed'])->group(function () {
     Route::get('/staff', 'index')->name('staff.index');
     Route::get('/staff/create', 'create')->name('staff.create');
     Route::post('/staff', 'store')->name('staff.store');
@@ -215,21 +224,21 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth'])->gro
 });
 
 // separation
-Route::controller(SeparationController::class)->middleware(['auth'])->group(function () {
+Route::controller(SeparationController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/separation', 'index')->name('separation.index');
     Route::get('/separation/{staff}', 'show')->name('separation.show');
     // Route::delete('/staff/{staff}/separation/{separation}', 'delete')->name('staff.separation.delete');
 });
 //  promote
-Route::controller(PromoteStaffController::class)->middleware(['auth'])->group(function () {
+Route::controller(PromoteStaffController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::post('/staff/{staff}/promote', 'store')->name('staff.promote.store');
     Route::patch('/staff/{staff}/promote/{promotion}', 'update')->name('staff.promote.update');
     Route::delete('/staff/{staff}/promote/{job}', 'delete')->name('staff.promote.delete');
 });
-Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth'])->name('rank-staff.promote-all');
+Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth', 'password_changed'])->name('rank-staff.promote-all');
 
 // transfer
-Route::controller(TransferController::class)->middleware(['auth'])->group(function () {
+Route::controller(TransferController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::post('/staff/{staff}/transfer', 'store')->name('staff.transfer.store');
     Route::patch('/staff/{staff}/unit/{unit}', 'update')->name('staff.transfer.update');
     Route::delete('/staff/{staff}/transfer/{unit}', 'delete')->name('staff.transfer.delete');
@@ -237,7 +246,7 @@ Route::controller(TransferController::class)->middleware(['auth'])->group(functi
 });
 
 // dependent
-Route::controller(DependentController::class)->middleware(['auth'])->group(function () {
+Route::controller(DependentController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/dependent', 'index')->name('dependent.index');
     // Route::get('/dependent/create', 'create')->name('dependent.create');
     // Route::get('/dependent/{dependent}', 'show')->name('dependent.show');
@@ -246,9 +255,9 @@ Route::controller(DependentController::class)->middleware(['auth'])->group(funct
     Route::delete('/dependent/{dependent}', 'destroy')->name('dependent.delete');
 });
 
-Route::post('staff/{staff}/profile-image', [PersonAvatarController::class, 'store'])->middleware(['auth'])->name('staff.profile-image.store');
+Route::post('staff/{staff}/profile-image', [PersonAvatarController::class, 'store'])->middleware(['auth', 'password_changed'])->name('staff.profile-image.store');
 
-Route::controller(JobCategoryController::class)->middleware(['auth'])->group(function () {
+Route::controller(JobCategoryController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/job-category', 'index')->name('job-category.index');
     Route::get('/job-category/create', 'create')->name('job-category.create');
     Route::post('/job-category', 'store')->name('job-category.store');
@@ -258,19 +267,19 @@ Route::controller(JobCategoryController::class)->middleware(['auth'])->group(fun
 });
 
 
-Route::controller(CategoryRanks::class)->middleware(['auth'])->group(function () {
+Route::controller(CategoryRanks::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/category/{category}/ranks', 'show')->name('category-ranks.show');
 });
 
-Route::get('/rank/{rank}/staff', [RankStaffController::class, 'index'])->middleware(['auth'])->name('rank-staff.index');
-Route::get('/rank/{rank}/promote', [RankStaffController::class, 'promote'])->middleware(['auth'])->name('rank-staff.promote');
-Route::get('/rank/{rank}/active', [RankStaffController::class, 'active'])->middleware(['auth'])->name('rank-staff.active');
-Route::get('/rank/{rank}/all', [RankStaffController::class, 'all'])->middleware(['auth'])->name('rank-staff.all');
-Route::get('/rank/{rank}/export', [RankStaffController::class, 'exportRank'])->middleware(['auth'])->name('rank-staff.export-rank');
-Route::get('/rank/{rank}/export/promotion-list', [RankStaffController::class, 'exportPromotion'])->middleware(['auth'])->name('rank-staff.export-rank-promote');
-Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth'])->name('rank-staff.export-rank-all');
+Route::get('/rank/{rank}/staff', [RankStaffController::class, 'index'])->middleware(['auth', 'password_changed'])->name('rank-staff.index');
+Route::get('/rank/{rank}/promote', [RankStaffController::class, 'promote'])->middleware(['auth', 'password_changed'])->name('rank-staff.promote');
+Route::get('/rank/{rank}/active', [RankStaffController::class, 'active'])->middleware(['auth', 'password_changed'])->name('rank-staff.active');
+Route::get('/rank/{rank}/all', [RankStaffController::class, 'all'])->middleware(['auth', 'password_changed'])->name('rank-staff.all');
+Route::get('/rank/{rank}/export', [RankStaffController::class, 'exportRank'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank');
+Route::get('/rank/{rank}/export/promotion-list', [RankStaffController::class, 'exportPromotion'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank-promote');
+Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank-all');
 
-Route::controller(JobController::class)->middleware(['auth'])->group(function () {
+Route::controller(JobController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
     Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
@@ -288,7 +297,7 @@ Route::get('/rank/{rank}/category', function (Job $rank) {
         'level' => $rank->category->level,
         'short_name' => $rank->category->short_name,
     ];
-})->middleware(['auth'])->name('rank.category');
+})->middleware(['auth', 'password_changed'])->name('rank.category');
 
 Route::get('rank/{rank}/next', function (Job $rank) {
     $nextCategoryId =  $rank->job_category_id - 1;
@@ -302,12 +311,12 @@ Route::get('rank/{rank}/next', function (Job $rank) {
             'label' => $rank->name,
         ]);
     //->where('id', '>', $rank->id)->first();
-})->middleware(['auth'])->name('rank.next');
+})->middleware(['auth', 'password_changed'])->name('rank.next');
 
 // Route::get('rank/{rank}/previous', function (JobCategory $rank) {
 //     $previousCategoryId =  $rank->job_category_id + 1 ;
 //     return $rank->previous;
-// })->middleware(['auth'])->name('rank.previous');
+// })->middleware(['auth','password_changed'])->name('rank.previous');
 
 Route::get('/document-types', function () {
     foreach (DocumentTypeEnum::cases() as $type) {
@@ -317,7 +326,7 @@ Route::get('/document-types', function () {
         ];
     }
     return $types;
-})->middleware(['auth'])->name('document-types');
+})->middleware(['auth', 'password_changed'])->name('document-types');
 
 Route::get('/document-statuses', function () {
     foreach (DocumentStatusEnum::cases() as $status) {
@@ -327,76 +336,74 @@ Route::get('/document-statuses', function () {
         ];
     }
     return $types;
-})->middleware(['auth'])->name('document-statuses');
+})->middleware(['auth', 'password_changed'])->name('document-statuses');
 
-Route::controller(QualificationDocumentController::class)->middleware(['auth'])->group(function () {
+Route::controller(QualificationDocumentController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::post('/qualification/{qualification}/document', 'update')->name('qualification-document.update');
     Route::delete('/qualification/{qualification}/document', 'delete')->name('qualification-document.delete');
 });
 
 // report
-Route::get('/report', [RecruitmentController::class, 'index'])->middleware(['auth'])->name('report.index');
-Route::get('/report/recruitment', [RecruitmentController::class, 'recruitment'])->middleware(['auth'])->name('report.recruitment');
-Route::get('/report/recruitment/chart', [RecruitmentController::class, 'recruitmentChart'])->middleware(['auth'])->name('report.recruitment.chart');
-Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth'])->name('report.recruitment.details');
+Route::get('/report', [RecruitmentController::class, 'index'])->middleware(['auth', 'password_changed'])->name('report.index');
+Route::get('/report/recruitment', [RecruitmentController::class, 'recruitment'])->middleware(['auth', 'password_changed'])->name('report.recruitment');
+Route::get('/report/recruitment/chart', [RecruitmentController::class, 'recruitmentChart'])->middleware(['auth', 'password_changed'])->name('report.recruitment.chart');
+Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth', 'password_changed'])->name('report.recruitment.details');
 
 // staff
-Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth'])->name('report.staff');
-Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth'])->name('report.staff-details');
-Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth'])->name('report.staff-retirement');
-Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth'])->name('report.staff-pending-transfer');
-Route::get('/report-staff-positions/', [StaffReportController::class, 'positions'])->middleware(['auth'])->name('report.staff-positions');
+Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth', 'password_changed'])->name('report.staff');
+Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth', 'password_changed'])->name('report.staff-details');
+Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth', 'password_changed'])->name('report.staff-retirement');
+Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth', 'password_changed'])->name('report.staff-pending-transfer');
+Route::get('/report-staff-positions/', [StaffReportController::class, 'positions'])->middleware(['auth', 'password_changed'])->name('report.staff-positions');
 
 // retires exports
 
-Route::get('/report-retirements/', [StaffReportController::class, 'retirements'])->middleware(['auth'])->name('report.retirements');
-Route::get('/report-all-retirements/', [StaffReportController::class, 'allRetirements'])->middleware(['auth'])->name('report.retirements-all');
-Route::get('/report-deceased-retirements/', [StaffReportController::class, 'deceased'])->middleware(['auth'])->name('report.retirements-deceased');
-Route::get('/report-terminated-retirements/', [StaffReportController::class, 'terminated'])->middleware(['auth'])->name('report.retirements-terminated');
-Route::get('/report-resignation/', [StaffReportController::class, 'resignation'])->middleware(['auth'])->name('report.resignation');
-Route::get('/report-suspended/', [StaffReportController::class, 'suspended'])->middleware(['auth'])->name('report.suspended');
-Route::get('/report-vol-retirement/', [StaffReportController::class, 'volRetirement'])->middleware(['auth'])->name('report.vol-retirement');
-Route::get('/report-dismissed/', [StaffReportController::class, 'dismissed'])->middleware(['auth'])->name('report.dismissed');
-Route::get('/report-vacation-of-post/', [StaffReportController::class, 'vacatedPost'])->middleware(['auth'])->name('report.vacation-of-post');
-Route::get('/report-leave-with-pay/', [StaffReportController::class, 'leaveWithPay'])->middleware(['auth'])->name('report.leave-pay');
-Route::get('/report-leave-without-pay/', [StaffReportController::class, 'leaveWithoutPay'])->middleware(['auth'])->name('report.leave-without-pay');
-Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth'])->name('report.recruitment.export-data');
-Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth'])->name('report.recruitment.export-summary');
+Route::get('/report-retirements/', [StaffReportController::class, 'retirements'])->middleware(['auth', 'password_changed'])->name('report.retirements');
+Route::get('/report-all-retirements/', [StaffReportController::class, 'allRetirements'])->middleware(['auth', 'password_changed'])->name('report.retirements-all');
+Route::get('/report-deceased-retirements/', [StaffReportController::class, 'deceased'])->middleware(['auth', 'password_changed'])->name('report.retirements-deceased');
+Route::get('/report-terminated-retirements/', [StaffReportController::class, 'terminated'])->middleware(['auth', 'password_changed'])->name('report.retirements-terminated');
+Route::get('/report-resignation/', [StaffReportController::class, 'resignation'])->middleware(['auth', 'password_changed'])->name('report.resignation');
+Route::get('/report-suspended/', [StaffReportController::class, 'suspended'])->middleware(['auth', 'password_changed'])->name('report.suspended');
+Route::get('/report-vol-retirement/', [StaffReportController::class, 'volRetirement'])->middleware(['auth', 'password_changed'])->name('report.vol-retirement');
+Route::get('/report-dismissed/', [StaffReportController::class, 'dismissed'])->middleware(['auth', 'password_changed'])->name('report.dismissed');
+Route::get('/report-vacation-of-post/', [StaffReportController::class, 'vacatedPost'])->middleware(['auth', 'password_changed'])->name('report.vacation-of-post');
+Route::get('/report-leave-with-pay/', [StaffReportController::class, 'leaveWithPay'])->middleware(['auth', 'password_changed'])->name('report.leave-pay');
+Route::get('/report-leave-without-pay/', [StaffReportController::class, 'leaveWithoutPay'])->middleware(['auth', 'password_changed'])->name('report.leave-without-pay');
+Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth', 'password_changed'])->name('report.recruitment.export-data');
+Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth', 'password_changed'])->name('report.recruitment.export-summary');
 
 // promotion report
-Route::get('/export/promotion', [PromotionExportController::class, 'show'])->middleware(['auth'])->name('export.promotion');
-Route::get('/export/promotion/list', [PromotionExportController::class, 'list'])->middleware(['auth'])->name('export.promotion-list');
+Route::get('/export/promotion', [PromotionExportController::class, 'show'])->middleware(['auth', 'password_changed'])->name('export.promotion');
+Route::get('/export/promotion/list', [PromotionExportController::class, 'list'])->middleware(['auth', 'password_changed'])->name('export.promotion-list');
 
-Route::get('/report/promotion', [PromotionController::class, 'index'])->middleware(['auth'])->name('report.promotion');
-Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth'])->name('report.promotion.year');
+Route::get('/report/promotion', [PromotionController::class, 'index'])->middleware(['auth', 'password_changed'])->name('report.promotion');
+Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth', 'password_changed'])->name('report.promotion.year');
 
-Route::controller(PromotionController::class)->middleware(['auth'])->group(function () {
+Route::controller(PromotionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/past-promotion', 'index')->name('promotion.index');
     Route::get('/past-promotion/{year}', 'show')->name('promotion.show');
     Route::get('/past-promotion/{year}/rank', 'byRanks')->name('promotion.ranks');
     Route::get('/past-promotion/{promotion}/export', 'export')->name('promotion.export');
 });
 
-
-
-Route::controller(PromotionBatchController::class)->middleware(['auth'])->group(function () {
+Route::controller(PromotionBatchController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
     Route::get('/next-promotions/{year?}', 'show')->name('promotion.batch.show');
 });
 
-Route::controller(QualificationController::class)->middleware(['auth'])->group(function () {
+Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/qualification', 'index')->name('qualification.index');
     Route::post('/qualification', 'store')->name('qualification.store');
     Route::patch('/qualification/{qualification}', 'update')->name('qualification.update');
     Route::delete('/qualification/{qualification}', 'delete')->name('qualification.delete');
 });
 
-Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth'])->name('contact-type.index');
+Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth', 'password_changed'])->name('contact-type.index');
 
-Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middleware(['auth'])->name('marital-status.index');
-Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth'])->name('gender.index');
+Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middleware(['auth', 'password_changed'])->name('marital-status.index');
+Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth', 'password_changed'])->name('gender.index');
 
-Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth'])->name('nationality.index');
+Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth', 'password_changed'])->name('nationality.index');
 
 Route::get('/country', function () {
     $nationality = null;
@@ -407,9 +414,9 @@ Route::get('/country', function () {
         $nationality[] = $newNation;
     }
     return $nationality;
-})->middleware(['auth'])->name('country.index');
+})->middleware(['auth', 'password_changed'])->name('country.index');
 
-Route::controller(StaffStatusController::class)->middleware(['auth'])->group(function () {
+Route::controller(StaffStatusController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/staff-status', 'index')->name('staff-status.index');
     Route::get('/staff-status/create', 'create')->name('staff-status.create');
     Route::post('/staff-status', 'store')->name('staff-status.store');
@@ -417,9 +424,9 @@ Route::controller(StaffStatusController::class)->middleware(['auth'])->group(fun
     Route::patch('/staff-status/{staffStatus}', 'update')->name('staff-status.update');
     Route::delete('/staff-status/{staffStatus}', 'delete')->name('staff-status.delete');
 });
-// Route::post('/staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth'])->name('staff-status.save');
+// Route::post('/staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth','password_changed'])->name('staff-status.save');
 
-Route::controller(StaffTypeController::class)->middleware(['auth'])->group(function () {
+Route::controller(StaffTypeController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/staff-type', 'index')->name('staff-type.index');
     Route::get('/staff-type/create', 'create')->name('staff-type.create');
     Route::post('/staff-type', 'store')->name('staff-type.store');
@@ -427,13 +434,13 @@ Route::controller(StaffTypeController::class)->middleware(['auth'])->group(funct
     Route::patch('/staff-type/{staffType}', 'update')->name('staff-type.update');
     Route::delete('/staff-type/{staffType}', 'delete')->name('staff-type.delete');
 });
-// Route::post('/staff-type/{`staff}', [StaffTypeController::class, 'store'])->middleware(['auth'])->name('staff-type.save');
+// Route::post('/staff-type/{`staff}', [StaffTypeController::class, 'store'])->middleware(['auth','password_changed'])->name('staff-type.save');
 
-// Route::patch('/staff-type/{staff}/{type}', [StaffTypeController::class, 'update'])->middleware(['auth'])->name('staff-type.update');
+// Route::patch('/staff-type/{staff}/{type}', [StaffTypeController::class, 'update'])->middleware(['auth','password_changed'])->name('staff-type.update');
 
-Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth'])->name('unit-type.index');
+Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth', 'password_changed'])->name('unit-type.index');
 
-Route::controller(NoteController::class)->middleware(['auth'])->group(function () {
+Route::controller(NoteController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/notes', 'index')->name('notes.index');
     Route::get('/notes/create', 'create')->name('notes.create');
     Route::post('/notes', 'store')->name('notes.store');
@@ -455,10 +462,10 @@ Route::get('/note-types', function () {
     //     'value' => $type->id,
     //     'label' => $type->name,
     // ]);
-})->middleware(['auth'])->name('note-types');
+})->middleware(['auth', 'password_changed'])->name('note-types');
 
 
-Route::controller(PositionController::class)->middleware(['auth'])->group(function () {
+Route::controller(PositionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/position', 'index')->name('position.index');
     Route::get('/position/create', 'create')->name('position.create');
     Route::post('/position', 'store')->name('position.store');

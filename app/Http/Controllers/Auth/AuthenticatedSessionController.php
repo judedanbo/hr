@@ -36,6 +36,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (auth()->user()->password_change_at == null) {
+            return redirect(route('change-password.index'));
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

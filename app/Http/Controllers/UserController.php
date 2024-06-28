@@ -56,7 +56,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $password = Str::random(8);
         $bio = $request->all()['userData']['bio'];
         $bio['password'] = Hash::make($password); //bcrypt('password');
@@ -136,5 +136,15 @@ class UserController extends Controller
     public function delete(User $user)
     {
         //
+    }
+
+    public function roles(User $user)
+    {
+        $user->load('roles');
+        return [
+            'roles' => $user->roles->map(function ($role) {
+                return $role->name;
+            })
+        ];
     }
 }

@@ -1,28 +1,24 @@
 <script setup>
 import UserRoleForm from "./UserRoleForm.vue";
 import { Inertia } from "@inertiajs/inertia";
+import axios from "axios";
+import { computed } from "vue";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
 	user: { type: Number, required: true },
-	// userRoles: {
-	// 	type: Array,
-	// 	default: () => [],
-	// },
 });
 
-import { format, addDays, subYears } from "date-fns";
-
-const today = format(new Date(), "yyyy-MM-dd");
-const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 20), "yyyy-MM-dd");
-
-let roles = ref([]);
+const roles = ref([]);
+const userRoles = ref([]);
 
 onMounted(async () => {
 	const response = await axios.get(route("roles.list"));
 	roles.value = response.data;
+
+	const response2 = await axios.get(route("user.roles", { user: props.user }));
+	userRoles.value = response2.data;
 });
 
 const submitHandler = (data, node) => {
@@ -38,14 +34,19 @@ const submitHandler = (data, node) => {
 		},
 	});
 };
-const userRoles = ref([]);
+// const userRoles = computed(() => {
+// 	return roles.value.map(function (role) {
+// 		return role.value;
+// 	});
+// });
 </script>
 
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Roles</h1>
+		<!-- {{ userRoles }} -->
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
-			<UserRoleForm />
+			<UserRoleForm :userRoles="userRoles" />
 		</FormKit>
 	</main>
 </template>

@@ -82,7 +82,7 @@ const tableCols = [
 				</MainTable>
 				<slot name="pagination" />
 			</div>
-			<NoItem v-else name="Staff" />
+			<NoItem v-else name="User" />
 		</div>
 	</section>
 </template>
