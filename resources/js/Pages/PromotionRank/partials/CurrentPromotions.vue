@@ -38,17 +38,26 @@ const tableCols = ["Rank", "April", "October", "Total"];
 							v-for="currentRank in promotions.data"
 							:key="currentRank.job_id"
 						>
-							<TableRow @click="emit('openPromotion', currentRank.job_id)">
-								<TableData>
+							<TableRow>
+								<TableData @click="emit('openPromotion', currentRank.job_id)">
 									{{ currentRank.job_name }}
 								</TableData>
-								<TableData align="right">
+								<TableData
+									align="right"
+									@click="emit('openPromotion', currentRank.job_id, 'april')"
+								>
 									{{ currentRank.april }}
 								</TableData>
-								<TableData align="right">
+								<TableData
+									align="right"
+									@click="emit('openPromotion', currentRank.job_id, 'october')"
+								>
 									{{ currentRank.october }}
 								</TableData>
-								<TableData align="right">
+								<TableData
+									align="right"
+									@click="emit('openPromotion', currentRank.job_id)"
+								>
 									{{ currentRank.april + currentRank.october }}
 								</TableData>
 							</TableRow>

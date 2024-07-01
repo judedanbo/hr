@@ -5,15 +5,34 @@
 				<h1
 					class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50"
 				>
-					Due for Promotion
+					Due for Promotion in {{ batch == "april" ? "April" : "October" }}
 				</h1>
 				<p class="mt-2 text-sm text-gray-700 dark:text-gray-200">
 					A list of staff who have been at the role from three years or more.
 				</p>
+				<div class="flex gap-x-5">
+					<button
+						class="flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 hover:cursor-pointer disabled:bg-gray-200 disabled:text-gray-500 disabled:hover:cursor-not-allowed"
+						@click="aprilData()"
+						:disabled="batch == 'april'"
+					>
+						April
+					</button>
+					<button
+						class="flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 hover:cursor-pointer disabled:text-gray-500 disabled:hover:cursor-not-allowed"
+						@click="octoberData()"
+						:disabled="batch == 'october'"
+					>
+						October
+					</button>
+				</div>
 			</div>
+
 			<a
 				class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-				:href="route('rank-staff.export-rank-promote', { rank: props.rank })"
+				:href="
+					route('rank-staff.export-rank-promote', { rank: props.rank, batch })
+				"
 			>
 				<ArrowDownTrayIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 				Download
@@ -199,7 +218,7 @@ import { Inertia } from "@inertiajs/inertia";
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";
-import { useToggle } from "@vueuse/core";
+import { get, useToggle } from "@vueuse/core";
 import PromoteAllForm from "./PromoteAllForm.vue";
 import Spinner from "@/Components/Spinner.vue";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
@@ -230,8 +249,20 @@ onMounted(async () => {
 	const next = await axios.get(route("rank.next", { rank: props.rank }));
 	nextRank.value = next.data;
 });
+const batch = ref("april");
+
+const aprilData = async () => {
+	batch.value = "april";
+	await getRankStaff();
+};
+
+const octoberData = async () => {
+	batch.value = "october";
+	await getRankStaff();
+};
 
 const getRankStaff = async (page = null) => {
+	// console.log(batch);
 	if (page) {
 		const staff = (await axios.get(page)).data;
 		rankStaff.value = staff;
@@ -240,7 +271,7 @@ const getRankStaff = async (page = null) => {
 	}
 	const staff = (
 		await axios.get(route("rank-staff.promote", { rank: props.rank }), {
-			params: { search: props.search },
+			params: { batch: batch.value, search: props.search },
 		})
 	).data;
 	rankStaff.value = staff;

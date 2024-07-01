@@ -6,6 +6,7 @@ use App\Exports\RankAllListExport;
 use App\Exports\RankPromotionListExport;
 use App\Exports\RanksStaffExport;
 use App\Models\Job;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
 
@@ -53,6 +54,7 @@ class RankStaffController extends Controller
 
     function promote($rank)
     {
+        // dd(request()->all());
         $staff =  Job::find($rank)
             ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
@@ -64,7 +66,19 @@ class RankStaffController extends Controller
             ->whereHas('ranks', function ($query) use ($rank) {
                 $query->whereNull('job_staff.end_date');
                 $query->where('job_staff.job_id', $rank);
-                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                // dd(request()->batch);
+                $query->when(request()->batch == 'april', function ($query) {
+                    $query->where('job_staff.start_date', '<=', Carbon::parse('first day of April')->subYear(3));
+                    $query->where(function ($query) {
+                        $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
+                        $query->orWhereRaw('month(job_staff.start_date) IN (11, 12)');
+                    });
+                    // $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
+                });
+                $query->when(request()->batch == 'october', function ($query) {
+                    $query->where('job_staff.start_date', '<=', Carbon::parse('first day of October')->subYear(3));
+                    $query->whereRaw('month(job_staff.start_date) IN (4,5, 6, 7, 8, 9, 10)');
+                });
             })
             ->with(['person', 'units', 'ranks'])
             ->paginate()
@@ -173,7 +187,8 @@ class RankStaffController extends Controller
     }
     function exportPromotion(Job $rank)
     {
-        return Excel::download(new RankPromotionListExport($rank), Str::of($rank->name)->plural() . ' promotion list.xlsx');
+        // dd(Carbon::parse('April 1'));
+        return Excel::download(new RankPromotionListExport($rank, request()->batch), request()->batch . ' ' . date('Y') . ' ' . Str::of($rank->name)->plural() . ' promotion list.xlsx');
     }
     function exportAll(Job $rank)
     {

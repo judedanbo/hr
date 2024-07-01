@@ -44,9 +44,15 @@ const exportToExcel = () => {
 	window.location = route("export.promotion-list");
 };
 
-const openPromotion = (job_id, year = new Date().getFullYear()) => {
+const openPromotion = (
+	jobId,
+	period = null,
+	year = new Date().getFullYear(),
+) => {
+	console.log(period);
 	Inertia.get(route("promotion.batch.show", { year: year }), {
-		rank: job_id,
+		rank: jobId,
+		period: period,
 	});
 };
 </script>
@@ -69,7 +75,9 @@ const openPromotion = (job_id, year = new Date().getFullYear()) => {
 			</div>
 			<CurrentPromotions
 				@update:model-value="searchStaff"
-				@openPromotion="(job_id) => openPromotion(job_id)"
+				@openPromotion="
+					(jobId, period, year) => openPromotion(jobId, period, year)
+				"
 				:promotions="promotions"
 			>
 				<template #pagination>

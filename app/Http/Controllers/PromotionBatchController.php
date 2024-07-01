@@ -112,6 +112,15 @@ class PromotionBatchController extends Controller
             ->whereNull('jobs.deleted_at')
             ->whereNull('job_staff.end_date')
             ->where('job_staff.job_id', $request->rank)
+            ->when($request->period, function ($query, $request) {
+                if ($request == 'april') {
+                    $query->whereRaw('month(job_staff.start_date) in (1, 2, 3, 4, 11, 12)');
+                }
+                if ($request == 'october') {
+                    $query->whereRaw('month(job_staff.start_date) in (5, 6, 7, 8, 9, 10)');
+                }
+                // $query->where('job_staff.start_date', 'in', );
+            })
             ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3)
             ->paginate()
             ->withQueryString()

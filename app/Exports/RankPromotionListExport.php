@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Job;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -22,9 +23,11 @@ class RankPromotionListExport implements
 {
     use Exportable;
     public $rank;
-    public function __construct(Job $rank)
+    public $batch;
+    public function __construct(Job $rank, string $batch = null)
     {
         $this->rank = $rank;
+        $this->batch = $batch ?? now() <= Carbon::parse('April 1') || now() >= Carbon::parse('October 1') ? 'april' : 'october';
     }
     public function headings(): array
     {
@@ -61,6 +64,18 @@ class RankPromotionListExport implements
                 $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
                 $query->whereNull('job_staff.end_date');
                 $query->where('job_staff.job_id', $this->rank->id);
+            })
+            ->when($this->batch == 'april', function ($query) {
+                $query->where('job_staff.start_date', '<=', Carbon::parse('first day of April')->subYear(3));
+                $query->where(function ($query) {
+                    $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
+                    $query->orWhereRaw('month(job_staff.start_date) IN (11, 12)');
+                });
+                // $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
+            })
+            ->when(request()->batch == 'october', function ($query) {
+                $query->where('job_staff.start_date', '<=', Carbon::parse('first day of October')->subYear(3));
+                $query->whereRaw('month(job_staff.start_date) IN (4,5, 6, 7, 8, 9, 10)');
             })
             ->with(['person', 'units', 'ranks']);
     }

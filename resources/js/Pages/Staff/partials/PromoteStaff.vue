@@ -12,7 +12,7 @@ import { format, addDays, subYears } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 20), "yyyy-MM-dd");
+const end_date = format(subYears(new Date(), 60), "yyyy-MM-dd");
 
 let ranks = ref([]);
 

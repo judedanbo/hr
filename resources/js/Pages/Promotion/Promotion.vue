@@ -42,10 +42,7 @@ const getMonth = (month) => {
 						</tr>
 					</thead>
 					<tbody>
-						<template
-							v-for="ranks in promotions"
-							key="{{ranks[0].id +ranks[0].rank_id }}"
-						>
+						<template v-for="ranks in promotions" key="{{ranks.id}}">
 							<tr class="text-sm leading-6 text-gray-900">
 								<th
 									scope="colgroup"
@@ -53,7 +50,7 @@ const getMonth = (month) => {
 									class="relative isolate py-2 font-semibold"
 								>
 									<p class="dark:text-gray-50">
-										{{ ranks[0].rank_name + "(" + ranks.length + ")" }}
+										{{ ranks.rank_name + "(" + ranks.length + ")" }}
 									</p>
 									<div
 										class="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 dark:border-gray-500 bg-gray-50 dark:bg-gray-800"

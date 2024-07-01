@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\JobStaff;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PromotionController extends Controller
@@ -31,8 +32,8 @@ class PromotionController extends Controller
                 'jobs.id as job_id,
                 jobs.name as job_name,
                  YEAR(job_staff.start_date) as year,
-                 COUNT(CASE WHEN MONTH(job_staff.start_date) <= 4 THEN 1 END) as april,
-                COUNT(CASE WHEN MONTH(job_staff.start_date) > 4 THEN 1 END) as october,
+                 COUNT(CASE WHEN MONTH(job_staff.start_date) IN (1,2,3,4,11,12) THEN 1 END) as april,
+                COUNT(CASE WHEN MONTH(job_staff.start_date) IN (5,6,7,8,9,10) THEN 1 END) as october,
                 COUNT(job_staff.start_date) as total
                  '
             )
@@ -68,39 +69,59 @@ class PromotionController extends Controller
         ]);
     }
 
-    public function show(int $year = null)
+    public function show(Request $request, int $year = null)
     {
+        // dd($request->rank);
 
         if ($year == null) {
             $year = date('Y');
         }
 
         $promotions = InstitutionPerson::query()
-            ->whereHas('ranks', function ($query) use ($year) {
+            // ->active()
+            ->join('job_staff', 'job_staff.staff_id', '=', 'institution_person.id')
+            ->join('jobs', 'jobs.id', '=', 'job_staff.job_id')
+            ->join('job_categories', 'job_categories.id', '=', 'jobs.job_category_id')
+            // ->where('job_staff.job_id', $request->rank)
+            // ->whereNull('job_staff.end_date')
+            ->where('jobs.id', $request->rank)
+            ->whereYear('job_staff.start_date', $year)
+            // ->when(request()->rank, function ($query, $rank) {
+            //     $query->where('job_staff.job_id', $rank);
+            // })
+            // ->whereHas('ranks', function ($query) use ($year) {
 
-                $query->whereYear('start_date', $year);
-                $query->when(request()->month, function ($whenQuery, $month) {
-                    if ($month == 'april') {
-                        $whenQuery->whereMonth('start_date', '<=', 4);
-                    } elseif ($month == 'october') {
-                        $whenQuery->whereMonth('start_date', '>', 4);
-                    }
-                });
-                $query->when(request()->rank, function ($whenQuery, $rank) {
-                    $whenQuery->where('job_id', $rank);
-                });
-            })
+            //     $query->when(request()->month, function ($whenQuery, $month) {
+            //         if ($month == 'april') {
+            //             $whenQuery->whereRaw('month(start_date) IN (1,2,3,4,11,12)');
+            //         } elseif ($month == 'october') {
+            //             $whenQuery->whereRaw('month(start_date) In (5,6,7,8,9,10)');
+            //         }
+            //     });
+            // $query->when(request()->rank, function ($whenQuery, $rank) {
+            //     $whenQuery->where('job_id', $rank);
+            // });
+            // })
             // ->join('job_categories', 'job_categories.id', '=', 'jobs.job_category_id')
             // ->whereHas('statuses', function ($query) {
             //     $query->where('status', 'A');
             // })
-            ->with(['ranks', 'person', 'institution', 'units', 'statuses'])
+            ->with([
+                'ranks' => function ($query) {
+                    // $query->wherePivot('job_id', request()->rank);
+                },
+                'person',
+                'institution',
+                'units',
+                'statuses'
+            ])
             // ->orderBy('job_categories.level')
             ->get()
             // ->paginate()
             // ->withQueryString()
             ->map(fn ($staff) => [
-                'id' => $staff->id,
+                'staff' => $staff->ranks,
+                'id' => $staff->staff_id,
                 'person_id' => $staff->person_id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,
@@ -113,9 +134,10 @@ class PromotionController extends Controller
                 'status' => $staff->statuses->first()?->status->label(),
                 'start_date' => $staff->ranks->first()?->pivot->start_date->format('d F Y'),
                 'now' => date('Y-m-d'),
-                'test_rank' => $staff->ranks,
+                // 'test_rank' => $staff->ranks,
             ]);
-        $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
+        // return $promotions;
+        // $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
 
         return Inertia::render(
             'Promotion/Show',

@@ -154,7 +154,7 @@ const editContactModal = () => {
 				>
 					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
 						<!-- Employment summary -->
-						<Summary :person="user" @open-edit-person="toggle()" />
+						<!-- <Summary :person="user" @open-edit-person="toggle()" /> -->
 					</div>
 
 					<div
