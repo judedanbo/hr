@@ -15,7 +15,13 @@ const props = defineProps({
 	},
 });
 
-const tableCols = ["Rank", "April", "October", "Total"];
+const tableCols = [
+	"Rank",
+	"Total Staff",
+	"April",
+	"October",
+	"Due for Promotion",
+];
 </script>
 
 <template>
@@ -44,6 +50,12 @@ const tableCols = ["Rank", "April", "October", "Total"];
 								</TableData>
 								<TableData
 									align="right"
+									@click="emit('openPromotion', currentRank.job_id)"
+								>
+									{{ currentRank.all_staff }}
+								</TableData>
+								<TableData
+									align="right"
 									@click="emit('openPromotion', currentRank.job_id, 'april')"
 								>
 									{{ currentRank.april }}
@@ -58,7 +70,7 @@ const tableCols = ["Rank", "April", "October", "Total"];
 									align="right"
 									@click="emit('openPromotion', currentRank.job_id)"
 								>
-									{{ currentRank.april + currentRank.october }}
+									{{ currentRank.staff_to_promote }}
 								</TableData>
 							</TableRow>
 						</template>

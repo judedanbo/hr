@@ -28,17 +28,49 @@ class Job extends Model
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')->withPivot(
-            'start_date',
-            'end_date',
-            'remarks'
-        );
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')
+            ->withPivot(
+                'start_date',
+                'end_date',
+                'remarks'
+            );
     }
     public function activeStaff(): BelongsToMany
     {
         return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')
-            ->wherePivotNull('end_date');
+            ->withPivot('start_date', 'end_date', 'remarks')
+            ->active()
+            ->wherePivotNull('end_date')
+            ->orWherePivot('end_date', '>', now());
     }
+    public function staffToPromote(): BelongsToMany
+    {
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')
+            ->withPivot('start_date', 'end_date', 'remarks')
+            ->active()
+            ->toPromote()
+            ->wherePivotNull('end_date');
+        // ->orWherePivot('end_date', '>', now());
+    }
+    public function staffToPromoteApril(): BelongsToMany
+    {
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')
+            ->withPivot('start_date', 'end_date', 'remarks')
+            ->active()
+            ->toPromoteApril()
+            ->wherePivotNull('end_date')
+            ->orWherePivot('end_date', '>', now());
+    }
+    public function staffToPromoteOctober(): BelongsToMany
+    {
+        return $this->belongsToMany(InstitutionPerson::class, 'job_staff', 'job_id', 'staff_id')
+            ->withPivot('start_date', 'end_date', 'remarks')
+            ->active()
+            ->toPromoteOctober()
+            ->wherePivotNull('end_date')
+            ->orWherePivot('end_date', '>', now());
+    }
+
 
     /**
      * Get the previousRank associated with the Job
@@ -70,7 +102,7 @@ class Job extends Model
     public function scopeOtherRanks($query)
     {
         return $query->WhereHas('category', function ($whereHasQuery) {
-            $whereHasQuery->where("level", ">", 3);
+            $whereHasQuery->where("level", ">=", 2);
         });
     }
 

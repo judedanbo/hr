@@ -114,7 +114,6 @@ class RankStaffController extends Controller
                 ]
 
             ]);
-        // Inertia::render('')
         return $staff;
     }
     function active($rank)

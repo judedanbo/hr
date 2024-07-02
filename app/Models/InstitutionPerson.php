@@ -229,6 +229,51 @@ class InstitutionPerson extends Pivot
         // }]);
     }
 
+    public function scopeToPromote($query)
+    {
+        return $query->whereHas('ranks', function ($query) {
+            $query->whereNull('job_staff.end_date');
+            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+        });
+    }
+    public function scopeToPromoteApril($query)
+    {
+        return $query->whereHas('ranks', function ($query) {
+            $query->whereNull('job_staff.end_date');
+            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+            $query->where(function ($query) {
+                $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 11, 12)');
+                $query->orWhere(function ($query) {
+                    $query->whereMonth('job_staff.start_date', 4);
+                    $query->whereDay('job_staff.start_date', 1);
+                });
+                $query->orWhere(function ($query) {
+                    $query->whereMonth('job_staff.start_date', 10);
+                    $query->whereDay('job_staff.start_date', '>', 1);
+                });
+            });
+        });
+    }
+    public function scopeToPromoteOctober($query)
+    {
+        return $query->whereHas('ranks', function ($query) {
+            $query->whereNull('job_staff.end_date');
+            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+            $query->where(function ($query) {
+                $query->whereRaw('month(job_staff.start_date) IN (5, 6, 7, 8, 9)');
+                $query->orWhere(function ($query) {
+                    $query->whereMonth('job_staff.start_date', 10);
+                    $query->whereDay('job_staff.start_date', 1);
+                });
+                $query->orWhere(function ($query) {
+                    $query->whereMonth('job_staff.start_date', 4);
+                    $query->whereDay('job_staff.start_date', '>', 1);
+                });
+            });
+        });
+    }
+
+
     function scopeToRetire($query)
     {
         return $query->whereHas('person', function ($query) {

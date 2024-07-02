@@ -111,9 +111,10 @@ const getMonth = (month) => {
 									<div class="flex justify-end">
 										<Link
 											class="text-sm font-medium leading-6 text-green-600 hover:text-green-500 dark:text-green-50 hover:dark:text-gray-50"
+											:href="route('staff.show', { staff: staff.id })"
 											>View<span class="hidden sm:inline"> staff</span
 											><span class="sr-only"
-												>, invoice #{{ staff.file_number }},
+												>, staff #{{ staff.file_number }},
 												{{ staff.client }}</span
 											>
 										</Link>
