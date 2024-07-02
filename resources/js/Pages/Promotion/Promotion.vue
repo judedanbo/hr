@@ -8,6 +8,10 @@ const props = defineProps({
 		type: Object,
 		required: true,
 	},
+	rank: {
+		type: String,
+		required: true,
+	},
 	filters: Object,
 	// month: String,
 	// year: Number,
@@ -20,10 +24,11 @@ const getMonth = (month) => {
 };
 </script>
 <template>
-	<div class="mx-auto px-4 sm:px-6 lg:px-8">
+	<div class="mx-auto px-4 sm:px-6 lg:px-8 dark:text-gray-50">
+		<h2 class="leading-6 font-bold tracking-wider text-xl">{{ rank }}</h2>
 		<h2
 			@click="getMonth()"
-			class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none capitalize"
+			class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark: dark:text-gray-50 lg:mx-0 lg:max-w-none capitalize"
 		>
 			{{ filters.month }} {{ filters.year }} Promotions
 		</h2>
@@ -50,7 +55,7 @@ const getMonth = (month) => {
 									class="relative isolate py-2 font-semibold"
 								>
 									<p class="dark:text-gray-50">
-										{{ ranks.rank_name + "(" + ranks.length + ")" }}
+										{{ "(" + ranks.length + ")" }}
 									</p>
 									<div
 										class="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 dark:border-gray-500 bg-gray-50 dark:bg-gray-800"
@@ -105,11 +110,6 @@ const getMonth = (month) => {
 								<td class="py-5 text-right">
 									<div class="flex justify-end">
 										<Link
-											:href="
-												route('staff.show', {
-													staff: staff.id,
-												})
-											"
 											class="text-sm font-medium leading-6 text-green-600 hover:text-green-500 dark:text-green-50 hover:dark:text-gray-50"
 											>View<span class="hidden sm:inline"> staff</span
 											><span class="sr-only"

@@ -72,6 +72,7 @@ class PromotionController extends Controller
     public function show(Request $request, int $year = null)
     {
         // dd($request->rank);
+        $rank  = Job::find($request->rank)->only('id', 'name');
 
         if ($year == null) {
             $year = date('Y');
@@ -120,29 +121,30 @@ class PromotionController extends Controller
             // ->paginate()
             // ->withQueryString()
             ->map(fn ($staff) => [
-                'staff' => $staff->ranks,
+                // 'staff' => $staff->ranks,
                 'id' => $staff->staff_id,
                 'person_id' => $staff->person_id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,
                 'full_name' => $staff->person->full_name,
-                'institution' => $staff->institution->name,
-                'unit' => $staff->units?->first(),
-                'rank_id' => $staff->ranks->first()?->id,
-                'rank_name' => $staff->ranks->first()?->name,
-                'remarks' => $staff->ranks->first()?->pivot->remarks,
+                // 'institution' => $staff->institution->name,
+                // 'unit' => $staff->units?->first(),
+                // 'rank_id' => $staff->ranks->first()?->id,
+                // 'rank_name' => $staff->ranks->first()?->name,
+                // 'remarks' => $staff->ranks->first()?->pivot->remarks,
                 'status' => $staff->statuses->first()?->status->label(),
                 'start_date' => $staff->ranks->first()?->pivot->start_date->format('d F Y'),
                 'now' => date('Y-m-d'),
                 // 'test_rank' => $staff->ranks,
             ]);
         // return $promotions;
-        // $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
+        $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
 
         return Inertia::render(
             'Promotion/Show',
             [
                 'promotions' => $promotions,
+                'rank' => $rank,
                 'filters' => [
                     'search' => request()->search,
                     'month' => request()->month,

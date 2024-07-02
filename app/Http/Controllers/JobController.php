@@ -142,7 +142,10 @@ class JobController extends Controller
             'staff as due_for_promotion' => function ($query) {
                 $query->active();
                 $query->whereYear('job_staff.start_date', '<=', now()->subYears(3)->year);
-                $query->whereNull('job_staff.end_date');
+                $query->where(function ($query) {
+                    $query->whereNull('job_staff.end_date');
+                    $query->orWhere('job_staff.end_date', '>', now());
+                });
             },
             'staff as male_staff_count' => function ($query) {
                 $query->active();

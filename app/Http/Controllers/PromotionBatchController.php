@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\InstitutionPerson;
 use App\Models\JobStaff;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,7 +27,8 @@ class PromotionBatchController extends Controller
                         });
                     }
                 })
-                ->selectRaw('jobs.name as job_name, job_staff.job_id as job_id, count(case when month(job_staff.start_date) in (1,2,3,4,11,12) then 1 end) as april, count(case when month(job_staff.start_date) in (5,6,7,8,9,10) then 1 end) as october, count(*) as staff')
+                ->whereDate('job_staff.start_date', '<', Carbon::now()->subYears(3))
+                ->selectRaw('jobs.name as job_name, job_staff.job_id as job_id, count(case when month(job_staff.start_date) in (1,2,3,10,11,12) then 1 end) as april, count(case when month(job_staff.start_date) in (4,5,6,7,8,9) then 1 end) as october, count(*) as staff')
                 ->groupByRaw('job_name, job_id')
                 ->orderByRaw('job_categories.level')
                 ->whereNull('jobs.deleted_at')

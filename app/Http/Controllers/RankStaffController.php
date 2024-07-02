@@ -66,18 +66,32 @@ class RankStaffController extends Controller
             ->whereHas('ranks', function ($query) use ($rank) {
                 $query->whereNull('job_staff.end_date');
                 $query->where('job_staff.job_id', $rank);
-                // dd(request()->batch);
+                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
                 $query->when(request()->batch == 'april', function ($query) {
-                    $query->where('job_staff.start_date', '<=', Carbon::parse('first day of April')->subYear(3));
                     $query->where(function ($query) {
-                        $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
-                        $query->orWhereRaw('month(job_staff.start_date) IN (11, 12)');
+                        $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 11, 12)');
+                        $query->orWhere(function ($query) {
+                            $query->whereMonth('job_staff.start_date', 4);
+                            $query->whereDay('job_staff.start_date', 1);
+                        });
+                        $query->orWhere(function ($query) {
+                            $query->whereMonth('job_staff.start_date', 10);
+                            $query->whereDay('job_staff.start_date', '>', 1);
+                        });
                     });
-                    // $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
                 });
                 $query->when(request()->batch == 'october', function ($query) {
-                    $query->where('job_staff.start_date', '<=', Carbon::parse('first day of October')->subYear(3));
-                    $query->whereRaw('month(job_staff.start_date) IN (4,5, 6, 7, 8, 9, 10)');
+                    $query->where(function ($query) {
+                        $query->whereRaw('month(job_staff.start_date) IN (5, 6, 7, 8, 9)');
+                        $query->orWhere(function ($query) {
+                            $query->whereMonth('job_staff.start_date', 10);
+                            $query->whereDay('job_staff.start_date', 1);
+                        });
+                        $query->orWhere(function ($query) {
+                            $query->whereMonth('job_staff.start_date', 4);
+                            $query->whereDay('job_staff.start_date', '>', 1);
+                        });
+                    });
                 });
             })
             ->with(['person', 'units', 'ranks'])
