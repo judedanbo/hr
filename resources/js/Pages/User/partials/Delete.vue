@@ -61,13 +61,14 @@ defineProps({
 										<DialogTitle
 											as="h3"
 											class="text-base font-semibold leading-6 text-gray-900"
-											>Revoke Promotion</DialogTitle
+											>Delete User</DialogTitle
 										>
 										<div class="mt-2">
 											<p class="text-sm text-gray-500">
-												You are about to revoke the
-												{{ model.name }} role of the staff. <br />
-												Are you sure you want to delete this promotion?
+												You are about to delete {{ model.name }}
+												<br />
+												<br />
+												Are you sure you want to delete this user?
 											</p>
 										</div>
 									</div>

@@ -81,7 +81,8 @@ Route::controller(UserController::class)->middleware(['auth', 'password_changed'
     Route::get('/user/{user}', 'show')->name('user.show');
     Route::post('/user/', 'store')->name('user.store');
     Route::patch('/user/{user}', 'update')->name('user.update');
-    Route::delete('/user', 'delete')->name('user.delete');
+    Route::delete('/user/{user}', 'delete')->name('user.delete');
+    Route::post('/user/{user}', 'resetPassword')->name('user.reset-password');
     Route::get('/user/{user}/roles', 'roles')->name('user.roles');
 });
 Route::controller(RoleController::class)->middleware(['auth', 'password_changed'])->group(function () {

@@ -1,38 +1,16 @@
 <script setup>
 import { getNode } from "@formkit/core";
-import { useForm } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import { ref, onMounted, defineEmits } from "vue";
-import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
-import ContactForm from "@/Pages/Person/partials/ContactForm.vue";
-import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
-import EmploymentForm from "./EmploymentForm.vue";
-import { FormKitMessages } from "@formkit/vue";
+
+import UserRoleForm from "./UserRoleForm.vue";
 
 const emit = defineEmits(["formSubmitted"]);
 let props = defineProps({
-	staffId: {
-		type: Number,
+	user: {
+		type: Object,
 		required: true,
 	},
-});
-
-const contact_types = ref([]);
-const gender = ref([]);
-const maritalStatus = ref([]);
-let staff = ref(null);
-
-onMounted(async () => {
-	const StaffData = await axios.get(
-		route("staff.edit", { staff: props.staffId }),
-	);
-	const { data } = await axios.get(route("contact-type.index"));
-	contact_types.value = data;
-	const genderData = await axios.get(route("gender.index"));
-	gender.value = genderData.data;
-	const maritalStatusData = await axios.get(route("marital-status.index"));
-	maritalStatus.value = maritalStatusData.data;
-	staff.value = StaffData.data;
 });
 
 let formData = ref(null);
@@ -40,29 +18,29 @@ let formData = ref(null);
 const submitImage = async (image) => {
 	formData.value = new FormData();
 	formData.value.append("image", image);
-	const avatar = await Inertia.post(
-		route("person.avatar.update", { person: staff.value.person.id }),
-		formData.value,
-		{
-			preserveScroll: true,
-			onSuccess: () => {
-				return true;
-				// emit("imageUpdated");
-			},
-			onError: (errors) => {
-				const errorNode = getNode("image");
-				const errorMsg = {
-					"image.image": errors.image ?? "",
-				};
-				errorNode.setErrors(errors);
-				// errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
-			},
-		},
-	);
+	// const avatar = await Inertia.post(
+	// 	route("person.avatar.update", { person: staff.value.person.id }),
+	// 	formData.value,
+	// 	{
+	// 		preserveScroll: true,
+	// 		onSuccess: () => {
+	// 			return true;
+	// 			// emit("imageUpdated");
+	// 		},
+	// 		onError: (errors) => {
+	// 			const errorNode = getNode("image");
+	// 			const errorMsg = {
+	// 				"image.image": errors.image ?? "",
+	// 			};
+	// 			errorNode.setErrors(errors);
+	// 			// errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
+	// 		},
+	// 	},
+	// );
 };
 
 const submitHandler = (data, node) => {
-	Inertia.patch(route("staff.update", { staff: props.staffId }), data, {
+	Inertia.patch(route("user.update", { user: props.user.id }), data, {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();
@@ -73,66 +51,57 @@ const submitHandler = (data, node) => {
 		},
 		onFinish: () => {},
 	});
-
-	if (data.staffData.image.image[0]?.file) {
-		if (submitImage(data.staffData.image.image[0].file)) {
-			emit("formSubmitted");
-		}
-	}
 };
 </script>
 <template>
 	<main class="bg-gray-100 dark:bg-gray-700 px-8 py-8">
-		<h1 class="text-2xl dark:text-gray-200">Edit Staff</h1>
+		<h1 class="text-2xl dark:text-gray-200">Edit User</h1>
 		<FormKit
-			v-if="staff"
-			id="addStaffForm"
+			id="editStaffForm"
 			type="form"
-			name="addStaffForm"
-			submit-label="Add Staff"
-			:actions="false"
+			name="editStaffForm"
+			submit-label="Save User"
 			wrapper-class="mx-auto"
 			@submit="submitHandler"
+			:value="user"
 		>
-			<FormKit id="staff_id" type="hidden" name="staff_id" :value="staff.id" />
-			<FormKit
-				type="multi-step"
-				name="staffData"
-				:allow-incomplete="true"
-				tab-style="progress"
-				steps-class="pb-2"
+			<FormKit id="user_id" type="hidden" name="user_id" :value="user.id" />
+
+			<h1
+				class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
 			>
-				<FormKit type="step" name="personalInformation" :value="staff.person">
-					<PersonalInformationForm />
-				</FormKit>
-
-				<FormKit id="image" type="step" name="image">
-					<ImageUpload :image-url="staff.person.image" />
-					<FormKitMessages />
-				</FormKit>
-
-				<!-- <FormKit type="step" name="contactInformation">
-                    <ContactForm />
-                </FormKit> -->
-				<FormKit
-					type="step"
-					name="employmentInformation"
-					:value="{
-						hire_date: staff.hire_date,
-						file_number: staff.file_number,
-						staff_number: staff.staff_number,
-						remarks: staff.remarks,
-					}"
-				>
-					<EmploymentForm />
-					<template #stepNext>
-						<FormKit type="submit" label="Save" />
-					</template>
-				</FormKit>
-			</FormKit>
+				Personal Information of user
+			</h1>
+			<FormKit
+				id="name"
+				name="name"
+				type="text"
+				label="Name of User"
+				validation="required"
+				autofocus
+			/>
+			<FormKit
+				id="email"
+				name="email"
+				type="email"
+				label="Email Address"
+				validation="required|email"
+			/>
+			<!-- <PersonalInformationForm /> -->
 		</FormKit>
-		<div v-else class="h-96 dark:text-white grid place-items-center">
+		<!-- <FormKit type="step" name="roles">
+					<h1
+						class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200"
+					>
+						Roles
+					</h1>
+					<UserRoleForm :userRoles="user.roles" />
+					<template #stepNext>
+						<FormKit type="submit" label="Add staff" />
+					</template>
+				</FormKit> -->
+		<!-- <div v-else class="h-96 dark:text-white grid place-items-center">
 			<img src="/images/spinner.gif" alt="spinner" />
-		</div>
+		</div> -->
 	</main>
 </template>

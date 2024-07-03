@@ -18,7 +18,6 @@ class ChangePasswordController extends Controller
         }
         return Inertia::render('Auth/ChangePassword', ['previous' => $previous]);
     }
-    // GjSqdt8XsbpL8MA9tb5XptBxx
     public function store(StoreChangePasswordRequest $request)
     {
         // dd($request->all());

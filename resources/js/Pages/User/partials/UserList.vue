@@ -8,7 +8,12 @@ import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
 import SubMenu from "@/Components/SubMenu.vue";
 
-const emit = defineEmits(["openUser"]);
+const emit = defineEmits([
+	"openUser",
+	"editUser",
+	"deleteUser",
+	"resetPassword",
+]);
 const props = defineProps({
 	users: {
 		type: Array,
@@ -16,11 +21,18 @@ const props = defineProps({
 	},
 });
 const subMenuClicked = (action, model) => {
+	if (action == "Open") {
+		// @click="emit('openUser', user.id)"
+		emit("openUser", model.id);
+	}
 	if (action == "Edit") {
-		emit("editPosition", model);
+		emit("editUser", model);
 	}
 	if (action == "Delete") {
-		emit("deletePosition", model);
+		emit("deleteUser", model);
+	}
+	if (action == "Reset Password") {
+		emit("resetPassword", model.id);
 	}
 };
 
@@ -49,7 +61,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="user in users" :key="user.id">
-							<TableRow @click="emit('openUser', user.id)">
+							<TableRow>
 								<TableData>
 									{{ user.name }}
 									<!-- <UserNameCard :user="user" /> -->
@@ -61,10 +73,10 @@ const tableCols = [
 									{{ user.verified }}
 								</TableData>
 								<TableData>
-									{{ user.roles }}
+									{{ user.roles_count }}
 								</TableData>
 								<TableData>
-									{{ user.permissions }}
+									{{ user.permissions_count }}
 								</TableData>
 								<TableData class="flex justify-end">
 									<SubMenu
@@ -72,8 +84,8 @@ const tableCols = [
 											$page.props.permissions.includes('update staff') ||
 											$page.props.permissions.includes('delete staff')
 										"
-										@itemClicked="(action) => subMenuClicked(action, position)"
-										:items="['Edit', 'Delete']"
+										@itemClicked="(action) => subMenuClicked(action, user)"
+										:items="['Open', 'Reset Password', 'Edit', 'Delete']"
 									/>
 								</TableData>
 							</TableRow>

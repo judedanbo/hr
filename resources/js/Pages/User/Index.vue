@@ -14,6 +14,8 @@ import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 import { Link } from "@inertiajs/inertia-vue3";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+import EditUserForm from "./partials/EditUserForm.vue";
+import Delete from "./partials/Delete.vue";
 
 const navigation = computed(() => useNavigation(props.users));
 
@@ -22,10 +24,41 @@ let props = defineProps({
 	filters: { type: Object, default: () => {} },
 });
 
+const resetPassword = (user) => {
+	// console.log(user);
+	Inertia.post(route("user.reset-password", { user: user }));
+};
+
+const openDeleteModal = ref(false);
+
+const toggleDeleteModal = useToggle(openDeleteModal);
+
+const deleteUser = (user) => {
+	selectedUser.value = user;
+	toggleDeleteModal();
+};
+
 let openDialog = ref(false);
 
 let toggle = useToggle(openDialog);
 
+const openEditDialog = ref(false);
+
+const toggleEditDialog = useToggle(openEditDialog);
+
+const selectedUser = ref(null);
+const editUser = (user) => {
+	selectedUser.value = user;
+	toggleEditDialog();
+};
+
+const deleteConfirmed = () => {
+	Inertia.delete(route("user.delete", { user: selectedUser.value.id }), {
+		onSuccess: () => {
+			toggleDeleteModal();
+		},
+	});
+};
 const searchUser = (value) => {
 	useSearch(value, route("user.index"));
 };
@@ -61,7 +94,13 @@ let BreadCrumpLinks = [
 					@search-entered="(value) => searchUser(value)"
 				/>
 
-				<UserList :users="users.data" @open-user="(userId) => openUser(userId)">
+				<UserList
+					:users="users.data"
+					@open-user="(userId) => openUser(userId)"
+					@edit-user="(user) => editUser(user)"
+					@delete-user="(user) => deleteUser(user)"
+					@reset-password="(user) => resetPassword(user)"
+				>
 					<template #pagination>
 						<Pagination :navigation="navigation" />
 					</template>
@@ -71,5 +110,14 @@ let BreadCrumpLinks = [
 		<Modal :show="openDialog" @close="toggle()">
 			<AddUserForm @form-submitted="toggle()" />
 		</Modal>
+		<Modal :show="openEditDialog" @close="toggleEditDialog()">
+			<EditUserForm :user="selectedUser" @form-submitted="toggleEditDialog()" />
+		</Modal>
+		<Delete
+			:show="openDeleteModal"
+			:model="selectedUser"
+			@close="toggleDeleteModal"
+			@delete-confirmed="deleteConfirmed()"
+		/>
 	</MainLayout>
 </template>

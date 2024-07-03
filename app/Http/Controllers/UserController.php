@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -29,8 +30,15 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'verified' => $user->email_verified_at ? 'Yes' : 'No',
-                'roles' => $user->roles_count,
-                'permissions' => $user->getAllPermissions()->count(),
+                'roles_count' => $user->roles_count,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'value' => $role->id,
+                        'label' => $role->name,
+                        // 'start_date' => $role->created_at->format('d M Y'),
+                    ];
+                }),
+                'permissions_count' => $user->getAllPermissions()->count(),
             ]);
         return Inertia::render('User/Index', [
             'users' => $users,
@@ -56,7 +64,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        // dd($request->all());
+        dd($request->all());
         $password = Str::random(8);
         $bio = $request->all()['userData']['bio'];
         $bio['password'] = Hash::make($password); //bcrypt('password');
@@ -122,9 +130,11 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        // return $request->validated();
+        $user->update($request->validated());
+        return redirect()->route('user.index')->with('success', "User updated successfully");
     }
 
     /**
@@ -135,7 +145,9 @@ class UserController extends Controller
      */
     public function delete(User $user)
     {
-        //
+
+        $user->delete();
+        return redirect()->route('user.index')->with('success', "User deleted successfully");
     }
 
     public function roles(User $user)
@@ -146,5 +158,19 @@ class UserController extends Controller
                 return $role->name;
             })
         ];
+    }
+    public function resetPassword(User $user)
+    {
+        // dd($user);
+        $password = Str::random(8);
+        // $user = User::where(request()->user->id)->first();
+        $user->update([
+            'password' => Hash::make($password),
+            'password_change_at' => null,
+        ]);
+        Mail::to($user->email)->send(
+            new \App\Mail\PasswordReset($user, $password)
+        );
+        return redirect()->route('user.index')->with('success', "Password reset successfully");
     }
 }

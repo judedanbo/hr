@@ -4,6 +4,7 @@ import { onMounted, ref } from "vue";
 const props = defineProps({
 	userRoles: {
 		type: Array,
+		default: () => [],
 	},
 });
 const selectedRoles = ref([]);
