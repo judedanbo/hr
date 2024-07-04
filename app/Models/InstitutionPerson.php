@@ -184,7 +184,25 @@ class InstitutionPerson extends Pivot
                 ->latest('job_staff.start_date')
                 ->take(1)
         ])->with(['currentRank' => function ($query) {
-            $query->with(['job.category', 'job:id,name']);
+            $query->with(['job' => function ($query) {
+                $query->with('category');
+            }]);
+        }]);
+    }
+    public function scopeCurrentRankName($query, $rank = null)
+    {
+        $query->addSelect([
+            'current_rank_id' => JobStaff::select('id')
+                ->whereColumn('institution_person.id', 'job_staff.staff_id')
+                ->when($rank !== null, function ($query) use ($rank) {
+                    $query->where('job_staff.job_id', $rank);
+                })
+                ->latest('job_staff.start_date')
+                ->take(1)
+        ])->with(['currentRank' => function ($query) {
+            $query->with(['job' => function ($query) {
+                $query->with('category');
+            }]);
         }]);
     }
 

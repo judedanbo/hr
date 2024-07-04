@@ -25,6 +25,12 @@ class PromotionListExport implements
     ShouldQueue,
     WithTitle
 {
+    public $rank;
+    public function __construct($rank = null)
+    {
+        $this->rank = $rank;
+    }
+
     use Exportable;
     /**
      * @return string
@@ -45,6 +51,7 @@ class PromotionListExport implements
             'Date Posted',
             'Current Promotion',
             'Date Promoted',
+            'level'
         ];
     }
 
@@ -59,6 +66,8 @@ class PromotionListExport implements
             $staff->units?->first() ? $staff->units?->first()->pivot?->start_date?->format('d M Y') : null,
             $staff->ranks?->first()?->name,
             $staff->ranks?->first() ? $staff->ranks?->first()->pivot?->start_date?->format('d M Y') : null,
+            $staff->currentRank?->job?->category->level
+
         ];
     }
 
@@ -77,11 +86,15 @@ class PromotionListExport implements
         return InstitutionPerson::query()
             ->active()
             ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
-            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
-            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
-            ->with(['person', 'ranks', 'units'])
-            ->orderByRaw('job_categories.level')
-            ->whereNull('jobs.deleted_at')
+            ->currentRank()
+            // ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
+            // ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+            ->with(['person', 'units'])
+            // ->orderByRaw('job_categories.level')
+            // ->when($this->rank !== null, function ($query) {
+            //     $query->where('jobs.id', $this->rank);
+            // })
+            // ->whereNull('jobs.deleted_at')
             ->whereNull('job_staff.end_date')
             ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3);
     }

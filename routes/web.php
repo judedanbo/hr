@@ -47,8 +47,10 @@ use App\Http\Controllers\UserController;
 use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
+use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\JobCategory;
+use App\Models\Person;
 use App\Models\Qualification;
 use App\Models\StaffType;
 use App\Models\Unit;
@@ -477,9 +479,23 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
 
-// Route::get('/test', function () {
-//     Mail::to('jude@gmail.con')->send(
-//         new \App\Mail\UserCreated(auth()->user(), 'password')
-//     );
-//     return 'email sent';
-// });
+Route::get('/test', function () {
+    return InstitutionPerson::query()
+        ->active()
+        ->with(['person'])
+        ->currentRank()
+        ->currentUnit()
+        ->toRetire()
+        // ->orderBy(
+        //     Person::select('date_of_birth')
+        //         ->whereColumn('people.id', 'institution_person.person_id')
+        // )
+        ->orderBy(
+            JobCategory::select('level')
+                ->join('job_staff', 'job_categories.id', '=', 'job_staff.job_id')
+                ->join('institution_person', 'job_staff.staff_id', '=', 'institution_person.id')
+                ->whereNull('job_staff.end_date')
+                ->take(1)
+        )
+        ->get();
+});

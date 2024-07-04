@@ -45,7 +45,7 @@ class SeparatedDismissedExport implements FromQuery, WithMapping, WithHeadings, 
             })->first()?->contact ?? '',
         ];
     }
-    function query()
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person.contacts', 'statuses' => function ($query) {

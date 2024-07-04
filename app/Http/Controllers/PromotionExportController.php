@@ -10,9 +10,10 @@ use Illuminate\Http\Request;
 
 class PromotionExportController extends Controller
 {
-    public function show(Excel $excel)
+    public function show(Request $request, Excel $excel)
     {
-        return $excel->download(new PromotionListExport, 'Promotion List.xlsx', Excel::XLSX);
+        // dd($request->rank);
+        return $excel->download(new PromotionListExport($request->rank), 'Promotion List.xlsx', Excel::XLSX);
     }
     function list(Excel $excel)
     {

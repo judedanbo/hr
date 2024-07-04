@@ -15,6 +15,10 @@ let props = defineProps({
 		required: true,
 	},
 	filters: Object,
+	rank: {
+		type: String,
+		required: true,
+	},
 });
 
 let search = ref(props.filters.search);

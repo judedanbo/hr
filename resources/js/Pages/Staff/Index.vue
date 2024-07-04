@@ -54,7 +54,6 @@ let BreadCrumpLinks = [
 					title="Staff"
 					:total="staff.total"
 					:search="filters.search"
-					class="w-4/6"
 					action-text="Onboard Staff"
 					:action-permission="$page.props.permissions.includes('create staff')"
 					@action-clicked="toggle()"

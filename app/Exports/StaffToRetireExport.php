@@ -3,6 +3,8 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
+use App\Models\JobCategory;
+use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -30,7 +32,8 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'Current Unit',
             'Retirement Date',
             'current rank Start Date',
-            'current Unit Start Date'
+            'current Unit Start Date',
+            'level'
         ];
     }
     public function map($staff): array
@@ -47,24 +50,29 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->currentUnit?->unit?->name,
             $staff->person->date_of_birth?->addYears(60)->format('d F Y'),
             $staff->currentRank?->start_date?->format('d F, Y'),
-            $staff->currentUnit?->start_date?->format('d F, Y')
+            $staff->currentUnit?->start_date?->format('d F, Y'),
+            $staff->currentRank?->job?->category->level,
         ];
     }
     function query()
     {
         return InstitutionPerson::query()
-            ->join('people', 'institution_person.person_id', '=', 'people.id')
-            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
-            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
-            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
-            ->whereNull('job_staff.end_date')
+            ->active()
             ->with(['person'])
             ->active()
             ->currentRank()
             ->currentUnit()
-            ->toRetire()
-            ->orderBy('job_categories.level', 'asc')
-            ->orderBy('people.date_of_birth', 'asc')
-            ->orderBy('job_staff.start_date', 'asc');
+            ->toRetire();
+        // ->orderBy(
+        //     Person::select('date_of_birth')
+        //         ->whereColumn('people.id', 'institution_person.person_id')
+        // )
+        // ->orderBy(
+        //     JobCategory::select('level')
+        //         ->join('job_staff', 'job_categories.id', '=', 'job_staff.job_id')
+        //         ->whereColumn('job_staff.staff_id', 'institution_person.id')
+        //         ->whereNull('job_staff.end_date')
+        //         ->take(1)
+        // );
     }
 }
