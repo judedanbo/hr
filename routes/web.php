@@ -479,23 +479,23 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
 
-Route::get('/test', function () {
-    return InstitutionPerson::query()
-        ->active()
-        ->with(['person'])
-        ->currentRank()
-        ->currentUnit()
-        ->toRetire()
-        // ->orderBy(
-        //     Person::select('date_of_birth')
-        //         ->whereColumn('people.id', 'institution_person.person_id')
-        // )
-        ->orderBy(
-            JobCategory::select('level')
-                ->join('job_staff', 'job_categories.id', '=', 'job_staff.job_id')
-                ->join('institution_person', 'job_staff.staff_id', '=', 'institution_person.id')
-                ->whereNull('job_staff.end_date')
-                ->take(1)
-        )
-        ->get();
-});
+// Route::get('/test', function () {
+//     return InstitutionPerson::query()
+//         ->active()
+//         ->with(['person'])
+//         ->currentRank()
+//         ->currentUnit()
+//         ->toRetire()
+//         // ->orderBy(
+//         //     Person::select('date_of_birth')
+//         //         ->whereColumn('people.id', 'institution_person.person_id')
+//         // )
+//         ->orderBy(
+//             JobCategory::select('level')
+//                 ->join('job_staff', 'job_categories.id', '=', 'job_staff.job_id')
+//                 ->join('institution_person', 'job_staff.staff_id', '=', 'institution_person.id')
+//                 ->whereNull('job_staff.end_date')
+//                 ->take(1)
+//         )
+//         ->get();
+// });
