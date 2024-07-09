@@ -10,6 +10,10 @@ import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 let props = defineProps({
 	promotions: Object,
+	rank: {
+		type: String,
+		required: true,
+	},
 	filters: Object,
 });
 
@@ -41,7 +45,7 @@ const navigation = computed(() => useNavigation(props.promotions));
 // 	);
 // });
 const exportToExcel = () => {
-	window.location = route("export.promotion");
+	window.location = route("export.promotion") + "?rank=" + props.rank;
 };
 </script>
 

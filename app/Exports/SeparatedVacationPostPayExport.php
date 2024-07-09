@@ -53,7 +53,7 @@ class SeparatedVacationPostPayExport implements FromQuery, WithMapping, WithHead
             }])
             ->currentRank()
             ->whereHas('statuses', function ($query) {
-                $query->where('status', EmployeeStatusEnum::leavePay);
+                $query->where('status', EmployeeStatusEnum::Vacation);
             })
             ->retired();
     }

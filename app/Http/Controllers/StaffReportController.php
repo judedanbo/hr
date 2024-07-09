@@ -15,6 +15,7 @@ use App\Exports\SeparatedTerminationExport;
 use App\Exports\SeparatedVoluntaryExport;
 use App\Exports\StaffPositionExport;
 use App\Exports\StaffDetailsExport;
+use App\Exports\SeparatedVacatedPostExport;
 use App\Exports\StaffToRetireExport;
 use Maatwebsite\Excel\Excel;
 
@@ -82,7 +83,7 @@ class StaffReportController extends Controller
     }
     public function vacatedPost(Excel $excel)
     {
-        return $excel->download(new SeparatedVoluntaryExport, 'vacation-of-post.xls');
+        return $excel->download(new SeparatedVacatedPostExport, 'vacation-of-post.xls');
     }
     public function positions(Excel $excel)
     {

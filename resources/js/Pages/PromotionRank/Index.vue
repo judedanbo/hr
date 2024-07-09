@@ -68,7 +68,7 @@ const openPromotion = (
 					title="Next Promotion list"
 					:total="promotions.total"
 					:search="search"
-					action-text="Export Data to excel"
+					action-text="Export Summary"
 					@action-clicked="exportToExcel()"
 					@search-entered="(value) => searchStaff(value)"
 				/>

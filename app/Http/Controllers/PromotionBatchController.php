@@ -161,8 +161,9 @@ class PromotionBatchController extends Controller
             'PromotionRank/Show',
             [
                 'promotions' => $staff,
+                'rank' => request()->rank,
                 'filters' => [
-                    'search' => Request()->search,
+                    'search' => request()->search,
                     'year' => $year
                 ],
             ]

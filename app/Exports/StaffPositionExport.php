@@ -37,7 +37,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
-            // $staff->currentUnit?->level->label(),
+            $staff,
 
         ];
     }
