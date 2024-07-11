@@ -87,8 +87,8 @@ class JobController extends Controller
                     $query->where('job_staff.end_date', null);
                 }
             ])
-            ->find($job);
-        // return($job);
+            ->findOrFail($job);
+        return ($job);
         return Inertia::render('Job/Show', [
             'job' => [
                 'id' => $job->id,

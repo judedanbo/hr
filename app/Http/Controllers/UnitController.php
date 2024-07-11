@@ -77,19 +77,50 @@ class UnitController extends Controller
                     $query->active();
                     $query->search(request()->search);
                 },
+                // 'subs'
                 'subs' => function ($query) {
                     $query->when(request()->search, function ($query) {
                         $query->where('name', 'like', '%' . request()->search . '%');
                     });
-                    $query->whereHas('staff', function ($query) {
-                        $query->active();
-                        $query->search(request()->search);
+                    $query->where(function ($query) {
+                        $query->whereHas('staff', function ($query) {
+                            $query->active();
+                            $query->search(request()->search);
+                        });
+                        $query->orWhereHas('subs', function ($query) {
+                            $query->whereHas('staff', function ($query) {
+                                $query->active();
+                                $query->search(request()->search);
+                            });
+                        });
                     });
-                    $query->with(['staff' => function ($query) {
-                        $query->with(['person', 'ranks', 'units']);
-                        $query->active();
-                        $query->search(request()->search);
-                    }]);
+                    $query->with([
+                        'subs' => function ($query) {
+                            $query->where(function ($query) {
+                                $query->whereHas('staff', function ($query) {
+                                    $query->active();
+                                    $query->search(request()->search);
+                                });
+                                $query->orWhereHas('subs', function ($query) {
+                                    $query->whereHas('staff', function ($query) {
+                                        $query->active();
+                                        $query->search(request()->search);
+                                    });
+                                });
+                            });
+                            $query->withCount([
+                                'staff' => function ($query) {
+                                    $query->active();
+                                },
+                            ]);
+                        },
+                        'staff' => function ($query) {
+                            $query->with(['person', 'ranks', 'units']);
+                            $query->active();
+                            $query->search(request()->search);
+                        }
+                    ]);
+
                     $query->withCount([
                         'staff' => function ($query) {
                             $query->active();
@@ -104,10 +135,19 @@ class UnitController extends Controller
                 }
             ])
             ->withCount([
+
                 'subs' => function ($query) {
-                    $query->whereHas('staff', function ($query) {
-                        $query->active();
-                        $query->search(request()->search);
+                    $query->where(function ($query) {
+                        $query->whereHas('staff', function ($query) {
+                            $query->active();
+                            $query->search(request()->search);
+                        });
+                        $query->orWhereHas('subs', function ($query) {
+                            $query->whereHas('staff', function ($query) {
+                                $query->active();
+                                $query->search(request()->search);
+                            });
+                        });
                     });
                 },
                 'staff' => function ($query) {
@@ -116,7 +156,7 @@ class UnitController extends Controller
                 }
             ])
             ->whereId($unit)
-            ->first();
+            ->firstOrFail();
         // return $unit;
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
@@ -180,7 +220,7 @@ class UnitController extends Controller
                     'id' => $sub->id,
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,
-                    'staff_count' => $sub->staff_count,
+                    'staff_count' => $sub->staff_count + $sub->subs->sum('staff_count'),
                     // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
                     //     'id' => $stafff->id,
                     //     'name' => $stafff->full_name,

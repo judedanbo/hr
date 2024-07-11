@@ -93,11 +93,10 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 		</template> -->
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<div class="shadow-sm sm:rounded-lg px-6 border-b border-gray-200">
-				<div class="flex">
-					<InfoCard title="Units" :value="props.unit.subs_number" link="#" />
-					<InfoCard title="Staff" :value="props.unit.staff_number" link="#" />
-				</div>
+			<div class="text-2xl m-4 text-gray-700 dark:text-gray-50">
+				{{ unit.name }}
+			</div>
+			<div class="shadow-sm sm:rounded-lg px-6 mt-2 border-b border-gray-200">
 				<section class="sm:flex items-center justify-between my-2">
 					<FormKit
 						v-model="search"
@@ -125,6 +124,7 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 						</a>
 					</div>
 				</section>
+
 				<div
 					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12"
 				>

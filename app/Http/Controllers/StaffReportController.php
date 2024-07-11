@@ -10,6 +10,7 @@ use App\Exports\SeparatedDeceasedExport;
 use App\Exports\SeparatedDismissedExport;
 use App\Exports\SeparatedLeaveWithoutPayExport;
 use App\Exports\SeparatedLeaveWithPayExport;
+use App\Exports\SeparatedResignationExport;
 use App\Exports\SeparatedSuspendedExport;
 use App\Exports\SeparatedTerminationExport;
 use App\Exports\SeparatedVoluntaryExport;
@@ -66,7 +67,7 @@ class StaffReportController extends Controller
     }
     function resignation(Excel $excel)
     {
-        return $excel->download(new SeparatedTerminationExport, 'resignation-staff.xlsx');
+        return $excel->download(new SeparatedResignationExport, 'resignation-staff.xlsx');
     }
 
     public function suspended(Excel $excel)

@@ -36,15 +36,19 @@ class SeparatedResignationExport implements FromQuery, WithMapping, WithHeadings
             $staff->currentRank?->job?->name,
             // $staff->statuses?->first()->status->label(),
             $staff->statuses->first()->start_date?->format('d F, Y'),
-            // $staff->person->contacts,
+            $staff,
         ];
     }
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person', 'statuses' => function ($query) {
-                $query->latest('start_date');
-            }])
+            ->with([
+                'person',
+                'statuses' => function ($query) {
+                    $query->where('status', EmployeeStatusEnum::Resignation);
+                    $query->latest('start_date');
+                }
+            ])
             ->currentRank()
             ->whereHas('statuses', function ($query) {
                 $query->where('status', EmployeeStatusEnum::Resignation);

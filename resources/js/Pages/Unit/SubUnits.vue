@@ -18,7 +18,7 @@ defineEmits(["update:modelValue"]);
 			<p
 				class="font-bold text-xl px-8 py-4 text-gray-700 dark:text-white tracking-wide"
 			>
-				<span>Sub Units</span>
+				<span>Sub Units ({{ subs.subs_number }})</span>
 
 				<span class="text-lg text-gray-500 dark:text-white ml-2">
 					<!-- ({{ subs }}) -->
@@ -26,7 +26,7 @@ defineEmits(["update:modelValue"]);
 			</p>
 		</header>
 		<main
-			class=" shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full max-h-screen overflow-y-auto"
+			class="shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full max-h-screen overflow-y-auto"
 		>
 			<!-- <div " class=""> -->
 			<table
@@ -37,7 +37,7 @@ defineEmits(["update:modelValue"]);
 					<tr>
 						<th
 							scope="col"
-							class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-8 "
+							class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-8"
 						>
 							Name
 						</th>

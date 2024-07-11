@@ -12,14 +12,16 @@ const selectedUnit = ref({});
 const unitList = ref([]);
 onMounted(async () => {
 	unitTypes.value = (await axios.get(route("unit-type.index"))).data;
-	selectedUnit.value = (await axios.get(route("unit.details", { unit: props.unit }))).data;
+	selectedUnit.value = (
+		await axios.get(route("unit.details", { unit: props.unit }))
+	).data;
 	unitList.value = (await axios.get(route("units.list"))).data;
 });
 
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.patch(route("unit.update", {unit: data.id}), data, {
+	Inertia.patch(route("unit.update", { unit: data.id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -35,7 +37,12 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Unit</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save" v-model=selectedUnit>
+		<FormKit
+			@submit="submitHandler"
+			type="form"
+			submit-label="Save"
+			v-model="selectedUnit"
+		>
 			<FormKit
 				type="text"
 				name="name"
@@ -76,10 +83,10 @@ const submitHandler = (data, node) => {
 					name="unit_id"
 					id="unit_id"
 					:options="unitList"
-					validation="integer|min:1|max:30"
+					validation="integer|min:1|max:300"
 					label="Parent Unit"
 					error-visibility="submit"
-				/> 
+				/>
 			</div>
 			<div class="sm:flex gap-4">
 				<FormKit
@@ -88,9 +95,7 @@ const submitHandler = (data, node) => {
 					id="start_date"
 					:max="start_date"
 					label="Start date"
-					:validation="
-						'|date_before:' + start_date
-					"
+					:validation="'|date_before:' + start_date"
 					validation-visibility="submit"
 					inner-class="w-1/2"
 				/>

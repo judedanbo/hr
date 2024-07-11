@@ -19,13 +19,16 @@ defineEmits(["update:modelValue"]);
 			<p
 				class="font-bold text-xl px-8 py-4 text-gray-700 dark:text-white tracking-wide"
 			>
-				<span>Staff</span>
+				<span>Staff ({{ unit.staff_number }})</span>
 			</p>
 		</header>
 		<main
-			class="max-h-screen  overflow-y-auto shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full"
+			class="max-h-screen overflow-y-auto shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full"
 		>
-			<table v-if="unit.staff_number > 0" class="whitespace-nowrap text-left w-full">
+			<table
+				v-if="unit.staff_number > 0"
+				class="whitespace-nowrap text-left w-full"
+			>
 				<thead
 					class="border-b border-white/10 text-sm leading-6 text-green-950 uppercase dark:text-white dark:bg-gray-900 bg-green-100"
 				>
