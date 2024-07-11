@@ -81,7 +81,6 @@ const submitHandler = (data, node) => {
 					id="start_date"
 					label="Start date"
 					validation-visibility="submit"
-					inner-class="w-1/2"
 				/>
 				<FormKit
 					type="date"
@@ -90,7 +89,6 @@ const submitHandler = (data, node) => {
 					:value="today"
 					label="End date"
 					validation-visibility="submit"
-					inner-class="w-1/2"
 				/>
 			</div>
 			<FormKit
@@ -104,15 +102,3 @@ const submitHandler = (data, node) => {
 		</FormKit>
 	</main>
 </template>
-
-<style scoped>
-.formkit-outer {
-	@apply w-full;
-}
-.formkit-submit {
-	@apply justify-self-end;
-}
-.formkit-actions {
-	@apply flex justify-end;
-}
-</style>

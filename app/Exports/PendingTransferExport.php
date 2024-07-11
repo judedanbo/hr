@@ -48,14 +48,14 @@ class PendingTransferExport implements FromQuery, WithMapping, WithHeadings, Sho
                 $query->where('status', TransferStatusEnum::Pending);
             })
             ->currentUnit()
-            ->active()
-            ->addSelect([
-                'current_unit_id' => StaffUnit::select('id')
-                    ->whereColumn('institution_person.id', 'staff_unit.staff_id')
-                    ->take(1)
-                    ->latest()
-            ])->with(['currentUnit' => function ($query) {
-                $query->with('unit:id,name');
-            }]);
+            ->active();
+        // ->addSelect([
+        //     'current_unit_id' => StaffUnit::select('id')
+        //         ->whereColumn('institution_person.id', 'staff_unit.staff_id')
+        //         ->take(1)
+        //         ->latest()
+        // ])->with(['currentUnit' => function ($query) {
+        //     $query->with('unit:id,name');
+        // }]);
     }
 }

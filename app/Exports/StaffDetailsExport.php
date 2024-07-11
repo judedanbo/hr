@@ -47,22 +47,16 @@ class StaffDetailsExport implements FromQuery, WithMapping, WithHeadings, Should
             $staff->currentUnit?->unit?->name,
             $staff->person->date_of_birth?->addYears(60)->format('d F Y'),
             $staff->currentRank?->start_date?->format('d F, Y'),
-            $staff->currentUnit?->start_date?->format('d F, Y')
+            $staff->currentUnit?->start_date?->format('d F, Y'),
+            $staff->currentRank?->job?->category->level ?? null,
         ];
     }
     function query()
     {
         return InstitutionPerson::query()
-            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
-            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
-            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
-            ->whereNull('job_staff.end_date')
-            ->whereNull('jobs.deleted_at')
             ->with(['person'])
             ->currentRank()
             ->currentUnit()
-            ->orderBy('job_categories.level', 'asc')
-            ->orderBy('job_staff.start_date', 'asc')
             ->active();
     }
 }

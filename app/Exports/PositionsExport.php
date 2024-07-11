@@ -31,7 +31,8 @@ class PositionsExport implements
             'Current Rank',
             'Current Unit',
             'Position',
-            'Position Date'
+            'Position Date',
+            'Level'
         ];
     }
     public function map($staff): array
@@ -45,23 +46,17 @@ class PositionsExport implements
             $staff->currentUnit?->unit?->name,
             $staff->positions->first()?->name,
             Carbon::parse($staff->positions->first()?->pivot->start_date)?->format('d M, Y'),
+            $staff->currentRank?->job?->category->level ?? null,
 
         ];
     }
     function query()
     {
         return InstitutionPerson::query()
-            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
-            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
-            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
             ->whereHas('positions')
-            ->whereNull('job_staff.end_date')
-            ->whereNull('jobs.deleted_at')
             ->with(['person', 'ranks.category', 'positions'])
             ->currentRank()
             ->currentUnit()
-            ->orderBy('job_categories.level', 'asc')
-            ->orderBy('job_staff.start_date', 'asc')
             ->active();
     }
 }
