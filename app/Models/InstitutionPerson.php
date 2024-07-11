@@ -185,6 +185,7 @@ class InstitutionPerson extends Pivot
                 ->take(1)
         ])->with(['currentRank' => function ($query) {
             $query->with(['job' => function ($query) {
+                $query->whereNull('jobs.deleted_at');
                 $query->with('category');
             }]);
         }]);

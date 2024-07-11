@@ -21,7 +21,7 @@ class SeparationController extends Controller
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($staff) => [
-                'id' => $staff->id,
+                'id' => $staff->person_id,
                 'note' => [
                     'date' => $staff->notes->first()?->note_date,
                     'note' => $staff->notes->first()?->note,

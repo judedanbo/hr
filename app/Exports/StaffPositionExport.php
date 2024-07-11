@@ -39,7 +39,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->currentRank?->job?->category->level ?? null,
-            $staff->currentRank
+            // $staff
         ];
     }
     function query()

@@ -78,7 +78,7 @@ class PersonController extends Controller
      */
     public function show($person)
     {
-        $person = Person::with([
+        $selectedPerson = Person::with([
             'address' => function ($query) {
                 $query->where('valid_end', null);
             },
@@ -90,43 +90,43 @@ class PersonController extends Controller
             'qualifications'
         ])
             ->whereId($person)->first();
-        // return $person;
+        // dd(Person::find($person));
         return Inertia::render('Person/NewShow', [
             'person' => [
-                'id' => $person->id,
-                'name' => $person->full_name,
-                'dob-value' => $person->date_of_birth,
-                'dob' => $person->date_of_birth?->format('d M Y'),
-                'dob_distance' => $person->date_of_birth?->diffInYears() . " years old",
-                'gender' => $person->gender?->label(),
-                'ssn' => $person->social_security_number,
-                'initials' => $person->initials,
-                'nationality' => $person->nationality?->nationality(),
-                'religion' => $person->religion,
-                'marital_status' => $person->marital_status?->label(),
-                'image' => $person->image ? Storage::disk('avatars')->url($person->image) : null,
-                'identities' => $person->identities->count() > 0 ? $person->identities->map(fn ($id) => [
+                'id' => $selectedPerson->id,
+                'name' => $selectedPerson->full_name,
+                'dob-value' => $selectedPerson->date_of_birth,
+                'dob' => $selectedPerson->date_of_birth?->format('d M Y'),
+                'dob_distance' => $selectedPerson->date_of_birth?->diffInYears() . " years old",
+                'gender' => $selectedPerson->gender?->label(),
+                'ssn' => $selectedPerson->social_security_number,
+                'initials' => $selectedPerson->initials,
+                'nationality' => $selectedPerson->nationality?->nationality(),
+                'religion' => $selectedPerson->religion,
+                'marital_status' => $selectedPerson->marital_status?->label(),
+                'image' => $selectedPerson->image ? Storage::disk('avatars')->url($selectedPerson->image) : null,
+                'identities' => $selectedPerson->identities->count() > 0 ? $selectedPerson->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
                 ]) : null,
             ],
-            'contacts' => $person->contacts->count() > 0 ? $person->contacts->map(fn ($contact) => [
+            'contacts' => $selectedPerson->contacts->count() > 0 ? $selectedPerson->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type_id' => $contact->contact_type_id,
                 'valid_end' => $contact->valid_end,
             ]) : null,
-            'address' => $person->address->count() > 0 ? [
-                'id' => $person->address->first()->id,
-                'address_line_1' => $person->address->first()->address_line_1,
-                'address_line_2' => $person->address->first()->address_line_2,
-                'city' => $person->address->first()->city,
-                'region' => $person->address->first()->region,
-                'country' => $person->address->first()->country,
-                'post_code' => $person->address->first()->post_code,
-                'valid_end' => $person->address->first()->valid_end,
+            'address' => $selectedPerson->address->count() > 0 ? [
+                'id' => $selectedPerson->address->first()->id,
+                'address_line_1' => $selectedPerson->address->first()->address_line_1,
+                'address_line_2' => $selectedPerson->address->first()->address_line_2,
+                'city' => $selectedPerson->address->first()->city,
+                'region' => $selectedPerson->address->first()->region,
+                'country' => $selectedPerson->address->first()->country,
+                'post_code' => $selectedPerson->address->first()->post_code,
+                'valid_end' => $selectedPerson->address->first()->valid_end,
             ] : null,
-            'staff' => $person->institution->count() > 0 ?  $person->institution->map(fn ($inst) => [
+            'staff' => $selectedPerson->institution->count() > 0 ?  $selectedPerson->institution->map(fn ($inst) => [
                 'status' =>  $inst->staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
                     'status' => $status->status,
@@ -178,8 +178,8 @@ class PersonController extends Controller
                 'hire_date_dis' =>  $inst->staff->hire_date?->format('d M Y'),
                 'end_date' =>  $inst->staff->end_date,
             ])  : null,
-            'dependent' => $person->dependent,
-            'dependents' => $person->dependents ? $person->dependents->map(fn ($dep) => [
+            'dependent' => $selectedPerson->dependent,
+            'dependents' => $selectedPerson->dependents ? $selectedPerson->dependents->map(fn ($dep) => [
                 'id' => $dep->id,
                 'person_id' => $dep->person_id,
                 'name' => $dep->person->full_name,
