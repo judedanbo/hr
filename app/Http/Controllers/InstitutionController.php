@@ -98,7 +98,7 @@ class InstitutionController extends Controller
                     $query->whereNull('end_date');
                 },
                 'staff' => function ($query) {
-                    $query->active();
+                    // $query->active();
                 },
             ])
             ->firstOrFail();
@@ -111,12 +111,12 @@ class InstitutionController extends Controller
                 }]);
             }])
             ->withCount([
-                'subs'=> function ($query) {
+                'subs' => function ($query) {
                     $query->whereHas('staff', function ($query) {
                         $query->active();
                     });
                 },
-                'staff'=> function ($query) {
+                'staff' => function ($query) {
                     $query->active();
                 },
                 'divisions',

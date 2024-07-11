@@ -17,4 +17,12 @@ enum GenderEnum: string
             default => static::NOT_AVAILABLE,
         };
     }
+
+    public function color(): string
+    {
+        return match ($this) {
+            self::MALE => '#4CAF50',
+            self::FEMALE => '#FFC107',
+        };
+    }
 }

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\JobCategory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Job extends Model
 {
@@ -91,6 +93,16 @@ class Job extends Model
     {
         return $this->category();
         // return $this->hasMany(Job::class, 'next_rank_id');
+    }
+
+    public function jobStaff(): HasMany
+    {
+        return $this->hasMany(JobStaff::class);
+    }
+
+    public function units(): HasManyThrough
+    {
+        return $this->hasManyThrough(Unit::class, JobStaff::class, 'job_id', 'id', 'id', 'unit_id');
     }
 
     public function scopeManagementRanks($query)

@@ -73,7 +73,7 @@ stats.value = [
 	<div class="w-full sm:w-1/2 md:w-1/3 my-4">
 		<BaseChart
 			v-if="genderStats?.length > 0"
-			type="bar"
+			type="pie"
 			:title="chartTitle + ' by gender'"
 			:labels="['Male', 'Female']"
 			:datasets="genderStats"

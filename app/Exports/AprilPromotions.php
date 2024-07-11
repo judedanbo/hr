@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
+use App\Models\JobStaff;
 use Illuminate\Contracts\Queue\ShouldQueue;
 // use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -14,7 +15,11 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class AprilPromotions implements
     // FromCollection,
-    ShouldAutoSize, WithHeadings, FromQuery, WithMapping, ShouldQueue
+    ShouldAutoSize,
+    WithHeadings,
+    FromQuery,
+    WithMapping,
+    ShouldQueue
 {
     use Exportable;
 

@@ -50,6 +50,7 @@ use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\JobCategory;
+use App\Models\JobStaff;
 use App\Models\Person;
 use App\Models\Qualification;
 use App\Models\StaffType;
@@ -479,23 +480,22 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
 
-// Route::get('/test', function () {
-//     return InstitutionPerson::query()
-//         ->active()
-//         ->with(['person'])
-//         ->currentRank()
-//         ->currentUnit()
-//         ->toRetire()
-//         // ->orderBy(
-//         //     Person::select('date_of_birth')
-//         //         ->whereColumn('people.id', 'institution_person.person_id')
-//         // )
-//         ->orderBy(
-//             JobCategory::select('level')
-//                 ->join('job_staff', 'job_categories.id', '=', 'job_staff.job_id')
-//                 ->join('institution_person', 'job_staff.staff_id', '=', 'institution_person.id')
-//                 ->whereNull('job_staff.end_date')
-//                 ->take(1)
-//         )
-//         ->get();
-// });
+Route::get('/test', function () {
+    return InstitutionPerson::query()
+        ->active()
+        ->with('person')
+        ->currentRank()
+        ->currentUnit()
+        // ->where('staff_number', '2743')
+        ->orderBy(
+            JobCategory::query()
+                ->join('jobs', 'job_categories.id', '=', 'jobs.job_category_id')
+                ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
+                ->select('job_categories.level')
+                ->whereColumn('job_staff.staff_id', 'institution_person.id')
+                ->orderBy('job_categories.level')
+                ->limit(1)
+        )
+        ->get();
+})->middleware(['auth', 'password_changed']);
+// Route::get('/test/{job}', [JobController::class, 'unitStats'])->middleware(['auth', 'password_changed'])->name('job.unitStats');

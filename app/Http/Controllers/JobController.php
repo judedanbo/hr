@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\GenderEnum;
 use App\Http\Requests\StoreJobRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Job;
+use App\Models\Unit;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
@@ -151,14 +153,14 @@ class JobController extends Controller
                 $query->active();
                 $query->where('job_staff.end_date', null);
                 $query->whereHas('person', function ($query) {
-                    $query->where('gender', 'M');
+                    $query->where('gender', GenderEnum::MALE);
                 });
             },
             'staff as female_staff_count' => function ($query) {
                 $query->active();
                 $query->where('job_staff.end_date', null);
                 $query->whereHas('person', function ($query) {
-                    $query->where('gender', 'F');
+                    $query->where('gender', GenderEnum::FEMALE);
                 });
             }
         ]);
@@ -169,6 +171,8 @@ class JobController extends Controller
         // }]); 
         $stats = new \stdClass();
         $stats->label = "Gender Statistics";
+        $stats->borderWidth = 0;
+        $stats->backgroundColor = ['#2563eb', '#fb7185'];
         $stats->data = [
             $job->male_staff_count,
             $job->female_staff_count,
@@ -182,6 +186,118 @@ class JobController extends Controller
             'due_for_promotion' => $job->due_for_promotion,
             'gender_stats' => [$stats]
         ];
+    }
+
+    public function unitStats($job)
+    {
+        return Unit::query()
+            ->whereHas('staff', function ($query) use ($job) {
+                $query->active();
+                $query->whereHas('ranks', function ($query) use ($job) {
+                    $query->where('job_staff.job_id', $job);
+                    $query->whereNull('job_staff.end_date');
+                    $query->orWhere('job_staff.end_date', '>=', now());
+                });
+                // $query->where('job_staff.job_id', $job);
+                // $query->whereNull('job_staff.end_date');
+            })
+            ->withCount(
+                [
+                    'staff' => function ($query) use ($job) {
+                        $query->active();
+                        $query->whereHas('ranks', function ($query) use ($job) {
+                            // $query->where('job_staff.job_id', $job);
+                            $query->whereNull('job_staff.end_date');
+                            $query->orWhere('job_staff.end_date', '>=', now());
+                        });
+                        // $query->where('job_staff.job_id', $job);
+                        // $query->whereNull('job_staff.end_date');
+                    },
+                    'subs' => function ($query) {
+                        $query->whereHas('staff', function ($query) {
+                            $query->active();
+                            $query->search(request()->search);
+                        });
+                    },
+                ]
+            )
+            ->with([
+                'staff' => function ($query) {
+                    $query->with(['person', 'ranks', 'units']);
+                    $query->active();
+                    $query->whereHas('ranks', function ($query) {
+                        $query->whereNull('job_staff.end_date');
+                        $query->orWhere('job_staff.end_date', '>=', now());
+                    });
+                },
+                'subs' => function ($query) {
+                    $query->whereHas('staff', function ($query) {
+                        $query->active();
+                        $query->search(request()->search);
+                    });
+                    $query->with(['staff' => function ($query) {
+                        $query->with(['person', 'ranks', 'units']);
+                        $query->active();
+                        $query->search(request()->search);
+                    }]);
+                    $query->withCount([
+                        'staff' => function ($query) {
+                            $query->active();
+                            $query->search(request()->search);
+                        },
+                        'subs' => function ($query) {
+                            $query->whereHas('staff', function ($query) {
+                                $query->active();
+                            });
+                        },
+                    ]);
+                }
+            ])
+            ->get();
+        $job = Job::query()
+            ->withCount([
+                'staff',
+                'staff as active_staff_count' => function ($query) {
+                    $query->active();
+                    $query->where('job_staff.end_date', null);
+                    $query->whereHas('units');
+                    $query->with('units');
+                }
+            ])
+            ->with(['staff' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+                $query->whereHas('units');
+                $query->with(['units' => function ($query) {
+                    $query->whereNull('staff_unit.end_date');
+                    // $query->select(['id', 'name']);
+                }]);
+            }])
+            ->find($job);
+
+        dd($job->staff);
+        return $job->loadCount([
+            'staff as total_staff_count',
+            'staff as total_staff' => function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+                $query->groupBy(Unit::select('unit_id')
+                    ->whereColumn('unit_id', 'units.id'));
+            },
+            'staff as active_staff_count' => function ($query) use ($job) {
+                $query->active();
+                $query->where('job_staff.job_id', $job->id);
+                $query->whereNull('job_staff.end_date');
+                $query->whereHas('units');
+            },
+
+        ]);
+        // ->load(['staff' => function ($query) {
+        //     $query->active();
+        //     $query->where('job_staff.end_date', null);
+        //     $query->whereHas('units');
+        // }]);
+        // return 
     }
     public function units(Job $job)
     {

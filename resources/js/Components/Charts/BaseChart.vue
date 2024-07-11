@@ -42,27 +42,29 @@ const options = reactive({
 	scales: {
 		y: {
 			ticks: {
+				display: props.type == "pie" ? false : true,
 				color: "rgba(255,255,255,0.8)",
 			},
 			border: {
-				display: true,
+				display: props.type == "pie" ? false : true,
 				color: "rgba(255,255,255)",
 			},
 			grid: {
-				display: true,
+				display: props.type == "pie" ? false : true,
 				color: "rgba(0,0,0,0.18)",
 			},
 		},
 		x: {
 			ticks: {
+				display: props.type == "pie" ? false : true,
 				color: "rgba(255,255,255,0.8)",
 			},
 			border: {
-				display: true,
+				display: props.type == "pie" ? false : true,
 				color: "rgba(255,255,255)",
 			},
 			grid: {
-				display: false,
+				display: props.type == "pie" ? false : true,
 			},
 		},
 	},
@@ -80,7 +82,7 @@ onMounted(() => {
 </script>
 <template>
 	<canvas
-		class="bg-gray-700 w-full sm:rounded-2xl px-4 py-2"
+		class="dark:bg-gray-700 bg-gray-50 w-full sm:rounded-2xl px-4 py-2"
 		id="hrChart"
 	></canvas>
 </template>

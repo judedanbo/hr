@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
+use App\Models\JobCategory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -25,7 +26,7 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'Years Served',
             'Current Rank',
             'Current Unit',
-            // 'level'
+            'level'
         ];
     }
     public function map($staff): array
@@ -37,23 +38,26 @@ class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
-            $staff,
-
+            $staff->currentRank?->job?->category->level ?? null,
+            // $staff
         ];
     }
     function query()
     {
         return InstitutionPerson::query()
-            ->join('job_staff', 'institution_person.id', '=', 'job_staff.staff_id')
-            ->join('jobs', 'job_staff.job_id', '=', 'jobs.id')
-            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
-            ->whereNull('job_staff.end_date')
-            ->whereNull('jobs.deleted_at')
-            ->with(['person', 'ranks.category'])
+            ->active()
+            ->with('person')
             ->currentRank()
-            ->currentUnit()
-            ->orderBy('job_categories.level', 'asc')
-            ->orderBy('job_staff.start_date', 'asc')
-            ->active();
+            ->currentUnit();
+        // ->where('staff_number', '2743')
+        // ->orderBy(
+        //     JobCategory::query()
+        //         ->join('jobs', 'job_categories.id', '=', 'jobs.job_category_id')
+        //         ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
+        //         ->select('job_categories.level')
+        //         ->whereColumn('job_staff.staff_id', 'institution_person.id')
+        //         ->orderBy('job_categories.level')
+        //         ->limit(1)
+        // );
     }
 }
