@@ -128,7 +128,12 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 				<div
 					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12"
 				>
-					<SubUnits v-model="dept" :type="unit.name" :subs="props.unit" />
+					<SubUnits
+						v-if="unit.subs.length > 0"
+						v-model="dept"
+						:type="unit.name"
+						:subs="props.unit"
+					/>
 					<UnitStaff :unit="props.unit" />
 				</div>
 			</div>

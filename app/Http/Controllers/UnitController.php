@@ -15,11 +15,89 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
+        // $units =  Unit::query()
+        //     ->departments()
+        //     ->with([
+        //         'institution:id,name,abbreviation',
+        //         // 'staff' => function ($query) {
+        //         //     $query->active();
+        //         //     $query->select('institution_person.id', 'person_id', 'file_number', 'staff_number', 'hire_date');
+        //         // },
+        //         'subs' => function ($query) {
+        //             $query->where(function ($query) {
+        //                 $query->whereHas('staff', function ($query) {
+        //                     $query->active();
+        //                 });
+        //                 $query->orWhereHas('subs', function ($query) {
+        //                     $query->whereHas('staff', function ($query) {
+        //                         $query->active();
+        //                     });
+        //                 });
+        //             });
+        //             $query->with([
+        //                 'subs' => function ($query) {
+        //                     $query->where(function ($query) {
+        //                         $query->whereHas('staff', function ($query) {
+        //                             $query->active();
+        //                         });
+        //                         $query->orWhereHas('subs', function ($query) {
+        //                             $query->whereHas('staff', function ($query) {
+        //                                 $query->active();
+        //                             });
+        //                         });
+        //                     });
+        //                     $query->withCount([
+        //                         'staff' => function ($query) {
+        //                             $query->active();
+        //                         },
+        //                     ]);
+        //                 },
+        //                 'staff' => function ($query) {
+        //                     $query->with(['person', 'ranks', 'units']);
+        //                     $query->active();
+        //                 }
+        //             ]);
+        //             $query->withCount([
+        //                 'staff' => function ($query) {
+        //                     $query->active();
+        //                 },
+        //                 'subs' => function ($query) {
+        //                     $query->whereHas('staff', function ($query) {
+        //                         $query->active();
+        //                     });
+        //                 },
+        //             ]);
+        //         }
+        //     ])
+        //     ->withCount(
+        //         [
+        //             'staff' => function ($query) {
+        //                 $query->active();
+        //             },
+        //             'subs' => function ($query) {
+        //                 $query->where(function ($query) {
+        //                     $query->whereHas('staff', function ($query) {
+        //                         $query->active();
+        //                     });
+        //                     $query->orWhereHas('subs', function ($query) {
+        //                         $query->whereHas('staff', function ($query) {
+        //                             $query->active();
+        //                         });
+        //                     });
+        //                 });
+        //             }
+        //         ]
+        //     )
+        //     ->get();
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
                 ->with([
-                    'institution',
+                    'institution:id,name,abbreviation',
+                    // 'staff' => function ($query) {
+                    //     $query->active();
+                    //     $query->select('institution_person.id', 'person_id', 'file_number', 'staff_number', 'hire_date');
+                    // },
                     'subs' => function ($query) {
                         $query->where(function ($query) {
                             $query->whereHas('staff', function ($query) {
@@ -31,12 +109,39 @@ class UnitController extends Controller
                                 });
                             });
                         });
+                        $query->with([
+                            'subs' => function ($query) {
+                                $query->where(function ($query) {
+                                    $query->whereHas('staff', function ($query) {
+                                        $query->active();
+                                    });
+                                    $query->orWhereHas('subs', function ($query) {
+                                        $query->whereHas('staff', function ($query) {
+                                            $query->active();
+                                        });
+                                    });
+                                });
+                                $query->withCount([
+                                    'staff' => function ($query) {
+                                        $query->active();
+                                    },
+                                ]);
+                            },
+                            'staff' => function ($query) {
+                                $query->with(['person', 'ranks', 'units']);
+                                $query->active();
+                            }
+                        ]);
                         $query->withCount([
                             'staff' => function ($query) {
                                 $query->active();
                             },
+                            'subs' => function ($query) {
+                                $query->whereHas('staff', function ($query) {
+                                    $query->active();
+                                });
+                            },
                         ]);
-                        $query->with(['staff']);
                     }
                 ])
                 ->withCount(
@@ -69,11 +174,11 @@ class UnitController extends Controller
                         'id' => $unit->id,
                         'name' => $unit->name,
                         'short_name' => $unit->short_name,
-                        'countsub' =>  $unit->subs,
+                        // 'countsub' =>  $unit->subs,
                         // 'count' =>  $unit->subs->sum(function ($sub) {
                         //     // return $sub->subs->sum('staff_count');
                         // }),
-                        'staff' => $unit->subs->sum(function ($sub) {
+                        'staff' => $unit->staff_count + $unit->subs->sum(function ($sub) {
                             return $sub->staff_count + $sub->subs->sum('staff_count') ?? 0;
                         }), //+ $unit->subs->sum(function ($sum) {
                         //     return $sum->staff_count + $sum->subs->sum(function ($sum) {
