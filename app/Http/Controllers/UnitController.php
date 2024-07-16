@@ -21,15 +21,22 @@ class UnitController extends Controller
                 ->with([
                     'institution',
                     'subs' => function ($query) {
-                        $query->whereHas('staff', function ($query) {
-                            $query->active();
+                        $query->where(function ($query) {
+                            $query->whereHas('staff', function ($query) {
+                                $query->active();
+                            });
+                            $query->orWhereHas('subs', function ($query) {
+                                $query->whereHas('staff', function ($query) {
+                                    $query->active();
+                                });
+                            });
                         });
                         $query->withCount([
                             'staff' => function ($query) {
                                 $query->active();
                             },
-                            // 'subs'
                         ]);
+                        $query->with(['staff']);
                     }
                 ])
                 ->withCount(
@@ -38,8 +45,15 @@ class UnitController extends Controller
                             $query->active();
                         },
                         'subs' => function ($query) {
-                            $query->whereHas('staff', function ($query) {
-                                $query->active();
+                            $query->where(function ($query) {
+                                $query->whereHas('staff', function ($query) {
+                                    $query->active();
+                                });
+                                $query->orWhereHas('subs', function ($query) {
+                                    $query->whereHas('staff', function ($query) {
+                                        $query->active();
+                                    });
+                                });
                             });
                         }
                     ]
@@ -55,7 +69,17 @@ class UnitController extends Controller
                         'id' => $unit->id,
                         'name' => $unit->name,
                         'short_name' => $unit->short_name,
-                        'staff' => $unit->staff_count + $unit->subs->sum('staff_count'),
+                        'countsub' =>  $unit->subs,
+                        // 'count' =>  $unit->subs->sum(function ($sub) {
+                        //     // return $sub->subs->sum('staff_count');
+                        // }),
+                        'staff' => $unit->subs->sum(function ($sub) {
+                            return $sub->staff_count + $sub->subs->sum('staff_count') ?? 0;
+                        }), //+ $unit->subs->sum(function ($sum) {
+                        //     return $sum->staff_count + $sum->subs->sum(function ($sum) {
+                        //         return $sum->staff_count + $sum->subs->sum('staff_count');
+                        //     });
+                        // }),
                         'units' => $unit->subs_count,
                         'institution' => $unit->institution ? [
                             'id' => $unit->institution->id,
@@ -167,9 +191,12 @@ class UnitController extends Controller
         // return $allStaff;
         return Inertia::render('Unit/Show', [
             'unit' => [
+                'unit' => $unit,
                 'id' => $unit?->id,
                 'name' => $unit?->name,
-                'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum('staff_count') : $unit?->staff_count,
+                'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum(function ($sub) {
+                    return $sub->staff_count + $sub->subs->sum('staff_count');
+                }) : $unit?->staff_count,
                 'subs_number' => $unit?->subs_count,
                 'institution' => $unit?->institution ? [
                     'name' => $unit?->institution->name,
@@ -220,7 +247,10 @@ class UnitController extends Controller
                     'id' => $sub->id,
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,
-                    'staff_count' => $sub->staff_count + $sub->subs->sum('staff_count'),
+                    'staff_count' => $sub->staff_count + $sub->subs->sum(function ($sub) {
+                        // return $sub->subs?->sum('staff_count');
+                        return $sub->staff_count + $sub->subs->sum('staff_count');
+                    }),
                     // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
                     //     'id' => $stafff->id,
                     //     'name' => $stafff->full_name,

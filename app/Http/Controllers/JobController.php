@@ -88,7 +88,7 @@ class JobController extends Controller
                 }
             ])
             ->findOrFail($job);
-        return ($job);
+        // return ($job);
         return Inertia::render('Job/Show', [
             'job' => [
                 'id' => $job->id,

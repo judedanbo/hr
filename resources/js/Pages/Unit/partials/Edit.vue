@@ -63,7 +63,7 @@ const submitHandler = (data, node) => {
 				type="hidden"
 				name="id"
 				id="id"
-				validation="required|integer|min:1|max:150"
+				validation="required|integer|min:1|max:1000"
 				validation-visibility="submit"
 				disabled
 			/>
@@ -72,7 +72,7 @@ const submitHandler = (data, node) => {
 					type="select"
 					name="type"
 					id="type"
-					validation="required|string|length:1,5"
+					validation="string|length:1,5"
 					placeholder="Select Unit type"
 					label="Unit Type"
 					:options="unitTypes"
@@ -95,7 +95,7 @@ const submitHandler = (data, node) => {
 					id="start_date"
 					:max="start_date"
 					label="Start date"
-					:validation="'|date_before:' + start_date"
+					:validation="'date_before:' + start_date"
 					validation-visibility="submit"
 					inner-class="w-1/2"
 				/>

@@ -47,12 +47,12 @@ defineEmits(["update:modelValue"]);
 						>
 							Staff
 						</th>
-						<!-- <th
-								scope="col"
-								class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
-							>
-								Sub units
-							</th> -->
+						<th
+							scope="col"
+							class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
+						>
+							Sub units
+						</th>
 					</tr>
 				</thead>
 				<tbody class="bg-white dark:bg-gray-700">
@@ -73,11 +73,11 @@ defineEmits(["update:modelValue"]);
 						>
 							{{ subUnit.staff_count }}
 						</td>
-						<!-- <td
-								class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
-							>
-								{{ subUnit.subs }}
-							</td> -->
+						<td
+							class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
+						>
+							{{ subUnit.subs }}
+						</td>
 					</tr>
 				</tbody>
 			</table>
