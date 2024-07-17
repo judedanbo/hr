@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-	staff_id: {
+	staffId: {
 		type: Number,
 		required: true,
 	},
@@ -11,7 +11,7 @@ defineProps({
 		type="hidden"
 		name="staff_id"
 		id="staff_id"
-		:value="staff_id"
+		:value="staffId"
 		validation="required|min:1|max:90000"
 	/>
 	<!-- <FormKit v-if="new"
