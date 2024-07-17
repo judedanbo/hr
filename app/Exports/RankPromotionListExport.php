@@ -38,6 +38,7 @@ class RankPromotionListExport implements
             $this->rank->name . ' Date',
             'Current Posting',
             'Posting Date',
+            'Retirement Date'
         ];
     }
     public function title(): string
@@ -53,6 +54,7 @@ class RankPromotionListExport implements
             $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
             $staff->units->first()?->name,
             $staff->units->first()?->pivot->start_date?->format('d M, Y'),
+            $staff->person->date_of_birth->addYears(60)->format('d M, Y')
         ];
     }
     public function query()
