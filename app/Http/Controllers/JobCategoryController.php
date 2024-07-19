@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreJobCategoryRequest;
 use App\Http\Requests\UpdateJobCategoryRequest;
 use App\Models\JobCategory;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class JobCategoryController extends Controller
@@ -29,7 +30,7 @@ class JobCategoryController extends Controller
                             'staff as promotion_count' => function ($query) {
                                 $query->active();
                                 $query->where('job_staff.end_date', null);
-                                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                                $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
                             },
                             'staff as all_count',
                         ]);
@@ -92,7 +93,7 @@ class JobCategoryController extends Controller
                         $query->active();
                         $query->whereHas('ranks', function ($query) {
                             $query->whereNull('job_staff.end_date');
-                            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                            $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
                         });
                     },
                     'staff as all'

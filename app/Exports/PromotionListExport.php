@@ -95,7 +95,7 @@ class PromotionListExport implements
             ->whereHas('ranks', function ($query) {
                 $query->whereNull('job_staff.end_date');
                 $query->where('job_staff.job_id', $this->rank->id);
-                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
             })
             ->with(['person', 'units', 'ranks']);
         // return InstitutionPerson::query()

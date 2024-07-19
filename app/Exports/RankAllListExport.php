@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Job;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -59,7 +60,7 @@ class RankAllListExport implements
         return Job::find($this->rank->id)
             ->staff()
             ->whereHas('ranks', function ($query) {
-                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
             })
             ->with(['person', 'units', 'ranks']);
     }

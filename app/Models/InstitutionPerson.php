@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Requests\StoreNoteRequest;
+use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -255,14 +256,14 @@ class InstitutionPerson extends Pivot
     {
         return $query->whereHas('ranks', function ($query) {
             $query->whereNull('job_staff.end_date');
-            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+            $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
         });
     }
     public function scopeToPromoteApril($query)
     {
         return $query->whereHas('ranks', function ($query) {
             $query->whereNull('job_staff.end_date');
-            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+            $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
             $query->where(function ($query) {
                 $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 11, 12)');
                 $query->orWhere(function ($query) {
@@ -280,7 +281,7 @@ class InstitutionPerson extends Pivot
     {
         return $query->whereHas('ranks', function ($query) {
             $query->whereNull('job_staff.end_date');
-            $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+            $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
             $query->where(function ($query) {
                 $query->whereRaw('month(job_staff.start_date) IN (5, 6, 7, 8, 9)');
                 $query->orWhere(function ($query) {

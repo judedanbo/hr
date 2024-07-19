@@ -66,7 +66,7 @@ class RankStaffController extends Controller
             ->whereHas('ranks', function ($query) use ($rank) {
                 $query->whereNull('job_staff.end_date');
                 $query->where('job_staff.job_id', $rank);
-                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
                 $query->when(request()->batch == 'april', function ($query) {
                     $query->where(function ($query) {
                         $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 11, 12)');

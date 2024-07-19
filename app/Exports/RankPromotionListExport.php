@@ -61,12 +61,12 @@ class RankPromotionListExport implements
     }
     public function query()
     {
-        // dd($this->batch);
+        // dd(Carbon::now()->subYears(3));
         return Job::find($this->rank->id)
             ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
             ->whereHas('ranks', function ($query) {
-                $query->whereYear('job_staff.start_date', '<=', now()->year - 3);
+                $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
                 $query->whereNull('job_staff.end_date');
                 $query->where('job_staff.job_id', $this->rank->id);
             })

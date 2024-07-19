@@ -7,6 +7,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\Nationality;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
+use App\Http\Controllers\AgeController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanks;
 use App\Http\Controllers\ContactTypeController;
@@ -292,6 +293,7 @@ Route::controller(JobController::class)->middleware(['auth', 'password_changed']
     Route::post('/rank', 'store')->name('job.store');
     Route::get('rank/{job}/stats', 'stats')->name('job.stats');
     Route::get('rank/{job}/unitStats', 'unitStats')->name('job.unit-stats');
+    Route::get('rank/{job}/age-distribution', 'staffAgeDistribution')->name('job.age-distribution');
 });
 
 Route::get('/rank/{rank}/category', function (Job $rank) {
@@ -481,18 +483,4 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
 
-// Route::get('/test', function () {
-//     return InstitutionPerson::query()
-//         ->with(['person', 'statuses' => function ($query) {
-//             $query->where('status', EmployeeStatusEnum::Resignation);
-//             $query->latest('start_date');
-//             // $query->take(1);
-//         }])
-//         ->currentRank()
-//         ->whereHas('statuses', function ($query) {
-//             $query->where('status', EmployeeStatusEnum::Resignation);
-//         })
-//         ->retired()
-//         ->get();
-// })->middleware(['auth', 'password_changed']);
-// Route::get('/test/{job}', [JobController::class, 'unitStats'])->middleware(['auth', 'password_changed'])->name('job.unitStats');
+// Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
