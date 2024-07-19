@@ -27,7 +27,9 @@ class RankPromotionListExport implements
     public function __construct(Job $rank, string $batch = null)
     {
         $this->rank = $rank;
-        $this->batch = $batch ?? now() <= Carbon::parse('April 1') || now() >= Carbon::parse('October 1') ? 'april' : 'october';
+        $this->batch = $batch; // ?? now() <= Carbon::parse('April 1') || now() >= Carbon::parse('October 1') ? 'april' : 'october';
+        // dd($batch);
+        // dd($this->batch);
     }
     public function headings(): array
     {
@@ -43,7 +45,7 @@ class RankPromotionListExport implements
     }
     public function title(): string
     {
-        return Str::of($this->rank->name)->plural();
+        return date('Y') . Str::of($this->rank->name)->plural() . " Promotion List";
     }
     public function map($staff): array
     {
@@ -54,11 +56,12 @@ class RankPromotionListExport implements
             $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
             $staff->units->first()?->name,
             $staff->units->first()?->pivot->start_date?->format('d M, Y'),
-            $staff->person->date_of_birth->addYears(60)->format('d M, Y')
+            $staff->person->date_of_birth?->addYears(60)->format('d M, Y')
         ];
     }
     public function query()
     {
+        // dd($this->batch);
         return Job::find($this->rank->id)
             ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
@@ -68,17 +71,43 @@ class RankPromotionListExport implements
                 $query->where('job_staff.job_id', $this->rank->id);
             })
             ->when($this->batch == 'april', function ($query) {
-                $query->where('job_staff.start_date', '<=', Carbon::parse('first day of April')->subYear(3));
                 $query->where(function ($query) {
-                    $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
-                    $query->orWhereRaw('month(job_staff.start_date) IN (11, 12)');
+                    $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 11, 12)');
+                    $query->orWhere(function ($query) {
+                        $query->whereMonth('job_staff.start_date', 4);
+                        $query->whereDay('job_staff.start_date', 1);
+                    });
+                    $query->orWhere(function ($query) {
+                        $query->whereMonth('job_staff.start_date', 10);
+                        $query->whereDay('job_staff.start_date', '>', 1);
+                    });
                 });
-                // $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
             })
-            ->when(request()->batch == 'october', function ($query) {
-                $query->where('job_staff.start_date', '<=', Carbon::parse('first day of October')->subYear(3));
-                $query->whereRaw('month(job_staff.start_date) IN (4,5, 6, 7, 8, 9, 10)');
+            ->when($this->batch == 'october', function ($query) {
+                $query->where(function ($query) {
+                    $query->whereRaw('month(job_staff.start_date) IN (5, 6, 7, 8, 9)');
+                    $query->orWhere(function ($query) {
+                        $query->whereMonth('job_staff.start_date', 10);
+                        $query->whereDay('job_staff.start_date', 1);
+                    });
+                    $query->orWhere(function ($query) {
+                        $query->whereMonth('job_staff.start_date', 4);
+                        $query->whereDay('job_staff.start_date', '>', 1);
+                    });
+                });
             })
+            // ->when($this->batch == 'april', function ($query) {
+            //     $query->where('job_staff.start_date', '<=', Carbon::parse('first day of April')->subYear(3));
+            //     $query->where(function ($query) {
+            //         $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
+            //         $query->orWhereRaw('month(job_staff.start_date) IN (11, 12)');
+            //     });
+            //     // $query->whereRaw('month(job_staff.start_date) IN (1, 2, 3, 4)');
+            // })
+            // ->when($this->batch == 'october', function ($query) {
+            //     $query->where('job_staff.start_date', '<=', Carbon::parse('first day of October')->subYear(3));
+            //     $query->whereRaw('month(job_staff.start_date) IN (4,5, 6, 7, 8, 9, 10)');
+            // })
             ->with(['person', 'units', 'ranks']);
     }
 }

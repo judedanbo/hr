@@ -291,6 +291,7 @@ Route::controller(JobController::class)->middleware(['auth', 'password_changed']
     Route::delete('/rank/{job}', 'delete')->name('job.delete');
     Route::post('/rank', 'store')->name('job.store');
     Route::get('rank/{job}/stats', 'stats')->name('job.stats');
+    Route::get('rank/{job}/unitStats', 'unitStats')->name('job.unit-stats');
 });
 
 Route::get('/rank/{rank}/category', function (Job $rank) {

@@ -6,6 +6,52 @@ import PageStats from "@/Components/PageStats.vue";
 import { Inertia } from "@inertiajs/inertia";
 import { UserGroupIcon, UsersIcon } from "@heroicons/vue/24/outline";
 import BaseChart from "@/Components/Charts/BaseChart.vue";
+import { useDark, useToggle } from "@vueuse/core";
+
+import { Bar, Pie } from "vue-chartjs";
+import {
+	Chart as ChartJS,
+	Title,
+	Legend,
+	Tooltip,
+	BarElement,
+	ArcElement,
+	CategoryScale,
+	LinearScale,
+} from "chart.js";
+
+ChartJS.register(
+	Title,
+	Legend,
+	Tooltip,
+	ArcElement,
+	BarElement,
+	CategoryScale,
+	LinearScale,
+);
+const isDark = useDark();
+
+// const chartData = ref({
+// 	labels: ["January", "February", "March", "April", "May", "June", "July"],
+// 	datasets: [
+// 		{
+// 			backgroundColor: [
+// 				"red",
+// 				"blue",
+// 				"green",
+// 				"yellow",
+// 				"purple",
+// 				"orange",
+// 				"pink",
+// 			],
+// 			label: "My First Dataset",
+// 			data: [65, 59, 80, 81, 56, 55, 40],
+// 			fill: false,
+// 			borderColor: "rgb(75, 192, 192)",
+// 			tension: 0.1,
+// 		},
+// 	],
+// });
 const props = defineProps({
 	rank: {
 		type: Number,
@@ -16,13 +62,18 @@ const props = defineProps({
 		default: "",
 	},
 });
-const unitsStats = ref([]);
+const unitsStats = ref({});
+const jobStats = ref([]);
 onMounted(async () => {
 	unitsStats.value = (
 		await axios.get(route("job.stats", { job: props.rank }), {
 			params: { search: props.search },
 		})
 	).data;
+	jobStats.value = (
+		await axios.get(route("job.unit-stats", { job: props.rank }))
+	).data;
+	// await console.log(unitsStats.value);
 });
 const totalStaffCount = computed(() => {
 	return unitsStats.value.total_staff_count;
@@ -67,16 +118,102 @@ stats.value = [
 		changeType: "increase",
 	},
 ];
+const genderData = computed(() => {
+	return {
+		labels: ["Male", "Female"],
+		datasets: [
+			{
+				label: "Active Staff",
+				borderWidth: 0,
+				backgroundColor: ["#2563eb", "#fb7185"],
+				data: [unitsStats.value.male_count, unitsStats.value.female_count],
+			},
+		],
+	};
+});
+const unitsData = computed(() => {
+	return {
+		labels: jobStats.value.map((unit) => unit.name),
+		datasets: [
+			{
+				label: "Total Staff",
+				backgroundColor: "#059669",
+				data: jobStats.value.map((unit) => unit.total_staff),
+			},
+		],
+	};
+});
 </script>
 <template>
-	<PageStats :stats="stats" />
-	<div class="w-full sm:w-1/2 md:w-1/3 my-4">
-		<BaseChart
-			v-if="genderStats?.length > 0"
-			type="pie"
-			:title="chartTitle + ' by gender'"
-			:labels="['Male', 'Female']"
-			:datasets="genderStats"
-		/>
+	<div>
+		<PageStats :stats="stats" />
+		<div class="flex mt-4 gap-x-4 items-start">
+			<div class="w-1/3">
+				<Pie
+					class="bg-white dark:bg-gray-700 rounded-lg shadow-md"
+					v-if="unitsStats != {}"
+					:data="genderData"
+					:options="{
+						responsive: true,
+						plugins: {
+							legend: {
+								position: 'top',
+								labels: {
+									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+								},
+							},
+							title: {
+								display: true,
+								text: unitsStats.name + ' by gender',
+								color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)',
+							},
+						},
+					}"
+				/>
+			</div>
+			<div class="flex-grow">
+				<Bar
+					class="bg-white dark:bg-gray-700 rounded-lg shadow-md px-3"
+					:data="unitsData"
+					:options="{
+						indexAxis: 'y',
+						responsive: true,
+						axis: 'y',
+						scales: {
+							x: {
+								ticks: {
+									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+								},
+							},
+							y: {
+								ticks: {
+									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+								},
+							},
+						},
+						plugins: {
+							legend: {
+								position: 'top',
+								labels: {
+									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+								},
+							},
+							title: {
+								display: true,
+								text: 'By units',
+								color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)',
+							},
+							xAxis: {
+								ticks: {
+									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+								},
+							},
+						},
+					}"
+				/>
+			</div>
+			<!-- <pre>{{ unitsData }}</pre> -->
+			<!-- <pre>{{ jobStats }}</pre> -->
+		</div>
 	</div>
 </template>

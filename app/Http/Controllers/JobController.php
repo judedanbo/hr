@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\GenderEnum;
 use App\Http\Requests\StoreJobRequest;
-use App\Http\Requests\UpdateStaffRequest;
+use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Unit;
 use Inertia\Inertia;
@@ -169,14 +169,14 @@ class JobController extends Controller
         //     $query->active();
         //     $query->where('job_staff.end_date', null);
         // }]); 
-        $stats = new \stdClass();
-        $stats->label = "Gender Statistics";
-        $stats->borderWidth = 0;
-        $stats->backgroundColor = ['#2563eb', '#fb7185'];
-        $stats->data = [
-            $job->male_staff_count,
-            $job->female_staff_count,
-        ];
+        // $stats = new \stdClass();
+        // $stats->label = "Gender Statistics";
+        // $stats->borderWidth = 0;
+        // $stats->backgroundColor = ['#2563eb', '#fb7185'];
+        // $stats->data = [
+        //     $job->male_staff_count,
+        //     $job->female_staff_count,
+        // ];
 
         return [
             'id' => $job->id,
@@ -184,12 +184,32 @@ class JobController extends Controller
             'total_staff_count' => $job->total_staff_count,
             'current_staff_count' => $job->current_staff_count,
             'due_for_promotion' => $job->due_for_promotion,
-            'gender_stats' => [$stats]
+            // 'gender_stats' => [$stats],
+            'male_count' => $job->male_staff_count,
+            'female_count' => $job->female_staff_count,
         ];
     }
 
     public function unitStats($job)
     {
+        return InstitutionPerson::query()
+            ->selectRaw('units.name, count(*) as total_staff')
+            ->join('staff_unit', 'staff_unit.staff_id', 'institution_person.id')
+            ->join('units', 'units.id', 'staff_unit.unit_id')
+            ->join('job_staff', 'job_staff.staff_id', 'institution_person.id')
+            ->join('jobs', 'jobs.id', 'job_staff.job_id')
+            ->where(function ($query) {
+                $query->whereNull('staff_unit.end_date');
+                $query->orWhere('staff_unit.end_date', '>=', now());
+            })
+            ->whereNull('units.deleted_at')
+            ->whereNull('jobs.deleted_at')
+            ->where('jobs.id', $job)
+            ->groupByRaw('units.name, units.id')
+            ->active()
+            ->get();
+        // ->get();
+
         return Unit::query()
             ->whereHas('staff', function ($query) use ($job) {
                 $query->active();
