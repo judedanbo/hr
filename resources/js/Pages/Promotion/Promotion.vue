@@ -24,14 +24,21 @@ const getMonth = (month) => {
 };
 </script>
 <template>
-	<div class="mx-auto px-4 sm:px-6 lg:px-8 dark:text-gray-50">
-		<h2 class="leading-6 font-bold tracking-wider text-xl">{{ rank }}</h2>
-		<h2
-			@click="getMonth()"
-			class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark: dark:text-gray-50 lg:mx-0 lg:max-w-none capitalize"
-		>
-			{{ filters.month }} {{ filters.year }} Promotions
-		</h2>
+	<div
+		class="mx-auto px-4 sm:px-6 lg:px-8 dark:text-gray-50 flex justify-between"
+	>
+		<div>
+			<h2 class="leading-6 font-bold tracking-wider text-xl">{{ rank }}</h2>
+			<h2
+				@click="getMonth()"
+				class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark: dark:text-gray-50 lg:mx-0 lg:max-w-none capitalize"
+			>
+				{{ filters.month }} {{ filters.year }} Promotions
+			</h2>
+		</div>
+		<button class="border-1 border-gray-50" onclick="window.print()">
+			Print this page
+		</button>
 	</div>
 	<div
 		class="mt-6 overflow-hidden border-t border-gray-100 dark:border-gray-600 bg-white dark:bg-gray-700"

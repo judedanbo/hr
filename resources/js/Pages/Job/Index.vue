@@ -13,8 +13,6 @@ import { useSearch } from "@/Composables/search";
 import JobsList from "./partials/JobsList.vue";
 import { Inertia } from "@inertiajs/inertia";
 
-const navigation = computed(() => useNavigation(props.jobs));
-
 let openAddDialog = ref(false);
 
 let toggle = useToggle(openAddDialog);
@@ -23,6 +21,7 @@ let props = defineProps({
 	jobs: { type: Object, required: true },
 	filters: { type: Object, default: () => {} },
 });
+const navigation = computed(() => useNavigation(props.jobs));
 
 let BreadCrumpLinks = [
 	{

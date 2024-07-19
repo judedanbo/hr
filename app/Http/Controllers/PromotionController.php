@@ -28,6 +28,7 @@ class PromotionController extends Controller
     public function index()
     {
         $promotions =  InstitutionPerson::query()
+            ->active()
             ->selectRaw(
                 'jobs.id as job_id,
                 jobs.name as job_name,
@@ -79,7 +80,8 @@ class PromotionController extends Controller
         }
 
         $promotions = InstitutionPerson::query()
-            // ->active()
+            ->active()
+            ->currentRank()
             ->join('job_staff', 'job_staff.staff_id', '=', 'institution_person.id')
             ->join('jobs', 'jobs.id', '=', 'job_staff.job_id')
             ->join('job_categories', 'job_categories.id', '=', 'jobs.job_category_id')
@@ -122,7 +124,7 @@ class PromotionController extends Controller
             // ->withQueryString()
             ->map(fn ($staff) => [
                 // 'staff' => $staff->ranks,
-                'id' => $staff->staff_id,
+                'id' => $staff->id,
                 'person_id' => $staff->person_id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,

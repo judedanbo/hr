@@ -1,13 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import PageHeading from "@/Components/PageHeading.vue";
-import PageActions from "@/Components/PageActions.vue";
 import PageStats from "@/Components/PageStats.vue";
-import { Inertia } from "@inertiajs/inertia";
 import { UserGroupIcon, UsersIcon } from "@heroicons/vue/24/outline";
-import BaseChart from "@/Components/Charts/BaseChart.vue";
-import { useDark, useToggle } from "@vueuse/core";
+import { useDark } from "@vueuse/core";
+import RankUnitList from "./RankUnitList.vue";
+import { useNavigation } from "@/Composables/navigation";
 
+const tableCols = ["units", "No. Staff"];
 import { Bar, Pie } from "vue-chartjs";
 import {
 	Chart as ChartJS,
@@ -20,6 +19,7 @@ import {
 	LinearScale,
 } from "chart.js";
 
+const navigation = computed(() => useNavigation(jobStats.value.staff));
 ChartJS.register(
 	Title,
 	Legend,
@@ -131,18 +131,12 @@ const genderData = computed(() => {
 		],
 	};
 });
-const unitsData = computed(() => {
-	return {
-		labels: jobStats.value.map((unit) => unit.name),
-		datasets: [
-			{
-				label: "Total Staff",
-				backgroundColor: "#059669",
-				data: jobStats.value.map((unit) => unit.total_staff),
-			},
-		],
-	};
-});
+// const unitsData = computed(() => {
+// 	return {
+// 		unit: jobStats.value.map((unit) => unit.name),
+// 		value: jobStats.value.map((unit) => unit.total_staff),
+// 	};
+// });
 </script>
 <template>
 	<div>
@@ -172,48 +166,14 @@ const unitsData = computed(() => {
 				/>
 			</div>
 			<div class="flex-grow">
-				<Bar
-					class="bg-white dark:bg-gray-700 rounded-lg shadow-md px-3"
-					:data="unitsData"
-					:options="{
-						indexAxis: 'y',
-						responsive: true,
-						axis: 'y',
-						scales: {
-							x: {
-								ticks: {
-									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
-								},
-							},
-							y: {
-								ticks: {
-									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
-								},
-							},
-						},
-						plugins: {
-							legend: {
-								position: 'top',
-								labels: {
-									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
-								},
-							},
-							title: {
-								display: true,
-								text: 'By units',
-								color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)',
-							},
-							xAxis: {
-								ticks: {
-									color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
-								},
-							},
-						},
-					}"
-				/>
+				<RankUnitList :units="jobStats">
+					<template #pagination>
+						{{ navigation }}
+						<Pagination :navigation="navigation" />
+					</template>
+				</RankUnitList>
 			</div>
 			<!-- <pre>{{ unitsData }}</pre> -->
-			<!-- <pre>{{ jobStats }}</pre> -->
 		</div>
 	</div>
 </template>
