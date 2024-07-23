@@ -20,7 +20,6 @@ class ChangePasswordController extends Controller
     }
     public function store(StoreChangePasswordRequest $request)
     {
-        // dd($request->all());
         auth()->user()->update([
             'password' => bcrypt($request->password),
             'password_change_at' => now(),

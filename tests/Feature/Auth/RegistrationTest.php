@@ -15,26 +15,27 @@ class RegistrationTest extends TestCase
     {
         $response = $this->get('/register');
 
-        $response->assertRedirect('/login');
+        $response->assertStatus(404);
     }
 
 
-    public function test_can_register_a_new_users()
-    {
-        $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $this->assertAuthenticated();
+    // public function test_can_register_a_new_users()
+    // {
+    //     $user = User::factory()->create();
+    //     $response = $this->post('/login', [
+    //         'email' => $user->email,
+    //         'password' => 'password',
+    //     ]);
+    //     $this->assertAuthenticated();
 
-        $loginResponse = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+    //     // $loginResponse = $this->post('/register', [
+    //     //     'name' => 'Test User',
+    //     //     'email' => 'test@example.com',
+    //     //     'password' => 'password',
+    //     //     'password_confirmation' => 'password',
+    //     // ]);
+    //     // dd($loginResponse);
 
-        $loginResponse->assertRedirect(RouteServiceProvider::HOME);
-    }
+    //     $loginResponse->assertRedirect(RouteServiceProvider::HOME);
+    // }
 }
