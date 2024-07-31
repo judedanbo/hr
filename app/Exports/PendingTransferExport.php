@@ -24,8 +24,8 @@ class PendingTransferExport implements FromQuery, WithMapping, WithHeadings, Sho
             'File Number',
             'Staff Number',
             'Full Name',
-            'New Unit',
             'Current Unit',
+            'New Unit',
         ];
     }
     public function map($staff): array
