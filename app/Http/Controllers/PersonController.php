@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ContactTypeEnum;
+use App\Enums\Identity;
+use App\Http\Requests\StoreIdentityRequest;
 use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Contact;
 use App\Models\Person;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules\Enum;
 
@@ -266,7 +269,29 @@ class PersonController extends Controller
         return redirect()->back();
     }
 
+    public function addIdentity(StoreIdentityRequest $request, Person $person)
+    {
 
+        $person->identities()->create($request->validated());
+
+        return redirect()->back();
+    }
+
+    public function updateIdentity(StoreIdentityRequest $request, Person $person, $identity)
+    {
+        $person->identities()->find($identity)->update($request->validated());
+
+        return redirect()->back();
+    }
+
+    public function deleteIdentity(Person $person, $identity)
+    {
+        // dd($person->identities());
+        // dd($identity);
+        $person->identities()->where('id', $identity)->delete();
+
+        return redirect()->back();
+    }
 
     public function deleteAddress(Person $person, $address)
     {

@@ -141,10 +141,15 @@ class InstitutionPersonController extends Controller
             ->with(
                 [
                     'person' => function ($query) {
-                        $query->with(['address' => function ($query) {
-                            $query->whereNull('valid_end');
-                        }]);
-                    }, 'person.contacts', 'person.qualifications',
+                        $query->with([
+                            'address' => function ($query) {
+                                $query->whereNull('valid_end');
+                            },
+                            'contacts',
+                            'identities',
+                            'qualifications',
+                        ]);
+                    },
                     // 'units.institution',
                     // 'units.parent',
                     'units' => function ($query) {
@@ -184,8 +189,10 @@ class InstitutionPersonController extends Controller
                 'marital_status' => $staff->person->marital_status?->label(),
                 'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
-                    'type' => str_replace('_', ' ', $id->id_type->name),
-                    'number' => $id->id_number,
+                    'id' => $id->id,
+                    'id_type' => $id->id_type,
+                    'id_type_display' => $id->id_type->label(),
+                    'id_number' => $id->id_number,
                 ]) : null,
             ],
             'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn ($qualification) => [

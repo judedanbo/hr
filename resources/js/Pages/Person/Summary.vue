@@ -130,19 +130,21 @@ defineProps({
 
 				<div
 					v-for="ids in person.identities"
-					:key="ids.number"
+					:key="ids.id_number"
 					class="mt-4 flex w-full flex-none gap-x-4 px-6"
 				>
-					<dt class="flex-none">
-						<span class="sr-only">{{ ids.type }}</span>
-						<IdentificationIcon
-							class="h-6 w-5 text-gray-400"
-							aria-hidden="true"
-						/>
-					</dt>
-					<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
-						{{ ids.number }}
-					</dd>
+					<template v-if="ids.id_type == 'G'">
+						<dt class="flex-none">
+							<span class="sr-only">{{ ids.id_type }}</span>
+							<IdentificationIcon
+								class="h-6 w-5 text-gray-400 dark:text-gray-50"
+								aria-hidden="true"
+							/>
+						</dt>
+						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
+							{{ ids.id_number }}
+						</dd>
+					</template>
 				</div>
 			</dl>
 			<div

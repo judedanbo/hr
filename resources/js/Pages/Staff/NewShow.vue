@@ -12,6 +12,7 @@ import Qualifications from "./PersonQualifications.vue";
 import Dependents from "@/Pages/StaffDependents/Index.vue";
 // import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
+import StaffIdentities from "./StaffIdentities.vue";
 import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
@@ -192,6 +193,11 @@ const editContactModal = () => {
 						<!-- Employment summary -->
 						<Summary :person="person" @open-edit-person="toggle()" />
 						<!-- Contact information -->
+						<StaffIdentities
+							:identities="person.identities"
+							:person="person.id"
+							@edit-contact="toggleEditContactModal()"
+						/>
 						<Address
 							:address="address"
 							:contacts="contacts"

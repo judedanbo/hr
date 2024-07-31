@@ -5,7 +5,6 @@ import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 const emit = defineEmits(["close", "deleteConfirmed"]);
 defineProps({
 	model: Object,
-	person: String,
 });
 </script>
 <template>
@@ -22,13 +21,11 @@ defineProps({
 			<DialogTitle
 				as="h3"
 				class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-50"
-				>Delete Qualification
+				>Delete Identification
 			</DialogTitle>
 			<div class="mt-2 text-gray-300">
-				<p class="text-sm">
-					You are about to delete the qualification of {{ person }}.
-				</p>
-				<p>Are you sure you want to delete this qualification?</p>
+				<p class="text-sm">You are about to delete the Identification.</p>
+				<p>Are you sure you want to delete this identity?</p>
 			</div>
 		</div>
 	</div>

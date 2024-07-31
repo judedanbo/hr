@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum Identity: string
 {
-    case NOT_AVAILABLE = "";
     case NationalID = 'N';
     case GhanaCard = 'G';
     case Social_Security_Number = 'S';

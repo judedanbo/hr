@@ -13,6 +13,7 @@ use App\Http\Controllers\CategoryRanks;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\GenderController;
+use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
 use App\Http\Controllers\InstitutionRankController;
@@ -123,6 +124,9 @@ Route::controller(PersonController::class)->middleware(['auth', 'password_change
     Route::patch('/person/{person}', 'update')->name('person.update');
     Route::post('/person', 'store')->name('person.store');
     Route::post('/person/{person}/contact', 'addContact')->name('person.contact.create');
+    Route::post('/person/{person}/identity', 'addIdentity')->name('person.identity.create');
+    Route::post('/person/{person}/identity/{identity}', 'updateIdentity')->name('person.identity.update');
+    Route::delete('/person/{person}/identity/{identity}', 'deleteIdentity')->name('person.identity.delete');
     Route::post('/person/{person}/contact/{contact}', 'updateContact')->name('person.contact.update');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
@@ -406,6 +410,7 @@ Route::controller(QualificationController::class)->middleware(['auth', 'password
 });
 
 Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth', 'password_changed'])->name('contact-type.index');
+Route::get('/identities', [IdentityController::class, 'index'])->middleware(['auth', 'password_changed'])->name('identity.index');
 
 Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middleware(['auth', 'password_changed'])->name('marital-status.index');
 Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth', 'password_changed'])->name('gender.index');
