@@ -17,7 +17,13 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment as StyleAlignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class StaffDetailsExport implements FromQuery, WithMapping, WithHeadings, ShouldQueue, ShouldAutoSize, WithStyles
+class StaffDetailsExport implements
+    FromQuery,
+    WithMapping,
+    WithHeadings,
+    ShouldQueue,
+    ShouldAutoSize,
+    WithStyles
 {
     use Exportable;
 
@@ -30,7 +36,6 @@ class StaffDetailsExport implements FromQuery, WithMapping, WithHeadings, Should
             'Date of Birth',
             'Age',
             'Ghana Card Number',
-            'Social Security Number',
             'Appointment Date',
             'Years served',
             'Current Rank',
@@ -69,9 +74,6 @@ class StaffDetailsExport implements FromQuery, WithMapping, WithHeadings, Should
 
             // Styling a specific cell by coordinate.
             'F' => ['alignment' => ['horizontal' => StyleAlignment::HORIZONTAL_LEFT]],
-
-            // Styling an entire column.
-            // 'G'  => ['font' => ['size' => 16]],
         ];
     }
 

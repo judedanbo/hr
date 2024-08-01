@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Enums\Identity;
 use App\Models\InstitutionPerson;
 use App\Models\JobCategory;
 use App\Models\Person;
@@ -26,6 +27,7 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'Full Name',
             'Date of Birth',
             'Age',
+            'Ghana Card Number',
             'Appointment Date',
             'Years Served',
             'Current Rank',
@@ -44,7 +46,7 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
             $staff->person->date_of_birth?->diffInYears() . " years",
-            $staff->hire_date?->format('d F, Y'),
+            $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,            $staff->hire_date?->format('d F, Y'),
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
@@ -58,7 +60,7 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
     {
         return InstitutionPerson::query()
             ->active()
-            ->with(['person'])
+            ->with(['person.identities'])
             ->active()
             ->currentRank()
             ->currentUnit()
