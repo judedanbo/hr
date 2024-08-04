@@ -13,7 +13,7 @@ defineProps({
 	separated: { type: Array, required: true },
 });
 const emit = defineEmits(["openSeparation"]);
-const tableCols = ["Name", "Separation"];
+const tableCols = ["Name", "Ghana Card", "Contact", "Separation"];
 </script>
 
 <template>
@@ -37,9 +37,14 @@ const tableCols = ["Name", "Separation"];
 								<TableData>
 									<StaffNameCard :staff="staff" />
 								</TableData>
-								<!-- <TableData align="right">
-									<StaffRetirementCard :staff="staff" />
-								</TableData> -->
+								<TableData>
+									{{ staff.ghana_card }}
+									<!-- <StaffRetirementCard :staff="staff" /> -->
+								</TableData>
+								<TableData>
+									{{ staff.contact }}
+									<!-- <StaffRetirementCard :staff="staff" /> -->
+								</TableData>
 								<TableData align="right">
 									<!-- {{ staff.statuses }} -->
 									<div v-for="status in staff.statuses">

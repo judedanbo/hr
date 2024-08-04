@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Enums\ContactTypeEnum;
 use App\Enums\Identity;
 use App\Models\InstitutionPerson;
 use Carbon\Carbon;
@@ -36,6 +37,7 @@ class StaffDetailsExport implements
             'Date of Birth',
             'Age',
             'Ghana Card Number',
+            'Contact',
             'Appointment Date',
             'Years served',
             'Current Rank',
@@ -55,6 +57,9 @@ class StaffDetailsExport implements
             $staff->person->date_of_birth?->diffInYears() . " years",
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             // $staff->person->identities->where('id_type', Identity::Social_Security_Number)->first()?->id_number,
+            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+                return $item->contact;
+            })->implode(', ') : '',
             $staff->hire_date?->format('d F, Y'),
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
@@ -80,7 +85,9 @@ class StaffDetailsExport implements
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person.identities'])
+            ->with(['person' => function ($query) {
+                $query->with(['identities', 'contacts']);
+            }])
             ->currentRank()
             ->currentUnit()
             ->active();

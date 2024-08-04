@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Identity;
 use App\Http\Requests\StoreInstitutionPersonRequest;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\StoreStaffPositionRequest;
@@ -96,7 +97,10 @@ class InstitutionPersonController extends Controller
         $staff = null;
         $transaction  = DB::transaction(function () use ($request, $staff) {
             $person = Person::create($request->staffData['bio']);
-
+            $person->identities()->create([
+                'id_type' => Identity::GhanaCard,
+                'id_number' => $request->staffData['bio']['ghana_card']
+            ]);
             $institution = Institution::find(1);
 
             $person->institution()->attach($institution->id, $request->staffData['employment']);

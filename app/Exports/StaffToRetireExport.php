@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Enums\ContactTypeEnum;
 use App\Enums\Identity;
 use App\Models\InstitutionPerson;
 use App\Models\JobCategory;
@@ -47,6 +48,9 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->person->date_of_birth?->format('d F, Y'),
             $staff->person->date_of_birth?->diffInYears() . " years",
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,            $staff->hire_date?->format('d F, Y'),
+            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+                return $item->contact;
+            })->implode(', ') : '',
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
@@ -60,7 +64,9 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
     {
         return InstitutionPerson::query()
             ->active()
-            ->with(['person.identities'])
+            ->with(['person' => function ($query) {
+                $query->with('identities', 'contacts');
+            }])
             ->active()
             ->currentRank()
             ->currentUnit()

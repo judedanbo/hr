@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Enums\ContactTypeEnum;
 use App\Enums\EmployeeStatusEnum;
+use App\Enums\Identity;
 use App\Models\Contact;
 use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,6 +27,7 @@ class AllSeparatedExport implements FromQuery, WithMapping, WithHeadings, Should
             'Rank',
             'Separation Date',
             'Years served',
+            'Ghana Card Number',
             'Contact',
             'Type'
 
@@ -40,9 +42,10 @@ class AllSeparatedExport implements FromQuery, WithMapping, WithHeadings, Should
             $staff->currentRank?->job?->name,
             $staff->statuses->first()->start_date?->format('d F, Y'),
             $staff->hire_date->diff($staff->statuses->first()->start_date)->format('%y years'),
-            $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::PHONE;
-            })->first()?->contact ?? '',
+            $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
+            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+                return $item->contact;
+            })->implode(', ') : '',
             $staff->statuses->first()->status->label(),
             $staff->person->contacts->filter(function ($contact) {
                 return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
@@ -52,7 +55,9 @@ class AllSeparatedExport implements FromQuery, WithMapping, WithHeadings, Should
     function query()
     {
         return InstitutionPerson::query()
-            ->with(['person.contacts', 'statuses' => function ($query) {
+            ->with(['person' => function ($query) {
+                $query->with(['contacts', 'identities']);
+            }, 'statuses' => function ($query) {
                 $query->latest('start_date');
             }])
             ->currentRank()

@@ -81,24 +81,6 @@ onMounted(async () => {
 			validation-visibility="submit"
 			outer-class="md:flex-grow"
 		/>
-
-		<FormKit
-			id="place_of_birth"
-			name="place_of_birth"
-			type="text"
-			label="Place of Birth"
-			placeholder="Place of Birth"
-			outer-class="md:flex-grow"
-		/>
-		<FormKit
-			id="country_of_birth"
-			name="country_of_birth"
-			type="select"
-			label="Country of Birth"
-			placeholder="Select Country of Birth"
-			:options="country"
-			outer-class="md:flex-grow"
-		/>
 		<FormKit
 			id="gender"
 			name="gender"
@@ -109,14 +91,25 @@ onMounted(async () => {
 			:options="gender"
 			outer-class="md:flex-grow"
 		/>
-		<FormKit
-			id="maiden_name"
-			name="maiden_name"
-			type="text"
-			label="Maiden name"
-			placeholder="Maiden name"
-			outer-class="md:flex-grow"
-		/>
+		<div class="flex gap-3">
+			<FormKit
+				id="place_of_birth"
+				name="place_of_birth"
+				type="text"
+				label="Place of Birth"
+				placeholder="Place of Birth"
+				outer-class="md:flex-grow"
+			/>
+			<FormKit
+				id="country_of_birth"
+				name="country_of_birth"
+				type="select"
+				label="Country of Birth"
+				placeholder="Select Country of Birth"
+				:options="country"
+				outer-class="md:flex-grow"
+			/>
+		</div>
 		<FormKit
 			id="nationality"
 			name="nationality"
@@ -127,6 +120,14 @@ onMounted(async () => {
 			outer-class="md:flex-grow"
 		/>
 		<FormKit
+			id="ghana_card"
+			name="ghana_card"
+			type="text"
+			label="Ghana Card Number"
+			placeholder="GHA-##########-#"
+			outer-class=" md:flex-grow"
+		/>
+		<FormKit
 			id="marital_status"
 			type="select"
 			label="Marital Status"
@@ -134,7 +135,7 @@ onMounted(async () => {
 			placeholder="Select one"
 			validation=""
 			:options="maritalStatus"
-			outer-class="md:flex-grow"
+			outer-class="flex-start md:flex-grow"
 		/>
 		<FormKit
 			id="religion"

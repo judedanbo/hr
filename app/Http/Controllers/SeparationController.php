@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Identity;
 use App\Models\InstitutionPerson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +15,9 @@ class SeparationController extends Controller
         $separated = InstitutionPerson::query()
             ->retired()
             // ->where('status')
-            ->with(['person', 'statuses', 'notes'])
+            ->with(['person' => function ($query) {
+                $query->with(['contacts', 'identities']);
+            }, 'statuses', 'notes'])
             ->currentUnit()
             ->currentRank()
             ->search(request()->search)
@@ -50,6 +53,10 @@ class SeparationController extends Controller
                 'dob_distance' =>  $staff->person->date_of_birth?->diffInYears() . " years old",
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+                'ghana_card' => $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
+                'contact' => $staff->person->contacts->count() > 0 ?  $staff->person->contacts->map(function ($item) {
+                    return $item->contact;
+                })->implode(', ') : '',
                 'current_rank' => $staff->currentRank ? [
                     'id' => $staff->currentRank?->id,
                     'name' => $staff->currentRank?->job?->name,
