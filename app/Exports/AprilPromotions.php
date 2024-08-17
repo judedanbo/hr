@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
 class AprilPromotions implements
@@ -21,13 +22,21 @@ class AprilPromotions implements
     FromQuery,
     WithMapping,
     ShouldQueue,
-    WithTitle
+    WithTitle,
+    WithStyles
 {
     use Exportable;
 
     public function title(): string
     {
         return 'April Promotions';
+    }
+
+    public function styles($sheet): array
+    {
+        return [
+            1    => ['font' => ['bold' => true]],
+        ];
     }
 
     function headings(): array

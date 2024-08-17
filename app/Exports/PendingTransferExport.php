@@ -58,7 +58,7 @@ class PendingTransferExport implements
             $staff->units->first()->name,
         ];
     }
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): array
     {
         return [
             // Style the first row as bold text.

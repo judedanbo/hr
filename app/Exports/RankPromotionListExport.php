@@ -11,7 +11,9 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class RankPromotionListExport implements
     FromQuery,
@@ -19,7 +21,8 @@ class RankPromotionListExport implements
     WithHeadings,
     ShouldQueue,
     ShouldAutoSize,
-    WithTitle
+    WithTitle,
+    WithStyles
 {
     use Exportable;
     public $rank;
@@ -30,6 +33,12 @@ class RankPromotionListExport implements
         $this->batch = $batch; // ?? now() <= Carbon::parse('April 1') || now() >= Carbon::parse('October 1') ? 'april' : 'october';
         // dd($batch);
         // dd($this->batch);
+    }
+    public function styles(Worksheet $sheet): array
+    {
+        return [
+            1 => ['font' => ['bold' => true]]
+        ];
     }
     public function headings(): array
     {

@@ -14,9 +14,11 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PromotionListExport implements
     ShouldAutoSize,
@@ -24,7 +26,8 @@ class PromotionListExport implements
     FromQuery,
     WithMapping,
     ShouldQueue,
-    WithTitle
+    WithTitle,
+    WithStyles
 {
     public $rank;
     public function __construct($rank = null)
@@ -39,6 +42,13 @@ class PromotionListExport implements
     public function title(): string
     {
         return $this->rank ? $this->rank->name . ' Promotion List' : "Promotion List";
+    }
+
+    public function styles(Worksheet $sheet): array
+    {
+        return [
+            1 => ['font' => ['bold' => true]],
+        ];
     }
 
     public function headings(): array

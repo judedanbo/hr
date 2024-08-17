@@ -11,7 +11,9 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class SeparatedVacatedPostExport implements
     FromQuery,
@@ -19,7 +21,8 @@ class SeparatedVacatedPostExport implements
     WithHeadings,
     ShouldQueue,
     ShouldAutoSize,
-    WithTitle
+    WithTitle,
+    WithStyles
 {
     use Exportable;
 
@@ -27,7 +30,12 @@ class SeparatedVacatedPostExport implements
     {
         return 'Separated (Vacated Post)';
     }
-
+    public function styles(Worksheet $sheet): array
+    {
+        return [
+            1 => ['font' => ['bold' => 1]]
+        ];
+    }
     public function headings(): array
     {
         return [
