@@ -63,7 +63,7 @@ class PendingTransferExport implements
         return [
             // Style the first row as bold text.
             1    => ['font' => ['bold' => true]],
-
+            'B' => ['alignment' => ['horizontal' => StyleAlignment::HORIZONTAL_LEFT]],
             // Styling a specific cell by coordinate.
             'D' => ['alignment' => ['horizontal' => StyleAlignment::HORIZONTAL_LEFT]],
         ];

@@ -62,7 +62,7 @@ class StaffToRetireExport implements
         return [
             // Style the first row as bold text.
             1    => ['font' => ['bold' => true]],
-
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
             // Styling a specific cell by coordinate.
             'H' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];

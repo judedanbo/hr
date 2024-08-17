@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class SeparatedLeaveWithoutPayExport implements
@@ -33,7 +34,8 @@ class SeparatedLeaveWithoutPayExport implements
     public function styles(Worksheet $sheet)
     {
         return [
-            1 => ['font' => ['bold' => true]]
+            1 => ['font' => ['bold' => true]],
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
         ];
     }
     public function headings(): array

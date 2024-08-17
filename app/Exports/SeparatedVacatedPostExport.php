@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class SeparatedVacatedPostExport implements
@@ -33,7 +34,9 @@ class SeparatedVacatedPostExport implements
     public function styles(Worksheet $sheet): array
     {
         return [
-            1 => ['font' => ['bold' => 1]]
+            1 => ['font' => ['bold' => 1]],
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
+            'F' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
         ];
     }
     public function headings(): array
