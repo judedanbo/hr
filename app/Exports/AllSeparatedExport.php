@@ -13,11 +13,22 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class AllSeparatedExport implements FromQuery, WithMapping, WithHeadings, ShouldQueue, ShouldAutoSize
+class AllSeparatedExport implements
+    FromQuery,
+    WithMapping,
+    WithHeadings,
+    ShouldQueue,
+    ShouldAutoSize,
+    WithTitle
 {
     use Exportable;
 
+    public function title(): string
+    {
+        return 'All Separated Staff';
+    }
     public function headings(): array
     {
         return [

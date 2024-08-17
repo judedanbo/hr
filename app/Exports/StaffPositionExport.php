@@ -12,10 +12,22 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class StaffPositionExport implements FromQuery, WithMapping, WithHeadings, ShouldQueue, ShouldAutoSize
+class StaffPositionExport implements
+    FromQuery,
+    WithMapping,
+    WithHeadings,
+    ShouldQueue,
+    ShouldAutoSize,
+    WithTitle
 {
     use Exportable;
+
+    public function title(): string
+    {
+        return 'Staff Position';
+    }
 
     public function headings(): array
     {

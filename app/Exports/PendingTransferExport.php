@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment as StyleAlignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -24,10 +25,15 @@ class PendingTransferExport implements
     WithHeadings,
     ShouldQueue,
     ShouldAutoSize,
-    WithStyles
+    WithStyles,
+    WithTitle
 {
     use Exportable;
 
+    public function title(): string
+    {
+        return 'Pending Transfers';
+    }
     public function headings(): array
     {
         return [

@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class RecruitmentSummary implements
     // FromCollection,
@@ -19,10 +20,14 @@ class RecruitmentSummary implements
     WithHeadings,
     FromQuery,
     WithMapping,
-    ShouldQueue
+    ShouldQueue,
+    WithTitle
 {
     use Exportable;
-
+    public function title(): string
+    {
+        return "Recruitment Summary";
+    }
     public function headings(): array
     {
         return [

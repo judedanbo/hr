@@ -64,6 +64,14 @@ onMounted(async () => {
 			/>
 		</div>
 	</div>
+	<FormKit
+		id="maiden_name"
+		name="maiden_name"
+		type="text"
+		label="Maiden name"
+		placeholder="Maiden name"
+		outer-class="md:flex-grow"
+	/>
 	<div class="md:flex md:gap-2 justify-between flex-wrap">
 		<FormKit
 			id="date_of_birth"

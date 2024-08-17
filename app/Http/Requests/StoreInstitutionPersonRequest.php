@@ -30,8 +30,9 @@ class StoreInstitutionPersonRequest extends FormRequest
         return [
             'staffData.bio.title' => 'string|min:1|max:10|nullable',
             'staffData.bio.surname' => 'required|string|max:100',
-            'staffData.bio.first_name' => 'required|string|max:100',
-            'staffData.bio.other_names' => 'string|max:100|nullable',
+            'staffData.bio.first_name' => 'required|string|max:60',
+            'staffData.bio.other_names' => 'string|max:60|nullable',
+            'staffData.bio.maiden_name' => 'string|max:200|nullable',
             'staffData.bio.date_of_birth' => [
                 'required',
                 'date',
@@ -59,7 +60,7 @@ class StoreInstitutionPersonRequest extends FormRequest
             ],
             'staffData.qualifications.institution' => "required|string|max:50",
             'staffData.qualifications.course' => "required|string|max:100",
-            'staffData.qualifications.level' => "string|max:100|nullable",
+            'staffData.qualifications.level' => "string|max:10|nullable",
             'staffData.qualifications.qualification' => "string|max:100|nullable",
             'staffData.qualifications.qualification_number' => "string|max:20|nullable",
             'staffData.qualifications.year' => "required|string|max:4",

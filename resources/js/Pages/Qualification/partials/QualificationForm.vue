@@ -22,7 +22,7 @@
 				name="level"
 				id="level"
 				label="Level"
-				validation="string|length:2,100"
+				validation="string|length:1,10"
 				validation-visibility="submit"
 			/>
 		</div>

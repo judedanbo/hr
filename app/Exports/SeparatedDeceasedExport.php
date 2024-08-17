@@ -10,11 +10,21 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class SeparatedDeceasedExport implements FromQuery, WithMapping, WithHeadings, ShouldQueue, ShouldAutoSize
+class SeparatedDeceasedExport implements
+    FromQuery,
+    WithMapping,
+    WithHeadings,
+    ShouldQueue,
+    ShouldAutoSize,
+    WithTitle
 {
     use Exportable;
-
+    public function title(): string
+    {
+        return 'Separated Staff (Deceased)';
+    }
     public function headings(): array
     {
         return [

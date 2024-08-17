@@ -11,11 +11,21 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class SeparatedLeaveWithoutPayExport implements FromQuery, WithMapping, WithHeadings, ShouldQueue, ShouldAutoSize
+class SeparatedLeaveWithoutPayExport implements
+    FromQuery,
+    WithMapping,
+    WithHeadings,
+    ShouldQueue,
+    ShouldAutoSize,
+    WithTitle
 {
     use Exportable;
-
+    public function title(): string
+    {
+        return 'Separated (Leave without pay)';
+    }
     public function headings(): array
     {
         return [

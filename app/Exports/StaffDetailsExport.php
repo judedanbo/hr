@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment as StyleAlignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -24,9 +25,15 @@ class StaffDetailsExport implements
     WithHeadings,
     ShouldQueue,
     ShouldAutoSize,
-    WithStyles
+    WithStyles,
+    WithTitle
 {
     use Exportable;
+
+    public function title(): string
+    {
+        return 'Staff Details';
+    }
 
     public function headings(): array
     {

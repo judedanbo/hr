@@ -15,11 +15,27 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, ShouldQueue, ShouldAutoSize
+
+class StaffToRetireExport implements
+    FromQuery,
+    WithMapping,
+    WithHeadings,
+    ShouldQueue,
+    ShouldAutoSize,
+    WithTitle,
+    WithStyles
 {
     use Exportable;
 
+    public function title(): string
+    {
+        return 'Staff To Retire';
+    }
     public function headings(): array
     {
         return [
@@ -30,6 +46,7 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'Age',
             'Ghana Card Number',
             'Appointment Date',
+            'Contact',
             'Years Served',
             'Current Rank',
             'Current Unit',
@@ -37,6 +54,17 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             'current rank Start Date',
             'current Unit Start Date',
             'level'
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            // Style the first row as bold text.
+            1    => ['font' => ['bold' => true]],
+
+            // Styling a specific cell by coordinate.
+            'H' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
     public function map($staff): array
@@ -47,7 +75,8 @@ class StaffToRetireExport implements FromQuery, WithMapping, WithHeadings, Shoul
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
             $staff->person->date_of_birth?->diffInYears() . " years",
-            $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,            $staff->hire_date?->format('d F, Y'),
+            $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
+            $staff->hire_date?->format('d F, Y'),
             $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
             })->implode(', ') : '',

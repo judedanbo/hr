@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class AprilPromotions implements
     // FromCollection,
@@ -19,44 +20,50 @@ class AprilPromotions implements
     WithHeadings,
     FromQuery,
     WithMapping,
-    ShouldQueue
+    ShouldQueue,
+    WithTitle
 {
     use Exportable;
 
-    // function headings(): array
-    // {
-    //     return [
-    //         'Full Name',
-    //         'Gender',
-    //         'Date of Birth',
-    //         'Date Hired',
-    //         'Years Employed',
-    //         'Staff Number',
-    //         'Old Staff Number',
-    //         'Employment Status',
-    //         'Current Rank',
-    //         'Current Rank Start',
-    //         'Current Unit',
-    //         'Current Unit Start',
-    //     ];
-    // }
-    // public function map($staff): array
-    // {
-    //     return [
-    //         $staff->person->full_name,
-    //         $staff->person->gender->name,
-    //         $staff->person->date_of_birth->format('d F, Y'),
-    //         $staff->hire_date?->format('d F, Y'),
-    //         $staff->years_employed,
-    //         $staff->staff_number,
-    //         $staff->old_staff_number,
-    //         $staff->status,
-    //         $staff->ranks->count() > 0 ? $staff->ranks->first()->name : null,
-    //         $staff->ranks->count() > 0 ? $staff->ranks->first()->pivot->start_date->format('d F, Y') : null,
-    //         $staff->units->count() > 0 ? $staff->units->first()->name : null,
-    //         $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date->format('d F, Y') : null,
-    //     ];
-    // }
+    public function title(): string
+    {
+        return 'April Promotions';
+    }
+
+    function headings(): array
+    {
+        return [
+            'Full Name',
+            'Gender',
+            'Date of Birth',
+            'Date Hired',
+            'Years Employed',
+            'Staff Number',
+            'Old Staff Number',
+            'Employment Status',
+            'Current Rank',
+            'Current Rank Start',
+            'Current Unit',
+            'Current Unit Start',
+        ];
+    }
+    public function map($staff): array
+    {
+        return [
+            $staff->person->full_name,
+            $staff->person->gender->name,
+            $staff->person->date_of_birth->format('d F, Y'),
+            $staff->hire_date?->format('d F, Y'),
+            $staff->years_employed,
+            $staff->staff_number,
+            $staff->old_staff_number,
+            $staff->status,
+            $staff->ranks->count() > 0 ? $staff->ranks->first()->name : null,
+            $staff->ranks->count() > 0 ? $staff->ranks->first()->pivot->start_date->format('d F, Y') : null,
+            $staff->units->count() > 0 ? $staff->units->first()->name : null,
+            $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date->format('d F, Y') : null,
+        ];
+    }
     public function query()
     {
         return InstitutionPerson::query()

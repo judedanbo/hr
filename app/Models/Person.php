@@ -26,6 +26,7 @@ class Person extends Model
         'first_name',
         'other_names',
         'date_of_birth',
+        'maiden_name',
         'gender',
         'marital_status',
         'place_of_birth',
