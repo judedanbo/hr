@@ -33,8 +33,6 @@ class RegistrationTest extends TestCase
     //     //     'password' => 'password',
     //     //     'password_confirmation' => 'password',
     //     // ]);
-    //     // dd($loginResponse);
-
     //     $loginResponse->assertRedirect(RouteServiceProvider::HOME);
     // }
 }

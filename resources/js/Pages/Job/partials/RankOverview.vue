@@ -73,7 +73,6 @@ onMounted(async () => {
 	jobStats.value = (
 		await axios.get(route("job.unit-stats", { job: props.rank }))
 	).data;
-	// await console.log(unitsStats.value);
 });
 const totalStaffCount = computed(() => {
 	return unitsStats.value.total_staff_count;

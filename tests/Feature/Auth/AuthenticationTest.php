@@ -47,7 +47,6 @@ class AuthenticationTest extends TestCase
     // public function test_users_can_visit_change_password_page()
     // {
     //     $response = $this->get('/change-password');
-    //     dd($response);
     //     $response->assertOk();
     // }
 
@@ -68,7 +67,6 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
-        // dd($password);
         $password->assertRedirect(RouteServiceProvider::HOME);
     }
 

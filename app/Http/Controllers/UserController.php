@@ -65,7 +65,6 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        // dd($request->all());
         $password = Str::random(8);
         $bio = $request->all()['userData']['bio'];
         $bio['password'] = Hash::make($password); //bcrypt('password');
@@ -164,7 +163,6 @@ class UserController extends Controller
 
     public function resetPassword(User $user)
     {
-        // dd($user);
         $password = Str::random(8);
         // $user = User::where(request()->user->id)->first();
         $user->update([

@@ -49,7 +49,6 @@ const openPromotion = (
 	batch = null,
 	year = new Date().getFullYear(),
 ) => {
-	// console.log(batch);
 	Inertia.get(route("promotion.batch.show", { year: year }), {
 		rank: jobId,
 		batch: batch,

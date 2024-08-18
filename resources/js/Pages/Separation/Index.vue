@@ -45,7 +45,6 @@ let props = defineProps({
 let search = ref(props.filters.search);
 
 const searchUnits = (value) => {
-	console.log("seearch");
 	useSearch(value, route("separation.index"));
 };
 

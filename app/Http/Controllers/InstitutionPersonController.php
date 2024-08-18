@@ -115,7 +115,6 @@ class InstitutionPersonController extends Controller
                 'institution_id' => $institution->id,
                 'start_date' => Carbon::now(),
             ]);
-            // dd($request->staffData);
             $rank = $request->staffData['rank'];
             $rank['job_id'] = $request->staffData['rank']['rank_id'];
             unset($rank['rank_id']);

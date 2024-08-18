@@ -20,7 +20,10 @@ class InstitutionController extends Controller
                     $query->orWhere('abbreviation', 'like', "%{$search}%");
                 })
                 ->withCount([
-                    'departments', 'divisions', 'units', 'staff',
+                    'departments',
+                    'divisions',
+                    'units',
+                    'staff',
                 ])
                 ->whereNull('end_date')
                 ->paginate(10)
@@ -225,8 +228,6 @@ class InstitutionController extends Controller
             // ->withCount('staff')
             ->first();
 
-        // dd($institution);
-
         return Inertia::render('Institution/Staffs', [
             'staff' => $institution->staff ? $institution->staff->map(fn ($stf) => [
                 'staff_id' => $stf->id,
@@ -274,7 +275,6 @@ class InstitutionController extends Controller
             }])
             ->first();
 
-        //  dd($institution->staff);
         $staff = $institution ? $institution->staff->first() : null;
 
         return Inertia::render('Institution/Sta', [

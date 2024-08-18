@@ -93,7 +93,6 @@ class QualificationController extends Controller
      */
     public function update(UpdateQualificationRequest $request, Qualification $qualification)
     {
-        // dd($request->validated());
         if ($request->validated()) {
             $qualification->update($request->validated());
 

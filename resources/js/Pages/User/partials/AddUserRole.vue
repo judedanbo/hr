@@ -22,7 +22,6 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	console.log(data);
 	Inertia.post(route("user.add.roles", { user: props.user }), data, {
 		preserveScroll: true,
 		onSuccess: () => {

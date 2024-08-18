@@ -16,7 +16,6 @@ defineProps({
 const emit = defineEmits(["editContact", "deleteDependent"]);
 const contactModel = ref(null);
 const subMenuClicked = (action, model) => {
-	console.log(action, model);
 	if (action == "Edit") {
 		contactModel.value = model;
 		toggleEditContactModal();

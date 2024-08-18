@@ -25,7 +25,6 @@ let props = defineProps({
 });
 
 const resetPassword = (user) => {
-	// console.log(user);
 	Inertia.post(route("user.reset-password", { user: user }));
 };
 
@@ -64,7 +63,6 @@ const searchUser = (value) => {
 };
 
 let openUser = (user) => {
-	// console.log(user);
 	Inertia.visit(route("user.show", { user: user }));
 };
 

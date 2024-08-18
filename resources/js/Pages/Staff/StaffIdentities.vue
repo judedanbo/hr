@@ -50,7 +50,6 @@ const deleteModalIdentity = () => {
 			},
 		},
 	);
-	// console.log("Delete Identity");
 };
 </script>
 <template>

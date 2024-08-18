@@ -68,7 +68,6 @@ class SeparationController extends Controller
 
             ]);
 
-        // dd($separated);
         return Inertia::render('Separation/Index', [
             'separated' => $separated,
             'filters' => ['search' => request()->search],

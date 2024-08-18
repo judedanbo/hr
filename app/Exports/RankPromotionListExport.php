@@ -28,8 +28,6 @@ class RankPromotionListExport implements FromQuery, ShouldAutoSize, ShouldQueue,
     {
         $this->rank = $rank;
         $this->batch = $batch; // ?? now() <= Carbon::parse('April 1') || now() >= Carbon::parse('October 1') ? 'april' : 'october';
-        // dd($batch);
-        // dd($this->batch);
     }
 
     public function styles(Worksheet $sheet): array
@@ -73,7 +71,6 @@ class RankPromotionListExport implements FromQuery, ShouldAutoSize, ShouldQueue,
 
     public function query()
     {
-        // dd(Carbon::now()->subYears(3));
         return Job::find($this->rank->id)
             ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks

@@ -295,8 +295,6 @@ class JobController extends Controller
             }])
             ->find($job);
 
-        dd($job->staff);
-
         return $job->loadCount([
             'staff as total_staff_count',
             'staff as total_staff' => function ($query) {

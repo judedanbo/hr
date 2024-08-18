@@ -100,7 +100,6 @@ class JobCategoryController extends Controller
             }])
             ->get();
 
-        // dd($jobCategory->jobs);
         // if ($jobCategory->jobs->count() === 1) {
         //     return redirect()->route('job.show', ['job' => $jobCategory->jobs->first()->id]);
         // }

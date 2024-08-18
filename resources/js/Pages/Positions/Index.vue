@@ -30,7 +30,6 @@ const selectedPosition = ref(null);
 
 const editDialog = (model) => {
 	selectedPosition.value = model;
-	// console.log(model);
 	toggleEditDialog();
 };
 
@@ -52,7 +51,6 @@ const searchPosition = (value) => {
 };
 
 let openPosition = (position) => {
-	console.log(position);
 	Inertia.visit(route("position.show", { position: position }));
 };
 

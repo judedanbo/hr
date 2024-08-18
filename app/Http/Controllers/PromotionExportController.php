@@ -11,7 +11,6 @@ class PromotionExportController extends Controller
 {
     public function show(Request $request, Excel $excel)
     {
-        // dd($request->rank);
         return $excel->download(new PromotionListExport($request->rank), 'Promotion List.xlsx', Excel::XLSX);
     }
 

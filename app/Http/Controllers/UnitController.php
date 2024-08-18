@@ -199,7 +199,8 @@ class UnitController extends Controller
     {
         $unit = Unit::query()
             ->with([
-                'institution', 'parent',
+                'institution',
+                'parent',
                 'staff' => function ($query) {
                     $query->with(['person', 'ranks', 'units']);
                     $query->active();
@@ -375,7 +376,6 @@ class UnitController extends Controller
 
     public function store(StoreUnitRequest $request)
     {
-        // dd($request->validated());
         $unit = Unit::create($request->validated());
 
         return redirect()->route('unit.show', $unit->id)->with('success', 'Unit created successfully');

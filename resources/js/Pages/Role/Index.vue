@@ -31,7 +31,6 @@ const searchRole = (value) => {
 };
 
 let openRole = (role) => {
-	// console.log(role);
 	Inertia.visit(route("role.show", { role: role }));
 };
 

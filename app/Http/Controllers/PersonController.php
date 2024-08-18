@@ -94,7 +94,6 @@ class PersonController extends Controller
         ])
             ->whereId($person)->first();
 
-        // dd(Person::find($person));
         return Inertia::render('Person/NewShow', [
             'person' => [
                 'id' => $selectedPerson->id,
@@ -291,8 +290,6 @@ class PersonController extends Controller
 
     public function deleteIdentity(Person $person, $identity)
     {
-        // dd($person->identities());
-        // dd($identity);
         $person->identities()->where('id', $identity)->delete();
 
         return redirect()->back();

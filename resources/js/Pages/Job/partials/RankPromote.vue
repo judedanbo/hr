@@ -262,7 +262,6 @@ const octoberData = async () => {
 };
 
 const getRankStaff = async (page = null) => {
-	// console.log(batch);
 	if (page) {
 		const staff = (await axios.get(page)).data;
 		rankStaff.value = staff;

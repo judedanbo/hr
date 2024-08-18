@@ -55,7 +55,6 @@ class RankStaffController extends Controller
 
     public function promote($rank)
     {
-        // dd(request()->all());
         $staff = Job::find($rank)
             ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
@@ -207,7 +206,6 @@ class RankStaffController extends Controller
 
     public function exportPromotion(Job $rank)
     {
-        // dd(Carbon::parse('April 1'));
         return Excel::download(new RankPromotionListExport($rank, request()->batch), request()->batch . ' ' . date('Y') . ' ' . Str::of($rank->name)->plural() . ' promotion list.xlsx');
     }
 

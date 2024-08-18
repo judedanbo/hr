@@ -70,7 +70,6 @@ class PromotionController extends Controller
 
     public function show(Request $request, ?int $year = null)
     {
-        // dd($request->rank);
         $rank = Job::find($request->rank)->only('id', 'name');
 
         if ($year == null) {
