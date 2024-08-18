@@ -25,7 +25,7 @@ class UserController extends Controller
             ->withCount(['roles', 'permissions'])
             ->paginate(10)
             ->withQueryString()
-            ->through(fn ($user) => [
+            ->through(fn($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -64,7 +64,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $password = Str::random(8);
         $bio = $request->all()['userData']['bio'];
         $bio['password'] = Hash::make($password); //bcrypt('password');
