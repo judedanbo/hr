@@ -38,7 +38,7 @@ class StoreDependentRequest extends FormRequest
                 'before_or_equal:' . Carbon::now()->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(150)->format('Y-m-d'),
             ],
-            'nationality' => [ new Enum(Nationality::class)],
+            'nationality' => [new Enum(Nationality::class)],
             'gender' => ['required', new Enum(GenderEnum::class)],
             'marital_status' => [new Enum(MaritalStatusEnum::class)],
             'religion' => 'string|max:40|nullable',

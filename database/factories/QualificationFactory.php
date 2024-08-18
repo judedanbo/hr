@@ -18,14 +18,14 @@ class QualificationFactory extends Factory
     public function definition()
     {
         return [
-            "person_id" => $this->faker->numberBetween(1, 100),
-            "course" => $this->faker->word(),
-            "institution" => $this->faker->company(),
-            "qualification" => $this->faker->jobTitle(),
-            "qualification_number" => Str::random(10),
-            "level" => Str::random(20),
-            "pk" => Str::random(6),
-            "year" => $this->faker->numberBetween(1990, 2022),
+            'person_id' => $this->faker->numberBetween(1, 100),
+            'course' => $this->faker->word(),
+            'institution' => $this->faker->company(),
+            'qualification' => $this->faker->jobTitle(),
+            'qualification_number' => Str::random(10),
+            'level' => Str::random(20),
+            'pk' => Str::random(6),
+            'year' => $this->faker->numberBetween(1990, 2022),
         ];
     }
 }

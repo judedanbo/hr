@@ -10,7 +10,6 @@ use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -20,15 +19,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-
-class StaffToRetireExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class StaffToRetireExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -36,6 +27,7 @@ class StaffToRetireExport implements
     {
         return 'Staff To Retire';
     }
+
     public function headings(): array
     {
         return [
@@ -53,7 +45,7 @@ class StaffToRetireExport implements
             'Retirement Date',
             'current rank Start Date',
             'current Unit Start Date',
-            'level'
+            'level',
         ];
     }
 
@@ -61,12 +53,13 @@ class StaffToRetireExport implements
     {
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
             'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
             // Styling a specific cell by coordinate.
             'H' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -74,10 +67,10 @@ class StaffToRetireExport implements
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            $staff->person->date_of_birth?->diffInYears() . " years",
+            $staff->person->date_of_birth?->diffInYears() . ' years',
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             $staff->hire_date?->format('d F, Y'),
-            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+            $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
             })->implode(', ') : '',
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
@@ -89,7 +82,8 @@ class StaffToRetireExport implements
             $staff->currentRank?->job?->category->level,
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->active()

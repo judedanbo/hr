@@ -18,7 +18,7 @@ class Note extends Model
         'notable_type',
         'notable_id',
         'created_by',
-        'url'
+        'url',
     ];
 
     protected $casts = [

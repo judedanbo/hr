@@ -30,11 +30,13 @@ class TransferController extends Controller
             $staff->units()->updateExistingPivot($request->unit_id, [
                 'status' => TransferStatusEnum::Approved,
             ]);
+
             return redirect()->back()->with('success', 'Staff promoted successfully');
         }
 
         return redirect()->back()->with('success', 'Staff promotion record created successfully');
     }
+
     public function update(UpdateTransferRequest $request, InstitutionPerson $staff, $unit)
     {
         if ($request->staff_id != $staff->id) {
@@ -51,6 +53,7 @@ class TransferController extends Controller
     public function delete(InstitutionPerson $staff, $unit)
     {
         $staff->units()->detach($unit);
+
         return redirect()->back()->with('success', 'Transfer has  been successfully deleted ');
     }
 
@@ -65,6 +68,7 @@ class TransferController extends Controller
             'status' => TransferStatusEnum::Approved,
             'start_date' => $request->start_date,
         ]);
+
         return redirect()->back()->with('success', 'Transfer has  been successfully approved ');
     }
 }

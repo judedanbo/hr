@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exports\PromotionListExport;
 use App\Exports\PromotionSummaryExport;
-use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Excel as Excel;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel as Excel;
 
 class PromotionExportController extends Controller
 {
@@ -15,7 +14,8 @@ class PromotionExportController extends Controller
         // dd($request->rank);
         return $excel->download(new PromotionListExport($request->rank), 'Promotion List.xlsx', Excel::XLSX);
     }
-    function list(Excel $excel)
+
+    public function list(Excel $excel)
     {
         return $excel->download(new PromotionSummaryExport, 'promotion summary.xlsx');
     }

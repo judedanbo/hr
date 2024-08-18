@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UnitType;
 use App\Http\Requests\StoreInstitutionRequest;
 use App\Http\Requests\UpdateInstitutionRequest;
 use App\Models\Institution;
@@ -21,7 +20,7 @@ class InstitutionController extends Controller
                     $query->orWhere('abbreviation', 'like', "%{$search}%");
                 })
                 ->withCount([
-                    'departments', 'divisions', 'units', 'staff'
+                    'departments', 'divisions', 'units', 'staff',
                 ])
                 ->whereNull('end_date')
                 ->paginate(10)
@@ -48,7 +47,6 @@ class InstitutionController extends Controller
         return Institution::select(['id as value', 'name as label'])
             ->get();
     }
-
 
     public function department($institution)
     {
@@ -123,6 +121,7 @@ class InstitutionController extends Controller
             ])
             ->where('units.type', 'DEP')
             ->get();
+
         return Inertia::render('Institution/Show', [
             'institution' => $institution != null ? [
                 'id' => $institution->id,

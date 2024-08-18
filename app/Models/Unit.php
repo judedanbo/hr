@@ -28,7 +28,7 @@ class Unit extends Model
         'institution_id',
         'start_date',
         'end_date',
-        'region_id'
+        'region_id',
     ];
 
     /**
@@ -53,6 +53,7 @@ class Unit extends Model
     {
         return $this->belongsToMany(Region::class);
     }
+
     /**
      * Get all of the subs for the Unit
      */
@@ -61,6 +62,7 @@ class Unit extends Model
         return $this->hasMany(Unit::class, 'unit_id', 'id')
             ->whereNull('end_date');
     }
+
     public function divisions(): HasMany
     {
         return $this->hasMany(Unit::class, 'unit_id', 'id')->where('units.type', UnitType::DIVISION);
@@ -111,7 +113,7 @@ class Unit extends Model
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit',  'unit_id', 'staff_id')
+        return $this->belongsToMany(InstitutionPerson::class, 'staff_unit', 'unit_id', 'staff_id')
             ->using(StaffUnit::class)
             ->withPivot('start_date', 'end_date') //unit_id
             ->wherePivotNull('end_date'); //staff_id

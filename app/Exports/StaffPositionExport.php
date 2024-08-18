@@ -7,7 +7,6 @@ use App\Models\JobCategory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,14 +16,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class StaffPositionExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class StaffPositionExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -51,9 +43,10 @@ class StaffPositionExport implements
             'Years Served',
             'Current Rank',
             'Current Unit',
-            'level'
+            'level',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -67,7 +60,8 @@ class StaffPositionExport implements
             // $staff
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->active()

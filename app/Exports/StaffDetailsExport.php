@@ -8,25 +8,16 @@ use App\Models\InstitutionPerson;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment as StyleAlignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class StaffDetailsExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithStyles,
-    WithTitle
+class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -51,9 +42,10 @@ class StaffDetailsExport implements
             'Current Unit',
             'Retirement Date',
             'current rank Start Date',
-            'current Unit Start Date'
+            'current Unit Start Date',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -61,10 +53,10 @@ class StaffDetailsExport implements
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            $staff->person->date_of_birth?->diffInYears() . " years",
+            $staff->person->date_of_birth?->diffInYears() . ' years',
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             // $staff->person->identities->where('id_type', Identity::Social_Security_Number)->first()?->id_number,
-            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+            $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
             })->implode(', ') : '',
             $staff->hire_date?->format('d F, Y'),
@@ -82,14 +74,14 @@ class StaffDetailsExport implements
     {
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
             'B' => ['alignment' => ['horizontal' => StyleAlignment::HORIZONTAL_LEFT]],
             // Styling a specific cell by coordinate.
             'G' => ['alignment' => ['horizontal' => StyleAlignment::HORIZONTAL_LEFT]],
         ];
     }
 
-    function query()
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person' => function ($query) {

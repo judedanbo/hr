@@ -6,7 +6,6 @@ use App\Http\Requests\StoreDependentRequest;
 use App\Http\Requests\UpdateDependentRequest;
 use App\Models\Dependent;
 use App\Models\Person;
-use Exception;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -45,7 +44,7 @@ class DependentController extends Controller
     {
         $person = $request->validated();
         if ($request->hasFile('image')) {
-            $avatar =  Storage::disk('avatars')->put('/', $request->image);
+            $avatar = Storage::disk('avatars')->put('/', $request->image);
             $person['image'] = $avatar;
         }
 
@@ -55,6 +54,7 @@ class DependentController extends Controller
             'person_id' => $newPerson->id,
             'relation' => $request->validated()['relation'],
         ]);
+
         return redirect()->back()->with('success', 'Dependent created successfully');
     }
 
@@ -89,8 +89,8 @@ class DependentController extends Controller
         $path = '';
         $avatar = null;
         if ($request->hasFile('image')) {
-            
-            $avatar =  Storage::disk('avatars')->put('/', $request->image);
+
+            $avatar = Storage::disk('avatars')->put('/', $request->image);
         }
         $dependent->person()->update([
             'title' => $request->title,
@@ -105,6 +105,7 @@ class DependentController extends Controller
             'image' => $avatar,
         ]);
         $dependent->update($request->validated());
+
         return redirect()->back()->with('success', 'Dependent updated successfully');
     }
 

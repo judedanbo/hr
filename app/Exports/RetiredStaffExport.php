@@ -16,14 +16,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RetiredStaffExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class RetiredStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -31,14 +24,16 @@ class RetiredStaffExport implements
     {
         return 'Retired Staff';
     }
+
     public function styles(Worksheet $sheet): array
     {
         return [
             1 => ['font' => ['bold' => true]],
             'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
-            'H' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
+            'H' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
+
     public function headings(): array
     {
         return [
@@ -53,6 +48,7 @@ class RetiredStaffExport implements
             'Emergency Contact',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -63,15 +59,16 @@ class RetiredStaffExport implements
             $staff->statuses?->first()->status->label(),
             $staff->statuses->first()->start_date?->format('d F, Y'),
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
-            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+            $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
             })->implode(', ') : '',
             $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
+                return $contact->contact_type == ContactTypeEnum::EMERGENCY;
             })->first()?->contact ?? '',
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person' => function ($query) {

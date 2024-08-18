@@ -16,16 +16,10 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SeparatedLeaveWithPayExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class SeparatedLeaveWithPayExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
+
     public function title(): string
     {
         return 'Separated Staff (Leave With Pay)';
@@ -49,9 +43,10 @@ class SeparatedLeaveWithPayExport implements
             'Rank',
             // 'Status',
             'Date',
-            'contact'
+            'contact',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -62,14 +57,15 @@ class SeparatedLeaveWithPayExport implements
             // $staff->statuses?->first()->status->label(),
             $staff->statuses->first()->start_date?->format('d F, Y'),
             $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::PHONE;
+                return $contact->contact_type == ContactTypeEnum::PHONE;
             })->first()?->contact ?? '',
             $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
+                return $contact->contact_type == ContactTypeEnum::EMERGENCY;
             })->first()?->contact ?? '',
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person.contacts', 'statuses' => function ($query) {

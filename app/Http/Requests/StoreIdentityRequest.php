@@ -42,6 +42,7 @@ class StoreIdentityRequest extends FormRequest
                 ],
             ];
     }
+
     public function messages()
     {
         return [

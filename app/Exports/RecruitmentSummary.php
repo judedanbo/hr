@@ -15,27 +15,24 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RecruitmentSummary implements
+class RecruitmentSummary implements FromQuery,
     // FromCollection,
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue,
-    WithTitle,
-    WithTitle
+    ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithTitle, WithTitle
 {
     use Exportable;
+
     public function title(): string
     {
-        return "Recruitment Summary";
+        return 'Recruitment Summary';
     }
+
     public function styles(Worksheet $sheet): array
     {
         return [
-            1 => ['font' => ['bold' => true]]
+            1 => ['font' => ['bold' => true]],
         ];
     }
+
     public function headings(): array
     {
         return [

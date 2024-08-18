@@ -15,27 +15,23 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SeparatedDeceasedExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class SeparatedDeceasedExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
+
     public function title(): string
     {
         return 'Separated Staff (Deceased)';
     }
+
     public function styles(Worksheet $sheet): array
     {
         return [
             1 => ['font' => ['bold' => true]],
-            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
+
     public function headings(): array
     {
         return [
@@ -46,6 +42,7 @@ class SeparatedDeceasedExport implements
             'Date',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -57,7 +54,8 @@ class SeparatedDeceasedExport implements
             $staff->statuses->first()->start_date?->format('d F, Y'),
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person', 'statuses' => function ($query) {

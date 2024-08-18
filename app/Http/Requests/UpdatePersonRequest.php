@@ -39,7 +39,7 @@ class UpdatePersonRequest extends FormRequest
                 'before:' . Carbon::now()->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(180)->format('Y-m-d'),
             ],
-            'gender' =>  ['required', new Enum(GenderEnum::class)],
+            'gender' => ['required', new Enum(GenderEnum::class)],
             'marital_status' => [new Enum(MaritalStatusEnum::class), 'nullable'],
             'nationality' => new Enum(CountryEnum::class),
             'ethnicity' => 'string|max:40|nullable',

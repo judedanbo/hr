@@ -39,6 +39,7 @@ class Institution extends Model
     {
         return $this->hasMany(Unit::class)->where('units.type', UnitType::UNIT);
     }
+
     public function allUnits(): HasMany
     {
         return $this->hasMany(Unit::class);

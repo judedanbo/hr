@@ -3,14 +3,14 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *  
+     *
      * @return void
      */
     public function run()
@@ -83,8 +83,6 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'restore staff position']);
         Permission::create(['name' => 'destroy staff position']);
 
-
-
         Role::create(['name' => 'super-administrator'])
             ->givePermissionTo(Permission::all());
         Role::create(['name' => 'personel-user'])
@@ -92,7 +90,7 @@ class PermissionSeeder extends Seeder
                 'view all staff',
                 'view staff',
                 'update staff',
-                'view separated staff'
+                'view separated staff',
             ]);
         Role::create(['name' => 'hr-user'])
             ->givePermissionTo([
@@ -103,7 +101,7 @@ class PermissionSeeder extends Seeder
                 'create staff notes',
                 'view staff notes',
                 'edit staff notes',
-                'create staff transfers'
+                'create staff transfers',
             ]);
         Role::create(['name' => 'general-admin-user'])
             ->givePermissionTo([

@@ -4,45 +4,34 @@ namespace App\Exports;
 
 use App\Models\InstitutionPerson;
 use App\Models\Job;
-use App\Models\JobStaff;
 use Carbon\Carbon;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PromotionListExport implements
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue,
-    WithTitle,
-    WithStyles
+class PromotionListExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     public $rank;
+
     public function __construct($rank = null)
     {
         $this->rank = $rank !== null ? Job::find($rank) : null;
     }
 
     use Exportable;
-    /**
-     * @return string
-     */
+
     public function title(): string
     {
-        return $this->rank ? $this->rank->name . ' Promotion List' : "Promotion List";
+        return $this->rank ? $this->rank->name . ' Promotion List' : 'Promotion List';
     }
 
     public function styles(Worksheet $sheet): array
@@ -87,7 +76,7 @@ class PromotionListExport implements
     public function columnFormats(): array
     {
         return [
-            "A" => NumberFormat::FORMAT_TEXT,
+            'A' => NumberFormat::FORMAT_TEXT,
             'D' => NumberFormat::FORMAT_DATE_YYYYMMDD,
             'F' => NumberFormat::FORMAT_DATE_YYYYMMDD,
             'H' => NumberFormat::FORMAT_DATE_YYYYMMDD,

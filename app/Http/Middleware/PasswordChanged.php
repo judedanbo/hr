@@ -10,7 +10,6 @@ class PasswordChanged
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
@@ -19,6 +18,7 @@ class PasswordChanged
         if (auth()->user()->password_change_at == null) {
             return redirect(route('change-password.index'));
         }
+
         return $next($request);
     }
 }

@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Institution;
 use App\Enums\EmployeeStatusEnum;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Status extends Pivot
 {

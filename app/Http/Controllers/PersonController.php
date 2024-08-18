@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ContactTypeEnum;
-use App\Enums\Identity;
 use App\Http\Requests\StoreIdentityRequest;
 use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Contact;
@@ -11,9 +10,8 @@ use App\Models\Person;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 use Illuminate\Validation\Rules\Enum;
+use Inertia\Inertia;
 
 class PersonController extends Controller
 {
@@ -52,24 +50,26 @@ class PersonController extends Controller
         ]);
     }
 
-    function store(UpdatePersonRequest $request)
+    public function store(UpdatePersonRequest $request)
     {
         // return $request->validated();
-        if (!$request->hasFile('image')) {
+        if (! $request->hasFile('image')) {
             return response()->json(['error', 'There is no file attached', 400]);
         }
         try {
             $avatar = Storage::disk('avatars')->put('/', $request->image);
+
             return Person::create($request->validated());
-            if (!$avatar) {
+            if (! $avatar) {
                 return response()->json(['error', 'the file could not be saved', 500]);
             }
-            $person =  $request->validated();
+            $person = $request->validated();
             $person['image'] = $avatar;
-            $newPerson  = Person::create($person);
+            $newPerson = Person::create($person);
         } catch (Exception $e) {
-            return response()->json(['error', "failed to add Person with message " . $e->getMessage(), 500]);
+            return response()->json(['error', 'failed to add Person with message ' . $e->getMessage(), 500]);
         }
+
         return redirect()->route('person.show', $newPerson->id)->with('success', 'Person records created');
     }
 
@@ -90,9 +90,10 @@ class PersonController extends Controller
             'dependent',
             'dependents',
             'institution',
-            'qualifications'
+            'qualifications',
         ])
             ->whereId($person)->first();
+
         // dd(Person::find($person));
         return Inertia::render('Person/NewShow', [
             'person' => [
@@ -100,7 +101,7 @@ class PersonController extends Controller
                 'name' => $selectedPerson->full_name,
                 'dob-value' => $selectedPerson->date_of_birth,
                 'dob' => $selectedPerson->date_of_birth?->format('d M Y'),
-                'dob_distance' => $selectedPerson->date_of_birth?->diffInYears() . " years old",
+                'dob_distance' => $selectedPerson->date_of_birth?->diffInYears() . ' years old',
                 'gender' => $selectedPerson->gender?->label(),
                 'ssn' => $selectedPerson->social_security_number,
                 'initials' => $selectedPerson->initials,
@@ -129,8 +130,8 @@ class PersonController extends Controller
                 'post_code' => $selectedPerson->address->first()->post_code,
                 'valid_end' => $selectedPerson->address->first()->valid_end,
             ] : null,
-            'staff' => $selectedPerson->institution->count() > 0 ?  $selectedPerson->institution->map(fn ($inst) => [
-                'status' =>  $inst->staff->statuses?->map(fn ($status) => [
+            'staff' => $selectedPerson->institution->count() > 0 ? $selectedPerson->institution->map(fn ($inst) => [
+                'status' => $inst->staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
                     'status' => $status->status,
                     'status_display' => $status->status?->name,
@@ -140,7 +141,7 @@ class PersonController extends Controller
                     'end_date' => $status->end_date?->format('Y-m-d'),
                     'end_date_display' => $status->end_date?->format('d M Y'),
                 ]),
-                'type' =>  $inst->staff->type->map(function ($type) {
+                'type' => $inst->staff->type->map(function ($type) {
                     return [
                         'id' => $type->id,
                         'type' => $type->staff_type,
@@ -172,15 +173,15 @@ class PersonController extends Controller
                     'end_date' => $inst->staff->ranks?->first()->end_date?->format('d M Y'),
                     'remarks' => $inst->staff->ranks?->first()->remarks,
                 ] : null,
-                'institution_name' =>  $inst->name,
-                'institution_id' =>  $inst->id,
-                'staff_id' =>  $inst->staff->id,
-                'staff_number' =>  $inst->staff->staff_number,
-                'file_number' =>  $inst->staff->file_number,
-                'hire_date' =>  $inst->staff->hire_date,
-                'hire_date_dis' =>  $inst->staff->hire_date?->format('d M Y'),
-                'end_date' =>  $inst->staff->end_date,
-            ])  : null,
+                'institution_name' => $inst->name,
+                'institution_id' => $inst->id,
+                'staff_id' => $inst->staff->id,
+                'staff_number' => $inst->staff->staff_number,
+                'file_number' => $inst->staff->file_number,
+                'hire_date' => $inst->staff->hire_date,
+                'hire_date_dis' => $inst->staff->hire_date?->format('d M Y'),
+                'end_date' => $inst->staff->end_date,
+            ]) : null,
             'dependent' => $selectedPerson->dependent,
             'dependents' => $selectedPerson->dependents ? $selectedPerson->dependents->map(fn ($dep) => [
                 'id' => $dep->id,
@@ -223,6 +224,7 @@ class PersonController extends Controller
     {
         // return $request->validated();
         $person->update($request->validated());
+
         return redirect()->route('person.show', $person->id)->with('success', 'Person records updated');
     }
 
@@ -233,15 +235,18 @@ class PersonController extends Controller
             'contact' => 'required|min:7|max:30',
         ]);
         $person->contacts()->create($attribute);
+
         return redirect()->back();
     }
-    public function updateContact(Request $request,  $person, $contact)
+
+    public function updateContact(Request $request, $person, $contact)
     {
         $attribute = $request->validate([
             'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:30',
         ]);
         $contact = Contact::find($contact)->update($attribute);
+
         return redirect()->back()->with('success', 'Contact updated');
     }
 

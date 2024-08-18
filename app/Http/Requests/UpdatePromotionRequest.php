@@ -29,7 +29,7 @@ class UpdatePromotionRequest extends FormRequest
             'staff_id' => 'exists:institution_person,id',
             'start_date' => 'required|date',
             'end_date' => 'date|after:start_date|nullable',
-            'remarks' => 'string|max:100|nullable'
+            'remarks' => 'string|max:100|nullable',
         ];
     }
 }

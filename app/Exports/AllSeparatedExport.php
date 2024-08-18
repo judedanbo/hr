@@ -3,9 +3,7 @@
 namespace App\Exports;
 
 use App\Enums\ContactTypeEnum;
-use App\Enums\EmployeeStatusEnum;
 use App\Enums\Identity;
-use App\Models\Contact;
 use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -18,14 +16,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AllSeparatedExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class AllSeparatedExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -33,11 +24,12 @@ class AllSeparatedExport implements
     {
         return 'All Separated Staff';
     }
+
     public function styles(Worksheet $sheet): array
     {
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
             'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
 
             'H' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
@@ -55,10 +47,11 @@ class AllSeparatedExport implements
             'Years served',
             'Ghana Card Number',
             'Contact',
-            'Type'
+            'Type',
 
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -69,16 +62,17 @@ class AllSeparatedExport implements
             $staff->statuses->first()->start_date?->format('d F, Y'),
             $staff->hire_date->diff($staff->statuses->first()->start_date)->format('%y years'),
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
-            $staff->person->contacts->count() > 0 ?  $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
+            $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
             })->implode(', ') : '',
             $staff->statuses->first()->status->label(),
             $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
+                return $contact->contact_type == ContactTypeEnum::EMERGENCY;
             })->first()?->contact ?? '',
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person' => function ($query) {

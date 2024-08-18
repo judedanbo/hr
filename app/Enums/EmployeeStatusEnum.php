@@ -18,7 +18,7 @@ enum EmployeeStatusEnum: String
     case leaveNoPay = 'N';
     case Vacation = 'C';
 
-    public  function label(): string
+    public function label(): string
     {
         return match ($this) {
             self::Active => 'Active staff',

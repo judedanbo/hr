@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\InstitutionPerson;
 use App\Models\Job;
-use App\Models\JobStaff;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,7 +26,7 @@ class PromotionController extends Controller
 
     public function index()
     {
-        $promotions =  InstitutionPerson::query()
+        $promotions = InstitutionPerson::query()
             ->active()
             ->selectRaw(
                 'jobs.id as job_id,
@@ -58,8 +57,7 @@ class PromotionController extends Controller
             ->withQueryString();
 
         return Inertia::render('Promotion/Index', [
-            'promotions' =>
-            $promotions->through(fn ($promotion) => [
+            'promotions' => $promotions->through(fn ($promotion) => [
                 'year' => $promotion->year,
                 'job_id' => $promotion->job_id,
                 'job_name' => $promotion->job_name,
@@ -70,10 +68,10 @@ class PromotionController extends Controller
         ]);
     }
 
-    public function show(Request $request, int $year = null)
+    public function show(Request $request, ?int $year = null)
     {
         // dd($request->rank);
-        $rank  = Job::find($request->rank)->only('id', 'name');
+        $rank = Job::find($request->rank)->only('id', 'name');
 
         if ($year == null) {
             $year = date('Y');
@@ -116,7 +114,7 @@ class PromotionController extends Controller
                 'person',
                 'institution',
                 'units',
-                'statuses'
+                'statuses',
             ])
             // ->orderBy('job_categories.level')
             ->get()
@@ -140,7 +138,7 @@ class PromotionController extends Controller
                 // 'test_rank' => $staff->ranks,
             ]);
         // return $promotions;
-        $promotions =  $promotions->sortByDesc('rank_name')->groupBy('rank_name');
+        $promotions = $promotions->sortByDesc('rank_name')->groupBy('rank_name');
 
         return Inertia::render(
             'Promotion/Show',

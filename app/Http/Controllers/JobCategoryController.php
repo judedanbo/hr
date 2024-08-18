@@ -17,7 +17,7 @@ class JobCategoryController extends Controller
             'categories' => JobCategory::query()
                 ->withCount(
                     [
-                        'jobs'
+                        'jobs',
                     ]
                 )
                 ->with([
@@ -37,7 +37,7 @@ class JobCategoryController extends Controller
                     },
                 ])
                 ->when(request()->search, function ($query, $search) {
-                    $query->where('name', "like", "%" . $search . "%");
+                    $query->where('name', 'like', '%' . $search . '%');
                     $query->orWhere('short_name', 'like', "%$search%");
                 })
                 ->with(['parent', 'institution'])
@@ -51,7 +51,7 @@ class JobCategoryController extends Controller
                     'jobs' => $jobCategory->jobs_count,
                     'parent' => $jobCategory->parent ? [
                         'name' => $jobCategory->parent->name,
-                        'id' => $jobCategory->parent->id
+                        'id' => $jobCategory->parent->id,
                     ] : '',
                     'institution' => $jobCategory->institution->name,
                     'institution_id' => $jobCategory->institution->id,
@@ -66,20 +66,18 @@ class JobCategoryController extends Controller
         ]);
     }
 
-
     public function create()
     {
         return JobCategory::select(['id as value', 'name as label'])
             ->get();
     }
 
-
     public function store(StoreJobCategoryRequest $request)
     {
         $jobCategory = JobCategory::create($request->all());
+
         return redirect()->route('job-category.index')->with('success', 'Job Category created.');
     }
-
 
     public function show(JobCategory $jobCategory)
     {
@@ -96,11 +94,12 @@ class JobCategoryController extends Controller
                             $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
                         });
                     },
-                    'staff as all'
+                    'staff as all',
 
                 ]);
             }])
             ->get();
+
         // dd($jobCategory->jobs);
         // if ($jobCategory->jobs->count() === 1) {
         //     return redirect()->route('job.show', ['job' => $jobCategory->jobs->first()->id]);
@@ -138,7 +137,6 @@ class JobCategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\JobCategory  $jobCategory
      * @return \Illuminate\Http\Response
      */
     public function edit(JobCategory $jobCategory)
@@ -153,31 +151,31 @@ class JobCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateJobCategoryRequest  $request
-     * @param  \App\Models\JobCategory  $jobCategory
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateJobCategoryRequest $request, JobCategory $jobCategory)
     {
         $jobCategory->update($request->all());
+
         return redirect()->route('job-category.index')->with('success', 'Job Category updated.');
     }
 
     public function delete(JobCategory $jobCategory)
     {
         $jobCategory->delete();
+
         return redirect()->route('job-category.index')->with('success', 'Job Category deleted.');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\JobCategory  $jobCategory
      * @return \Illuminate\Http\Response
      */
     public function destroy(JobCategory $jobCategory)
     {
         $jobCategory->delete();
+
         return redirect()->route('job-category.index')->with('success', 'Job Category deleted.');
     }
 }

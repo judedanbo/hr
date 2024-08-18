@@ -4,8 +4,8 @@ namespace App\Exports;
 
 use App\Models\Job;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -16,25 +16,22 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RankPromotionListExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class RankPromotionListExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
+
     public $rank;
+
     public $batch;
-    public function __construct(Job $rank, string $batch = null)
+
+    public function __construct(Job $rank, ?string $batch = null)
     {
         $this->rank = $rank;
         $this->batch = $batch; // ?? now() <= Carbon::parse('April 1') || now() >= Carbon::parse('October 1') ? 'april' : 'october';
         // dd($batch);
         // dd($this->batch);
     }
+
     public function styles(Worksheet $sheet): array
     {
         return [
@@ -42,6 +39,7 @@ class RankPromotionListExport implements
             'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
+
     public function headings(): array
     {
         return [
@@ -51,25 +49,28 @@ class RankPromotionListExport implements
             $this->rank->name . ' Date',
             'Current Posting',
             'Posting Date',
-            'Retirement Date'
+            'Retirement Date',
         ];
     }
+
     public function title(): string
     {
-        return date('Y') . Str::of($this->rank->name)->plural() . " Promotion List";
+        return date('Y') . Str::of($this->rank->name)->plural() . ' Promotion List';
     }
+
     public function map($staff): array
     {
-        return  [
+        return [
             $staff->file_number,
             $staff->staff_number,
             $staff->person->full_name,
             $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
             $staff->units->first()?->name,
             $staff->units->first()?->pivot->start_date?->format('d M, Y'),
-            $staff->person->date_of_birth?->addYears(60)->format('d M, Y')
+            $staff->person->date_of_birth?->addYears(60)->format('d M, Y'),
         ];
     }
+
     public function query()
     {
         // dd(Carbon::now()->subYears(3));

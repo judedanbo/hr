@@ -4,16 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\InstitutionPerson;
 use App\Models\Job;
-use App\Models\JobStaff;
+use App\Models\JobCategory;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\JobCategory;
 
 class PromotionBatchController extends Controller
 {
-
     public function index()
     {
         $ranks = Job::query()
@@ -23,7 +20,7 @@ class PromotionBatchController extends Controller
                 'activeStaff',
                 'staffToPromote',
                 'staffToPromoteApril',
-                'staffToPromoteOctober'
+                'staffToPromoteOctober',
             ])
             ->when(request()->search, function ($query, $search) {
                 $query->searchRank($search);
@@ -40,9 +37,10 @@ class PromotionBatchController extends Controller
                 'staff_to_promote' => $promotion->staff_to_promote_count,
                 'all_staff' => $promotion->active_staff_count,
             ]);
+
         // return $ranks;
         return Inertia::render('PromotionRank/Index', [
-            'promotions' =>  $ranks,
+            'promotions' => $ranks,
             'filters' => [
                 'search' => Request()->search,
             ],
@@ -51,7 +49,7 @@ class PromotionBatchController extends Controller
 
     public function show(Request $request, $year)
     {
-        $staff =  Job::find($request->rank)
+        $staff = Job::find($request->rank)
             ->activeStaff()
             ->active() // TODO Check for staff who has exited this ranks
             ->when(request()->search, function ($query, $search) {
@@ -164,7 +162,7 @@ class PromotionBatchController extends Controller
                 'rank' => $request->rank,
                 'filters' => [
                     'search' => request()->search,
-                    'year' => $year
+                    'year' => $year,
                 ],
             ]
         );

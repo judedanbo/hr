@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
-use Illuminate\Http\Request;
 
 class PersonRolesController extends Controller
 {
@@ -13,7 +12,7 @@ class PersonRolesController extends Controller
         $person->load([
             'institution',
             'dependent',
-            'user'
+            'user',
         ]);
         $staff = new \stdClass;
         if ($person->institution->count() > 0) {
@@ -33,16 +32,18 @@ class PersonRolesController extends Controller
 
         return compact('staff', 'dependent', 'user');
     }
+
     public function dependent(Person $person)
     {
         $person->load([
             'dependent.staff.person',
         ]);
+
         return [
             'staff_id' => [$person->dependent?->staff?->id],
             'staff_number' => [$person->dependent?->staff?->staff_number],
             'file_number' => [$person->dependent?->staff?->file_number],
-            'staff_name' => [$person->dependent?->staff?->person->full_name,]
+            'staff_name' => [$person->dependent?->staff?->person->full_name],
         ];
     }
 }

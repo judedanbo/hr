@@ -22,9 +22,7 @@ enum NoteTypeEnum: string
     case REACTIVATION = 'RA';
     case SUMMARY_DISMISSAL = 'SD';
     case END_OF_TERM = 'ET';
-    case TERMINATION = "TE";
-
-
+    case TERMINATION = 'TE';
 
     public function label(): string
     {
@@ -46,9 +44,9 @@ enum NoteTypeEnum: string
             self::REACTIVATION => 'Reactivation',
             self::SUMMARY_DISMISSAL => 'Summary dismissal',
             self::END_OF_TERM => 'End of term',
-            self::TERMINATION => "Termination",
+            self::TERMINATION => 'Termination',
             self::NOT_PROVIDED => 'General',
-            default => static::NOT_PROVIDED,
+            default => self::NOT_PROVIDED,
         };
     }
 }

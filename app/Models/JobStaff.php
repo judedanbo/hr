@@ -22,6 +22,6 @@ class JobStaff extends Pivot
      */
     public function staff(): BelongsTo
     {
-        return $this->BelongsTo(InstitutionPerson::class,);
+        return $this->BelongsTo(InstitutionPerson::class);
     }
 }

@@ -29,7 +29,7 @@ class UpdateStaffTypeRequest extends FormRequest
             'staff_id' => 'required|exists:institution_person,id',
             'staff_type' => [
                 'required',
-                new Enum(StaffTypeEnum::class)
+                new Enum(StaffTypeEnum::class),
             ],
             'start_date' => 'required|date|before_or_equal:today|after_or_equal:hire_date', // TODO: add hire_date to institution_person
             'end_date' => 'date|after:start_date|nullable',

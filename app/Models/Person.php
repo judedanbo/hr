@@ -49,7 +49,7 @@ class Person extends Model
     /// get full name of person
     public function getFullNameAttribute(): string
     {
-        return ("{$this->title} {$this->first_name} {$this->other_names} {$this->surname}");
+        return "{$this->title} {$this->first_name} {$this->other_names} {$this->surname}";
     }
 
     public function scopeOrderDob($query)
@@ -69,8 +69,10 @@ class Person extends Model
             if (count($surnameMultiple) > 1) {
                 return strtoupper(substr($surnameMultiple[0], 0, 1) . substr($surnameMultiple[1], 0, 1));
             }
+
             return strtoupper(substr($surname, 0, 2));
         }
+
         return strtoupper(($firstNameInitial ?? $otherNamesInitial) . substr($surname, 0, 1));
     }
 
@@ -101,6 +103,7 @@ class Person extends Model
             )
             ->as('staff');
     }
+
     /**
      * The units that belong to the Person
      */
@@ -147,7 +150,6 @@ class Person extends Model
     /**
      * Get all the person's notes
      */
-
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'notable');
@@ -190,6 +192,6 @@ class Person extends Model
 
     public function dependents(): HasManyThrough
     {
-        return $this->hasManyThrough(Dependent::class, InstitutionPerson::class,  'person_id', 'staff_id');
+        return $this->hasManyThrough(Dependent::class, InstitutionPerson::class, 'person_id', 'staff_id');
     }
 }

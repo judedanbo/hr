@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStaffStatusRequest;
 use App\Http\Requests\UpdateStaffStatusRequest;
-use App\Models\InstitutionPerson;
 use App\Models\Status;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StaffStatusController extends Controller
@@ -35,6 +33,7 @@ class StaffStatusController extends Controller
     public function delete(Status $staffStatus)
     {
         $staffStatus->delete();
+
         return redirect()->back()->with('success', 'Staff status deleted');
     }
 }

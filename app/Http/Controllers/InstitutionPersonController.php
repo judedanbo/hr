@@ -44,9 +44,9 @@ class InstitutionPersonController extends Controller
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender?->label(),
-                'dob' =>  $staff->person->date_of_birth?->format('d M Y'),
+                'dob' => $staff->person->date_of_birth?->format('d M Y'),
                 'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
-                'dob_distance' =>  $staff->person->date_of_birth?->diffInYears() . " years old",
+                'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                 'current_rank' => $staff->currentRank ? [
@@ -95,11 +95,11 @@ class InstitutionPersonController extends Controller
     {
         // return $request->staffData;
         $staff = null;
-        $transaction  = DB::transaction(function () use ($request, $staff) {
+        $transaction = DB::transaction(function () use ($request, $staff) {
             $person = Person::create($request->staffData['bio']);
             $person->identities()->create([
                 'id_type' => Identity::GhanaCard,
-                'id_number' => $request->staffData['bio']['ghana_card']
+                'id_number' => $request->staffData['bio']['ghana_card'],
             ]);
             $institution = Institution::find(1);
 
@@ -123,14 +123,16 @@ class InstitutionPersonController extends Controller
             if (array_key_exists('unit_id', $request->staffData['unit'])) {
                 $staff->units()->attach($request->staffData['unit']['unit_id'], $request->staffData['unit']);
             }
+
             return $staff;
         });
 
         if ($transaction === null || $transaction['id'] === null) {
             return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
         }
+
         // return $transaction;
-        return redirect()->route('staff.show', ['staff' => $transaction['id']])->with('success', "Staff created successfully");
+        return redirect()->route('staff.show', ['staff' => $transaction['id']])->with('success', 'Staff created successfully');
     }
 
     /**
@@ -169,9 +171,10 @@ class InstitutionPersonController extends Controller
             ->active()
             ->whereId($staffId)
             ->first();
-        if (!$staff) {
+        if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
+
         return Inertia::render('Staff/NewShow', [
             'user' => [
                 'id' => auth()->user()->id,
@@ -184,7 +187,7 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'dob-value' => $staff->person->date_of_birth,
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'dob_distance' => $staff->person->date_of_birth?->diffInYears() . " years old",
+                'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
                 'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
@@ -336,8 +339,6 @@ class InstitutionPersonController extends Controller
         ]);
     }
 
-
-
     public function promote(Request $request, InstitutionPerson $staff)
     {
         $request->validate([
@@ -362,9 +363,10 @@ class InstitutionPersonController extends Controller
         return redirect()->back()->with('success', 'Staff promoted successfully');
     }
 
-    function promotions(InstitutionPerson $staff)
+    public function promotions(InstitutionPerson $staff)
     {
         $staff->load('ranks', 'person');
+
         return [
             'staff_id' => $staff->id,
             'full_name' => $staff->person->full_name,
@@ -380,9 +382,9 @@ class InstitutionPersonController extends Controller
                 'start_date' => $rank->pivot->start_date?->format('d M Y'),
                 'end_date' => $rank->pivot->end_date?->format('d M Y'),
                 'remarks' => $rank->pivot->remarks,
-                'distance' => $rank->pivot->start_date->diffInYears()
+                'distance' => $rank->pivot->start_date->diffInYears(),
             ])
-                : null
+                : null,
         ];
     }
     // public function transfer(Request $request, InstitutionPerson $staff)
@@ -395,7 +397,6 @@ class InstitutionPersonController extends Controller
     //     ]);
 
     //     $staff->load('units');
-
 
     //     $staff->units()->wherePivot('end_date', null)->update([
     //         'staff_unit.end_date' => Carbon::parse($request->start_date)->subDay(),
@@ -418,7 +419,8 @@ class InstitutionPersonController extends Controller
     public function edit(InstitutionPerson $staff)
     {
         $staff->load('person');
-        return  [
+
+        return [
             'id' => $staff->id,
             'file_number' => $staff->file_number,
             'staff_number' => $staff->staff_number,
@@ -441,7 +443,7 @@ class InstitutionPersonController extends Controller
                 'ethnicity' => $staff->person->ethnicity,
                 'image' => Storage::disk('avatars')->url($staff->person->image),
                 'about' => $staff->person->about,
-            ]
+            ],
         ];
     }
 
@@ -479,6 +481,7 @@ class InstitutionPersonController extends Controller
 
         $validated['created_by'] = auth()->user()->id;
         $staff->writeNote($validated);
+
         return redirect()->back()->with('success', 'Note added successfully.');
     }
 
@@ -489,8 +492,10 @@ class InstitutionPersonController extends Controller
             'start_date' => $validated['start_date'] ?? null,
             'end_date' => $validated['end_date'] ?? null,
         ]);
+
         return redirect()->back()->with('success', 'Position assigned successfully.');
     }
+
     public function updatePosition(UpdateStaffPositionRequest $request, InstitutionPerson $staff)
     {
         $validated = $request->validated();
@@ -498,11 +503,14 @@ class InstitutionPersonController extends Controller
             'start_date' => $validated['start_date'] ?? null,
             'end_date' => $validated['end_date'] ?? null,
         ]);
+
         return redirect()->back()->with('success', 'Position updated successfully.');
     }
+
     public function deletePosition(InstitutionPerson $staff)
     {
         $staff->positions()->detach(request('position_id'));
+
         return redirect()->back()->with('success', 'Position updated successfully.');
     }
 }

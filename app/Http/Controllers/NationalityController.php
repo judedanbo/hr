@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CountryEnum;
-use Illuminate\Http\Request;
 
 class NationalityController extends Controller
 {
@@ -16,6 +15,7 @@ class NationalityController extends Controller
             $newNation->label = $county->nationality();
             $nationality[] = $newNation;
         }
+
         return $nationality;
     }
 }

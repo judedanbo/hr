@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
-use App\Models\JobStaff;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -11,24 +10,20 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class PromotionSummaryExport implements
-    FromQuery,
-    WithHeadings,
-    ShouldAutoSize,
-    WithTitle,
-    WithMapping,
-    WithStyles
+class PromotionSummaryExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping, WithStyles, WithTitle
 {
-    function title(): string
+    public function title(): string
     {
         return date('Y') . ' promotions';
     }
+
     public function styles($sheet): array
     {
         return [
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
+
     public function headings(): array
     {
         return [
@@ -38,6 +33,7 @@ class PromotionSummaryExport implements
             'Total Staff',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -47,6 +43,7 @@ class PromotionSummaryExport implements
             $staff->staff,
         ];
     }
+
     public function query()
     {
         return InstitutionPerson::query()
@@ -59,6 +56,6 @@ class PromotionSummaryExport implements
             ->orderByRaw('job_categories.level')
             ->whereNull('jobs.deleted_at')
             ->whereNull('job_staff.end_date')
-            ->whereRaw("year(job_staff.start_date) < " . date('Y') - 3);
+            ->whereRaw('year(job_staff.start_date) < ' . date('Y') - 3);
     }
 }

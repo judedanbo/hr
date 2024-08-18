@@ -15,6 +15,7 @@ class Region extends Model
     protected $fillable = [
         'name',
     ];
+
     /**
      * Get all of the districts for the Region
      */

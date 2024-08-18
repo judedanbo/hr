@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\InstitutionPerson;
-use Illuminate\Http\Request;
 
 class AgeController extends Controller
 {
@@ -11,6 +10,7 @@ class AgeController extends Controller
     {
         $rank = request()->rank ?? null;
         $unit = request()->unit ?? null;
+
         return InstitutionPerson::query()
             ->join('people', 'people.id', 'institution_person.person_id')
             ->whereNotNull('people.date_of_birth')

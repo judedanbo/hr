@@ -5,7 +5,7 @@ namespace App\Enums;
 enum StaffTypeEnum: string
 {
     case NotProvided = '';
-    case Field  = 'FS';
+    case Field = 'FS';
     case Supporting = 'SS';
     case SupportService = 'FSS';
 
@@ -16,7 +16,7 @@ enum StaffTypeEnum: string
             self::Supporting => 'Supporting Staff',
             self::SupportService => 'Field Staff (Suppt Serv)',
             self::NotProvided => 'Not Provided',
-            default => static::NotProvided,
+            default => self::NotProvided,
         };
     }
 }

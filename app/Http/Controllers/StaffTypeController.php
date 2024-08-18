@@ -33,7 +33,6 @@ class StaffTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreStaffTypeRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreStaffTypeRequest $request)
@@ -54,7 +53,6 @@ class StaffTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\StaffType  $staffType
      * @return \Illuminate\Http\Response
      */
     public function show(StaffType $staffType)
@@ -65,7 +63,6 @@ class StaffTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\StaffType  $staffType
      * @return \Illuminate\Http\Response
      */
     public function edit(StaffType $staffType)
@@ -76,8 +73,6 @@ class StaffTypeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateStaffTypeRequest  $request
-     * @param  \App\Models\StaffType  $staffType
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateStaffTypeRequest $request, StaffType $staffType)
@@ -98,7 +93,6 @@ class StaffTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\StaffType  $staffType
      * @return \Illuminate\Http\Response
      */
     public function destroy(StaffType $staffType)

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreQualificationRequest;
 use App\Http\Requests\UpdateQualificationRequest;
-use App\Models\Person;
 use App\Models\Qualification;
 use Inertia\Inertia;
 
@@ -44,6 +43,7 @@ class QualificationController extends Controller
             'filters' => request()->all('search'),
         ]);
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -62,6 +62,7 @@ class QualificationController extends Controller
     public function store(StoreQualificationRequest $request)
     {
         Qualification::create($request->validated());
+
         return redirect()->back()->with('success', 'Qualification added.');
     }
 
@@ -95,13 +96,17 @@ class QualificationController extends Controller
         // dd($request->validated());
         if ($request->validated()) {
             $qualification->update($request->validated());
+
             return redirect()->back()->with('success', 'Qualification updated.');
         }
+
         return redirect()->back()->with('error', 'Qualification not updated.');
     }
+
     public function delete($qualification)
     {
         Qualification::find($qualification)->delete();
+
         return redirect()->back()->with('success', 'Qualification deleted.');
     }
 

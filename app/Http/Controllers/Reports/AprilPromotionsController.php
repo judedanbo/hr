@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class AprilPromotionsController extends Controller
 {
-    public function __construct(int $year = null)
+    public function __construct(?int $year = null)
     {
         if (! $year) {
             $this->year = (int) date('Y');

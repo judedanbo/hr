@@ -15,7 +15,8 @@ class PersonAvatarController extends Controller
             'initials' => $person->initials,
         ];
     }
-    public function store (Request $request, Person $person)
+
+    public function store(Request $request, Person $person)
     {
         $request->validate([
             'image' => ['required', 'image', 'max:2048'],
@@ -28,12 +29,12 @@ class PersonAvatarController extends Controller
             'image' => ['required', 'image', 'max:2048'],
         ]);
 
-        $avatar =  Storage::disk('avatars')->put('/', $request->image);
+        $avatar = Storage::disk('avatars')->put('/', $request->image);
         // dd($avatar);
         // $fileName = $request->file('image')->store('public/avatar');
 
         $person->update([
-            'image' =>  $avatar//$request->file('image')->hashName(),
+            'image' => $avatar, //$request->file('image')->hashName(),
         ]);
 
         return back()->with('success', 'Image uploaded successfully');

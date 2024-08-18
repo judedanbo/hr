@@ -24,14 +24,14 @@ class StoreQualificationRequest extends FormRequest
     public function rules()
     {
         return [
-            "person_id" => "required|integer|exists:people,id",
-            "course" => "required|string|max:100",
-            "institution" => "string|max:100|nullable",
-            "qualification" => "string|max:100|nullable",
-            "qualification_number" => "string|max:10|nullable",
-            "level" => "string|max:50|nullable",
-            "pk" => "string|max:6|nullable",
-            "year" => "string|max:4|nullable"
+            'person_id' => 'required|integer|exists:people,id',
+            'course' => 'required|string|max:100',
+            'institution' => 'string|max:100|nullable',
+            'qualification' => 'string|max:100|nullable',
+            'qualification_number' => 'string|max:10|nullable',
+            'level' => 'string|max:50|nullable',
+            'pk' => 'string|max:6|nullable',
+            'year' => 'string|max:4|nullable',
         ];
     }
 }

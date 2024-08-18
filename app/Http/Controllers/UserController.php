@@ -8,8 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -20,12 +20,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users =  User::query()
+        $users = User::query()
             ->with('roles', 'permissions')
             ->withCount(['roles', 'permissions'])
             ->paginate(10)
             ->withQueryString()
-            ->through(fn($user) => [
+            ->through(fn ($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -40,6 +40,7 @@ class UserController extends Controller
                 }),
                 'permissions_count' => $user->getAllPermissions()->count(),
             ]);
+
         return Inertia::render('User/Index', [
             'users' => $users,
             'filters' => ['search' => request()->search],
@@ -75,19 +76,20 @@ class UserController extends Controller
         Mail::to($bio['email'])->send(
             new \App\Mail\UserCreated($newUser, $password)
         );
+
         // return->redirect
-        return redirect()->route('user.index')->with('success', "User created successfully");
+        return redirect()->route('user.index')->with('success', 'User created successfully');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
     {
         $user->load(['roles', 'permissions']);
+
         return Inertia::render('User/Show', [
             'user' => [
                 'id' => $user->id,
@@ -108,14 +110,13 @@ class UserController extends Controller
                         'start_date' => $permission->created_at->format('d M Y'),
                     ];
                 }),
-            ]
+            ],
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
@@ -127,38 +128,40 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateUserRequest $request, User $user)
     {
         // return $request->validated();
         $user->update($request->validated());
-        return redirect()->route('user.index')->with('success', "User updated successfully");
+
+        return redirect()->route('user.index')->with('success', 'User updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function delete(User $user)
     {
 
         $user->delete();
-        return redirect()->route('user.index')->with('success', "User deleted successfully");
+
+        return redirect()->route('user.index')->with('success', 'User deleted successfully');
     }
 
     public function roles(User $user)
     {
         $user->load('roles');
+
         return [
             'roles' => $user->roles->map(function ($role) {
                 return $role->name;
-            })
+            }),
         ];
     }
+
     public function resetPassword(User $user)
     {
         // dd($user);
@@ -171,6 +174,7 @@ class UserController extends Controller
         Mail::to($user->email)->send(
             new \App\Mail\PasswordReset($user, $password)
         );
-        return redirect()->route('user.index')->with('success', "Password reset successfully");
+
+        return redirect()->route('user.index')->with('success', 'Password reset successfully');
     }
 }

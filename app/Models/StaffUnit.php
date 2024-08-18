@@ -14,13 +14,13 @@ class StaffUnit extends Pivot
         'status',
         'start_date',
         'end_date',
-        'remarks'
+        'remarks',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'status' => TransferStatusEnum::class
+        'status' => TransferStatusEnum::class,
     ];
 
     /**

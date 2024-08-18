@@ -15,14 +15,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SeparatedResignationExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class SeparatedResignationExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -35,7 +28,7 @@ class SeparatedResignationExport implements
     {
         return [
             1 => ['font' => ['bold' => true]],
-            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
 
@@ -51,6 +44,7 @@ class SeparatedResignationExport implements
             // 'contact'
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -62,7 +56,8 @@ class SeparatedResignationExport implements
             $staff->statuses->first()->start_date?->format('d F, Y'),
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with([
@@ -70,7 +65,7 @@ class SeparatedResignationExport implements
                 'statuses' => function ($query) {
                     $query->where('status', EmployeeStatusEnum::Resignation);
                     $query->latest('start_date');
-                }
+                },
             ])
             ->currentRank()
             ->whereHas('statuses', function ($query) {

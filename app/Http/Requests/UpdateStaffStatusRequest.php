@@ -28,8 +28,8 @@ class UpdateStaffStatusRequest extends FormRequest
         return [
             'staff_id' => 'required|exists:institution_person,id',
             'status' => [
-                "required",
-                new Enum(EmployeeStatusEnum::class)
+                'required',
+                new Enum(EmployeeStatusEnum::class),
             ],
             'start_date' => 'required|date|before_or_equal:today|after_or_equal:hire_date',
             'end_date' => 'date|after:start_date|nullable',

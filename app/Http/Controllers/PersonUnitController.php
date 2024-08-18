@@ -124,6 +124,7 @@ class PersonUnitController extends Controller
             ->with(['person.address', 'person.contacts', 'unit.institution', 'jobs', 'dependents.person'])
             ->whereId($staff)
             ->first();
+
         // return $staff;
         return Inertia::render('Staff/Show', [
             'person' => [

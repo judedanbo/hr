@@ -4,7 +4,6 @@ use App\Enums\CountryEnum;
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\EmployeeStatusEnum;
-use App\Enums\Nationality;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
@@ -33,33 +32,27 @@ use App\Http\Controllers\PromoteStaffController;
 use App\Http\Controllers\PromotionBatchController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PromotionExportController;
-use App\Http\Controllers\Reports\RecruitmentController;
-use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
 use App\Http\Controllers\RankStaffController;
+use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SeparationController;
+use App\Http\Controllers\StaffReportController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitTypeController;
-use App\Http\Controllers\StaffReportController;
 use App\Http\Controllers\UserController;
-use App\Models\Contact;
 use App\Models\Dependent;
 use App\Models\Institution;
-use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\JobCategory;
-use App\Models\JobStaff;
 use App\Models\Person;
-use App\Models\Qualification;
-use App\Models\StaffType;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -73,7 +66,6 @@ Route::get('/', function () {
         'logo' => asset('images/inner-logo.png'),
     ]);
 });
-
 
 Route::controller(ChangePasswordController::class)->middleware(['auth'])->group(function () {
     Route::get('/change-password', 'index')->name('change-password.index');
@@ -108,7 +100,6 @@ Route::controller(PermissionController::class)->middleware(['auth', 'password_ch
     Route::post('/user/{user}/add-permission', 'addPermission')->name('user.add.permissions');
     Route::patch('/user/{user}/revoke-permission', 'revokePermission')->name('user.revoke.permissions');
 });
-
 
 Route::get('/dashboard', function () {
     return redirect()->route('institution.show', [1]);
@@ -154,6 +145,7 @@ Route::get('/institution/{institution}/ranks', [InstitutionRankController::class
 
 Route::get('/institution/{institution}/units', function (Institution $institution) {
     $institution->load('allUnits');
+
     return $institution->allUnits->map(fn ($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
@@ -170,6 +162,7 @@ Route::get('/institution/{institution}/statuses', function (Institution $institu
         $status->label = $county->label() . ' (' . $county->name . ')';
         $statuses[] = $status;
     }
+
     return $statuses;
 })->name('institution.statuses');
 
@@ -181,6 +174,7 @@ Route::get('/institution/{institution}/staff-types', function (Institution $inst
         $type->label = $staffType->label();
         $types[] = $type;
     }
+
     return $types;
 })->name('institution.staff-types');
 
@@ -197,6 +191,7 @@ Route::controller(UnitController::class)->middleware(['auth', 'password_changed'
 Route::get('/unit-list', function () {
     // return 'all units';
     $units = Unit::all();
+
     return $units->map(fn ($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
@@ -275,7 +270,6 @@ Route::controller(JobCategoryController::class)->middleware(['auth', 'password_c
     Route::delete('/job-category/{jobCategory}', 'delete')->name('job-category.delete');
 });
 
-
 Route::controller(CategoryRanks::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/category/{category}/ranks', 'show')->name('category-ranks.show');
 });
@@ -302,6 +296,7 @@ Route::controller(JobController::class)->middleware(['auth', 'password_changed']
 
 Route::get('/rank/{rank}/category', function (Job $rank) {
     $rank->load('category');
+
     return [
         'id' => $rank->category->id,
         'name' => $rank->category->name,
@@ -311,10 +306,11 @@ Route::get('/rank/{rank}/category', function (Job $rank) {
 })->middleware(['auth', 'password_changed'])->name('rank.category');
 
 Route::get('rank/{rank}/next', function (Job $rank) {
-    $nextCategoryId =  $rank->job_category_id - 1;
+    $nextCategoryId = $rank->job_category_id - 1;
     if ($nextCategoryId < 1) {
         return null;
     }
+
     return Job::where('job_category_id', $nextCategoryId)
         ->get()
         ->map(fn ($rank) => [
@@ -336,6 +332,7 @@ Route::get('/document-types', function () {
             'label' => $type->getDocumentType(),
         ];
     }
+
     return $types;
 })->middleware(['auth', 'password_changed'])->name('document-types');
 
@@ -346,6 +343,7 @@ Route::get('/document-statuses', function () {
             'label' => $status->getDocumentStatus(),
         ];
     }
+
     return $types;
 })->middleware(['auth', 'password_changed'])->name('document-statuses');
 
@@ -425,6 +423,7 @@ Route::get('/country', function () {
         $newNation->label = $county->label();
         $nationality[] = $newNation;
     }
+
     return $nationality;
 })->middleware(['auth', 'password_changed'])->name('country.index');
 
@@ -469,13 +468,13 @@ Route::get('/note-types', function () {
             'label' => $type->label(),
         ];
     }
+
     return $types;
     // return NoteTypeEnum::acasll()->map(fn ($type) => [
     //     'value' => $type->id,
     //     'label' => $type->name,
     // ]);
 })->middleware(['auth', 'password_changed'])->name('note-types');
-
 
 Route::controller(PositionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/position', 'index')->name('position.index');

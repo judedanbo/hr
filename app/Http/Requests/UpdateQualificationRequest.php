@@ -26,13 +26,13 @@ class UpdateQualificationRequest extends FormRequest
         return [
             // "person_id" => "required|integer|exists:people,id",
             // "staffQualification.certification." ,
-            "institution" => "string|max:100",
-            "course" => "string|max:100",
-            "qualification" => "string|max:100|nullable",
-            "qualification_number" => "string|max:10|nullable",
-            "level" => "string|max:50|nullable",
-            "pk" => "string|max:6|nullable",
-            "year" => "string|max:4|nullable"
+            'institution' => 'string|max:100',
+            'course' => 'string|max:100',
+            'qualification' => 'string|max:100|nullable',
+            'qualification_number' => 'string|max:10|nullable',
+            'level' => 'string|max:50|nullable',
+            'pk' => 'string|max:6|nullable',
+            'year' => 'string|max:4|nullable',
         ];
     }
 }

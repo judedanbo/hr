@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UnitType;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
@@ -130,7 +129,7 @@ class UnitController extends Controller
                             'staff' => function ($query) {
                                 $query->with(['person', 'ranks', 'units']);
                                 $query->active();
-                            }
+                            },
                         ]);
                         $query->withCount([
                             'staff' => function ($query) {
@@ -142,7 +141,7 @@ class UnitController extends Controller
                                 });
                             },
                         ]);
-                    }
+                    },
                 ])
                 ->withCount(
                     [
@@ -160,7 +159,7 @@ class UnitController extends Controller
                                     });
                                 });
                             });
-                        }
+                        },
                     ]
                 )
                 ->when(request()->institution, function ($query, $search) {
@@ -247,7 +246,7 @@ class UnitController extends Controller
                             $query->with(['person', 'ranks', 'units']);
                             $query->active();
                             $query->search(request()->search);
-                        }
+                        },
                     ]);
 
                     $query->withCount([
@@ -261,7 +260,7 @@ class UnitController extends Controller
                             });
                         },
                     ]);
-                }
+                },
             ])
             ->withCount([
 
@@ -282,7 +281,7 @@ class UnitController extends Controller
                 'staff' => function ($query) {
                     $query->active();
                     $query->search(request()->search);
-                }
+                },
             ])
             ->whereId($unit)
             ->firstOrFail();
@@ -290,9 +289,10 @@ class UnitController extends Controller
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
-        $sub_staff  = $unit?->subs?->map(fn ($sub) => $sub->staff)->flatten(1);
+        $sub_staff = $unit?->subs?->map(fn ($sub) => $sub->staff)->flatten(1);
         // return $sub_staff;
         $allStaff = $unit?->staff->merge($sub_staff)->flatten(1);
+
         // return $allStaff;
         return Inertia::render('Unit/Show', [
             'unit' => [
@@ -384,14 +384,17 @@ class UnitController extends Controller
     public function update(UpdateUnitRequest $request, Unit $unit)
     {
         $unit->update($request->validated());
+
         return redirect()->back()->with('success', 'Unit updated successfully');
     }
 
     public function delete(Unit $unit)
     {
         $unit->delete();
+
         return redirect()->back()->with('success', 'Unit deleted successfully');
     }
+
     public function details(Unit $unit)
     {
         return [

@@ -9,6 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *p
+     *
      * @return void
      */
     public function up()

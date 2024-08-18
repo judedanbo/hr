@@ -7,7 +7,6 @@ use App\Http\Requests\UpdatePromotionRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class PromoteStaffController extends Controller
 {
@@ -21,6 +20,7 @@ class PromoteStaffController extends Controller
             'end_date' => $request->end_date,
             'remarks' => $request->remarks,
         ]);
+
         return redirect()->back()->with('success', 'Staff promoted successfully');
     }
 
@@ -39,12 +39,14 @@ class PromoteStaffController extends Controller
             'end_date' => $request->end_date,
             'remarks' => $request->remarks,
         ]);
+
         return redirect()->back()->with('success', 'Staff promotion successfully updated');
     }
 
     public function delete(InstitutionPerson $staff, Job $job)
     {
         $staff->ranks()->detach($job->id);
+
         return redirect()->back()->with('success', 'Staff promotion successfully deleted');
     }
 }

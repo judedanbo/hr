@@ -7,16 +7,15 @@ use App\Http\Requests\StoreJobRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Unit;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class JobController extends Controller
 {
     public function index()
     {
         return Inertia::render('Job/Index', [
-            'jobs' =>
-            Job::query()
+            'jobs' => Job::query()
                 ->searchRank(request()->search)
                 ->with(['category', 'institution'])
                 ->withCount(['staff' => function ($query) {
@@ -45,12 +44,11 @@ class JobController extends Controller
         ]);
     }
 
-    function create()
+    public function create()
     {
         return Job::select(['id as value', 'name as label'])
             ->get();
     }
-
 
     public function show($job)
     {
@@ -77,7 +75,7 @@ class JobController extends Controller
                     });
                 },
                 'staff.person',
-                'institution'
+                'institution',
             ])
             ->withCount([
                 'staff' => function ($query) {
@@ -85,9 +83,10 @@ class JobController extends Controller
                         $query->where('status', 'A');
                     });
                     $query->where('job_staff.end_date', null);
-                }
+                },
             ])
             ->findOrFail($job);
+
         // return ($job);
         return Inertia::render('Job/Show', [
             'job' => [
@@ -124,6 +123,7 @@ class JobController extends Controller
     public function store(StoreJobRequest $request)
     {
         Job::create($request->validated());
+
         return redirect()->route('job.index')->with('success', 'Job created.');
     }
 
@@ -162,13 +162,13 @@ class JobController extends Controller
                 $query->whereHas('person', function ($query) {
                     $query->where('gender', GenderEnum::FEMALE);
                 });
-            }
+            },
         ]);
 
         // $jobs->withCount(['staff' => function ($query) {
         //     $query->active();
         //     $query->where('job_staff.end_date', null);
-        // }]); 
+        // }]);
         // $stats = new \stdClass();
         // $stats->label = "Gender Statistics";
         // $stats->borderWidth = 0;
@@ -223,9 +223,9 @@ class JobController extends Controller
             })
             ->withCount(
                 [
-                    'staff' => function ($query) use ($job) {
+                    'staff' => function ($query) {
                         $query->active();
-                        $query->whereHas('ranks', function ($query) use ($job) {
+                        $query->whereHas('ranks', function ($query) {
                             // $query->where('job_staff.job_id', $job);
                             $query->whereNull('job_staff.end_date');
                             $query->orWhere('job_staff.end_date', '>=', now());
@@ -271,7 +271,7 @@ class JobController extends Controller
                             });
                         },
                     ]);
-                }
+                },
             ])
             ->get();
         $job = Job::query()
@@ -282,7 +282,7 @@ class JobController extends Controller
                     $query->where('job_staff.end_date', null);
                     $query->whereHas('units');
                     $query->with('units');
-                }
+                },
             ])
             ->with(['staff' => function ($query) {
                 $query->active();
@@ -296,6 +296,7 @@ class JobController extends Controller
             ->find($job);
 
         dd($job->staff);
+
         return $job->loadCount([
             'staff as total_staff_count',
             'staff as total_staff' => function ($query) {
@@ -317,8 +318,9 @@ class JobController extends Controller
         //     $query->where('job_staff.end_date', null);
         //     $query->whereHas('units');
         // }]);
-        // return 
+        // return
     }
+
     public function units(Job $job)
     {
         return $job->loadCount('staff');
@@ -327,12 +329,14 @@ class JobController extends Controller
     public function update(StoreJobRequest $request, Job $job)
     {
         $job->update($request->validated());
+
         return redirect()->route('job.index')->with('success', 'Rank updated.');
     }
 
     public function delete(Job $job)
     {
         $job->delete();
+
         return redirect()->route('job.index')->with('success', 'Rank updated.');
     }
 }

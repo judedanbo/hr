@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Document extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'document_type',
         'document_title',

@@ -18,7 +18,7 @@ enum MaritalStatusEnum: String
             self::WIDOWED => 'Widowed',
             self::DEVOICED => 'Devoiced',
             self::NOT_AVAILABLE => 'Not Provided',
-            default => static::NOT_AVAILABLE,
+            default => self::NOT_AVAILABLE,
         };
     }
 }

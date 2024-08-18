@@ -14,15 +14,9 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RecruitmentExport implements
+class RecruitmentExport implements FromQuery,
     // FromCollection,
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue,
-    WithTitle,
-    WithStyles
+    ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 

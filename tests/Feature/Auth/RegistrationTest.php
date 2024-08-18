@@ -18,7 +18,6 @@ class RegistrationTest extends TestCase
         $response->assertStatus(404);
     }
 
-
     // public function test_can_register_a_new_users()
     // {
     //     $user = User::factory()->create();

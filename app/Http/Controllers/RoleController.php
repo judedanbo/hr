@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Str;
 
 class RoleController extends Controller
 {
@@ -25,7 +25,7 @@ class RoleController extends Controller
             'role' => [
                 'id' => $role->id,
                 'name' => $role->name,
-                'display_name' =>  Str::of($role->name)->replace('-', ' ')->title(),
+                'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
             ],
             'users' => $role->users()
                 ->withCount('permissions')
@@ -47,9 +47,11 @@ class RoleController extends Controller
 
         return redirect()->back()->with('success', 'Role added successfully');
     }
+
     public function revokeRole(Request $request, User $user)
     {
         $user->assignRole($request->role);
+
         return redirect()->back()->with('success', 'Role revoked successfully');
     }
 }

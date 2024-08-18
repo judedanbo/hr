@@ -30,6 +30,7 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
         $response->assertRedirect();
     }
+
     public function test_users_can_authenticate_redirect_to_change_password_page()
     {
         $user = User::factory()->create();
@@ -62,15 +63,14 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
         $response->assertRedirect('/change-password');
 
-        $password = $this->post('/change-password',[
-            'current_password'=> 'password',
+        $password = $this->post('/change-password', [
+            'current_password' => 'password',
             'password' => 'password',
-            'password_confirmation' => 'password'
-            ]);
+            'password_confirmation' => 'password',
+        ]);
         // dd($password);
         $password->assertRedirect(RouteServiceProvider::HOME);
     }
-
 
     public function test_users_can_not_authenticate_with_invalid_password()
     {

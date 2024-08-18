@@ -30,7 +30,7 @@ class StoreNoteRequest extends FormRequest
             'note_type' => [
                 new Enum(NoteTypeEnum::class),
                 'max:3',
-                'nullable'
+                'nullable',
             ],
             // 'notable_type' => 'required|string',
             // 'notable_id' => 'required|integer',

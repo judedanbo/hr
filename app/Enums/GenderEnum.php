@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum GenderEnum: string
 {
-    case NOT_AVAILABLE = "";
+    case NOT_AVAILABLE = '';
     case MALE = 'M';
     case FEMALE = 'F';
 
@@ -14,7 +14,7 @@ enum GenderEnum: string
             self::MALE => 'Male',
             self::FEMALE => 'Female',
             self::NOT_AVAILABLE => 'Gender not Provided',
-            default => static::NOT_AVAILABLE,
+            default => self::NOT_AVAILABLE,
         };
     }
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\Identity;
 use App\Models\InstitutionPerson;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -28,7 +27,7 @@ class SeparationController extends Controller
                 'note' => [
                     'date' => $staff->notes->first()?->note_date,
                     'note' => $staff->notes->first()?->note,
-                    'type' => $staff->notes->first()?->note_type->label()
+                    'type' => $staff->notes->first()?->note_type->label(),
                 ],
                 'statuses' => $staff->statuses->map(function ($status) {
                     return [
@@ -48,13 +47,13 @@ class SeparationController extends Controller
                 'initials' => $staff->person->initials,
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender?->label(),
-                'dob' =>  $staff->person->date_of_birth?->format('d M Y'),
+                'dob' => $staff->person->date_of_birth?->format('d M Y'),
                 'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
-                'dob_distance' =>  $staff->person->date_of_birth?->diffInYears() . " years old",
+                'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                 'ghana_card' => $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
-                'contact' => $staff->person->contacts->count() > 0 ?  $staff->person->contacts->map(function ($item) {
+                'contact' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(function ($item) {
                     return $item->contact;
                 })->implode(', ') : '',
                 'current_rank' => $staff->currentRank ? [
@@ -68,8 +67,9 @@ class SeparationController extends Controller
                 ] : null,
 
             ]);
+
         // dd($separated);
-        return  Inertia::render('Separation/Index', [
+        return Inertia::render('Separation/Index', [
             'separated' => $separated,
             'filters' => ['search' => request()->search],
         ]);
@@ -77,6 +77,6 @@ class SeparationController extends Controller
 
     public function show()
     {
-        return  Inertia::render('Separation/Show', []);
+        return Inertia::render('Separation/Show', []);
     }
 }

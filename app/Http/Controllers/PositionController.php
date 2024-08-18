@@ -38,11 +38,11 @@ class PositionController extends Controller
                     'contacts' => $position->staff?->first()?->person->contacts?->map(function ($contact) {
                         return [
                             'id' => $contact->id,
-                            'contact' => $contact->contact
+                            'contact' => $contact->contact,
                         ];
                     }) ?? 'not available',
                 ]),
-            'filters' => request()->all('search', 'trashed')
+            'filters' => request()->all('search', 'trashed'),
         ]);
     }
 
@@ -59,24 +59,23 @@ class PositionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorePositionRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StorePositionRequest $request)
     {
         Position::create($request->validated());
+
         return redirect()->route('position.index')->with('success', 'Position created.');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Position  $position
      * @return \Illuminate\Http\Response
      */
     public function show(Position $position)
     {
-        $position = $position->load(["staff" => function ($query) {
+        $position = $position->load(['staff' => function ($query) {
             $query->with([
                 'ranks' => function ($query) {
                     $query->wherePivotNull('end_date');
@@ -88,10 +87,11 @@ class PositionController extends Controller
                     $query->with(['contacts' => function ($query) {
                         $query->where('contact_type', ContactTypeEnum::PHONE);
                     }]);
-                }
+                },
             ]);
             $query->orderBy('start_date', 'desc');
         }]);
+
         return Inertia::render('Positions/Show', [
             'position' => [
                 'id' => $position->id,
@@ -130,7 +130,6 @@ class PositionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Position  $position
      * @return \Illuminate\Http\Response
      */
     public function edit(Position $position)
@@ -141,25 +140,24 @@ class PositionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatePositionRequest  $request
-     * @param  \App\Models\Position  $position
      * @return \Illuminate\Http\Response
      */
     public function update(UpdatePositionRequest $request, Position $position)
     {
         $position->update($request->validated());
+
         return redirect()->route('position.index')->with('success', 'Position updated.');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Position  $position
      * @return \Illuminate\Http\Response
      */
     public function delete(Position $position)
     {
         $position->delete();
+
         return redirect()->route('position.index')->with('success', 'Position deleted.');
     }
 
@@ -167,6 +165,7 @@ class PositionController extends Controller
     {
         return Position::select('id as value', 'name as label')->get();
     }
+
     public function stat()
     {
         return Position::select('id as value', 'name as label')->get();

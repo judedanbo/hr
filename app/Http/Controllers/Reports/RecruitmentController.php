@@ -39,6 +39,7 @@ class RecruitmentController extends Controller
             ->orderBy('year', 'desc')
             ->take(10)
             ->get();
+
         // return  $recruitment;
         return Inertia::render('Report/Recruitment/Index', [
             'recruitment' => $recruitment,

@@ -52,6 +52,7 @@ class StorePersonRequest extends FormRequest
             ],
         ];
     }
+
     public function attributes(): array
     {
         return [
@@ -72,8 +73,8 @@ class StorePersonRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'staffData.personalInformation.date_of_birth.before' => 'The staff must be over 18 years', 
-            'staffData.personalInformation.date_of_birth.before_or_equal' => 'The date of birth cannot after today', 
+            'staffData.personalInformation.date_of_birth.before' => 'The staff must be over 18 years',
+            'staffData.personalInformation.date_of_birth.before_or_equal' => 'The date of birth cannot after today',
         ];
     }
 }

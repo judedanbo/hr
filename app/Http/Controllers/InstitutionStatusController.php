@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Institution;
 use App\Models\Status;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class InstitutionStatusController extends Controller
@@ -16,8 +15,10 @@ class InstitutionStatusController extends Controller
             ->with('institution')
             ->where('institution_id', $institution)
             ->get();
+
         // $institution->load('statuses');
         return $statuses;
+
         return Inertia::render('Status/Index', [
             'institution' => [
                 'id' => $statuses, //->institution
@@ -32,7 +33,7 @@ class InstitutionStatusController extends Controller
                     'description' => $status->description,
                     'start_date' => $status->start_date,
                     'end_date' => $status->end_date,
-                    'staff' => $status->staff_count
+                    'staff' => $status->staff_count,
                     // ->map(fn ($person) => [
                     //     'id' => $person->id,
                     //     'person_id' => $person->person->id,
@@ -43,12 +44,14 @@ class InstitutionStatusController extends Controller
                 ]),
             'filters' => request()->all('search'),
         ]);
+
         return $institution;
     }
 
     public function show(Institution $institution, Status $status)
     {
         $status->load(['staff', 'institution']);
+
         // return $status;
         return Inertia::render('Status/Show', [
             'institution' => [
@@ -61,7 +64,7 @@ class InstitutionStatusController extends Controller
                 'name' => $status->status->label(),
                 'description' => $status->description,
             ],
-            'staff' => $status->staff
+            'staff' => $status->staff,
             // ->map(fn ($person) => [
             //     'id' => $person->id,
             //     'person_id' => $person->person->id,

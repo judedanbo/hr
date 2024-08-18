@@ -16,7 +16,7 @@ class StaffType extends Model
         'staff_id',
         'staff_type',
         'start_date',
-        'end_date'
+        'end_date',
     ];
 
     protected $casts = [
@@ -28,7 +28,6 @@ class StaffType extends Model
     /**
      * get staff who are of a type
      */
-
     public function staff(): BelongsTo
     {
         return $this->belongsTo(InstitutionPerson::class, 'staff_id');

@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use App\Http\Requests\StoreNoteRequest;
 use Carbon\Carbon;
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -23,7 +20,7 @@ class InstitutionPerson extends Pivot
         'old_staff_number',
         'hire_date',
         'end_date',
-        'job_category_id'
+        'job_category_id',
     ];
     // protected $appends =  ['status'];
 
@@ -34,12 +31,12 @@ class InstitutionPerson extends Pivot
 
     /**
      * get staff types of a staff
-     *
      */
     public function type(): HasMany
     {
         return $this->hasMany(StaffType::class, 'staff_id')->latest();
     }
+
     /**
      * Get the person that owns the InstitutionPerson
      */
@@ -124,7 +121,7 @@ class InstitutionPerson extends Pivot
             'current_unit_id' => StaffUnit::select('id')
                 ->whereColumn('institution_person.id', 'staff_unit.staff_id')
                 ->latest('staff_unit.start_date')
-                ->take(1)
+                ->take(1),
         ])->with(['currentUnit' => function ($query) {
             $query->with('unit:id,name');
         }]);
@@ -136,42 +133,46 @@ class InstitutionPerson extends Pivot
             $query->whereNull('job_staff.end_date');
         });
     }
-    function scopeUnit($query)
+
+    public function scopeUnit($query)
     {
         return $query->whereHas('units', function ($query) {
             $query->whereNull('staff_unit.end_date');
         });
     }
-    public function scopePromotion($query, $year = Null)
+
+    public function scopePromotion($query, $year = null)
     {
         return $query->whereHas('ranks', function ($query) use ($year) {
-            $searchYear = $year  ?? $year - 3;
+            $searchYear = $year ?? $year - 3;
             $query->whereHas('category');
             $query->whereNull('job_staff.end_date');
-            $query->whereRaw("YEAR(job_staff.start_date) < ?", [$searchYear]);
+            $query->whereRaw('YEAR(job_staff.start_date) < ?', [$searchYear]);
         });
     }
 
-    function scopeSearchPerson($query, $search)
+    public function scopeSearchPerson($query, $search)
     {
         return $query->whereHas('person', function ($personQuery) use ($search) {
             $personQuery->search($search);
         });
     }
-    function scopeSearchRank($query, $search)
+
+    public function scopeSearchRank($query, $search)
     {
         return $query->orWhereHas('ranks', function ($rankQuery) use ($search) {
             $rankQuery->searchRank($search);
         });
     }
 
-    function scopeSearchOtherRank($query, $search)
+    public function scopeSearchOtherRank($query, $search)
     {
         return $query->orWhereHas('ranks', function ($rankQuery) use ($search) {
             $rankQuery->searchOtherRank($search);
             // $rankQuery->searchRank($search);
         });
     }
+
     public function currentRank(): BelongsTo
     {
         return $this->BelongsTo(JobStaff::class);
@@ -183,7 +184,7 @@ class InstitutionPerson extends Pivot
             'current_rank_id' => JobStaff::select('id')
                 ->whereColumn('institution_person.id', 'job_staff.staff_id')
                 ->latest('job_staff.start_date')
-                ->take(1)
+                ->take(1),
         ])->with(['currentRank' => function ($query) {
             $query->with(['job' => function ($query) {
                 $query->whereNull('jobs.deleted_at');
@@ -191,6 +192,7 @@ class InstitutionPerson extends Pivot
             }]);
         }]);
     }
+
     public function scopeCurrentRankName($query, $rank = null)
     {
         $query->addSelect([
@@ -200,15 +202,13 @@ class InstitutionPerson extends Pivot
                     $query->where('job_staff.job_id', $rank);
                 })
                 ->latest('job_staff.start_date')
-                ->take(1)
+                ->take(1),
         ])->with(['currentRank' => function ($query) {
             $query->with(['job' => function ($query) {
                 $query->with('category');
             }]);
         }]);
     }
-
-
 
     // get current rank of staff
     // public function getCurrentRankAttribute()
@@ -259,6 +259,7 @@ class InstitutionPerson extends Pivot
             $query->whereYear('job_staff.start_date', '<=', Carbon::now()->subYears(3));
         });
     }
+
     public function scopeToPromoteApril($query)
     {
         return $query->whereHas('ranks', function ($query) {
@@ -277,6 +278,7 @@ class InstitutionPerson extends Pivot
             });
         });
     }
+
     public function scopeToPromoteOctober($query)
     {
         return $query->whereHas('ranks', function ($query) {
@@ -296,8 +298,7 @@ class InstitutionPerson extends Pivot
         });
     }
 
-
-    function scopeToRetire($query)
+    public function scopeToRetire($query)
     {
         return $query->whereHas('person', function ($query) {
             $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 57');
@@ -334,13 +335,10 @@ class InstitutionPerson extends Pivot
     }
 
     /** Get staff's notes */
-
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'notable')->latest();
     }
-
-
 
     public function scopeManagement($query)
     {
@@ -348,13 +346,13 @@ class InstitutionPerson extends Pivot
             $whereHasQuery->managementRanks();
         });
     }
+
     public function scopeOtherRanks($query)
     {
         return $query->whereHas('ranks', function ($whereHasQuery) {
             $whereHasQuery->otherRanks();
         });
     }
-
 
     public function scopeSearch($query, $search)
     {

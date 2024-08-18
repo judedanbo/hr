@@ -15,14 +15,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SeparatedTerminationExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class SeparatedTerminationExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -35,7 +28,7 @@ class SeparatedTerminationExport implements
     {
         return [
             1 => ['font' => ['bold' => true]],
-            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
 
@@ -51,6 +44,7 @@ class SeparatedTerminationExport implements
             // 'contact'
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -63,7 +57,8 @@ class SeparatedTerminationExport implements
             // $staff->person->contacts,
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person', 'statuses' => function ($query) {

@@ -4,8 +4,8 @@ namespace App\Exports;
 
 use App\Models\Job;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -16,24 +16,17 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RankAllListExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class RankAllListExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
+
     public $rank;
-
-
 
     public function __construct(Job $rank)
     {
         $this->rank = $rank;
     }
+
     public function styles(Worksheet $sheet): array
     {
         return [
@@ -41,6 +34,7 @@ class RankAllListExport implements
             'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
+
     public function headings(): array
     {
         return [
@@ -53,13 +47,15 @@ class RankAllListExport implements
             'Posting Date',
         ];
     }
+
     public function title(): string
     {
         return Str::of($this->rank->name)->plural();
     }
+
     public function map($staff): array
     {
-        return  [
+        return [
             $staff->file_number,
             $staff->staff_number,
             $staff->person->full_name,
@@ -69,6 +65,7 @@ class RankAllListExport implements
             $staff->units->first()?->pivot->start_date?->format('d M, Y'),
         ];
     }
+
     public function query()
     {
         return Job::find($this->rank->id)

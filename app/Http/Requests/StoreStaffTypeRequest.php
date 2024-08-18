@@ -28,8 +28,8 @@ class StoreStaffTypeRequest extends FormRequest
         return [
             'staff_id' => 'required|exists:institution_person,id',
             'staff_type' => [
-                "required",
-                new Enum(StaffTypeEnum::class)
+                'required',
+                new Enum(StaffTypeEnum::class),
             ],
             'start_date' => 'required|date|before_or_equal:today|after_or_equal:institution_person.hire_date',
             'end_date' => 'date|after:start_date|nullable',

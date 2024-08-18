@@ -16,16 +16,10 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SeparatedLeaveWithoutPayExport implements
-    FromQuery,
-    WithMapping,
-    WithHeadings,
-    ShouldQueue,
-    ShouldAutoSize,
-    WithTitle,
-    WithStyles
+class SeparatedLeaveWithoutPayExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
+
     public function title(): string
     {
         return 'Separated (Leave without pay)';
@@ -35,9 +29,10 @@ class SeparatedLeaveWithoutPayExport implements
     {
         return [
             1 => ['font' => ['bold' => true]],
-            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]]
+            'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
+
     public function headings(): array
     {
         return [
@@ -47,9 +42,10 @@ class SeparatedLeaveWithoutPayExport implements
             'Rank',
             // 'Status',
             'Date',
-            'Contact'
+            'Contact',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -60,14 +56,15 @@ class SeparatedLeaveWithoutPayExport implements
             // $staff->statuses?->first()->status->label(),
             $staff->statuses->first()->start_date?->format('d F, Y'),
             $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::PHONE;
+                return $contact->contact_type == ContactTypeEnum::PHONE;
             })->first()?->contact ?? '',
             $staff->person->contacts->filter(function ($contact) {
-                return $contact->contact_type ==  ContactTypeEnum::EMERGENCY;
+                return $contact->contact_type == ContactTypeEnum::EMERGENCY;
             })->first()?->contact ?? '',
         ];
     }
-    function query()
+
+    public function query()
     {
         return InstitutionPerson::query()
             ->with(['person.contacts', 'statuses' => function ($query) {

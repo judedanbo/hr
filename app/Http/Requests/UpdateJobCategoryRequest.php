@@ -31,7 +31,7 @@ class UpdateJobCategoryRequest extends FormRequest
             'level' => [
                 'required',
                 Rule::unique('job_categories', 'level')->ignore($this->id),
-                'integer:between:1,100'
+                'integer:between:1,100',
             ],
             'job_category_id' => 'nullable|integer|exists:job_categories,id',
             'description' => 'nullable|string',

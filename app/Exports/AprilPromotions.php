@@ -16,15 +16,9 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class AprilPromotions implements
+class AprilPromotions implements FromQuery,
     // FromCollection,
-    ShouldAutoSize,
-    WithHeadings,
-    FromQuery,
-    WithMapping,
-    ShouldQueue,
-    WithTitle,
-    WithStyles
+    ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -36,12 +30,12 @@ class AprilPromotions implements
     public function styles($sheet): array
     {
         return [
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
             'F' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
         ];
     }
 
-    function headings(): array
+    public function headings(): array
     {
         return [
             'Full Name',
@@ -58,6 +52,7 @@ class AprilPromotions implements
             'Current Unit Start',
         ];
     }
+
     public function map($staff): array
     {
         return [
@@ -75,6 +70,7 @@ class AprilPromotions implements
             $staff->units->count() > 0 ? $staff->units->first()->pivot->start_date->format('d F, Y') : null,
         ];
     }
+
     public function query()
     {
         return InstitutionPerson::query()

@@ -31,7 +31,6 @@ class DocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreDocumentRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreDocumentRequest $request)
@@ -42,7 +41,6 @@ class DocumentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Http\Response
      */
     public function show(Document $document)
@@ -53,7 +51,6 @@ class DocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Http\Response
      */
     public function edit(Document $document)
@@ -64,8 +61,6 @@ class DocumentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateDocumentRequest  $request
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateDocumentRequest $request, Document $document)
@@ -76,7 +71,6 @@ class DocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Http\Response
      */
     public function destroy(Document $document)

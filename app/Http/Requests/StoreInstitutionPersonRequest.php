@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Carbon\Carbon;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
-use Illuminate\Validation\Rules\Enum;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreInstitutionPersonRequest extends FormRequest
 {
@@ -58,18 +58,18 @@ class StoreInstitutionPersonRequest extends FormRequest
                 'after:' . Carbon::now()->subYears(5)->format('Y-m-d'),
                 'before_or_equal:today',
             ],
-            'staffData.qualifications.institution' => "required|string|max:50",
-            'staffData.qualifications.course' => "required|string|max:100",
-            'staffData.qualifications.level' => "string|max:10|nullable",
-            'staffData.qualifications.qualification' => "string|max:100|nullable",
-            'staffData.qualifications.qualification_number' => "string|max:20|nullable",
-            'staffData.qualifications.year' => "required|string|max:4",
-            'staffData.rank.rank_id' => "required|exists:jobs,id",
-            'staffData.rank.start_date' => "required|date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d'),
-            'staffData.rank.end_date' => "date|after:staffData.rank.start_date|before:" . Carbon::now()->subYear()->format('Y-m-d') . "|nullable",
-            'staffData.unit.unit_id' => "exists:units,id|nullable",
-            'staffData.unit.start_date' => "date|after:" . Carbon::now()->subYears(2)->format('Y-m-d') . "|before:" . Carbon::now()->addYear()->format('Y-m-d') . "|nullable",
-            'staffData.unit.end_date' => "date|after:staffData.unit.start_date|before:" . Carbon::now()->addYear()->format('Y-m-d') . "|nullable",
+            'staffData.qualifications.institution' => 'required|string|max:50',
+            'staffData.qualifications.course' => 'required|string|max:100',
+            'staffData.qualifications.level' => 'string|max:10|nullable',
+            'staffData.qualifications.qualification' => 'string|max:100|nullable',
+            'staffData.qualifications.qualification_number' => 'string|max:20|nullable',
+            'staffData.qualifications.year' => 'required|string|max:4',
+            'staffData.rank.rank_id' => 'required|exists:jobs,id',
+            'staffData.rank.start_date' => 'required|date|after:' . Carbon::now()->subYears(2)->format('Y-m-d') . '|before:' . Carbon::now()->addYear()->format('Y-m-d'),
+            'staffData.rank.end_date' => 'date|after:staffData.rank.start_date|before:' . Carbon::now()->subYear()->format('Y-m-d') . '|nullable',
+            'staffData.unit.unit_id' => 'exists:units,id|nullable',
+            'staffData.unit.start_date' => 'date|after:' . Carbon::now()->subYears(2)->format('Y-m-d') . '|before:' . Carbon::now()->addYear()->format('Y-m-d') . '|nullable',
+            'staffData.unit.end_date' => 'date|after:staffData.unit.start_date|before:' . Carbon::now()->addYear()->format('Y-m-d') . '|nullable',
         ];
     }
 
@@ -94,18 +94,18 @@ class StoreInstitutionPersonRequest extends FormRequest
             'staffData.contact.contact' => 'Contact',
             'staffData.employment.file_number' => 'File number',
             'staffData.employment.hire_date' => 'Hire date',
-            'staffData.qualifications.institution' => "Institution",
-            'staffData.qualifications.course' => "Course",
-            'staffData.qualifications.level' => "Level",
-            'staffData.qualifications.qualification' => "Qualification",
-            'staffData.qualifications.qualification_number' => "Qualification Number",
-            'staffData.qualifications.year' => "Graduating year",
-            'staffData.rank.rank_id' => "Rank",
-            'staffData.rank.start_date' => "Start date",
-            'staffData.rank.end_date' => "End date",
-            'staffData.unit.unit_id' => "Unit",
-            'staffData.unit.start_date' => "Start date",
-            'staffData.unit.end_date' => "End date",
+            'staffData.qualifications.institution' => 'Institution',
+            'staffData.qualifications.course' => 'Course',
+            'staffData.qualifications.level' => 'Level',
+            'staffData.qualifications.qualification' => 'Qualification',
+            'staffData.qualifications.qualification_number' => 'Qualification Number',
+            'staffData.qualifications.year' => 'Graduating year',
+            'staffData.rank.rank_id' => 'Rank',
+            'staffData.rank.start_date' => 'Start date',
+            'staffData.rank.end_date' => 'End date',
+            'staffData.unit.unit_id' => 'Unit',
+            'staffData.unit.start_date' => 'Start date',
+            'staffData.unit.end_date' => 'End date',
         ];
     }
 

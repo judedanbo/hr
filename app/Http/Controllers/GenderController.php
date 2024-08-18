@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GenderEnum;
-use Illuminate\Http\Request;
 
 class GenderController extends Controller
 {
@@ -16,6 +15,7 @@ class GenderController extends Controller
             $newGender->label = $gen->label();
             $gender[] = $newGender;
         }
+
         return $gender;
     }
 }
