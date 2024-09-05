@@ -2,7 +2,6 @@
 import UserRoleForm from "./UserRoleForm.vue";
 import { Inertia } from "@inertiajs/inertia";
 import axios from "axios";
-import { computed } from "vue";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -33,19 +32,13 @@ const submitHandler = (data, node) => {
 		},
 	});
 };
-// const userRoles = computed(() => {
-// 	return roles.value.map(function (role) {
-// 		return role.value;
-// 	});
-// });
 </script>
 
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Roles</h1>
-		<!-- {{ userRoles }} -->
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
-			<UserRoleForm :userRoles="userRoles" />
+			<UserRoleForm :userRoles="userRoles.roles" />
 		</FormKit>
 	</main>
 </template>

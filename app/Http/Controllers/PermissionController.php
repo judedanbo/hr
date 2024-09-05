@@ -20,7 +20,7 @@ class PermissionController extends Controller
 
     public function addPermission(Request $request, User $user)
     {
-        $user->givePermissionTo($request->permissions);
+        $user->syncPermissions($request->permissions);
 
         return redirect()->back()->with('success', 'Permission added successfully');
     }

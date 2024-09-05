@@ -81,6 +81,8 @@ Route::controller(UserController::class)->middleware(['auth', 'password_changed'
     Route::delete('/user/{user}', 'delete')->name('user.delete');
     Route::post('/user/{user}', 'resetPassword')->name('user.reset-password');
     Route::get('/user/{user}/roles', 'roles')->name('user.roles');
+    Route::get('/user/{user}/permissions', 'permissions')->name('user.permissions');
+    Route::get('/user/{user}/roles-permissions', 'rolesPermissions')->name('user.roles-permissions');
 });
 Route::controller(RoleController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/role', 'index')->name('role.index');
@@ -146,7 +148,7 @@ Route::get('/institution/{institution}/ranks', [InstitutionRankController::class
 Route::get('/institution/{institution}/units', function (Institution $institution) {
     $institution->load('allUnits');
 
-    return $institution->allUnits->map(fn ($unit) => [
+    return $institution->allUnits->map(fn($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -192,7 +194,7 @@ Route::get('/unit-list', function () {
     // return 'all units';
     $units = Unit::all();
 
-    return $units->map(fn ($unit) => [
+    return $units->map(fn($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -313,7 +315,7 @@ Route::get('rank/{rank}/next', function (Job $rank) {
 
     return Job::where('job_category_id', $nextCategoryId)
         ->get()
-        ->map(fn ($rank) => [
+        ->map(fn($rank) => [
             'value' => $rank->id,
             'label' => $rank->name,
         ]);

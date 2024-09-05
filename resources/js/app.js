@@ -54,7 +54,7 @@ createInertiaApp({
 							// Family styles apply to all inputs that share a common family
 							"family:box": {
 								decorator:
-									"block relative h-5 w-5 mr-2 rounded bg-white bg-gradient-to-b from-transparent to-gray-200 peer-checked:ring-green-500 text-transparent peer-checked:text-green-500",
+									"block relative h-5 w-5 mr-2 rounded bg-white bg-gradient-to-b from-transparent to-gray-200 peer-checked:ring-green-500 text-transparent peer-checked:text-green-500 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:pointer-events-none",
 								// decoratorIcon:
 									// "flex p-[3px] w-1/2 w-1/2 ",
 								help: "mb-2 mt-1.5",

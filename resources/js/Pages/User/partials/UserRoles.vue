@@ -79,11 +79,7 @@ const deleteRole = (user, role) => {
 		</div>
 
 		<Modal :show="openAddRoleModal" @close="toggleAddRoleModal()">
-			<AddUserRole
-				:user="user"
-				:roles="roles"
-				@form-submitted="toggleAddRoleModal()"
-			/>
+			<AddUserRole :user="user" @form-submitted="toggleAddRoleModal()" />
 		</Modal>
 		<Modal :show="openEditPromoteModal" @close="toggleEditRoleModal()">
 			<Edit

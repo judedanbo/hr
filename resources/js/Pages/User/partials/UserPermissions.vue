@@ -88,6 +88,7 @@ const deletePermission = (user, permission) => {
 		</div>
 
 		<Modal :show="openAddPermissionModal" @close="toggleAddPermissionModal()">
+			<!-- {{ permissions }} -->
 			<AddUserPermission
 				:user="user"
 				:permissions="permissions"

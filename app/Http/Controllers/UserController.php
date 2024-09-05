@@ -25,7 +25,7 @@ class UserController extends Controller
             ->withCount(['roles', 'permissions'])
             ->paginate(10)
             ->withQueryString()
-            ->through(fn ($user) => [
+            ->through(fn($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -157,6 +157,30 @@ class UserController extends Controller
         return [
             'roles' => $user->roles->map(function ($role) {
                 return $role->name;
+            }),
+        ];
+    }
+    public function permissions(User $user)
+    {
+        // return $user->getAllPermissions();
+        // // dd($user);
+        // $user->load('permissions');
+
+        return [
+            'permissions' => $user->getAllPermissions()->map(function ($permission) {
+                return $permission->name;
+            }),
+        ];
+    }
+    public function rolesPermissions(User $user)
+    {
+        // return $user->getAllPermissions();
+        // // dd($user);
+        // $user->load('permissions');
+
+        return [
+            'permissions' => $user->getPermissionsViaRoles()->map(function ($permission) {
+                return $permission->name;
             }),
         ];
     }

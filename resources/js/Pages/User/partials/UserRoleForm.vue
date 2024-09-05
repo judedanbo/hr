@@ -7,18 +7,16 @@ const props = defineProps({
 		default: () => [],
 	},
 });
-const selectedRoles = ref([]);
 let roles = ref([]);
-
 onMounted(async () => {
 	const response = await axios.get(route("roles.list"));
 	roles.value = response.data;
 });
 </script>
 <template>
-	<!-- {{ userRoles }} -->
 	<div>
 		<FormKit
+			v-model="userRoles"
 			type="checkbox"
 			name="roles"
 			id="roles"
