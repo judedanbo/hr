@@ -34,7 +34,7 @@ class InstitutionPersonController extends Controller
             ->search(request()->search)
             ->paginate(10)
             ->withQueryString()
-            ->through(fn ($staff) => [
+            ->through(fn($staff) => [
                 'id' => $staff->id,
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
@@ -151,7 +151,9 @@ class InstitutionPersonController extends Controller
                                 $query->whereNull('valid_end');
                             },
                             'contacts',
-                            'identities',
+                            'identities' => function ($query) {
+                                $query->withTrashed();
+                            },
                             'qualifications',
                         ]);
                     },
@@ -194,14 +196,14 @@ class InstitutionPersonController extends Controller
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
                 'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
-                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
+                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn($id) => [
                     'id' => $id->id,
                     'id_type' => $id->id_type,
                     'id_type_display' => $id->id_type->label(),
                     'id_number' => $id->id_number,
                 ]) : null,
             ],
-            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn ($qualification) => [
+            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn($qualification) => [
                 'id' => $qualification->id,
                 'person_id' => $qualification->person_id,
                 'course' => $qualification->course,
@@ -210,7 +212,7 @@ class InstitutionPersonController extends Controller
                 'qualification_number' => $qualification->qualification_number,
                 'level' => $qualification->level,
                 'year' => $qualification->year,
-                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
+                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn($document) => [
                     'document_type' => $document->document_type,
                     'document_title' => $document->document_title,
                     'document_status' => $document->document_status,
@@ -219,7 +221,7 @@ class InstitutionPersonController extends Controller
                     'file_type' => $document->file_type,
                 ]) : null,
             ]) : [],
-            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
+            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type' => $contact->contact_type,
@@ -248,7 +250,7 @@ class InstitutionPersonController extends Controller
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_display' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                 'start_date' => $staff->start_date?->format('d M Y'),
-                'statuses' => $staff->statuses?->map(fn ($status) => [
+                'statuses' => $staff->statuses?->map(fn($status) => [
                     'id' => $status->id,
                     'status' => $status->status,
                     'status_display' => $status->status?->name,
@@ -258,7 +260,7 @@ class InstitutionPersonController extends Controller
                     'end_date' => $status->end_date?->format('Y-m-d'),
                     'end_date_display' => $status->end_date?->format('d M Y'),
                 ]),
-                'staff_type' => $staff->type?->map(fn ($type) => [
+                'staff_type' => $staff->type?->map(fn($type) => [
                     'id' => $type->id,
                     'type' => $type->staff_type,
                     'type_label' => $type->staff_type->label(),
@@ -267,7 +269,7 @@ class InstitutionPersonController extends Controller
                     'end_date' => $type->end_date?->format('Y-m-d'),
                     'end_date_display' => $type->end_date?->format('d M Y'),
                 ]),
-                'positions' => $staff->positions?->map(fn ($position) => [
+                'positions' => $staff->positions?->map(fn($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
                     'start_date' => $position->pivot->start_date,
@@ -275,7 +277,7 @@ class InstitutionPersonController extends Controller
                     'start_date_display' => $position->pivot->start_date ? Carbon::parse($position->pivot->start_date)->format('d M Y') : null,
                     'end_date_display' => $position->pivot->end_date ? Carbon::parse($position->pivot->end_date)->format('d M Y') : null,
                 ]),
-                'ranks' => $staff->ranks->map(fn ($rank) => [
+                'ranks' => $staff->ranks->map(fn($rank) => [
                     'id' => $rank->id,
                     'name' => $rank->name,
                     'staff_name' => $staff->person->full_name,
@@ -288,7 +290,7 @@ class InstitutionPersonController extends Controller
                     'remarks' => $rank->pivot->remarks,
                     'distance' => $rank->pivot->start_date?->diffForHumans(),
                 ]),
-                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn ($note) => [
+                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn($note) => [
                     'id' => $note->id,
                     'note' => $note->note,
                     'note_date' => $note->note_date->diffForHumans(),
@@ -298,7 +300,7 @@ class InstitutionPersonController extends Controller
                     'url' => $note->url,
 
                 ]) : null,
-                'units' => $staff->units->map(fn ($unit) => [
+                'units' => $staff->units->map(fn($unit) => [
                     // 'unit' => $unit,
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
@@ -315,7 +317,7 @@ class InstitutionPersonController extends Controller
                     'remarks' => $unit->pivot->remarks,
                     'old_data' => $unit->pivot->old_data,
                 ]),
-                'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
+                'dependents' => $staff->dependents ? $staff->dependents->map(fn($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'title' => $dep->person->title,
@@ -375,7 +377,7 @@ class InstitutionPersonController extends Controller
             'hire_date' => $staff->hire_date?->format('d M Y'),
             'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
             'start_date' => $staff->start_date,
-            'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
+            'promotions' => $staff->ranks ? $staff->ranks->map(fn($rank) => [
                 'id' => $rank->id,
                 'name' => $rank->name,
                 'start_date' => $rank->pivot->start_date?->format('d M Y'),

@@ -28,7 +28,7 @@ class PersonController extends Controller
                 ->with('institution', 'dependent', 'identities')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($person) => [
+                ->through(fn($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,
                     'gender' => $person->gender?->label(),
@@ -108,12 +108,12 @@ class PersonController extends Controller
                 'religion' => $selectedPerson->religion,
                 'marital_status' => $selectedPerson->marital_status?->label(),
                 'image' => $selectedPerson->image ? Storage::disk('avatars')->url($selectedPerson->image) : null,
-                'identities' => $selectedPerson->identities->count() > 0 ? $selectedPerson->identities->map(fn ($id) => [
+                'identities' => $selectedPerson->identities->count() > 0 ? $selectedPerson->identities->map(fn($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
                 ]) : null,
             ],
-            'contacts' => $selectedPerson->contacts->count() > 0 ? $selectedPerson->contacts->map(fn ($contact) => [
+            'contacts' => $selectedPerson->contacts->count() > 0 ? $selectedPerson->contacts->map(fn($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type_id' => $contact->contact_type_id,
@@ -129,8 +129,8 @@ class PersonController extends Controller
                 'post_code' => $selectedPerson->address->first()->post_code,
                 'valid_end' => $selectedPerson->address->first()->valid_end,
             ] : null,
-            'staff' => $selectedPerson->institution->count() > 0 ? $selectedPerson->institution->map(fn ($inst) => [
-                'status' => $inst->staff->statuses?->map(fn ($status) => [
+            'staff' => $selectedPerson->institution->count() > 0 ? $selectedPerson->institution->map(fn($inst) => [
+                'status' => $inst->staff->statuses?->map(fn($status) => [
                     'id' => $status->id,
                     'status' => $status->status,
                     'status_display' => $status->status?->name,
@@ -182,7 +182,7 @@ class PersonController extends Controller
                 'end_date' => $inst->staff->end_date,
             ]) : null,
             'dependent' => $selectedPerson->dependent,
-            'dependents' => $selectedPerson->dependents ? $selectedPerson->dependents->map(fn ($dep) => [
+            'dependents' => $selectedPerson->dependents ? $selectedPerson->dependents->map(fn($dep) => [
                 'id' => $dep->id,
                 'person_id' => $dep->person_id,
                 'name' => $dep->person->full_name,
@@ -290,7 +290,7 @@ class PersonController extends Controller
 
     public function deleteIdentity(Person $person, $identity)
     {
-        $person->identities()->where('id', $identity)->delete();
+        $person->identities()->where('id', $identity)->forceDelete();
 
         return redirect()->back();
     }
