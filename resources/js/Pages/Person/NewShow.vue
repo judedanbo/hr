@@ -3,6 +3,8 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
+import PromotionHistory from "../Staff/PromotionHistory.vue";
+import TransferHistory from "../Staff/TransferHistory.vue";
 import { ref } from "vue";
 import Dependents from "../Staff/Dependents.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
@@ -166,8 +168,33 @@ let BreadcrumbLinks = [
 				</div>
 				<div class="flex gap-2 flex-wrap flex-col">
 					<StaffDetails class="" :staff="staff" />
+					<div class="flex gap-x-4 mt-4">
+						<PromotionHistory
+							:promote="false"
+							:edit-promotion="false"
+							:promotions="staff[0].ranks"
+							:staff="staff[0].staff_id"
+							:institution="staff[0].institution_id"
+							:show-promotion-form="showPromotionForm"
+							class="w-full xl:flex-1"
+							@close-form="togglePromotionForm()"
+						/>
+						<TransferHistory
+							:transfer="false"
+							:edit-transfer="false"
+							:transfers="staff[0].units"
+							:staff="staff[0].staff_id"
+							:staff-name="person.name"
+							:institution="staff[0].institution_id"
+							:show-transfer-form="showTransferForm"
+							class="w-full xl:flex-1"
+							@close-form="toggleTransferForm()"
+						/>
+					</div>
 				</div>
+				<!-- {{ staff[0].ranks }} -->
 				<!-- <RolesDetail :person="person.id" /> -->
+				<!-- Posting History -->
 			</div>
 		</main>
 		<NewModal :show="showEditForm" @close="toggleEditForm()">

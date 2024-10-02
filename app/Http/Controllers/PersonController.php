@@ -151,7 +151,20 @@ class PersonController extends Controller
                         'end_date_display' => $type->end_date?->format('d M Y'),
                     ];
                 }),
-                'units' => $inst->staff->units->count() > 1 ? [
+                'units' => $inst->staff->units->count() > 1 ? $inst->staff->units->map(function ($unit) {
+                    return [
+                        'unit_id' => $unit->id,
+                        'unit_name' => $unit->name,
+                        'status' => $unit->pivot->status?->label(),
+                        'status_color' => $unit->pivot->status?->color(),
+                        'department' => $unit->parent?->name,
+                        'staff_id' => $unit->pivot->staff_id,
+                        'start_date' => $unit->pivot->start_date?->format('d M Y'),
+                        'end_date' => $unit->pivot->end_date?->format('d M Y'),
+                        'remarks' => $unit->pivot->remarks,
+                    ];
+                })  : null,
+                'lastUnit' => $inst->staff->units->count() > 1 ? [
                     'unit_id' => $inst->staff->units?->first()->id,
                     'unit_name' => $inst->staff->units?->first()->name,
                     'status' => $inst->staff->units?->first()->pivot->status?->label(),
@@ -163,7 +176,7 @@ class PersonController extends Controller
                     'remarks' => $inst->staff->units?->first()->pivot->remarks,
                 ] : null,
 
-                'ranks' => $inst->staff->ranks->count() > 0 ? [ //$inst->staff->ranks->first(),
+                'lastRank' => $inst->staff->ranks->count() > 0 ? [ //$inst->staff->ranks->first(),
                     'id' => $inst->staff->ranks?->first()->id,
                     'name' => $inst->staff->ranks?->first()->name,
                     'job_id' => $inst->staff->ranks?->first()->id,
@@ -172,6 +185,17 @@ class PersonController extends Controller
                     'end_date' => $inst->staff->ranks?->first()->end_date?->format('d M Y'),
                     'remarks' => $inst->staff->ranks?->first()->remarks,
                 ] : null,
+                'ranks' => $inst->staff->ranks->count() > 0 ? $inst->staff->ranks->map(function ($rank) {
+                    return [
+                        'id' => $rank->id,
+                        'name' => $rank->name,
+                        'job_id' => $rank->id,
+                        'start_date' => $rank->start_date?->format('d M Y'),
+                        'start_date_distance' => $rank->start_date?->diffForHumans(),
+                        'end_date' => $rank->end_date?->format('d M Y'),
+                        'remarks' => $rank->remarks,
+                    ];
+                }) : null,
                 'institution_name' => $inst->name,
                 'institution_id' => $inst->id,
                 'staff_id' => $inst->staff->id,

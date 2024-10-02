@@ -57,9 +57,9 @@ defineProps({
 							}"
 						/>
 					</div>
-					<!-- <div>Rank History {{ sta.ranks }}</div> -->
+					<!-- <div>Rank History {{ sta.lastRank }}</div> -->
 					<div
-						v-if="sta.ranks"
+						v-if="sta.lastRank"
 						class="border-t border-gray-900/5 dark:border-gray-200/30 pt-2 sm:pr-4"
 					>
 						<dt class="font-semibold text-gray-900 dark:text-white">
@@ -68,39 +68,39 @@ defineProps({
 						<dd class="mt-2 text-gray-500 dark:text-gray-300">
 							<div class="text-xs">{{ sta.institution_name }}</div>
 							<span class="font-medium text-gray-900 dark:text-white">{{
-								sta.ranks?.name
+								sta.lastRank?.name
 							}}</span
 							><br />
-							<span v-if="sta?.ranks?.start_date">
-								{{ sta?.ranks?.start_date }} -
-								{{ sta?.units?.end_date ?? "Present" }}
+							<span v-if="sta?.lastRank?.start_date">
+								{{ sta?.lastRank?.start_date }} -
+								{{ sta?.lastUnit?.end_date ?? "Present" }}
 							</span>
 							<span v-else class="text-xs font-thin italic">No start date</span>
 							<br />{{ sta?.remarks }}
 						</dd>
 					</div>
 					<div
-						v-if="sta.units"
+						v-if="sta.lastUnit"
 						class="border-t border-gray-900/5 dark:border-gray-200/30 pt-2 sm:pr-4"
 					>
 						<dt class="font-semibold text-gray-900 dark:text-white">
 							Current Unit
 						</dt>
 						<dd class="mt-2 text-gray-500 dark:text-gray-300">
-							<div class="text-xs">{{ sta.units.department }}</div>
+							<div class="text-xs">{{ sta.lastUnit.department }}</div>
 							<span class="font-medium text-gray-900 dark:text-white">{{
-								sta.units?.unit_name
+								sta.lastUnit?.unit_name
 							}}</span
 							><br />
-							<span v-if="sta?.units?.start_date">
-								{{ sta?.units?.start_date }} -
-								{{ sta?.units?.end_date ?? "Present" }}
+							<span v-if="sta?.lastUnit?.start_date">
+								{{ sta?.lastUnit?.start_date }} -
+								{{ sta?.lastUnit?.end_date ?? "Present" }}
 							</span>
 							<span v-else class="text-xs font-thin italic">No start date</span>
 							<br />{{ sta?.remarks }}
 						</dd>
 					</div>
-					<!-- <div>Transfer History {{ sta.units }}</div> -->
+					<!-- <div>Transfer History {{ sta.lastUnit }}</div> -->
 				</div>
 
 				<div class="flex gap-5">

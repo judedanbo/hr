@@ -26,6 +26,7 @@ const subMenuClicked = (action, model) => {
 	}
 };
 let props = defineProps({
+	editTransfer: { type: Boolean, required: true },
 	transfers: { type: Array, default: () => null },
 });
 </script>
@@ -63,6 +64,7 @@ let props = defineProps({
 						>
 							Status
 						</th>
+						<th v-if="editTransfer"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -95,7 +97,7 @@ let props = defineProps({
 						>
 							{{ transfer.status }}
 						</td>
-						<td class="flex justify-end">
+						<td v-if="editTransfer" class="flex justify-end">
 							<SubMenu
 								v-if="
 									$page.props.permissions.includes('update staff') ||

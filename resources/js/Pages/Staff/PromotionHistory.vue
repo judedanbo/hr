@@ -11,6 +11,14 @@ import PromotionList from "./partials/PromotionList.vue";
 const emit = defineEmits(["closeForm"]);
 
 let props = defineProps({
+	promote: {
+		type: Boolean,
+		required: true,
+	},
+	editPromotion: {
+		type: Boolean,
+		required: true,
+	},
 	promotions: {
 		type: Array,
 		required: true,
@@ -89,7 +97,7 @@ watch(
 						Promotion History
 					</dt>
 				</div>
-				<div class="flex-none self-end px-6 pt-4">
+				<div v-if="promote" class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="$page.props.permissions.includes('update staff')"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
@@ -101,6 +109,7 @@ watch(
 				<PromotionList
 					class="w-full max-h-64 overflow-y-scroll"
 					:promotions="promotions"
+					:edit-promotion="editPromotion"
 					@edit-promotion="(model) => editPromotion(model)"
 					@delete-promotion="(model) => confirmDeletePromotion(model)"
 				/>

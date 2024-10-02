@@ -1,6 +1,7 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
 defineProps({
+	editPromotion: { type: Function, required: true },
 	promotions: { type: Array, default: () => null },
 });
 
@@ -40,6 +41,7 @@ const clicked = (action, model) => {
 					>
 						End
 					</th>
+					<th v-if="editPromotion"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,7 +68,7 @@ const clicked = (action, model) => {
 					>
 						{{ promotion.end_date }}
 					</td>
-					<td class="w-8 flex justify-end">
+					<td v-if="editPromotion" class="w-8 flex justify-end">
 						<!-- <EllipsisVerticalIcon class="w-4 text-right" /> -->
 						<SubMenu
 							v-if="
