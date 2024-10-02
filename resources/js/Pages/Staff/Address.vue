@@ -64,7 +64,7 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 					</button>
 				</div>
 
-				<div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
+				<div class="mx-4 mt-8 flow-root w-full px-4">
 					<div v-if="address">
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
 							{{ address.address_line_1 ?? "Address line 1 Not Specified" }}
@@ -131,7 +131,7 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 								</th>
 								<th
 									scope="col"
-									class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell"
+									class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-100"
 								>
 									Details
 								</th>
@@ -145,25 +145,48 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 								class="border-b border-gray-200 dark:border-gray-200/30"
 							>
 								<td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
-									<div class="font-medium text-gray-900 dark:text-gray-100">
-										{{ contact.contact_type_dis }}
+									<div class="flex justify-between">
+										<div>
+											<div
+												class="font-medium text-xs text-gray-900 dark:text-gray-100"
+											>
+												{{ contact.contact_type_dis }}
+											</div>
+											<div
+												class="md:text-right text-lg text-gray-500 dark:text-gray-100"
+											>
+												<a
+													:href="'tel:' + contact.contact"
+													v-if="contact.contact_type == 2"
+												>
+													{{ contact.contact }}
+												</a>
+												<a
+													href="mailto:{{ contact.contact }}"
+													v-else-if="contact.contact_type == 1"
+												>
+													{{ contact.contact }}
+												</a>
+												<div v-else>
+													{{ contact.contact }}
+												</div>
+											</div>
+										</div>
+										<SubMenu
+											v-if="
+												$page.props.permissions.includes('update staff') ||
+												$page.props.permissions.includes('delete staff')
+											"
+											:items="['Edit', 'Delete']"
+											@item-clicked="
+												(action) => subMenuClicked(action, contact)
+											"
+										/>
 									</div>
 								</td>
-								<td
-									class="hidden px-3 py-5 text-right text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-								>
-									{{ contact.contact }}
-								</td>
-								<td class="flex justify-end">
-									<SubMenu
-										v-if="
-											$page.props.permissions.includes('update staff') ||
-											$page.props.permissions.includes('delete staff')
-										"
-										:items="['Edit', 'Delete']"
-										@item-clicked="(action) => subMenuClicked(action, contact)"
-									/>
-								</td>
+
+								<!-- <td class="flex justify-end"> -->
+								<!-- </td> -->
 							</tr>
 						</tbody>
 					</table>

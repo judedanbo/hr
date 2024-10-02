@@ -226,7 +226,7 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth', 'pass
     Route::post('/staff/{staff}/write-note', 'writeNote')->name('staff.write-note');
     Route::post('/staff/{staff}/position', 'assignPosition')->name('staff.position.store');
     Route::patch('/staff/{staff}/position', 'updatePosition')->name('staff.position.update');
-    Route::delete('/staff/{staff}/position', 'deletePosition')->name('staff.position.delete');
+    Route::delete('/staff/{staff}/position', 'deletePosition')->withTrashed()->name('staff.position.delete');
 });
 
 // separation

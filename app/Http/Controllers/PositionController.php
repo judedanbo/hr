@@ -29,9 +29,10 @@ class PositionController extends Controller
                     $query->wherePivotNull('end_date');
                 }])
                 ->orderBy('name')
+                ->withTrashed()
                 ->paginate()
                 ->withQueryString()
-                ->through(fn ($position) => [
+                ->through(fn($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
                     'current_staff' => $position->staff?->first()?->person->full_name ?? 'vacant',
@@ -156,14 +157,16 @@ class PositionController extends Controller
      */
     public function delete(Position $position)
     {
-        $position->delete();
+        $position->forceDelete();
 
-        return redirect()->route('position.index')->with('success', 'Position deleted.');
+        return redirect()->back()->with('success', 'Position deleted.');
     }
 
     public function list()
     {
-        return Position::select('id as value', 'name as label')->get();
+        return Position::select('id as value', 'name as label')
+            ->withTrashed()
+            ->get();
     }
 
     public function stat()
