@@ -6,23 +6,27 @@ import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
 import EditContact from "../Person/partials/EditContact.vue";
 import SubMenu from "@/Components/SubMenu.vue";
+import DeleteContact from "./DeleteContact.vue";
+import { Inertia } from "@inertiajs/inertia";
 
-defineProps({
+const props = defineProps({
 	address: { type: Object, required: true },
-	contacts: { type: Array, required: true },
+	contacts: { type: [Array, null], required: true },
 	person: { type: Number, required: true },
 });
 
 const emit = defineEmits(["editContact", "deleteDependent"]);
 const contactModel = ref(null);
 const subMenuClicked = (action, model) => {
+	contactModel.value = model;
 	if (action == "Edit") {
-		contactModel.value = model;
 		toggleEditContactModal();
 		// emit("editContact", model);
 	}
 	if (action == "Delete") {
-		emit("deleteDependent", model);
+		toggleDeleteContactModal();
+		// console.log(action);
+		// emit("deleteDependent", model);
 	}
 };
 
@@ -34,6 +38,16 @@ let toggleContactModal = useToggle(openContactModal);
 
 let openEditContactModal = ref(false);
 let toggleEditContactModal = useToggle(openEditContactModal);
+
+let openDeleteContactModal = ref(false);
+let toggleDeleteContactModal = useToggle(openDeleteContactModal);
+const deleteContact = (model) => {
+	// console.log(model);
+	Inertia.delete(
+		route("person.contact.delete", { person: props.person, contact: model.id }),
+	);
+	toggleDeleteContactModal();
+};
 </script>
 <template>
 	<!-- contact History -->
@@ -212,6 +226,9 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 				:person="person"
 				@form-submitted="toggleEditContactModal()"
 			/>
+		</Modal>
+		<Modal :show="openDeleteContactModal" @close="toggleDeleteContactModal()">
+			<DeleteContact @delete-confirmed="deleteContact(contactModel)" />
 		</Modal>
 	</main>
 </template>

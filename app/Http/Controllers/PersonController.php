@@ -92,8 +92,8 @@ class PersonController extends Controller
             'institution',
             'qualifications',
         ])
-            ->whereId($person)->first();
-
+            ->whereId($person)->firstOrFail();
+        // dd($selectedPerson);
         return Inertia::render('Person/NewShow', [
             'person' => [
                 'id' => $selectedPerson->id,
@@ -275,6 +275,13 @@ class PersonController extends Controller
         $contact = Contact::find($contact)->update($attribute);
 
         return redirect()->back()->with('success', 'Contact updated');
+    }
+
+    public function deleteContact(Person $person, $contact)
+    {
+        $person->contacts()->where('id', $contact)->forceDelete();
+
+        return redirect()->back();
     }
 
     public function addAddress(Request $request, Person $person)

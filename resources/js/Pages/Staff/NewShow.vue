@@ -105,7 +105,6 @@ const editContactModal = () => {
 						<div
 							class="flex flex-wrap items-center justify-between md:justify-start gap-x-6 w-full md:w-1/2"
 						>
-							{{ person.image }}
 							<Avatar
 								:initials="person.initials"
 								:image="person.image"
@@ -204,6 +203,7 @@ const editContactModal = () => {
 							:contacts="contacts"
 							:person="person.id"
 							@edit-contact="toggleEditContactModal()"
+							@delete-contact="editContactModal()"
 						/>
 
 						<!-- <StaffDependents v-if="staff" :staff="staff" class="" /> -->

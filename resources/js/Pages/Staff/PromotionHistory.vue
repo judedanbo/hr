@@ -13,11 +13,11 @@ const emit = defineEmits(["closeForm"]);
 let props = defineProps({
 	promote: {
 		type: Boolean,
-		required: true,
+		default: true,
 	},
 	editPromotion: {
 		type: Boolean,
-		required: true,
+		default: true,
 	},
 	promotions: {
 		type: Array,

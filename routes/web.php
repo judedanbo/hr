@@ -121,6 +121,7 @@ Route::controller(PersonController::class)->middleware(['auth', 'password_change
     Route::post('/person/{person}/identity/{identity}', 'updateIdentity')->name('person.identity.update');
     Route::delete('/person/{person}/identity/{identity}', 'deleteIdentity')->name('person.identity.delete');
     Route::post('/person/{person}/contact/{contact}', 'updateContact')->name('person.contact.update');
+    Route::delete('/person/{person}/contact/{contact}', 'deleteContact')->name('person.contact.delete');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
     // Route::get('/person/avatar', 'avatar')->name('person.ava');

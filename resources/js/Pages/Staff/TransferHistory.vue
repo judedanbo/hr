@@ -52,11 +52,11 @@ const deleteTransfer = (staff_id, unit_id) => {
 let props = defineProps({
 	transfer: {
 		type: Boolean,
-		required: true,
+		default: true,
 	},
 	editTransfer: {
 		type: Boolean,
-		required: true,
+		default: true,
 	},
 	transfers: { type: Array, default: () => null },
 	staffName: { type: String, default: () => null },
@@ -109,7 +109,7 @@ watch(
 				</div>
 				<TransferList
 					:transfers="transfers"
-					:edit-transfer="editTransfer"
+					:edit-transfer="props.editTransfer"
 					class="w-full max-h-64 overflow-y-scroll"
 					@delete-transfer="(model) => confirmDeleteTransfer(model)"
 					@edit-transfer="(model) => editTransfer(model)"

@@ -26,8 +26,8 @@ const subMenuClicked = (action, model) => {
 	}
 };
 let props = defineProps({
-	editTransfer: { type: Boolean, required: true },
-	transfers: { type: Array, default: () => null },
+	editTransfer: { type: Boolean, default: true },
+	transfers: { type: [Array, null], default: () => null },
 });
 </script>
 <template>

@@ -1,7 +1,7 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
 defineProps({
-	editPromotion: { type: Function, required: true },
+	editPromotion: { type: Function, default: true },
 	promotions: { type: Array, default: () => null },
 });
 
