@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\HarmonizedGradeSummaryExport;
 use App\Http\Requests\StoreJobCategoryRequest;
 use App\Http\Requests\UpdateJobCategoryRequest;
 use App\Models\JobCategory;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Excel;
 
 class JobCategoryController extends Controller
 {
     public function index()
     {
         return Inertia::render('JobCategory/Index', [
-
             'categories' => JobCategory::query()
                 ->withCount(
                     [
@@ -43,7 +44,7 @@ class JobCategoryController extends Controller
                 ->with(['parent', 'institution'])
                 ->paginate()
                 ->withQueryString()
-                ->through(fn ($jobCategory) => [
+                ->through(fn($jobCategory) => [
                     'id' => $jobCategory->id,
                     'name' => $jobCategory->name,
                     'short_name' => $jobCategory->short_name,
@@ -113,7 +114,7 @@ class JobCategoryController extends Controller
                 'level' => $jobCategory->level,
                 'job_category_id' => $jobCategory->job_category_id,
                 'start_date' => $jobCategory->start_date?->format('Y-m-d'),
-                'jobs' => $jobCategory->jobs ? $jobCategory->jobs->map(fn ($job) => [
+                'jobs' => $jobCategory->jobs ? $jobCategory->jobs->map(fn($job) => [
                     'id' => $job->id,
                     'name' => $job->name,
                     'staff_count' => $job->active_staff_count,
@@ -176,5 +177,10 @@ class JobCategoryController extends Controller
         $jobCategory->delete();
 
         return redirect()->route('job-category.index')->with('success', 'Job Category deleted.');
+    }
+
+    public function summary(Excel $excel)
+    {
+        return $excel->download(new HarmonizedGradeSummaryExport, 'harmonized grades summary.xlsx');
     }
 }

@@ -265,6 +265,7 @@ Route::post('staff/{staff}/profile-image', [PersonAvatarController::class, 'stor
 
 Route::controller(JobCategoryController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/job-category', 'index')->name('job-category.index');
+    Route::get('/job-category/summary', 'summary')->name('job-category.summary');
     Route::get('/job-category/create', 'create')->name('job-category.create');
     Route::post('/job-category', 'store')->name('job-category.store');
     Route::get('/job-category/{jobCategory}', 'show')->name('job-category.show');
@@ -286,6 +287,7 @@ Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportA
 
 Route::controller(JobController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/rank', 'index')->name('job.index');
+    Route::get('/rank-summary', 'summary')->name('job.summary');
     Route::get('/rank/create', 'create')->name('job.create');
     Route::get('/rank/{job}', 'show')->name('job.show');
     Route::patch('/rank/{job}', 'update')->name('job.update');

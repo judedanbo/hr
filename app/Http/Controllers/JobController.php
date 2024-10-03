@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\GenderEnum;
+use App\Exports\GradeSummaryExport;
 use App\Http\Requests\StoreJobRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Excel;
 
 class JobController extends Controller
 {
@@ -25,7 +27,7 @@ class JobController extends Controller
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($job) => [
+                ->through(fn($job) => [
                     'id' => $job->id,
                     'name' => $job->name,
                     'staff' => $job->staff_count,
@@ -101,7 +103,7 @@ class JobController extends Controller
                     'name' => $job->institution->name,
                     'id' => $job->institution->id,
                 ] : null,
-                'staff' => $job->staff->map(fn ($staff) => [
+                'staff' => $job->staff->map(fn($staff) => [
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'initials' => $staff->person->initials,
@@ -336,5 +338,10 @@ class JobController extends Controller
         $job->delete();
 
         return redirect()->route('job.index')->with('success', 'Rank updated.');
+    }
+
+    public function summary(Excel $excel)
+    {
+        return $excel->download(new GradeSummaryExport, 'grades.xlsx');
     }
 }

@@ -12,6 +12,7 @@ import PageHeader from "@/Components/PageHeader.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 import Pagination from "@/Components/Pagination.vue";
+import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 
 const navigation = computed(() => useNavigation(props.categories));
 
@@ -57,6 +58,21 @@ let openCategory = (categoryId) => {
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchCategories(value)"
 				/>
+				<div
+					v-if="
+						$page.props.permissions.includes('download active staff data') ||
+						$page.props.permissions.includes('download separated staff data')
+					"
+					class="flex gap-x-5"
+				>
+					<a
+						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+						:href="route('job-category.summary')"
+					>
+						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+						Download summary
+					</a>
+				</div>
 
 				<CategoryTable
 					:categories="categories.data"

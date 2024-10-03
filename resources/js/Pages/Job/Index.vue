@@ -12,6 +12,7 @@ import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 import JobsList from "./partials/JobsList.vue";
 import { Inertia } from "@inertiajs/inertia";
+import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 
 let openAddDialog = ref(false);
 
@@ -54,6 +55,21 @@ const searchJobs = (value) => {
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchJobs(value)"
 				/>
+				<div
+					v-if="
+						$page.props.permissions.includes('download active staff data') ||
+						$page.props.permissions.includes('download separated staff data')
+					"
+					class="flex gap-x-5"
+				>
+					<a
+						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+						:href="route('job.summary')"
+					>
+						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+						Download summary
+					</a>
+				</div>
 				<JobsList :jobs="jobs.data" @open-job="(jobId) => openJob(jobId)">
 					<template #pagination>
 						<Pagination :navigation="navigation" />
