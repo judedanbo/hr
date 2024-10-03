@@ -484,7 +484,7 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::post('/position', 'store')->name('position.store');
     Route::get('/position/{position}', 'show')->name('position.show');
     Route::patch('/position/{position}', 'update')->name('position.update');
-    Route::delete('/position/{position}', 'delete')->name('position.delete');
+    Route::delete('/position/{position}', 'delete')->withTrashed()->name('position.delete');
     Route::get('/position-list', 'list')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });

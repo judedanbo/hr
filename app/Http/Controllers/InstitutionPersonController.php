@@ -166,7 +166,9 @@ class InstitutionPersonController extends Controller
                     'dependents.person',
                     'statuses',
                     'notes',
-                    'positions',
+                    'positions' => function ($query) {
+                        $query->withTrashed();
+                    },
                 ]
             )
             ->active()

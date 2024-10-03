@@ -18,12 +18,6 @@ onMounted(async () => {
 	statuses.value = response.data;
 });
 
-import { format, addDays, subYears } from "date-fns";
-
-const today = format(new Date(), "yyyy-MM-dd");
-const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
-
 const submitHandler = (data, node) => {
 	Inertia.post(route("staff-status.store", { staff: data.staff_id }), data, {
 		preserveScroll: true,

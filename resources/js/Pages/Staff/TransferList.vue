@@ -34,7 +34,10 @@ let props = defineProps({
 	<!-- Transfer List -->
 	<main>
 		<div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
-			<table v-if="transfers.length > 0" class="min-w-full">
+			<table
+				v-if="transfers !== null && transfers.length > 0"
+				class="min-w-full"
+			>
 				<colgroup></colgroup>
 				<thead
 					class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50"

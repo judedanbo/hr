@@ -56,6 +56,12 @@ defineProps({
 								value: [sta.staff_number, sta.file_number],
 							}"
 						/>
+						<StaffItem
+							:item="{
+								title: 'Age at Separation',
+								value: [sta.age_at_end],
+							}"
+						/>
 					</div>
 					<!-- <div>Rank History {{ sta.lastRank }}</div> -->
 					<div

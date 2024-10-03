@@ -17,7 +17,10 @@ const clicked = (action, model) => {
 </script>
 <template>
 	<body class="-mx-4 mt-4 flow-root sm:mx-0 w-full px-4">
-		<table v-if="promotions.length > 0" class="min-w-full">
+		<table
+			v-if="promotions !== null && promotions.length > 0"
+			class="min-w-full"
+		>
 			<colgroup></colgroup>
 			<thead
 				class="border-b border-gray-300 text-gray-900 dark:text-gray-100 dark:border-gray-200/50"

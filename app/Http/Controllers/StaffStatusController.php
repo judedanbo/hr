@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStaffStatusRequest;
 use App\Http\Requests\UpdateStaffStatusRequest;
+use App\Models\Institution;
+use App\Models\InstitutionPerson;
 use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +16,13 @@ class StaffStatusController extends Controller
     {
         // return $request->all();
         DB::transaction(function () use ($request) {
+            if ($request->status !== "A") {
+                InstitutionPerson::where('id', $request->staff_id)
+                    ->update(['end_date' => $request->start_date ?? Carbon::now()]);
+            } else {
+                InstitutionPerson::where('id', $request->staff_id)
+                    ->update(['end_date' => null]);
+            }
             Status::where('staff_id', $request->staff_id)
                 ->whereNull('end_date')
                 ->update(['status.end_date' => Carbon::parse($request->start_date)->subDays(1)]);
