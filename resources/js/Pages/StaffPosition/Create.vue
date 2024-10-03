@@ -16,12 +16,6 @@ onMounted(async () => {
 	positions.value = response.data;
 });
 
-import { format, addDays, subYears } from "date-fns";
-
-const today = format(new Date(), "yyyy-MM-dd");
-const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
-
 const submitHandler = (data, node) => {
 	Inertia.post(route("staff.position.store", { staff: props.staff.id }), data, {
 		preserveScroll: true,

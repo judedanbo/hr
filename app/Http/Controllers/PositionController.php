@@ -35,6 +35,20 @@ class PositionController extends Controller
                 ->through(fn($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
+                    'staff' => $position->staff->map(function ($staff) {
+                        return [
+                            'staff_id' => $staff->id,
+                            'name' => $staff->person->full_name,
+                            'start_date' => $staff->pivot->start_date->format('d M, Y'),
+                            'contacts' => $staff->person->contacts->map(function ($contact) {
+                                return [
+                                    'id' => $contact->id,
+                                    'contact' => $contact->contact,
+                                ];
+                            }),
+                            // 'end_date'=>$staff->person->full_name,
+                        ];
+                    }),
                     'current_staff' => $position->staff?->first()?->person->full_name ?? 'vacant',
                     'contacts' => $position->staff?->first()?->person->contacts?->map(function ($contact) {
                         return [

@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Person;
+use App\Models\Position;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -491,10 +492,19 @@ class InstitutionPersonController extends Controller
     public function assignPosition(StoreStaffPositionRequest $request, InstitutionPerson $staff)
     {
         $validated = $request->validated();
-        $staff->positions()->attach($validated['position_id'], [
-            'start_date' => $validated['start_date'] ?? null,
-            'end_date' => $validated['end_date'] ?? null,
-        ]);
+        DB::transaction(function () use ($staff, $validated) {
+            Position::withTrashed()
+                ->find($validated['position_id'])
+                ->staff()->wherePivot('end_date', null)
+                ->each(function ($st) use ($validated) {
+                    $st->positions()->updateExistingPivot($validated['position_id'], ['end_date' => Carbon::now()]);
+                });
+            $staff->positions()->attach($validated['position_id'], [
+                'start_date' => $validated['start_date'] ?? null,
+                'end_date' => $validated['end_date'] ?? null,
+            ]);
+        });
+
 
         return redirect()->back()->with('success', 'Position assigned successfully.');
     }
