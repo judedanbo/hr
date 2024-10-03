@@ -39,7 +39,7 @@ class PositionController extends Controller
                         return [
                             'staff_id' => $staff->id,
                             'name' => $staff->person->full_name,
-                            'start_date' => $staff->pivot->start_date->format('d M, Y'),
+                            'start_date' => $staff->pivot->start_date?->format('d M, Y'),
                             'contacts' => $staff->person->contacts->map(function ($contact) {
                                 return [
                                     'id' => $contact->id,
