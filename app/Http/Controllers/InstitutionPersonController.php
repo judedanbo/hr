@@ -45,7 +45,7 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender?->label(),
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
+                'image' => $staff->person->image ? Storage::disk('public')->url($staff->person->image) : null,
                 'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
@@ -197,7 +197,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
+                'image' => $staff->person->image ? Storage::disk('public')->url($staff->person->image) : null,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn($id) => [
                     'id' => $id->id,
                     'id_type' => $id->id_type,

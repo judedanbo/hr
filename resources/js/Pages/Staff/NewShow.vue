@@ -105,6 +105,7 @@ const editContactModal = () => {
 						<div
 							class="flex flex-wrap items-center justify-between md:justify-start gap-x-6 w-full md:w-1/2"
 						>
+							{{ person.image }}
 							<Avatar
 								:initials="person.initials"
 								:image="person.image"

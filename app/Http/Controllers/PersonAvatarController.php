@@ -29,7 +29,7 @@ class PersonAvatarController extends Controller
             'image' => ['required', 'image', 'max:2048'],
         ]);
 
-        $avatar = Storage::disk('avatars')->put('/', $request->image);
+        $avatar = Storage::disk('public')->put('/avatars', $request->image);
         // $fileName = $request->file('image')->store('public/avatar');
 
         $person->update([
