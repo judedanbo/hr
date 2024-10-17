@@ -14,80 +14,6 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
-        // $units =  Unit::query()
-        //     ->departments()
-        //     ->with([
-        //         'institution:id,name,abbreviation',
-        //         // 'staff' => function ($query) {
-        //         //     $query->active();
-        //         //     $query->select('institution_person.id', 'person_id', 'file_number', 'staff_number', 'hire_date');
-        //         // },
-        //         'subs' => function ($query) {
-        //             $query->where(function ($query) {
-        //                 $query->whereHas('staff', function ($query) {
-        //                     $query->active();
-        //                 });
-        //                 $query->orWhereHas('subs', function ($query) {
-        //                     $query->whereHas('staff', function ($query) {
-        //                         $query->active();
-        //                     });
-        //                 });
-        //             });
-        //             $query->with([
-        //                 'subs' => function ($query) {
-        //                     $query->where(function ($query) {
-        //                         $query->whereHas('staff', function ($query) {
-        //                             $query->active();
-        //                         });
-        //                         $query->orWhereHas('subs', function ($query) {
-        //                             $query->whereHas('staff', function ($query) {
-        //                                 $query->active();
-        //                             });
-        //                         });
-        //                     });
-        //                     $query->withCount([
-        //                         'staff' => function ($query) {
-        //                             $query->active();
-        //                         },
-        //                     ]);
-        //                 },
-        //                 'staff' => function ($query) {
-        //                     $query->with(['person', 'ranks', 'units']);
-        //                     $query->active();
-        //                 }
-        //             ]);
-        //             $query->withCount([
-        //                 'staff' => function ($query) {
-        //                     $query->active();
-        //                 },
-        //                 'subs' => function ($query) {
-        //                     $query->whereHas('staff', function ($query) {
-        //                         $query->active();
-        //                     });
-        //                 },
-        //             ]);
-        //         }
-        //     ])
-        //     ->withCount(
-        //         [
-        //             'staff' => function ($query) {
-        //                 $query->active();
-        //             },
-        //             'subs' => function ($query) {
-        //                 $query->where(function ($query) {
-        //                     $query->whereHas('staff', function ($query) {
-        //                         $query->active();
-        //                     });
-        //                     $query->orWhereHas('subs', function ($query) {
-        //                         $query->whereHas('staff', function ($query) {
-        //                             $query->active();
-        //                         });
-        //                     });
-        //                 });
-        //             }
-        //         ]
-        //     )
-        //     ->get();
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
@@ -169,7 +95,7 @@ class UnitController extends Controller
                 ->paginate(10)
                 ->withQueryString()
                 ->through(
-                    fn ($unit) => [
+                    fn($unit) => [
                         'id' => $unit->id,
                         'name' => $unit->name,
                         'short_name' => $unit->short_name,
@@ -290,7 +216,7 @@ class UnitController extends Controller
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
         // });
-        $sub_staff = $unit?->subs?->map(fn ($sub) => $sub->staff)->flatten(1);
+        $sub_staff = $unit?->subs?->map(fn($sub) => $sub->staff)->flatten(1);
         // return $sub_staff;
         $allStaff = $unit?->staff->merge($sub_staff)->flatten(1);
 
@@ -326,7 +252,7 @@ class UnitController extends Controller
                 //     ]) : null,
                 // ]) : null,
                 'type' => $unit?->type->label(),
-                'staff' => $allStaff?->map(fn ($staff) => [
+                'staff' => $allStaff?->map(fn($staff) => [
                     'id' => $staff->person->id,
                     'name' => $staff->person->full_name,
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
@@ -349,7 +275,7 @@ class UnitController extends Controller
                         'duration' => $staff->units->first()->pivot->start_date?->diffForHumans(),
                     ] : null,
                 ]),
-                'subs' => $unit?->subs ? $unit->subs->map(fn ($sub) => [
+                'subs' => $unit?->subs ? $unit->subs->map(fn($sub) => [
                     'id' => $sub->id,
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,

@@ -178,7 +178,7 @@ class InstitutionPersonController extends Controller
         if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
-
+        // dd();
         return Inertia::render('Staff/NewShow', [
             'user' => [
                 'id' => auth()->user()->id,
@@ -198,7 +198,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' => $staff->person->image ? Storage::disk('public')->url($staff->person->image) : null,
+                'image' => "https://hr.audit.gov.gh/storage/WyIL1Hkao13XcNKFGYquOomqZuOfZnqGi8YthcCh.jpg", // . $staff->person->image, //Storage::url($staff->person->image), // $staff->person->image ? Storage::disk('public')->url($staff->person->image) : null,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn($id) => [
                     'id' => $id->id,
                     'id_type' => $id->id_type,

@@ -115,7 +115,7 @@ const submitHandler = (data, node) => {
 					<ImageUpload />
 				</FormKit>
 				<FormKit type="step" id="relation" name="relation">
-					<AddDependentForm :staff_id="staff_id" />
+					<AddDependentForm :staffId="staffId" />
 					<template #stepNext>
 						<FormKit type="submit" label="Add Dependent" />
 					</template>

@@ -30,6 +30,7 @@ class PersonAvatarController extends Controller
         ]);
 
         $avatar = Storage::disk('public')->put('/avatars', $request->image);
+        // dd($avatar);
         // $fileName = $request->file('image')->store('public/avatar');
 
         $person->update([

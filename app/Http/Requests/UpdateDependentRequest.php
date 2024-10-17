@@ -37,9 +37,10 @@ class UpdateDependentRequest extends FormRequest
                 'date',
                 'before_or_equal:' . Carbon::now()->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(150)->format('Y-m-d'),
+                'nullable'
             ],
             'nationality' => [new Enum(Nationality::class), 'nullable'],
-            'gender' => ['required', new Enum(GenderEnum::class)],
+            'gender' => [new Enum(GenderEnum::class), 'nullable'],
             'marital_status' => [new Enum(MaritalStatusEnum::class), 'nullable'],
             'religion' => 'string|max:40|nullable',
             'image' => 'file|image|nullable',
