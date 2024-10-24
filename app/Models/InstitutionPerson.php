@@ -210,6 +210,11 @@ class InstitutionPerson extends Pivot
         }]);
     }
 
+    // function scopeCurrentStatus()
+    // {
+    //     return $this->statuses()->first()->status->name;
+    // }
+
     // get current rank of staff
     // public function getCurrentRankAttribute()
     // {
@@ -228,23 +233,25 @@ class InstitutionPerson extends Pivot
     public function scopeActive($query)
     {
         return $query->whereHas('statuses', function ($query) {
-            $query->where('status', 'A');
             $query->where(function ($query) {
-                $query->whereNull('end_date');
-                $query->orWhere('end_date', '>', now());
+                $query->where('status', 'A');
+                $query->where(function ($query) {
+                    $query->whereNull('end_date');
+                    $query->orWhere('end_date', '>', now());
+                });
             });
-            // $query->whereNull('end_date');
         });
     }
 
     public function scopeRetired($query)
     {
+        // return $query->whereHas('currentStatus');
         return $query->whereHas('statuses', function ($query) {
+            $query->where('status', '<>', 'A');
             $query->where(function ($query) {
                 $query->whereNull('end_date');
-                $query->orWhere('end_date', '<', now());
+                $query->orWhere('end_date', '>', now());
             });
-            $query->where('status', '<>', 'A');
         });
         // return $query->with(['statuses' => function ($query) {
         //     $query->whereNull('end_date');
@@ -307,7 +314,16 @@ class InstitutionPerson extends Pivot
 
     public function scopeCurrentStatus($query)
     {
-        return $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 60');
+        return $query->addSelect([
+            'current_status' => Status::select('status')
+                ->whereColumn('institution_person.id', 'staff_id')
+                ->latest('start_date')
+                ->take(1),
+        ]);
+        // ->with(['statuses' => function ($query) {
+        //     $query->with('status');
+        // }]);
+        // return $query->whereRaw('(DATEDIFF(NOW(), people.date_of_birth)/365) > 60');
     }
 
     // public function getCurrentStatusAttribute()
@@ -323,7 +339,8 @@ class InstitutionPerson extends Pivot
      */
     public function statuses(): HasMany
     {
-        return $this->hasMany(Status::class, 'staff_id', 'id')->latest();
+        return $this->hasMany(Status::class, 'staff_id', 'id')
+            ->latest();
     }
 
     /**

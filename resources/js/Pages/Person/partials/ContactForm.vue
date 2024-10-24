@@ -23,6 +23,6 @@ onMounted(async () => {
 		name="contact"
 		label="Contact"
 		placeholder="Contact"
-		validation="required|length:2,50"
+		validation="required|length:2,100"
 	/>
 </template>

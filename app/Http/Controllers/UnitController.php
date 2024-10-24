@@ -260,7 +260,7 @@ class UnitController extends Controller
                     'hire_date' => $staff->hire_date?->format('d M Y'),
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
-                    'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
+                    'image' => $staff->person->image ? '/' . $staff->person->image : null,
                     'rank' => $staff->ranks->count() > 0 ? [
                         'id' => $staff->ranks->first()->id,
                         'name' => $staff->ranks->first()->name,

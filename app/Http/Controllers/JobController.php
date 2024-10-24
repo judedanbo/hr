@@ -107,7 +107,7 @@ class JobController extends Controller
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'initials' => $staff->person->initials,
-                    'image' => $staff->person->image ? Storage::disk('avatars')->url($staff->person->image) : null,
+                    'image' => $staff->person->image ? '/' . $staff->person->image : null,
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
                     // 'unit' => $staff->units?->first()?->name,

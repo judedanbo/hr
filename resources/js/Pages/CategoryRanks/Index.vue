@@ -31,9 +31,7 @@ const navigation = computed(() => useNavigation(props.ranks));
 	<MainLayout>
 		<Head title="Category Ranks" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-			<div
-				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
-			>
+			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
 				<TableHeader
 					title="Harmonized Grade"
 					:total="ranks.total"

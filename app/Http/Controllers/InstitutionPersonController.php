@@ -46,7 +46,7 @@ class InstitutionPersonController extends Controller
                 'name' => $staff->person->full_name,
                 'gender' => $staff->person->gender?->label(),
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'image' => $staff->person->image ? Storage::disk('public')->url($staff->person->image) : null,
+                'image' => $staff->person->image ? '/' . $staff->person->image : null,
                 'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
@@ -198,7 +198,7 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' => "https://hr.audit.gov.gh/storage/WyIL1Hkao13XcNKFGYquOomqZuOfZnqGi8YthcCh.jpg", // . $staff->person->image, //Storage::url($staff->person->image), // $staff->person->image ? Storage::disk('public')->url($staff->person->image) : null,
+                'image' =>  $staff->person->image ? '/' . $staff->person->image :  null,
                 'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn($id) => [
                     'id' => $id->id,
                     'id_type' => $id->id_type,
@@ -337,7 +337,8 @@ class InstitutionPersonController extends Controller
                     'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
-                    'image' => $dep->person->image ? Storage::disk('avatars')->url($dep->person->image) : null,
+                    // $staff->person->image ? '/' . $staff->person->image :  null,
+                    'image' => $dep->person->image ? '/' . $dep->person->image : null,
                 ]) : null,
             ],
         ]);
@@ -445,7 +446,7 @@ class InstitutionPersonController extends Controller
                 'religion' => $staff->person->religion,
                 'nationality' => $staff->person->nationality,
                 'ethnicity' => $staff->person->ethnicity,
-                'image' => Storage::disk('avatars')->url($staff->person->image),
+                'image' => $staff->person->image ? '/' . $staff->person->image : null,
                 'about' => $staff->person->about,
             ],
         ];
@@ -458,11 +459,12 @@ class InstitutionPersonController extends Controller
      */
     public function update(UpdateStaffRequest $request, InstitutionPerson $staff)
     {
+        // dd($staff);
         // return $request->validated();
         $validated = $request->validated();
         $personalInformation = $validated['staffData']['personalInformation'];
         $employmentInformation = $validated['staffData']['employmentInformation'];
-        // return $personalInformation;
+        // dd($personalInformation);
         $staff->person->update($personalInformation);
         $staff->update($employmentInformation);
 

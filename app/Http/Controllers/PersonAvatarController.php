@@ -29,8 +29,8 @@ class PersonAvatarController extends Controller
             'image' => ['required', 'image', 'max:2048'],
         ]);
 
-        $avatar = Storage::disk('public')->put('/avatars', $request->image);
-        // dd($avatar);
+        $avatar = Storage::disk('public')->put('', $request->image);
+        dd($avatar);
         // $fileName = $request->file('image')->store('public/avatar');
 
         $person->update([
