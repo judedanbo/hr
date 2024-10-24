@@ -35,7 +35,7 @@ class PersonController extends Controller
                     'dob' => $person->date_of_birth,
                     // 'ssn' => $person->identities->first()?->id_number,
                     'initials' => $person->initials,
-                    'image' => $person->image ? '/' . $person->image : null,
+                    'image' => $person->image ? '/storage/' . $person->image : null,
                     'institution' => $person->institution ? [
                         'id' => $person->institution->first()?->id,
                         'name' => $person->institution->first()?->name,
@@ -57,7 +57,7 @@ class PersonController extends Controller
             return response()->json(['error', 'There is no file attached', 400]);
         }
         try {
-            $avatar = Storage::disk('public')->put('/', $request->image);
+            $avatar = Storage::disk('public')->put('/storage/', $request->image);
             dd($avatar);
             return Person::create($request->validated());
             if (! $avatar) {
@@ -107,7 +107,7 @@ class PersonController extends Controller
                 'nationality' => $selectedPerson->nationality?->nationality(),
                 'religion' => $selectedPerson->religion,
                 'marital_status' => $selectedPerson->marital_status?->label(),
-                'image' => $selectedPerson->image ? '/avatars/' . $selectedPerson->image : null,
+                'image' => $selectedPerson->image ? '/storage/' . $selectedPerson->image : null,
                 'identities' => $selectedPerson->identities->count() > 0 ? $selectedPerson->identities->map(fn($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
@@ -239,7 +239,7 @@ class PersonController extends Controller
             'place_of_birth' => $person->place_of_birth,
             'country_of_birth' => $person->country_of_birth,
             'about' => $person->about,
-            'image' => $person->image ? '/' . $person->image : null,
+            'image' => $person->image ? '/storage/' . $person->image : null,
 
         ];
         // return {

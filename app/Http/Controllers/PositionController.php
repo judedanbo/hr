@@ -117,7 +117,7 @@ class PositionController extends Controller
                         'person' => [
                             'id' => $staff->person->id,
                             'full_name' => $staff->person->full_name,
-                            'image' => $staff->person->image,
+                            'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
                             'initials' => $staff->person->initials,
                             'contacts' => $staff->person->contacts->map(function ($contact) {
                                 return [

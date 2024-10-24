@@ -44,7 +44,7 @@ class DependentController extends Controller
     {
         $person = $request->validated();
         if ($request->hasFile('image')) {
-            $avatar = Storage::disk('avatars')->put('/', $request->image);
+            $avatar = Storage::disk('public')->put('avatars', $request->image);
             $person['image'] = $avatar;
         }
 
@@ -90,7 +90,7 @@ class DependentController extends Controller
         $avatar = null;
         if ($request->hasFile('image')) {
 
-            $avatar = Storage::disk('avatars')->put('/', $request->image);
+            $avatar = Storage::disk('public')->put('avatars', $request->image);
         }
         $dependent->person()->update([
             'title' => $request->title,

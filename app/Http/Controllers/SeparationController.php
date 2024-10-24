@@ -50,7 +50,7 @@ class SeparationController extends Controller
                     'name' => $staff->person->full_name,
                     'gender' => $staff->person->gender?->label(),
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                    'image' => $staff->person->image ? '/' . $staff->person->image : null,
+                    'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
                     'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
                     'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                     'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
