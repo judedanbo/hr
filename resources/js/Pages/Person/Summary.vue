@@ -79,7 +79,10 @@ defineProps({
 						{{ person.gender ?? "Gender Not Specified" }}
 					</dd>
 				</div>
-				<div class="mt-4 flex w-full flex-none gap-x-4 px-6">
+				<div
+					v-if="person.marital_status"
+					class="mt-4 flex w-full flex-none gap-x-4 px-6"
+				>
 					<dt class="flex-none">
 						<span class="sr-only">Marital Status</span>
 						<UserPlusIcon
@@ -91,7 +94,10 @@ defineProps({
 						{{ person.marital_status ?? "Marital Status Not Specified" }}
 					</dd>
 				</div>
-				<div class="mt-4 flex w-full flex-none gap-x-4 px-6">
+				<div
+					v-if="person.nationality"
+					class="mt-4 flex w-full flex-none gap-x-4 px-6"
+				>
 					<dt class="flex-none">
 						<span class="sr-only">Nationality</span>
 						<FlagIcon
@@ -103,7 +109,10 @@ defineProps({
 						{{ person.nationality ?? "Nationality Not Specified" }}
 					</dd>
 				</div>
-				<div class="mt-4 flex w-full flex-none gap-x-4 px-6">
+				<div
+					v-if="person.religion"
+					class="mt-4 flex w-full flex-none gap-x-4 px-6"
+				>
 					<dt class="flex-none">
 						<span class="sr-only">Religion</span>
 						<svg
@@ -147,7 +156,7 @@ defineProps({
 					</template>
 				</div>
 			</dl>
-			<div
+			<!-- <div
 				class="mt-6 border-t border-gray-900/5 dark:border-gray-200/30 px-6 py-6"
 			>
 				<p
@@ -156,7 +165,7 @@ defineProps({
 				>
 					Edit personal details <span aria-hidden="true">&rarr;</span>
 				</p>
-			</div>
+			</div> -->
 		</div>
 	</main>
 </template>

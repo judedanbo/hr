@@ -95,7 +95,10 @@ const deleteContact = (model) => {
 						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
 							{{ address.country ?? "Country Not Specified" }}
 						</dd>
-						<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
+						<dd
+							v-if="address.post_code"
+							class="text-sm leading-6 text-gray-500 dark:text-gray-50"
+						>
 							{{ address.post_code ?? "Post Code Not Specified" }}
 						</dd>
 					</div>

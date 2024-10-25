@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\Storage;
 
 class InstitutionPerson extends Pivot
 {
@@ -348,7 +349,25 @@ class InstitutionPerson extends Pivot
      */
     public function writeNote($note)
     {
-        $this->notes()->create($note);
+        // dd($note);
+        $files = [];
+        foreach ($note['document'] as $file) {
+            // dd($file['file']->getClientOriginalName());
+            $fileDetails = [
+                'document_type' => $note['note_type'],
+                'document_title' => $file['file']->getClientOriginalName(),
+                // 'document_number' => $file['document_number'],
+                // 'document_file' => $file['document_file'],
+                'file_type' => $file['file']->getMimeType(),
+                'file_name' => Storage::disk('documents')->put('notes', $file['file']),
+                // 'document_status' => $file['document_status'],
+                // 'document_remarks' => $file['document_remarks'],
+            ];
+            $files[] = $fileDetails; //Storage::disk('documents')->put('notes', $file['file']);
+        }
+        // dd($files);
+        $newNote = $this->notes()->create($note);
+        $newNote->documents()->createMany($files);
     }
 
     /** Get staff's notes */

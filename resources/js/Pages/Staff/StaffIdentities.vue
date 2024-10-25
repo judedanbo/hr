@@ -58,31 +58,29 @@ const deleteModalIdentity = () => {
 	<main class="w-full">
 		<h2 class="sr-only">Staff Identifications</h2>
 		<div
-			class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-500/80"
+			class="md:rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-500/80 px-6 pt-6"
 		>
-			<dl class="flex flex-wrap">
-				<div class="flex-auto pl-6 pt-6">
+			<dl class="flex items-center justify-between">
+				<div class="flex-auto">
 					<dt
 						class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-100"
 					>
 						Staff Identifications
 					</dt>
 				</div>
+				<button
+					v-if="
+						$page.props.permissions.includes('update staff') ||
+						$page.props.permissions.includes('delete staff')
+					"
+					class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+					@click="toggleIdentityModal()"
+				>
+					Add Identification
+				</button>
 			</dl>
-			<dl class="flex flex-wrap">
-				<div class="flex-none self-end px-6 pt-4">
-					<button
-						v-if="
-							$page.props.permissions.includes('update staff') ||
-							$page.props.permissions.includes('delete staff')
-						"
-						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
-						@click="toggleIdentityModal()"
-					>
-						Add Identification
-					</button>
-				</div>
-				<div class="-mx-4 mt-2 flow-root sm:mx-0 w-full px-4">
+			<dl>
+				<div class="mt-2 flow-root sm:mx-0 w-full">
 					<table v-if="identities" class="min-w-full">
 						<colgroup>
 							<col class="w-full" />
@@ -103,12 +101,8 @@ const deleteModalIdentity = () => {
 							</tr>
 						</thead>
 						<tbody>
-							<tr
-								v-for="identity in identities"
-								:key="identity.id"
-								class="border-b border-gray-200 dark:border-gray-200/30"
-							>
-								<td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+							<tr v-for="identity in identities" :key="identity.id" class="">
+								<td class="max-w-0 text-sm py-2">
 									<div
 										class="font-medium text-gray-800 dark:text-gray-300 text-xs"
 									>
@@ -119,7 +113,7 @@ const deleteModalIdentity = () => {
 									</div>
 								</td>
 
-								<td class="flex justify-end">
+								<td class="flex justify-center">
 									<SubMenu
 										v-if="
 											$page.props.permissions.includes('update staff') ||

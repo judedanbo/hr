@@ -23,9 +23,15 @@ const form = ref({
 	note_type: "",
 	notable_id: props.notable_id,
 	notable_type: props.notable_type,
+	document: "",
 });
 
+// const documentChanged = () => {
+// 	const file = noteDocument.files[0];
+// };
+
 const saveNote = () => {
+	// console.log(form.value);
 	// Inertia.post(route("notes.store"), form.value, {
 	Inertia.post(
 		route("staff.write-note", { staff: props.notable_id }),
@@ -46,8 +52,8 @@ const saveNote = () => {
 </script>
 <template>
 	<!-- {{ form }} -->
-	<div class="mt-6 flex gap-x-3">
-		<Avatar :person_id="props.user.id" />
+	<div class="mt-4 flex gap-x-3">
+		<!-- <Avatar :person_id="props.user.id" /> -->
 
 		<form @submit.prevent="saveNote()" class="relative flex-auto">
 			<div
@@ -69,13 +75,22 @@ const saveNote = () => {
 			>
 				<div class="flex items-center space-x-5">
 					<div class="flex items-center">
-						<button
+						<FormKit
+							v-model="form.document"
+							id="noteDocument"
+							name="document"
+							type="file"
+							accept=".png, jpeg, jpg, .pdf, .doc, .docx"
+							validation="document"
+							multiple="true"
+						></FormKit>
+						<!-- <button
 							type="button"
 							class="mx-1 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 dark:text-gray-50 hover:text-gray-500 dark:hover:text-gray-200"
 						>
 							<PaperClipIcon class="h-5 w-5 text" aria-hidden="true" />
 							<span class="sr-only">Attach a file</span>
-						</button>
+						</button> -->
 					</div>
 					<div class="flex items-center w-56">
 						<NewSelect

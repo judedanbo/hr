@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\NoteTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\File;
 
 class StoreNoteRequest extends FormRequest
 {
@@ -34,6 +35,11 @@ class StoreNoteRequest extends FormRequest
             ],
             // 'notable_type' => 'required|string',
             // 'notable_id' => 'required|integer',
+            'document.*.file' => [
+                'file',
+                File::types(['jpeg', 'jpg', 'png', 'pdf', 'doc', 'docx']),
+                'nullable'
+            ],
             'url' => 'string|nullable',
             // 'created_by' => 'required|integer|exists:users,id'
 

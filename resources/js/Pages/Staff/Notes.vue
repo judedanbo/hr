@@ -43,7 +43,7 @@ const formattedDob = (dob) => {
 					</dt>
 				</div>
 
-				<div class="-mx-4 flow-root sm:mx-0 w-full px-4">
+				<div class="flow-root sm:mx-0 w-full px-4">
 					<NewNote
 						v-if="$page.props.permissions.includes('create staff notes')"
 						:notable_id="notable_id"

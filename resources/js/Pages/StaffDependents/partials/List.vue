@@ -1,5 +1,7 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
+import Avatar from "@/Pages/Person/partials/Avatar.vue";
+
 const emit = defineEmits(["editDependent", "deleteDependent"]);
 
 defineProps({
@@ -50,12 +52,33 @@ const subMenuClicked = (action, model) => {
 					class="border-b border-gray-200 dark:border-gray-200/80"
 				>
 					<td class="max-w-0 py-2 pl-4 pr-3 text-sm sm:pl-0">
-						<div class="font-medium text-gray-900 dark:text-gray-50">
-							{{ dependent.name }}
-						</div>
-						<div class="mt-1 truncate text-gray-500 dark:text-gray-50">
-							{{ dependent.gender }}
-						</div>
+						<section class="flex items-center">
+							<Avatar :image="dependent.image" :initials="dependent.initials" />
+							<div class="ml-4">
+								<div class="text-green-900 dark:text-gray-50 font-semibold">
+									{{ dependent.name }}
+								</div>
+								<div class="text-xs text-gray-500 dark:text-gray-200">
+									<span v-if="dependent.gender !== null">
+										{{ dependent.gender }}
+									</span>
+									<span v-if="dependent.date_of_birth !== null">
+										&bull;
+										{{ dependent.date_of_birth }}
+										({{ dependent.dob_distance }})
+									</span>
+								</div>
+							</div>
+						</section>
+						<!-- <div class="flex items-center">
+							<Avatar :image="dependent.image" :initials="dependent.initials" />
+							<div class="font-medium text-gray-900 dark:text-gray-50">
+								{{ dependent.name }}
+							</div>
+							<div class="mt-1 truncate text-gray-500 dark:text-gray-50">
+								{{ dependent.gender }}
+							</div>
+						</div> -->
 					</td>
 					<td
 						class="hidden px-3 py-2 text-right text-sm text-gray-500 dark:text-gray-50 sm:table-cell"

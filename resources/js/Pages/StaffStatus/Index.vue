@@ -58,8 +58,8 @@ const deleteStaffStatus = () => {
 		<div
 			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-400/50"
 		>
-			<dl class="flex flex-wrap">
-				<div class="flex-auto pl-6 pt-4">
+			<dl class="flex flex-wrap pl-6 pt-4">
+				<div class="flex-auto">
 					<dt
 						class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-50"
 					>

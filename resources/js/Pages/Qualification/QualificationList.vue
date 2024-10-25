@@ -55,13 +55,16 @@ const subMenuClicked = (action, model) => {
 };
 </script>
 <template>
-	<div class="-mx-4 flow-root sm:mx-0 w-full px-4">
+	<div class="flow-root sm:mx-0 w-full px-4">
 		<table v-if="qualifications.length > 0" class="min-w-full">
 			<colgroup></colgroup>
 			<thead
 				class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50"
 			>
-				<tr>
+			<tr class="sm:hidden">
+				<tr>Details</tr>
+			</tr>
+				<tr class="hidden sm:table-row">
 					<th
 						scope="col"
 						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
@@ -74,25 +77,25 @@ const subMenuClicked = (action, model) => {
 					</th>
 					<th
 						scope="col"
-						class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+						class="px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50"
 					>
 						Level
 					</th>
 					<th
 						scope="col"
-						class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+						class="px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50"
 					>
 						Course
 					</th>
 					<th
 						scope="col"
-						class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+						class="px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50"
 					>
 						Qualification
 					</th>
 					<th
 						scope="col"
-						class="hidden px-3 py-3.5 text-sm text-center font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+						class="px-3 py-3.5 text-sm text-center font-semibold text-gray-900 dark:text-gray-50"
 					>
 						Year
 					</th>
@@ -109,7 +112,7 @@ const subMenuClicked = (action, model) => {
 				<tr
 					v-for="qualification in qualifications"
 					:key="qualification.id"
-					class="border-b border-gray-200 dark:border-gray-400/30"
+					class="dark:border-gray-400/30 hidden sm:table-row"
 				>
 					<td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
 						<div class="font-medium text-gray-900 dark:text-gray-50">
@@ -122,19 +125,15 @@ const subMenuClicked = (action, model) => {
 							{{ qualification.institution }}
 						</div>
 					</td>
-					<td
-						class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-					>
+					<td class="px-1 py-5 text-sm text-gray-500 dark:text-gray-100">
 						{{ qualification.level }}
 					</td>
-					<td
-						class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
-					>
+					<td class="px-1 py-5 text-sm text-gray-500 dark:text-gray-100">
 						{{ qualification.course }}
 					</td>
 
 					<td
-						class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
+						class="px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell"
 					>
 						{{ qualification.qualification }}
 						<div class="font-medium text-xs text-gray-900 dark:text-gray-50">
@@ -142,7 +141,7 @@ const subMenuClicked = (action, model) => {
 						</div>
 					</td>
 					<td
-						class="hidden px-1 py-5 text-sm text-gray-500 dark:text-gray-100 sm:table-cell text-right"
+						class="px-1 py-5 text-sm text-gray-500 dark:text-gray-100 text-right"
 					>
 						{{ qualification.year }}
 					</td>
@@ -170,6 +169,25 @@ const subMenuClicked = (action, model) => {
 							@item-clicked="(action) => subMenuClicked(action, qualification)"
 						/>
 					</td>
+				</tr>
+				<tr class="sm:hidden">
+					<td
+						v-for="qualification in qualifications"
+						class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
+					><div>
+						{{ qualification.institution }}
+						{{ qualification.level }}
+						{{ qualification.course }}
+						{{ qualification.qualification }}
+						{{ qualification.year }}
+					</div>
+					</td>
+					<!-- <td
+						v-if="qualifications.length > 0"
+						class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
+					>
+						{{ qualifications.length }}
+					</td> -->
 				</tr>
 			</tbody>
 		</table>

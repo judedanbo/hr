@@ -113,6 +113,9 @@ const updateDependent = (data, node) => {
 				>
 					<PersonalInformationForm />
 				</FormKit>
+				<FormKit type="step" id="image" name="image">
+					<ImageUpload :imageUrl="dependent.image" />
+				</FormKit>
 				<FormKit
 					:value="{ relation: dependent.relation }"
 					type="step"
@@ -123,9 +126,6 @@ const updateDependent = (data, node) => {
 					<template #stepNext>
 						<FormKit type="submit" label="Save Dependent" />
 					</template>
-				</FormKit>
-				<FormKit type="step" id="image" name="image">
-					<ImageUpload :imageUrl="dependent.image" />
 				</FormKit>
 			</FormKit>
 		</FormKit>

@@ -33,11 +33,7 @@ const subMenuClicked = (action, model) => {
 				</tr>
 			</thead>
 			<tbody>
-				<tr
-					v-for="status in statuses"
-					:key="status.id"
-					class="border-b border-gray-200 dark:border-gray-400/30"
-				>
+				<tr v-for="status in statuses" :key="status.id" class="">
 					<td class="max-w-0 py-2 pl-1 pr-3 text-sm sm:pl-0">
 						<div class="font-medium text-gray-900 dark:text-gray-50">
 							{{ status.status_display }}

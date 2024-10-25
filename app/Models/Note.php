@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\NoteTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Note extends Model
@@ -29,5 +31,10 @@ class Note extends Model
     public function notable()
     {
         return $this->morphTo();
+    }
+
+    function documents(): MorphMany
+    {
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

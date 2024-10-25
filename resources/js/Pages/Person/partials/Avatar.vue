@@ -2,15 +2,15 @@
 const props = defineProps({
 	initials: {
 		type: String,
-		default: null
+		default: null,
 	},
 	image: {
 		type: String,
-		default: null
+		default: null,
 	},
 	size: {
 		type: String,
-		default: 'sm'
+		default: "sm",
 	},
 });
 </script>
@@ -19,8 +19,8 @@ const props = defineProps({
 	<figure>
 		<img
 			v-if="image"
-			:class="size == 'sm' ? ' w-12 h-12' : 'w-56 h-56'"
-			class="flex-none  rounded-full bg-gray-50 object-cover object-center"
+			:class="size == 'sm' ? ' w-12 h-12' : ' w-56 h-56'"
+			class="flex-none rounded-xl md:rounded-full bg-gray-50 object-cover object-center"
 			:src="image"
 			:alt="initials"
 		/>

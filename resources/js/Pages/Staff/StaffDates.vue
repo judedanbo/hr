@@ -15,7 +15,7 @@ defineProps({
 		>
 			Important dates
 		</h2>
-		<dl class="mt-6 grid grid-cols-1 gap-y-6 text-sm leading-6 sm:grid-cols-2">
+		<dl class="mt-6 grid grid-cols-2 gap-y-6 text-sm leading-6">
 			<div class="sm:pr-4">
 				<dt class="text-gray-500 dark:text-gray-300">Date Employed:</dt>
 				{{ " " }}

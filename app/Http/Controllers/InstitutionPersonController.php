@@ -166,7 +166,7 @@ class InstitutionPersonController extends Controller
                     'ranks',
                     'dependents.person',
                     'statuses',
-                    'notes',
+                    'notes.documents',
                     'positions' => function ($query) {
                         $query->withTrashed();
                     },
@@ -300,7 +300,14 @@ class InstitutionPersonController extends Controller
                     'note_date_time' => $note->note_date,
                     'note_type' => $note->note_type,
                     'created_by' => $note->created_by,
-                    'url' => $note->url,
+                    'url' => $note->documents->count() > 0 ? $note->documents->map(fn($doc) => [
+                        'document_type' => $doc->document_type,
+                        'document_title' => $doc->document_title,
+                        // 'document_status' => $doc->document_status,
+                        // 'document_number' => $doc->document_number,
+                        'file_name' => $doc->file_name,
+                        'file_type' => $doc->file_type,
+                    ]) : null,
 
                 ]) : null,
                 'units' => $staff->units->map(fn($unit) => [
@@ -323,6 +330,7 @@ class InstitutionPersonController extends Controller
                 'dependents' => $staff->dependents ? $staff->dependents->map(fn($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
+                    'initials' => $dep->person->initials,
                     'title' => $dep->person->title,
                     'name' => $dep->person->full_name,
                     'surname' => $dep->person->surname,
@@ -335,6 +343,7 @@ class InstitutionPersonController extends Controller
                     'gender' => $dep->person->gender?->label(),
                     'gender_form' => $dep->person->gender,
                     'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
+                    'dob_distance' => $dep->person->date_of_birth?->diffInYears() . ' years old',
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
                     // $staff->person->image ? '/' . $staff->person->image :  null,
@@ -483,7 +492,23 @@ class InstitutionPersonController extends Controller
 
     public function writeNote(StoreNoteRequest $request, InstitutionPerson $staff)
     {
+        // dd($request->all());
+        // dd()
+        // $files = [];
+        // // if ($request->hasFile('document')) {
+        // foreach ($request->document as $file) {
+        //     // dd($file);
+        //     // if($file->file)
+        //     $files[] = Storage::disk('documents')->put('notes', $file['file']);; //$file->store('notes');
+        //     // $files[] = $file->store('notes');
+        // }
+        // }
+        // dd($files);
+        //  Storage::disk('documents')->put('notes', $request->image);
+
         $validated = $request->validated();
+
+        // foreach ($validated)
 
         $validated['created_by'] = auth()->user()->id;
         $staff->writeNote($validated);

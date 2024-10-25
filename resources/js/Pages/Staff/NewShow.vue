@@ -10,13 +10,15 @@ import StaffType from "../StaffType/Index.vue";
 import StaffPosition from "../StaffPosition/Index.vue";
 import Qualifications from "./PersonQualifications.vue";
 import Dependents from "@/Pages/StaffDependents/Index.vue";
+import Roles from "@/Pages/Person/partials/Roles.vue";
+
 // import Dependents from "./Dependents.vue";
 import Address from "./Address.vue";
 import StaffIdentities from "./StaffIdentities.vue";
 import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
 import { ref } from "vue";
-import { PlusIcon } from "@heroicons/vue/20/solid";
+import { PencilIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
 import NewModal from "@/Components/NewModal.vue";
 import EditStaffForm from "./EditStaffForm.vue";
@@ -98,57 +100,63 @@ const editContactModal = () => {
 					<div class="absolute inset-x-0 bottom-0 h-px bg-gray-900/5" />
 				</div>
 
-				<div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+				<div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
 					<div
 						class="mx-auto flex flex-wrap max-w-2xl items-center md:justify-between lg:justify-start gap-x-8 lg:mx-0 lg:max-w-none"
 					>
 						<div
-							class="flex flex-wrap items-center justify-between md:justify-start gap-x-6 w-full md:w-1/2"
+							class="flex flex-wrap items-center justify-center md:justify-between lg:justify-start gap-x-6 w-full md:w-1/2"
 						>
 							<!-- {{ person.image }} -->
 							<Avatar
 								:initials="person.initials"
 								:image="person.image"
 								size="lg"
+								class=""
 							/>
 							<div class="">
-								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-									File Number
-									<span class="text-gray-700 dark:text-gray-100">{{
-										staff.file_number
-									}}</span>
-								</div>
-								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-									Staff Number
-									<span class="text-gray-700 dark:text-gray-100">{{
-										staff.staff_number
-									}}</span>
-								</div>
 								<div
 									class="mt-1 text-xl font-semibold leading-6 text-gray-900 dark:text-white"
 								>
 									{{ person.name }}
 								</div>
+								<div class="flex justify-between">
+									<Roles :person="person.id" class="" />
+									<div
+										class="text-sm leading-6 text-gray-500 dark:text-gray-300 flex gap-4 justify-center"
+									>
+										<!-- File Number -->
+										<div class="">
+											{{ staff.file_number }}
+										</div>
+										<div class="">
+											{{ staff.staff_number }}
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div>
-							<div v-if="staff.statuses.length > 0" class="mt-4 md:mt-0">
-								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-									Current Status
-									<span class="text-gray-700 dark:text-gray-100">{{
+						<!-- <div> -->
+						<div
+							v-if="staff.statuses.length > 0"
+							class="flex justify-end mt-1 md:mt-0 w-full"
+						>
+							<!-- <div class="text-sm leading-6 text-gray-500 dark:text-gray-300"> -->
+							<!-- <span class="hidden"> Current Status </span> -->
+							<!-- <Roles :person="person.id" class="" /> -->
+							<!-- <span class="text-gray-700 dark:text-gray-100">{{
 										staff.statuses[0]?.status_display
-									}}</span>
-								</div>
-							</div>
-							<div class="mt-4 md:mt-0">
-								<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-									Current position
-									<span class="text-gray-700 dark:text-gray-100">{{
-										staff.positions[0]?.name
-									}}</span>
-								</div>
+									}}</span> -->
+							<!-- </div> -->
+						</div>
+						<div class="mt-4 md:mt-0">
+							<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
+								<span class="text-gray-700 dark:text-gray-100">{{
+									staff.positions[0]?.name
+								}}</span>
 							</div>
 						</div>
+						<!-- </div> -->
 						<div
 							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
 						>
@@ -178,7 +186,7 @@ const editContactModal = () => {
 								class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 								@click.prevent="toggle()"
 							>
-								<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+								<PencilIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 								Edit
 							</a>
 						</div>
@@ -215,9 +223,9 @@ const editContactModal = () => {
 					>
 						<div class="lg:flex flex-grow flex-wrap lg:gap-4 items-start">
 							<!-- important Dates -->
-							<StaffDates class="w-full xl:w-3/5" :staff="staff" />
+							<StaffDates class="w-full xl:w-3/5 mt-4" :staff="staff" />
 							<div
-								class="flex-1 flex xl:flex-col xl:gap-y-4 lg:flex-row lg:gap-x-4"
+								class="flex-1 flex flex-col xl:flex-col gap-y-4 flex-shrink-0 lg:flex-row lg:gap-x-4 flex-wrap mt-4"
 							>
 								<StaffStatus
 									:statuses="staff.statuses"
@@ -226,7 +234,7 @@ const editContactModal = () => {
 										hire_date: staff.hire_date,
 									}"
 									:institution="staff.institution_id"
-									class="flex-1"
+									class=""
 									@close-form="toggleTransferForm()"
 								/>
 								<StaffType
@@ -236,7 +244,7 @@ const editContactModal = () => {
 										hire_date: staff.hire_date,
 									}"
 									:institution="staff.institution_id"
-									class="flex-1"
+									class=""
 									@close-form="toggleTransferForm()"
 								/>
 								<StaffPosition
@@ -246,7 +254,7 @@ const editContactModal = () => {
 										hire_date: staff.hire_date,
 									}"
 									:institution="staff.institution_id"
-									class="flex-1"
+									class=""
 									@close-form="toggleTransferForm()"
 								/>
 							</div>
@@ -292,6 +300,7 @@ const editContactModal = () => {
 						<Dependents
 							:staff-id="staff.staff_id"
 							:dependents="staff.dependents"
+							class="w-full xl:w-2/3"
 						/>
 					</div>
 				</div>
