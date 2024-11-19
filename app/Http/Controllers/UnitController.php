@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\UnitStaffExport;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UnitController extends Controller
 {
@@ -223,12 +225,13 @@ class UnitController extends Controller
         // return $allStaff;
         return Inertia::render('Unit/Show', [
             'unit' => [
-                'unit' => $unit,
+                // 'unit' => $unit,
                 'id' => $unit?->id,
                 'name' => $unit?->name,
                 'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum(function ($sub) {
                     return $sub->staff_count + $sub->subs->sum('staff_count');
                 }) : $unit?->staff_count,
+                // 'staff_number' => $unit->subs->sum('staff_count'),
                 'subs_number' => $unit?->subs_count,
                 'institution' => $unit?->institution ? [
                     'name' => $unit?->institution->name,
@@ -357,4 +360,9 @@ class UnitController extends Controller
     //     //     'label' => $unit->name,
     //     // ]);
     // }
+
+    public function download(Unit $unit)
+    {
+        return Excel::download(new UnitStaffExport($unit), $unit->name . ' staff.xlsx');
+    }
 }

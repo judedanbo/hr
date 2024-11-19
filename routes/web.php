@@ -189,6 +189,7 @@ Route::controller(UnitController::class)->middleware(['auth', 'password_changed'
     Route::patch('/unit/{unit}', 'update')->name('unit.update');
     Route::get('/unit/{unit}/details', 'details')->name('unit.details');
     Route::post('/unit/{unit}/details', 'addSub')->name('unit.add-sub');
+    Route::get('/unit/{unit}/download', 'download')->name('export.unit.staff');
 });
 
 Route::get('/unit-list', function () {

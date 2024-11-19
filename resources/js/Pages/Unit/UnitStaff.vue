@@ -2,8 +2,9 @@
 import { Link } from "@inertiajs/inertia-vue3";
 import Avatar from "../Person/partials/Avatar.vue";
 import NoItem from "@/Components/NoItem.vue";
+import { ArrowDownTrayIcon } from "@heroicons/vue/20/solid";
 
-defineProps({
+const props = defineProps({
 	unit: {
 		type: Object,
 		required: true,
@@ -11,16 +12,28 @@ defineProps({
 });
 
 defineEmits(["update:modelValue"]);
+const exportToExcel = () => {
+	// console.log(unit);
+	window.location = route("export.unit.staff", { unit: props.unit.id });
+};
 </script>
 
 <template>
 	<section class="w-full">
-		<header>
+		<header class="flex justify-between items-center">
 			<p
 				class="font-bold text-xl px-8 py-4 text-gray-700 dark:text-white tracking-wide"
 			>
 				<span>Staff ({{ unit.staff_number }})</span>
 			</p>
+			<a
+				class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
+				href="#"
+				@click.prevent="exportToExcel()"
+			>
+				<ArrowDownTrayIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+				Export Staff list
+			</a>
 		</header>
 		<main
 			class="max-h-screen overflow-y-auto shadow-lg sm:rounded-2xl bg-white dark:bg-gray-700 w-full"
