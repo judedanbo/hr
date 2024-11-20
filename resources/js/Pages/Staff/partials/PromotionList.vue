@@ -56,6 +56,7 @@ const clicked = (action, model) => {
 					<td class="max-w-0 py-2 pl-2 pr-3 text-sm sm:pl-0 w-2/5">
 						<div class="font-medium text-gray-900 dark:text-gray-100">
 							{{ promotion.name }}
+							<!-- {{ promotion }} -->
 						</div>
 						<div class="mt-1 truncate text-gray-500 text-xs dark:text-gray-100">
 							{{ promotion.remarks }}

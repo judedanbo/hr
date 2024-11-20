@@ -57,7 +57,10 @@ class UnitStaffExport implements
 
     public function title(): string
     {
-        return Str::of($this->unit->name)->plural();
+        return Str::of($this->unit->name)
+            ->title()
+            ->replaceMatches('/[^A-Za-z0-9]++/', '-')
+            ->__toString();
     }
 
     public function map($staff): array

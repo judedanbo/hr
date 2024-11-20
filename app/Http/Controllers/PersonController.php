@@ -116,8 +116,9 @@ class PersonController extends Controller
             'contacts' => $selectedPerson->contacts->count() > 0 ? $selectedPerson->contacts->map(fn($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
-                'contact_type_id' => $contact->contact_type_id,
+                // 'contact_type_id' => $contact->contact_type_id,
                 'valid_end' => $contact->valid_end,
+                'contact_type' => $contact->contact_type?->label(),
             ]) : null,
             'address' => $selectedPerson->address->count() > 0 ? [
                 'id' => $selectedPerson->address->first()->id,
@@ -192,9 +193,9 @@ class PersonController extends Controller
                             'id' => $rank->id,
                             'name' => $rank->name,
                             'job_id' => $rank->id,
-                            'start_date' => $rank->start_date?->format('d M Y'),
-                            'start_date_distance' => $rank->start_date?->diffForHumans(),
-                            'end_date' => $rank->end_date?->format('d M Y'),
+                            'start_date' => $rank->pivot->start_date?->format('d M Y'),
+                            'start_date_distance' => $rank->pivot->start_date?->diffForHumans(),
+                            'end_date' => $rank->pivot->end_date?->format('d M Y'),
                             'remarks' => $rank->remarks,
                         ];
                     }) : null,

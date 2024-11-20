@@ -9,6 +9,7 @@ use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -363,6 +364,14 @@ class UnitController extends Controller
 
     public function download(Unit $unit)
     {
-        return Excel::download(new UnitStaffExport($unit), $unit->name . ' staff.xlsx');
+        return Excel::download(
+            new UnitStaffExport($unit),
+            Str::of($unit->name)
+                ->title()
+                ->replaceMatches('/[^A-Za-z0-9]++/', '-')
+                ->__toString()
+                // str_replace(array("/", "\\"), '-', $unit->name)
+                . ' staff.xlsx'
+        );
     }
 }
