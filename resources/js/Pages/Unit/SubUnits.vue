@@ -84,7 +84,7 @@ const exportToExcel = (subUnitId) => {
 							</div>
 						</td>
 						<td
-							class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
+							class="whitespace-nowrap px-5 py-4 text-sm text-gray-500 dark:text-gray-200 text-right"
 						>
 							{{ subUnit.staff_count }}
 						</td>
