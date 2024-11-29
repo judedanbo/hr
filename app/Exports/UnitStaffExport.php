@@ -113,10 +113,29 @@ class UnitStaffExport implements
                     $query->where(function ($query) {
                         $query->where('units.id', $this->unit->id);
                         $query->orWhere('units.unit_id', $this->unit->id);
-                        $query->orWhere(
-                            'units.unit_id',
-                            'in',
-                            Unit::where('units.unit_id', $this->unit->id)->select('id')
+                        $query->orWhereRaw(
+                            'units.unit_id 
+                            in 
+                            (select id from units as tempUnit where tempUnit.unit_id = ?)',
+                            [$this->unit->id]
+                        );
+                        $query->orWhereRaw(
+                            'units.unit_id 
+                            in 
+                            (select id from units as tempUnit where tempUnit.unit_id 
+                            in 
+                            (select id from units as tempUnit2 where tempUnit2.unit_id = ?))',
+                            [$this->unit->id]
+                        );
+                        $query->orWhereRaw(
+                            'units.unit_id 
+                            in 
+                            (select id from units as tempUnit where tempUnit.unit_id 
+                            in 
+                            (select id from units as tempUnit2 where tempUnit2.unit_id 
+                            in 
+                            (select id from units as tempUnit3 where tempUnit3.unit_id = ?)))',
+                            [$this->unit->id]
                         );
                     });
                     $query->where(function ($query) {
