@@ -36,7 +36,7 @@ const tableCols = ["units", "Male", "Female", "No. Staff"];
 						</TableData>
 						<TableData align="right">
 							<!-- {{ unit.male_staff_count.toLocaleString() }} -->
-							{{ unit }}
+							<!-- {{ unit }} -->
 						</TableData>
 						<TableData align="right">
 							<!-- {{ unit.male_staff_count.toLocaleString() }} -->
