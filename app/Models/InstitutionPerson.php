@@ -422,4 +422,17 @@ class InstitutionPerson extends Pivot
             });
         });
     }
+
+    public function scopeMaleStaff($query)
+    {
+        return $query->whereHas('person', function ($query) {
+            $query->male();
+        });
+    }
+    public function scopeFemaleStaff($query)
+    {
+        return $query->whereHas('person', function ($query) {
+            $query->female();
+        });
+    }
 }

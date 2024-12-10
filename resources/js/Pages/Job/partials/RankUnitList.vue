@@ -17,7 +17,7 @@ const props = defineProps({
 		default: "",
 	},
 });
-const tableCols = ["units", "No. Staff"];
+const tableCols = ["units", "Male", "Female", "No. Staff"];
 </script>
 <template>
 	<div class="overflow-y-scroll max-h-80">
@@ -33,6 +33,13 @@ const tableCols = ["units", "No. Staff"];
 					<TableRow>
 						<TableData>
 							{{ unit.name }}
+						</TableData>
+						<TableData align="right">
+							<!-- {{ unit.male_staff_count.toLocaleString() }} -->
+							{{ unit }}
+						</TableData>
+						<TableData align="right">
+							<!-- {{ unit.male_staff_count.toLocaleString() }} -->
 						</TableData>
 						<TableData align="right">
 							{{ unit.total_staff.toLocaleString() }}

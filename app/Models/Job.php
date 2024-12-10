@@ -103,9 +103,9 @@ class Job extends Model
         return $this->hasMany(JobStaff::class);
     }
 
-    public function units(): HasManyThrough
+    public function units(): HasMany
     {
-        return $this->hasManyThrough(Unit::class, JobStaff::class, 'job_id', 'id', 'id', 'unit_id');
+        return $this->hasMany(JobStaff::class);
     }
 
     public function scopeManagementRanks($query)

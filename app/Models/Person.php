@@ -194,4 +194,13 @@ class Person extends Model
     {
         return $this->hasManyThrough(Dependent::class, InstitutionPerson::class, 'person_id', 'staff_id');
     }
+
+    public function scopeMale($query)
+    {
+        return $query->where('gender', GenderEnum::MALE);
+    }
+    public function scopeFemale($query)
+    {
+        return $query->where('gender', GenderEnum::FEMALE);
+    }
 }

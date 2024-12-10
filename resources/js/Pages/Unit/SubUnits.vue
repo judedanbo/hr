@@ -47,16 +47,22 @@ const exportToExcel = (subUnitId) => {
 						</th>
 						<th
 							scope="col"
-							class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
+							class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50"
 						>
 							Staff
 						</th>
-						<!-- <th
-								scope="col"
-								class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50"
-							>
-								Sub units
-							</th> -->
+						<th
+							scope="col"
+							class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50"
+						>
+							Male
+						</th>
+						<th
+							scope="col"
+							class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50"
+						>
+							Total
+						</th>
 					</tr>
 				</thead>
 				<tbody class="bg-white dark:bg-gray-700">
@@ -86,13 +92,18 @@ const exportToExcel = (subUnitId) => {
 						<td
 							class="whitespace-nowrap px-5 py-4 text-sm text-gray-500 dark:text-gray-200 text-right"
 						>
+							{{ subUnit.male_staff }}
+						</td>
+						<td
+							class="whitespace-nowrap px-5 py-4 text-sm text-gray-500 dark:text-gray-200 text-right"
+						>
+							{{ subUnit.female_staff }}
+						</td>
+						<td
+							class="whitespace-nowrap px-3 py-4 text-right text-sm text-gray-500 dark:text-gray-200"
+						>
 							{{ subUnit.staff_count }}
 						</td>
-						<!-- <td
-								class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-200"
-							>
-								{{ subUnit.subs }}
-							</td> -->
 					</tr>
 				</tbody>
 			</table>

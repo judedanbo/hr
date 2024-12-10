@@ -8,7 +8,6 @@ use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -26,6 +25,10 @@ class UnitController extends Controller
                     //     $query->active();
                     //     $query->select('institution_person.id', 'person_id', 'file_number', 'staff_number', 'hire_date');
                     // },
+                    'staff' => function ($query) {
+                        $query->active();
+                        // $query->wherePivot('end_date', null);
+                    },
                     'subs' => function ($query) {
                         $query->where(function ($query) {
                             $query->whereHas('staff', function ($query) {
@@ -53,6 +56,14 @@ class UnitController extends Controller
                                     'staff' => function ($query) {
                                         $query->active();
                                     },
+                                    'staff as male_staff' => function ($query) {
+                                        $query->active();
+                                        $query->maleStaff();
+                                    },
+                                    'staff as female_staff' => function ($query) {
+                                        $query->active();
+                                        $query->femaleStaff();
+                                    },
                                 ]);
                             },
                             'staff' => function ($query) {
@@ -63,6 +74,15 @@ class UnitController extends Controller
                         $query->withCount([
                             'staff' => function ($query) {
                                 $query->active();
+                                // $query->wherePivot('end_date', null);
+                            },
+                            'staff as male_staff' => function ($query) {
+                                $query->active();
+                                $query->maleStaff();
+                            },
+                            'staff as female_staff' => function ($query) {
+                                $query->active();
+                                $query->femaleStaff();
                             },
                             'subs' => function ($query) {
                                 $query->whereHas('staff', function ($query) {
@@ -76,6 +96,14 @@ class UnitController extends Controller
                     [
                         'staff' => function ($query) {
                             $query->active();
+                        },
+                        'staff as male_staff' => function ($query) {
+                            $query->active();
+                            $query->maleStaff();
+                        },
+                        'staff as female_staff' => function ($query) {
+                            $query->active();
+                            $query->femaleStaff();
                         },
                         'subs' => function ($query) {
                             $query->where(function ($query) {
@@ -102,7 +130,6 @@ class UnitController extends Controller
                         'id' => $unit->id,
                         'name' => $unit->name,
                         'short_name' => $unit->short_name,
-                        // 'countsub' =>  $unit->subs,
                         // 'count' =>  $unit->subs->sum(function ($sub) {
                         //     // return $sub->subs->sum('staff_count');
                         // }),
@@ -113,6 +140,15 @@ class UnitController extends Controller
                         //         return $sum->staff_count + $sum->subs->sum('staff_count');
                         //     });
                         // }),
+                        'male' => $unit,
+                        'staff_list' => $unit->staff,
+                        'male_staff' => $unit->male_staff + $unit->subs->sum(function ($sub) {
+                            return $sub->male_staff + $sub->subs->sum('male_staff') ?? 0;
+                        }),
+                        // 'female_staff' => $unit->female_staff,
+                        'female_staff' => $unit->female_staff + $unit->subs->sum(function ($sub) {
+                            return $sub->female_staff + $sub->subs->sum('female_staff') ?? 0;
+                        }),
                         'units' => $unit->subs_count,
                         'institution' => $unit->institution ? [
                             'id' => $unit->institution->id,
@@ -170,6 +206,15 @@ class UnitController extends Controller
                                 'staff' => function ($query) {
                                     $query->active();
                                 },
+                                'staff as male' => function ($query) {
+                                    $query->active();
+                                    $query->maleStaff();
+                                },
+                                'staff as female' => function ($query) {
+                                    $query->active();
+                                    $query->femaleStaff();
+                                },
+
                             ]);
                         },
                         'staff' => function ($query) {
@@ -183,6 +228,16 @@ class UnitController extends Controller
                         'staff' => function ($query) {
                             $query->active();
                             $query->search(request()->search);
+                        },
+                        'staff as male_staff' => function ($query) {
+                            $query->active();
+                            $query->search(request()->search);
+                            $query->maleStaff();
+                        },
+                        'staff as female_staff' => function ($query) {
+                            $query->active();
+                            $query->search(request()->search);
+                            $query->femaleStaff();
                         },
                         'subs' => function ($query) {
                             $query->whereHas('staff', function ($query) {
@@ -212,6 +267,14 @@ class UnitController extends Controller
                     $query->active();
                     $query->search(request()->search);
                 },
+                'staff as male_staff' => function ($query) {
+                    $query->active();
+                    $query->maleStaff();
+                },
+                'staff as female_staff' => function ($query) {
+                    $query->active();
+                    $query->femaleStaff();
+                },
             ])
             ->whereId($unit)
             ->firstOrFail();
@@ -232,6 +295,9 @@ class UnitController extends Controller
                 'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum(function ($sub) {
                     return $sub->staff_count + $sub->subs->sum('staff_count');
                 }) : $unit?->staff_count,
+                'male_staff' => $unit?->subs ? $unit?->male_count + $unit?->subs->sum(function ($sub) {
+                    return $sub->male_count + $sub->subs->sum('male_count');
+                }) : $unit?->male_count,
                 // 'staff_number' => $unit->subs->sum('staff_count'),
                 'subs_number' => $unit?->subs_count,
                 'institution' => $unit?->institution ? [
@@ -284,8 +350,13 @@ class UnitController extends Controller
                     'name' => $sub->name,
                     'subs' => $sub->subs_count,
                     'staff_count' => $sub->staff_count + $sub->subs->sum(function ($sub) {
-                        // return $sub->subs?->sum('staff_count');
                         return $sub->staff_count + $sub->subs->sum('staff_count');
+                    }),
+                    'male_staff' => $sub->male_staff + $sub->subs->sum(function ($sub) {
+                        return $sub->male_staff + $sub->subs->sum('male_staff');
+                    }),
+                    'female_staff' => $sub->female_staff + $sub->subs->sum(function ($sub) {
+                        return $sub->female_staff + $sub->subs->sum('female_staff');
                     }),
                     // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
                     //     'id' => $stafff->id,

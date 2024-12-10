@@ -11,7 +11,7 @@ defineProps({
 	units: { type: Array, required: true },
 });
 const emit = defineEmits(["openUnit"]);
-const tableCols = ["Name", "Units", "Staff"];
+const tableCols = ["Name", "Units", "Male", "Female", "Total staff"];
 </script>
 
 <template>
@@ -35,11 +35,15 @@ const tableCols = ["Name", "Units", "Staff"];
 								</TableData>
 								<TableData align="right">
 									{{ unit.units.toLocaleString() }}
-									<!-- <StaffEmploymentCard :staff="unit" /> -->
+								</TableData>
+								<TableData align="right">
+									{{ unit.male_staff.toLocaleString() }}
+								</TableData>
+								<TableData align="right">
+									{{ unit.female_staff.toLocaleString() }}
 								</TableData>
 								<TableData align="right">
 									{{ unit.staff.toLocaleString() }}
-									<!-- <StaffRetirementCard :staff="unit" /> -->
 								</TableData>
 							</TableRow>
 						</template>

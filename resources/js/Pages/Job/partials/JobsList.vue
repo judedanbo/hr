@@ -12,7 +12,14 @@ defineProps({
 	jobs: { type: Array, required: true },
 });
 const emit = defineEmits(["openJob"]);
-const tableCols = ["Ranks", "Harmonized Grade", "Level", "No. Staff"];
+const tableCols = [
+	"Ranks",
+	"Harmonized Grade",
+	"Level",
+	"Male",
+	"Female",
+	"No. Staff",
+];
 </script>
 
 <template>
@@ -39,6 +46,12 @@ const tableCols = ["Ranks", "Harmonized Grade", "Level", "No. Staff"];
 								</TableData>
 								<TableData align="center">
 									{{ job.category.level }}
+								</TableData>
+								<TableData align="right">
+									{{ job.male_staff_count.toLocaleString() }}
+								</TableData>
+								<TableData align="right">
+									{{ job.female_staff_count.toLocaleString() }}
 								</TableData>
 								<TableData align="right">
 									{{ job.staff.toLocaleString() }}

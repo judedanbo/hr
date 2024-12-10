@@ -8,7 +8,6 @@ use App\Http\Requests\StoreJobRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Unit;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Excel;
 
@@ -20,10 +19,23 @@ class JobController extends Controller
             'jobs' => Job::query()
                 ->searchRank(request()->search)
                 ->with(['category', 'institution'])
-                ->withCount(['staff' => function ($query) {
-                    $query->active();
-                    $query->whereNull('job_staff.end_date');
-                }])
+                ->withCount([
+                    'staff' => function ($query) {
+                        $query->active();
+                        $query->whereNull('job_staff.end_date');
+                    },
+                    'staff as male_staff_count' => function ($query) {
+                        $query->active();
+                        $query->where('job_staff.end_date', null);
+                        $query->maleStaff();
+                    },
+                    'staff as female_staff_count' => function ($query) {
+                        $query->active();
+                        $query->where('job_staff.end_date', null);
+                        $query->femaleStaff();
+                    },
+                    'units'
+                ])
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
                 ->withQueryString()
@@ -31,6 +43,8 @@ class JobController extends Controller
                     'id' => $job->id,
                     'name' => $job->name,
                     'staff' => $job->staff_count,
+                    'male_staff_count' => $job->male_staff_count,
+                    'female_staff_count' => $job->female_staff_count,
                     'category' => $job->category ? [
                         'id' => $job->category->id,
                         'name' => $job->category->name,
@@ -78,13 +92,29 @@ class JobController extends Controller
                 },
                 'staff.person',
                 'institution',
+                // 'units' => function ($query) {
+                // $query->whereHas('staff', function ($query) {
+                //     $query->active();
+                //     $query->whereHas('ranks', function ($query) {
+                //         $query->whereNull('job_staff.end_date');
+                //     });
+                // });
+                // },
             ])
             ->withCount([
                 'staff' => function ($query) {
-                    $query->whereHas('statuses', function ($query) {
-                        $query->where('status', 'A');
-                    });
+                    $query->active();
                     $query->where('job_staff.end_date', null);
+                },
+                'staff as male_staff_count' => function ($query) {
+                    $query->active();
+                    $query->where('job_staff.end_date', null);
+                    $query->maleStaff();
+                },
+                'staff as female_staff_count' => function ($query) {
+                    $query->active();
+                    $query->where('job_staff.end_date', null);
+                    $query->femaleStaff();
                 },
             ])
             ->findOrFail($job);
@@ -99,10 +129,18 @@ class JobController extends Controller
                     'id' => $job->category->id,
                 ] : '',
                 'staff_count' => $job->staff_count,
+                'male_staff_count' => $job->male_staff_count,
+                'female_staff_count' => $job->female_staff_count,
                 'institution' => $job->institution ? [
                     'name' => $job->institution->name,
                     'id' => $job->institution->id,
                 ] : null,
+                // 'subs' => $job->subs->map(fn($unit) => [
+                //     'id' => $unit->id,
+                //     'name' => $unit->name,
+                //     'staff_count' => $unit->staff_count,
+                // ]),
+                'units' => $job->units,
                 'staff' => $job->staff->map(fn($staff) => [
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
@@ -195,7 +233,10 @@ class JobController extends Controller
     public function unitStats($job)
     {
         return InstitutionPerson::query()
-            ->selectRaw('units.name, count(*) as total_staff')
+            ->selectRaw(
+                'units.name,
+                count(*) as total_staff'
+            )
             ->join('staff_unit', 'staff_unit.staff_id', 'institution_person.id')
             ->join('units', 'units.id', 'staff_unit.unit_id')
             ->join('job_staff', 'job_staff.staff_id', 'institution_person.id')
@@ -210,7 +251,6 @@ class JobController extends Controller
             ->groupByRaw('units.name, units.id')
             ->active()
             ->get();
-        // ->get();
 
         return Unit::query()
             ->whereHas('staff', function ($query) use ($job) {
