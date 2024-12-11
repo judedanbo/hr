@@ -164,7 +164,7 @@ const genderData = computed(() => {
 					}"
 				/>
 			</div>
-			<div class="flex-grow">
+			<div class="flex-grow h-full">
 				<RankUnitList :units="jobStats">
 					<template #pagination>
 						{{ navigation }}

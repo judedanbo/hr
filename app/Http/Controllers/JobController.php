@@ -234,13 +234,16 @@ class JobController extends Controller
     {
         return InstitutionPerson::query()
             ->selectRaw(
-                'units.name,
-                count(*) as total_staff'
+                "units.name,
+                SUM(IF(people.gender = 'M', 1, 0)) AS male_staff_count,
+                SUM(IF(people.gender = 'F', 1, 0)) AS female_staff_count,
+                count(*) as total_staff"
             )
             ->join('staff_unit', 'staff_unit.staff_id', 'institution_person.id')
             ->join('units', 'units.id', 'staff_unit.unit_id')
             ->join('job_staff', 'job_staff.staff_id', 'institution_person.id')
             ->join('jobs', 'jobs.id', 'job_staff.job_id')
+            ->join('people', 'people.id', 'institution_person.person_id')
             ->where(function ($query) {
                 $query->whereNull('staff_unit.end_date');
                 $query->orWhere('staff_unit.end_date', '>=', now());
