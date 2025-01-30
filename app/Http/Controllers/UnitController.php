@@ -218,7 +218,7 @@ class UnitController extends Controller
                             ]);
                         },
                         'staff' => function ($query) {
-                            $query->with(['person', 'ranks', 'units']);
+                            $query->with(['person', 'ranks.category', 'units']);
                             $query->active();
                             $query->search(request()->search);
                         },
@@ -248,7 +248,6 @@ class UnitController extends Controller
                 },
             ])
             ->withCount([
-
                 'subs' => function ($query) {
                     $query->where(function ($query) {
                         $query->whereHas('staff', function ($query) {
@@ -286,7 +285,11 @@ class UnitController extends Controller
         // return $sub_staff;
         $allStaff = $unit?->staff->merge($sub_staff)->flatten(1);
 
-        // return $allStaff;
+        $sorted = $allStaff->sortBy(function ($staff) {
+            return $staff->ranks->first()?->category->level ?? 99;
+        });
+
+        // return $sorted;
         return Inertia::render('Unit/Show', [
             'unit' => [
                 // 'unit' => $unit,
@@ -322,7 +325,7 @@ class UnitController extends Controller
                 //     ]) : null,
                 // ]) : null,
                 'type' => $unit?->type->label(),
-                'staff' => $allStaff?->map(fn($staff) => [
+                'staff' => $sorted->values()->map(fn($staff) => [
                     'id' => $staff->person->id,
                     'name' => $staff->person->full_name,
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
@@ -336,6 +339,7 @@ class UnitController extends Controller
                         'name' => $staff->ranks->first()->name,
                         'start_date' => $staff->ranks->first()->pivot->start_date->format('d M Y'),
                         'remarks' => $staff->ranks->first()->pivot->remarks,
+                        'cat' => $staff->ranks->first()->category
                     ] : null,
                     'unit' => $staff->units->count() > 0 ? [
                         'id' => $staff->units->first()->id,

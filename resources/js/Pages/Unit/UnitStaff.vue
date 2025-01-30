@@ -13,7 +13,6 @@ const props = defineProps({
 
 defineEmits(["update:modelValue"]);
 const exportToExcel = () => {
-	// console.log(unit);
 	window.location = route("export.unit.staff", { unit: props.unit.id });
 };
 </script>

@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use App\Enums\ContactTypeEnum;
 use App\Enums\Identity;
-use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Unit;
 use Carbon\Carbon;
@@ -76,7 +75,6 @@ class UnitStaffExport implements
 
     public function map($staff): array
     {
-        // dd($staff);
         return [
             $staff->file_number,
             $staff->staff_number,
@@ -101,6 +99,9 @@ class UnitStaffExport implements
     public function query()
     {
         return InstitutionPerson::query()
+            ->join('job_staff', 'job_staff.staff_id', '=', 'institution_person.id')
+            ->join('jobs', 'jobs.id', '=', 'job_staff.job_id')
+            ->join('job_categories', 'job_categories.id', '=', 'jobs.job_category_id')
             ->with(['person' => function ($query) {
                 $query->with(['identities', 'contacts']);
             }])
@@ -143,6 +144,7 @@ class UnitStaffExport implements
                         $query->orWhere('staff_unit.end_date', '>=', now());
                     });
                 });
-            });
+            })
+            ->orderBy('job_categories.level');
     }
 }
