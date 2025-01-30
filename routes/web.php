@@ -45,6 +45,7 @@ use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\StaffListController;
 use App\Models\Dependent;
 use App\Models\Institution;
 use App\Models\Job;
@@ -493,4 +494,5 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::get('/position/{position}/stat', 'stat')->name('position.stat');
 });
 
+Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);

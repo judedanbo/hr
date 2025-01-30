@@ -51,7 +51,8 @@ class Unit extends Model
 
     public function region(): BelongsToMany
     {
-        return $this->belongsToMany(Region::class);
+        return $this->belongsToMany(Region::class)
+                ->latest();
     }
 
     /**
