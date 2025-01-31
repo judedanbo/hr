@@ -11,17 +11,24 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Illuminate\Support\Str;
 use App\Models\InstitutionPerson;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class StaffListRawExport implements
+class StaffListRawExport
+extends StringValueBinder
+implements
     FromQuery,
     ShouldAutoSize,
     WithHeadings,
     WithMapping,
     WithStyles,
-    WithTitle
-
+    WithTitle,
+    WithColumnFormatting,
+    WithCustomValueBinder
 {
     use Exportable;
 
@@ -30,6 +37,14 @@ class StaffListRawExport implements
         return [
             1 => ['font' => ['bold' => true]],
             'B' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
+        ];
+    }
+
+
+    public function columnFormats(): array
+    {
+        return [
+            'E' => DataType::TYPE_STRING,
         ];
     }
     public function title(): string
@@ -57,7 +72,7 @@ class StaffListRawExport implements
             $staff->person->first_name,
             $staff->person->surname,
             $staff->person->gender?->label(),
-            $staff->person->contact?->first()->contact,
+            $staff->person->contacts?->first()?->contact,
             '',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
