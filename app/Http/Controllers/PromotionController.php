@@ -57,7 +57,7 @@ class PromotionController extends Controller
             ->withQueryString();
 
         return Inertia::render('Promotion/Index', [
-            'promotions' => $promotions->through(fn ($promotion) => [
+            'promotions' => $promotions->through(fn($promotion) => [
                 'year' => $promotion->year,
                 'job_id' => $promotion->job_id,
                 'job_name' => $promotion->job_name,
@@ -70,6 +70,8 @@ class PromotionController extends Controller
 
     public function show(Request $request, ?int $year = null)
     {
+
+        // dd($request->month);
         $rank = Job::find($request->rank)->only('id', 'name');
 
         if ($year == null) {
@@ -85,6 +87,13 @@ class PromotionController extends Controller
             // ->where('job_staff.job_id', $request->rank)
             // ->whereNull('job_staff.end_date')
             ->where('jobs.id', $request->rank)
+            ->when($request->month, function ($query, $month) {
+                if ($month == 'april') {
+                    $query->whereRaw('month(job_staff.start_date) IN (1,2,3,4,11,12)');
+                } elseif ($month == 'october') {
+                    $query->whereRaw('month(job_staff.start_date) In (5,6,7,8,9,10)');
+                }
+            })
             ->whereYear('job_staff.start_date', $year)
             // ->when(request()->rank, function ($query, $rank) {
             //     $query->where('job_staff.job_id', $rank);
@@ -119,7 +128,7 @@ class PromotionController extends Controller
             ->get()
             // ->paginate()
             // ->withQueryString()
-            ->map(fn ($staff) => [
+            ->map(fn($staff) => [
                 // 'staff' => $staff->ranks,
                 'id' => $staff->id,
                 'person_id' => $staff->person_id,
