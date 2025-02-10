@@ -22,7 +22,7 @@ defineProps({
 			<div class="w-1/2 mx-auto">
 				<Promotion
 					:promotions="promotions"
-					:rank="rank.name"
+					:rank="rank?.name"
 					:filters="filters"
 				/>
 			</div>

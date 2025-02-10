@@ -46,7 +46,7 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'download active staff data']);
         Permission::create(['name' => 'download separated staff data']);
 
-        // Transfer staff permissionas
+        // Transfer staff permissions
         Permission::create(['name' => 'view all staff transfers']);
         Permission::create(['name' => 'view staff transfers']);
         Permission::create(['name' => 'create staff transfers']);
@@ -54,7 +54,7 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'delete staff transfers']);
         Permission::create(['name' => 'restore staff transfers']);
         Permission::create(['name' => 'destroy staff transfers']);
-        //staff promotions permissionas
+        //staff promotions permissions
         Permission::create(['name' => 'view all staff promotions']);
         Permission::create(['name' => 'view staff promotion']);
         Permission::create(['name' => 'create staff promotion']);

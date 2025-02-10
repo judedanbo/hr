@@ -10,7 +10,7 @@ const props = defineProps({
 	},
 	rank: {
 		type: String,
-		required: true,
+		default: null,
 	},
 	filters: Object,
 	// month: String,
@@ -49,6 +49,9 @@ const getMonth = (month) => {
 					<thead class="sr-only">
 						<tr>
 							<th>Staff</th>
+							{{
+								promotions
+							}}
 							<th class="hidden sm:table-cell">Promotion Date</th>
 							<th>More details</th>
 						</tr>

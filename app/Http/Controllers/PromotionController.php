@@ -71,8 +71,8 @@ class PromotionController extends Controller
     public function show(Request $request, ?int $year = null)
     {
 
-        // dd($request->month);
-        $rank = Job::find($request->rank)->only('id', 'name');
+        // dd($request->year);
+        $rank = Job::find($request->rank)?->only('id', 'name');
 
         if ($year == null) {
             $year = date('Y');
@@ -86,7 +86,10 @@ class PromotionController extends Controller
             ->join('job_categories', 'job_categories.id', '=', 'jobs.job_category_id')
             // ->where('job_staff.job_id', $request->rank)
             // ->whereNull('job_staff.end_date')
-            ->where('jobs.id', $request->rank)
+            ->when($request->rank, function ($query, $rank) {
+                // $query->where('job_staff.job_id', $rank);
+                $query->where('jobs.id', $rank);
+            })
             ->when($request->month, function ($query, $month) {
                 if ($month == 'april') {
                     $query->whereRaw('month(job_staff.start_date) IN (1,2,3,4,11,12)');
@@ -147,6 +150,7 @@ class PromotionController extends Controller
             ]);
         // return $promotions;
         $promotions = $promotions->sortByDesc('rank_name')->groupBy('rank_name');
+
 
         return Inertia::render(
             'Promotion/Show',
