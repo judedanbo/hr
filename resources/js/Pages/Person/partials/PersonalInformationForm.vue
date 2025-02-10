@@ -23,9 +23,9 @@ onMounted(async () => {
 	<div class="md:flex md:gap-2 md:flex-wrap w-full">
 		<div class="w-2/3 md:w-1/4">
 			<FormKit
+				id="title"
 				type="text"
 				name="title"
-				id="title"
 				label="Title"
 				placeholder="title"
 				validation-visibility="submit"
@@ -34,9 +34,9 @@ onMounted(async () => {
 		</div>
 		<div class="md:flex-grow">
 			<FormKit
+				id="first_name"
 				type="text"
 				name="first_name"
-				id="first_name"
 				validation="required|length:2,60"
 				label="First name"
 				placeholder="First name"
@@ -45,9 +45,9 @@ onMounted(async () => {
 		</div>
 		<div class="md:flex-grow">
 			<FormKit
+				id="surname"
 				type="text"
 				name="surname"
-				id="surname"
 				validation="required|length:2,60"
 				label="Surname"
 				placeholder="Surname"
@@ -55,9 +55,9 @@ onMounted(async () => {
 		</div>
 		<div class="md:flex-grow">
 			<FormKit
+				id="other_names"
 				type="text"
 				name="other_names"
-				id="other_names"
 				label="Other Names"
 				placeholder="other names"
 				validation="length:2,100"

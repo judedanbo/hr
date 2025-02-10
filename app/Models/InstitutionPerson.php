@@ -406,6 +406,7 @@ class InstitutionPerson extends Pivot
                             $searchName->where('first_name', 'like', "%{$term}%");
                             $searchName->orWhere('other_names', 'like', "%{$term}%");
                             $searchName->orWhere('surname', 'like', "%{$term}%");
+                            $searchName->orWhere('maiden_name', 'like', "%{$term}%");
                             $searchName->orWhere('date_of_birth', 'like', "%{$term}%");
                             $searchName->orWhereRaw('monthname(date_of_birth) like ?', [$term]);
                         });

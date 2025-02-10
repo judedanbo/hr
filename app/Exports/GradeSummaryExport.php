@@ -29,6 +29,8 @@ class GradeSummaryExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             'Rank',
             'Harmonized Grade',
             'Level',
+            'Male staff',
+            'Female staff',
             'No. of staff',
         ];
     }
@@ -39,6 +41,8 @@ class GradeSummaryExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             $job->name,
             $job->category ? $job->category->name : '',
             $job->category ? $job->category->level : '',
+            $job->male_staff_count ?? 0,
+            $job->female_staff_count ?? 0,
             $job->staff_count,
         ];
     }
@@ -59,10 +63,26 @@ class GradeSummaryExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
         return Job::query()
             ->searchRank(request()->search)
             ->with(['category', 'institution'])
-            ->withCount(['staff' => function ($query) {
+            ->whereHas('staff', function ($query) {
                 $query->active();
-                $query->whereNull('job_staff.end_date');
-            }])
+                $query->where('job_staff.end_date', null);
+            })
+            ->withCount([
+                'staff' => function ($query) {
+                    $query->active();
+                    $query->whereNull('job_staff.end_date');
+                },
+                'staff as male_staff_count' => function ($query) {
+                    $query->active();
+                    $query->where('job_staff.end_date', null);
+                    $query->maleStaff();
+                },
+                'staff as female_staff_count' => function ($query) {
+                    $query->active();
+                    $query->where('job_staff.end_date', null);
+                    $query->femaleStaff();
+                },
+            ])
             ->orderByRaw('job_category_id is null asc, job_category_id asc');
     }
 }

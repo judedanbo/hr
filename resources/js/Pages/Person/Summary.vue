@@ -32,6 +32,9 @@ defineProps({
 						class="mt-1 text-base font-semibold leading-6 text-gray-900 dark:text-gray-100"
 					>
 						{{ person.name }}
+						<div v-if="person.maiden_name" class="text-xs text-green-500">
+							({{ person.maiden_name }})
+						</div>
 					</dd>
 				</div>
 				<div class="flex-none self-end px-6 pt-4">

@@ -36,6 +36,10 @@ class JobController extends Controller
                     },
                     'units'
                 ])
+                ->whereHas('staff', function ($query) {
+                    $query->active();
+                    $query->where('job_staff.end_date', null);
+                })
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
                 ->withQueryString()

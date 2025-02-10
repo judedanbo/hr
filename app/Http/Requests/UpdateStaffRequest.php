@@ -31,9 +31,10 @@ class UpdateStaffRequest extends FormRequest
         return [
             'staffData.personalInformation.id' => 'required',
             'staffData.personalInformation.title' => 'string|min:1|max:10|nullable',
-            'staffData.personalInformation.first_name' => 'required|string|max:100',
-            'staffData.personalInformation.surname' => 'required|string|max:100',
-            'staffData.personalInformation.other_names' => 'string|max:100|nullable',
+            'staffData.personalInformation.first_name' => 'required|string|max:60',
+            'staffData.personalInformation.surname' => 'required|string|max:50',
+            'staffData.personalInformation.other_names' => 'string|max:60|nullable',
+            'staffData.personalInformation.maiden_name' => 'string|max:60|nullable',
             'staffData.personalInformation.date_of_birth' => [
                 'required',
                 'date',

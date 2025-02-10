@@ -18,3 +18,4 @@ yarn-error.log
 /database/seeders
 /kube
 *.sql
+ray.php

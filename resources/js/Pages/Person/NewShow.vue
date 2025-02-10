@@ -26,7 +26,7 @@ let props = defineProps({
 	contacts: { type: Array, required: true },
 	filters: { type: Object, default: () => null },
 	dependents: { type: Array, default: () => null },
-	staff: { type: Object, required: true },
+	staff: { type: Object, default: () => null },
 	dependant: { type: Object, default: () => null },
 });
 
@@ -170,7 +170,7 @@ let BreadcrumbLinks = [
 					<StaffDetails class="" :staff="staff" />
 					<div class="flex gap-x-4 mt-4">
 						<PromotionHistory
-							v-if="staff[0] !== null"
+							v-if="staff !== null && staff[0] !== null"
 							:promote="false"
 							:edit-promotion="false"
 							:promotions="staff[0].ranks"
@@ -181,7 +181,7 @@ let BreadcrumbLinks = [
 							@close-form="togglePromotionForm()"
 						/>
 						<TransferHistory
-							v-if="staff[0] !== null"
+							v-if="staff !== null && staff[0] !== null"
 							:transfer="false"
 							:edit-transfer="false"
 							:transfers="staff[0].units"

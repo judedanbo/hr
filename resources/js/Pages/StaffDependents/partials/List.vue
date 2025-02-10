@@ -1,6 +1,7 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
 import Avatar from "@/Pages/Person/partials/Avatar.vue";
+import { Link } from "@inertiajs/inertia-vue3";
 
 const emit = defineEmits(["editDependent", "deleteDependent"]);
 
@@ -56,7 +57,13 @@ const subMenuClicked = (action, model) => {
 							<Avatar :image="dependent.image" :initials="dependent.initials" />
 							<div class="ml-4">
 								<div class="text-green-900 dark:text-gray-50 font-semibold">
-									{{ dependent.name }}
+									<Link
+										:href="
+											route('person.show', { person: dependent.person_id })
+										"
+										>{{ dependent.name }}
+										<!-- {{ dependent }} -->
+									</Link>
 								</div>
 								<div class="text-xs text-gray-500 dark:text-gray-200">
 									<span v-if="dependent.gender !== null">

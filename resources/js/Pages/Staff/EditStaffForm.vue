@@ -37,10 +37,10 @@ onMounted(async () => {
 
 let formData = ref(null);
 
-const submitImage = async(image) => {
+const submitImage = async (image) => {
 	formData.value = new FormData();
 	formData.value.append("image", image);
-	const avatar =  await Inertia.post(
+	const avatar = await Inertia.post(
 		route("person.avatar.update", { person: staff.value.person.id }),
 		formData.value,
 		{
@@ -62,7 +62,6 @@ const submitImage = async(image) => {
 };
 
 const submitHandler = (data, node) => {
-
 	Inertia.patch(route("staff.update", { staff: props.staffId }), data, {
 		preserveState: true,
 		onSuccess: () => {
@@ -76,9 +75,9 @@ const submitHandler = (data, node) => {
 	});
 
 	if (data.staffData.image.image[0]?.file) {
-		if(submitImage(data.staffData.image.image[0].file)) {
+		if (submitImage(data.staffData.image.image[0].file)) {
 			emit("formSubmitted");
-		};
+		}
 	}
 };
 </script>
@@ -108,7 +107,6 @@ const submitHandler = (data, node) => {
 				</FormKit>
 
 				<FormKit id="image" type="step" name="image">
-					
 					<ImageUpload :image-url="staff.person.image" />
 					<FormKitMessages />
 				</FormKit>

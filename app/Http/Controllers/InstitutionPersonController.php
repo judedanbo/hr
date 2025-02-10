@@ -189,6 +189,7 @@ class InstitutionPersonController extends Controller
             'person' => [
                 'id' => $staff->person->id,
                 'name' => $staff->person->full_name,
+                'maiden_name' => $staff->person->maiden_name,
                 'dob-value' => $staff->person->date_of_birth,
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
                 'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
@@ -336,6 +337,7 @@ class InstitutionPersonController extends Controller
                     'surname' => $dep->person->surname,
                     'first_name' => $dep->person->first_name,
                     'other_names' => $dep->person->other_names,
+                    'maiden_name' => $dep->person->maiden_name,
                     'nationality' => $dep->person->nationality?->label(),
                     'nationality_form' => $dep->person->nationality,
                     'marital_status' => $dep->person->marital_status,
@@ -447,6 +449,7 @@ class InstitutionPersonController extends Controller
                 'surname' => $staff->person->surname,
                 'first_name' => $staff->person->first_name,
                 'other_names' => $staff->person->other_names,
+                'maiden_name' => $staff->person->maiden_name,
                 'date_of_birth' => $staff->person->date_of_birth?->format('Y-m-d'),
                 'place_of_birth' => $staff->person->place_of_birth,
                 'country_of_birth' => $staff->person->country_of_birth,
@@ -468,7 +471,6 @@ class InstitutionPersonController extends Controller
      */
     public function update(UpdateStaffRequest $request, InstitutionPerson $staff)
     {
-        // dd($staff);
         // return $request->validated();
         $validated = $request->validated();
         $personalInformation = $validated['staffData']['personalInformation'];
