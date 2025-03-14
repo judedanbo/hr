@@ -47,17 +47,27 @@ const toggle = useToggle(dark);
 					as="button"
 					class="mt-12 text-gray-700 lg:text-white text-2xl lg:text-3xl bg-white lg:bg-green-800 hover:bg-green-900 hover:text-white focus:outline-none hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
 				>
-					Home</Link
-				>
-				<Link
-					v-else
-					:href="route('login')"
-					as="button"
-					class="mt-12 text-gray-700 lg:text-white text-2xl lg:text-3xl bg-white lg:bg-green-800 hover:bg-green-900 hover:text-white focus:outline-none hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
-				>
-					login
+					Home
 				</Link>
-				<div class="mt-2">
+				<div v-else class="space-x-4">
+					<Link
+						v-if="canLogin"
+						:href="route('login')"
+						as="button"
+						class="mt-12 text-gray-700 lg:text-white text-2xl lg:text-3xl bg-white lg:bg-green-800 hover:bg-green-900 hover:text-white focus:outline-none focus:ring-1 focus:ring-green-300 hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
+					>
+						Login
+					</Link>
+					<Link
+						v-if="canRegister"
+						:href="route('register')"
+						as="button"
+						class="mt-12 text-gray-700 lg:text-green-800 text-2xl lg:text-3xl bg-white lg:bg-transparent hover:bg-green-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-green-700 hover:underline hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
+					>
+						Register
+					</Link>
+				</div>
+				<div class="mt-2 cursor-pointer">
 					<SunIcon
 						@click="toggle()"
 						v-if="dark"

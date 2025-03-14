@@ -3,36 +3,85 @@ import { ref } from "vue";
 
 defineProps({
 	modelValue: String,
+	alignText: {
+		type: String,
+		default: "left",
+	},
 	name: String,
+	prefix: {
+		type: String,
+		default: null,
+	},
+	postfix: {
+		type: String,
+		default: null,
+	},
 	placeholder: String,
 	type: {
 		type: String,
 		default: "text",
+	},
+	autofocus: {
+		type: Boolean,
+		default: false,
+	},
+	required: {
+		type: Boolean,
+		default: false,
+	},
+	autocomplete: {
+		type: String,
+		default: null,
+	},
+	ariaDescribedby: {
+		type: String,
+		default: null,
+	},
+	ariaLabel: {
+		type: String,
+		default: null,
 	},
 });
 
 defineEmits(["update:modelValue"]);
 
 const input = ref(null);
-
-// onMounted(() => {
-//     if (input.value.hasAttribute("autofocus")) {
-//         input.value.focus();
-//     }
-// });
 </script>
 
 <template>
 	<div>
 		<div class="mt-2">
-			<input
-				@input="$emit('update:modelValue', $event.target.value)"
-				:value="modelValue"
-				:type="type"
-				ref="input"
-				class="block w-full rounded-md border-0 py-1.5 `text-gray`-900 dark:text-gray-50 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-100 focus:ring-2 focus:ring-inset focus:ring-green-600 dark:focus:ring-gray-50 sm:text-sm sm:leading-6 dark:bg-gray-700"
-				:placeholder="placeholder ?? name"
-			/>
+			<div
+				class="flex items-center rounded-md bg-white px-3 ring-1 ring-insert ring-gray-400 dark:focus-within:ring-gray-300 focus-within:ring-2 focus-within:ring-insert focus-within:ring-green-600 dark:bg-gray-700"
+			>
+				<div
+					v-if="prefix"
+					class="shrink-0 select-none text-base text-gray-500 sm:text-sm/6"
+				>
+					{{ prefix }}
+				</div>
+				<input
+					@input="$emit('update:modelValue', $event.target.value)"
+					:value="modelValue"
+					:type="type"
+					:autofocus="autofocus"
+					:required="required"
+					:autocomplete="autocomplete"
+					:aria-describedby="ariaDescribedby ?? name"
+					:aria-label="ariaLabel ?? name"
+					ref="input"
+					class="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 dark:text-gray-50 shadow-sm placeholder:text-gray-400 sm:text-sm/6 border-none ring-0 focus:ring-0 dark:bg-gray-700"
+					:class="'text-' + alignText"
+					:placeholder="placeholder ?? name"
+				/>
+				<div
+					v-if="postfix"
+					id="price-currency"
+					class="shrink-0 select-none text-base text-gray-500 dark:text-gray-50 sm:text-sm/6"
+				>
+					{{ postfix }}
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
