@@ -26,6 +26,11 @@ class ChangePasswordController extends Controller
             'password_change_at' => now(),
         ]);
 
+        // records password Changed in log
+        activity()
+            ->causedBy(auth()->user())
+            ->log('Password Changed');
+
         return redirect()->intended(RouteServiceProvider::HOME);
         // return Inertia::render('Auth/ChangePassword');
     }

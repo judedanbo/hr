@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institution extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogAllTraits;
 
     protected $fillable = ['name', 'abbreviation', 'start_date', 'end_date', 'status'];
 

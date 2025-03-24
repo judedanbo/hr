@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\Identity;
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PersonIdentity extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogAllTraits;
 
     protected $fillable = ['person_id', 'id_type', 'id_number', 'notes'];
 

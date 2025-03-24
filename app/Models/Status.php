@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Status extends Pivot
 {
-    use SoftDeletes;
+    use SoftDeletes, LogAllTraits;
 
     protected $fillable = ['staff_id', 'status', 'description', 'start_date', 'end_date', 'institution_id'];
 

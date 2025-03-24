@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class PositionStaff extends Pivot
 {
+    use LogAllTraits;
     protected $table = 'position_staff';
 
     protected $fillable = [

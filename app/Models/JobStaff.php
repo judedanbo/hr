@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class JobStaff extends Pivot
 {
+    use LogAllTraits;
     protected $casts = ['start_date' => 'date', 'end_date' => 'date'];
 
     /**

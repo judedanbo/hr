@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\LogAllTraits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 
 class InstitutionPerson extends Pivot
 {
+    use LogAllTraits;
+
     protected $fillable = [
         'institution_id',
         'person_id',

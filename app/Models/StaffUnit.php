@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Enums\TransferStatusEnum;
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class StaffUnit extends Pivot
 {
+    use LogAllTraits;
     protected $fillable = [
         'unit_id',
         'staff_id',

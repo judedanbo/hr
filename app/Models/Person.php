@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\CountryEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
+use App\Traits\LogAllTraits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Person extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogAllTraits;
 
     protected $fillable = [
         'title',

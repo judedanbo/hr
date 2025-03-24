@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JobCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogAllTraits;
 
     protected $fillable = ['name', 'short_name', 'level', 'job_category_id', 'description', 'institution_id', 'start_date', 'end_date'];
 

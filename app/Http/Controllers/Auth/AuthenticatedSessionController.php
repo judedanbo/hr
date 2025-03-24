@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\Activitylog\Models\Activity;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -50,6 +51,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
+        activity()
+            ->causedBy(Auth::user())
+            // ->performedOn(Auth::user())
+            ->event('logout')
+            ->log('Logged out');
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

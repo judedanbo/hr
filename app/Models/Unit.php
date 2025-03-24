@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class Unit extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogAllTraits;
 
     protected $casts = [
         'type' => UnitType::class,
@@ -52,7 +53,7 @@ class Unit extends Model
     public function region(): BelongsToMany
     {
         return $this->belongsToMany(Region::class)
-                ->latest();
+            ->latest();
     }
 
     /**
