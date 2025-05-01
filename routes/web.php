@@ -105,7 +105,17 @@ Route::controller(PermissionController::class)->middleware(['auth', 'password_ch
 });
 
 Route::get('/dashboard', function () {
-    return redirect()->route('institution.show', [1]);
+    if (auth()->user()->hasRole('super-administrator')) {
+        return redirect()->route('institution.show', [1]);
+    }
+    if (auth()->user()->hasRole('staff')) {
+        // dd(auth()->user()->person);
+        if (auth()->user()->person) {
+            return redirect()->route('staff.show', [auth()->user()->person->institution->first()->staff->id]);
+        }
+    }
+    // TODO: design custom page for users without staff information
+    return auth()->logout();
 })->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
 // })->name('dashboard');
 
@@ -131,6 +141,7 @@ Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->
 Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
 Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->name('person-roles.dependent');
 Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth', 'password_changed'])->name('person.avatar.update');
+Route::delete('person/{person}/avatar/delete', [PersonAvatarController::class, 'delete'])->middleware(['auth', 'password_changed'])->name('person.avatar.delete');
 
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth', 'password_changed'])->group(function () {

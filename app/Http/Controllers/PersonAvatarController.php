@@ -25,8 +25,13 @@ class PersonAvatarController extends Controller
 
     public function update(Request $request, Person $person)
     {
+        // dd($request->all());
         $request->validate([
-            'image' => ['required', 'image', 'max:2048'],
+            'image' => [
+                'required',
+                'image',
+                'mimes:jpeg,png,jpg',
+            ],
         ]);
 
         $avatar = Storage::disk('public')->put('avatars', $request->image);
@@ -37,6 +42,35 @@ class PersonAvatarController extends Controller
             'image' => $avatar, //$request->file('image')->hashName(),
         ]);
 
+        activity()
+            ->performedOn($person)
+            ->causedBy($request->user())
+            ->event('updated avatar')
+            ->log('Updated avatar');
+
         return back()->with('success', 'Image uploaded successfully');
+    }
+
+    public function delete(Request $request, Person $person)
+    {
+
+        $person->update([
+            'image' => null,
+        ]);
+
+        // record the action in the activity log
+        activity()
+            ->performedOn($person)
+            ->causedBy($request->user())
+            ->event('deleted avatar')
+            ->log('Deleted avatar');
+        // ->create([
+        //     'action' => 'deleted',
+        //     'description' => 'Deleted avatar',
+        //     'model_type' => Person::class,
+        //     'model_id' => $person->id,
+        // ]);
+
+        return back()->with('success', 'Image deleted successfully');
     }
 }

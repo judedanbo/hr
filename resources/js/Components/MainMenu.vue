@@ -11,6 +11,10 @@ const props = defineProps({
 		default: "",
 	},
 	active: Boolean,
+	visible: {
+		type: Boolean,
+		default: true,
+	},
 });
 const isOpen = ref(false);
 
@@ -23,6 +27,7 @@ const classes = computed(() =>
 
 <template>
 	<div
+		v-if="visible"
 		:class="{ 'h-10': isOpen }"
 		class="flex flex-col justify-start items-center w-full group overflow-hidden"
 	>

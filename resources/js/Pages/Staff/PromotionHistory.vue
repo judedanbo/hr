@@ -1,12 +1,16 @@
 <script setup>
 import { Inertia } from "@inertiajs/inertia";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
 import PromoteStaff from "./partials/PromoteStaff.vue";
 import Edit from "./partials/Edit.vue";
 import Delete from "./partials/Delete.vue";
 import PromotionList from "./partials/PromotionList.vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const emit = defineEmits(["closeForm"]);
 
@@ -99,7 +103,7 @@ watch(
 				</div>
 				<div v-if="promote" class="flex-none self-end px-6 pt-4">
 					<button
-						v-if="$page.props.permissions.includes('update staff')"
+						v-if="permissions.includes('update staff')"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="togglePromoteModal()"
 					>

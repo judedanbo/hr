@@ -14,10 +14,14 @@ import {
 	RectangleStackIcon,
 } from "@heroicons/vue/24/outline";
 import { computed, ref } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import MainMenu from "@/Components/MainMenu.vue";
 import VMenu from "@/Components/VMenu.vue";
 
 const isOpen = ref(false);
+
+const page = usePage();
+const user = computed(() => page.props.value.auth.user);
 </script>
 <template>
 	<div
@@ -100,6 +104,7 @@ const isOpen = ref(false);
 			:active="route().current('unit.index')"
 			name="Departments"
 			:href="route('unit.index')"
+			:visible="false"
 		>
 			<template #icon> <RectangleGroupIcon class="w-6" /></template
 		></MainMenu>
@@ -119,10 +124,10 @@ const isOpen = ref(false);
 					<div class="rounded-full w-10 h-10 bg-gray-200"></div>
 					<div class="hidden lg:flex justify-start flex-col items-start">
 						<p class="cursor-pointer text-sm leading-5 text-white">
-							{{ $page.props.auth.user.name }}
+							{{ user.name }}
 						</p>
 						<p class="cursor-pointer text-xs leading-3 text-gray-300">
-							{{ $page.props.auth.user.email }}
+							{{ user.email }}
 						</p>
 					</div>
 				</div>

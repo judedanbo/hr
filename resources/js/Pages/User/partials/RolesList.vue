@@ -1,10 +1,15 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
+import { usePage } from "@inertiajs/inertia-vue3";
+import { computed } from "vue";
 defineProps({
 	roles: { type: Array, default: () => null },
 });
 
 const emit = defineEmits(["deleteRole"]);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const clicked = (action, model) => {
 	if (action === "Revoke") {
@@ -62,8 +67,8 @@ const clicked = (action, model) => {
 					<td class="w-8 flex justify-end">
 						<SubMenu
 							v-if="
-								$page.props.permissions.includes('edit_role') ||
-								$page.props.permissions.includes('delete_role')
+								permissions.includes('edit_role') ||
+								permissions.includes('delete_role')
 							"
 							:items="['Revoke']"
 							@item-clicked="(value) => clicked(value, role)"

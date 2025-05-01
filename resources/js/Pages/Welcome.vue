@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { computed } from "vue";
+import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
 import { useDark, useToggle } from "@vueuse/core";
 import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
@@ -9,6 +10,9 @@ defineProps({
 	year: String,
 	logo: String,
 });
+
+const page = usePage();
+const user = computed(() => page.props.value.auth?.user);
 
 const dark = useDark();
 const toggle = useToggle(dark);
@@ -42,7 +46,7 @@ const toggle = useToggle(dark);
 				</h1>
 				<h1 class="text-white text-4xl md:hidden">HRMIS</h1>
 				<Link
-					v-if="$page.props.auth.user"
+					v-if="user"
 					:href="route('dashboard')"
 					as="button"
 					class="mt-12 text-gray-700 lg:text-white text-2xl lg:text-3xl bg-white lg:bg-green-800 hover:bg-green-900 hover:text-white focus:outline-none hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"

@@ -204,4 +204,13 @@ class Person extends Model
     {
         return $query->where('gender', GenderEnum::FEMALE);
     }
+
+    public function isStaff(): bool
+    {
+        return $this->institution()->exists() ?? false;
+    }
+    public function isRetired(): bool
+    {
+        return $this->retired()->exists();
+    }
 }

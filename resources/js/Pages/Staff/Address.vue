@@ -1,6 +1,7 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { useToggle } from "@vueuse/core";
 import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
@@ -8,6 +9,9 @@ import EditContact from "../Person/partials/EditContact.vue";
 import SubMenu from "@/Components/SubMenu.vue";
 import DeleteContact from "./DeleteContact.vue";
 import { Inertia } from "@inertiajs/inertia";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const props = defineProps({
 	address: { type: Object, required: true },
@@ -68,8 +72,8 @@ const deleteContact = (model) => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							$page.props.permissions.includes('update staff') ||
-							$page.props.permissions.includes('delete staff')
+							permissions.includes('update staff') ||
+							permissions.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleAddressModal()"
@@ -121,8 +125,8 @@ const deleteContact = (model) => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							$page.props.permissions.includes('update staff') ||
-							$page.props.permissions.includes('delete staff')
+							permissions.includes('update staff') ||
+							permissions.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleContactModal()"
@@ -191,8 +195,8 @@ const deleteContact = (model) => {
 										</div>
 										<SubMenu
 											v-if="
-												$page.props.permissions.includes('update staff') ||
-												$page.props.permissions.includes('delete staff')
+												permissions.includes('update staff') ||
+												permissions.includes('delete staff')
 											"
 											:items="['Edit', 'Delete']"
 											@item-clicked="

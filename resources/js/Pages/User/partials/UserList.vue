@@ -1,4 +1,6 @@
 <script setup>
+import { usePage } from "@inertiajs/inertia-vue3";
+import { computed } from "vue";
 import NoItem from "@/Components/NoItem.vue";
 import MainTable from "@/Components/MainTable.vue";
 import TableHead from "@/Components/TableHead.vue";
@@ -20,6 +22,8 @@ const props = defineProps({
 		required: true,
 	},
 });
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 const subMenuClicked = (action, model) => {
 	if (action == "Open") {
 		// @click="emit('openUser', user.id)"
@@ -81,8 +85,8 @@ const tableCols = [
 								<TableData class="flex justify-end">
 									<SubMenu
 										v-if="
-											$page.props.permissions.includes('update staff') ||
-											$page.props.permissions.includes('delete staff')
+											permissions.includes('update staff') ||
+											permissions.includes('delete staff')
 										"
 										@itemClicked="(action) => subMenuClicked(action, user)"
 										:items="['Open', 'Reset Password', 'Edit', 'Delete']"

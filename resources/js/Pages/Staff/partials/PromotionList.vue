@@ -1,11 +1,17 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
+import { usePage } from "@inertiajs/inertia-vue3";
+import { ref, computed } from "vue";
+
 defineProps({
 	editPromotion: { type: Function, default: true },
 	promotions: { type: Array, default: () => null },
 });
 
 const emit = defineEmits(["editPromotion", "deletePromotion"]);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const clicked = (action, model) => {
 	if (action === "Edit") {
@@ -76,8 +82,8 @@ const clicked = (action, model) => {
 						<!-- <EllipsisVerticalIcon class="w-4 text-right" /> -->
 						<SubMenu
 							v-if="
-								$page.props.permissions.includes('update staff') ||
-								$page.props.permissions.includes('delete_staff')
+								permissions?.includes('update staff') ||
+								permissions?.includes('delete_staff')
 							"
 							:items="['Edit', 'Delete']"
 							@item-clicked="(value) => clicked(value, promotion)"

@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/inertia-vue3";
 import { ref, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
@@ -17,6 +17,9 @@ import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 const navigation = computed(() => useNavigation(props.categories));
 
 let openAddDialog = ref(false);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 let toggle = useToggle(openAddDialog);
 
@@ -60,8 +63,8 @@ let openCategory = (categoryId) => {
 				/>
 				<div
 					v-if="
-						$page.props.permissions.includes('download active staff data') ||
-						$page.props.permissions.includes('download separated staff data')
+						permissions.includes('download active staff data') ||
+						permissions.includes('download separated staff data')
 					"
 					class="flex gap-x-5"
 				>

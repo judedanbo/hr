@@ -11,10 +11,10 @@ import PermissionsList from "./PermissionsList.vue";
 const emit = defineEmits(["closeForm"]);
 
 let props = defineProps({
-	permissions: {
-		type: Array,
-		required: true,
-	},
+	// permissions: {
+	// 	type: Array,
+	// 	required: true,
+	// },
 	user: {
 		type: Number,
 		required: true,

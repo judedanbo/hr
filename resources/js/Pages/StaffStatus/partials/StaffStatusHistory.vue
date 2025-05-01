@@ -1,5 +1,10 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
+import { usePage } from "@inertiajs/inertia-vue3";
+import { computed } from "vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const emit = defineEmits(["editStaffStatus", "deleteStaffStatus"]);
 defineProps({
@@ -50,8 +55,8 @@ const subMenuClicked = (action, model) => {
 					<td class="flex justify-end">
 						<SubMenu
 							v-if="
-								$page.props.permissions.includes('update staff') ||
-								$page.props.permissions.includes('delete staff')
+								permissions.includes('update staff') ||
+								permissions.includes('delete staff')
 							"
 							@itemClicked="(action) => subMenuClicked(action, status)"
 							:items="['Edit', 'Delete']"

@@ -1,12 +1,16 @@
 <script setup>
 import ChangeStaffType from "./partials/ChangeStaffType.vue";
 import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 import EditStaffType from "@/Pages/StaffType/Edit.vue";
 
 const emit = defineEmits(["closeForm", "editType", "deleteType"]);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 let props = defineProps({
 	types: Array,
@@ -111,8 +115,8 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 								<td class="flex justify-end">
 									<SubMenu
 										v-if="
-											$page.props.permissions.includes('update staff') ||
-											$page.props.permissions.includes('delete staff')
+											permissions.includes('update staff') ||
+											permissions.includes('delete staff')
 										"
 										@itemClicked="(action) => subMenuClicked(action, type)"
 										:items="['Edit', 'Delete']"

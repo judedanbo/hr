@@ -3,10 +3,14 @@ import Create from "./Create.vue";
 import EditStaffStatus from "./Edit.vue";
 import DeleteStaffStatus from "./Delete.vue";
 import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import { useToggle } from "@vueuse/core";
 import StaffStatusHistory from "./partials/StaffStatusHistory.vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const emit = defineEmits(["closeForm", "editHistory", "deleteHistory"]);
 
@@ -69,8 +73,8 @@ const deleteStaffStatus = () => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							$page.props.permissions.includes('update staff') ||
-							$page.props.permissions.includes('delete staff')
+							permissions.includes('update staff') ||
+							permissions.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleStatusModal()"

@@ -1,14 +1,16 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
+
+const page = usePage();
+const errors = computed(() => page.props.value.errors);
 const props = defineProps({
 	imageUrl: String,
 });
 const url = ref(null);
 
 onMounted(() => {
-	url.value = props.imageUrl
-		? props.imageUrl
-		: "/images/placeholder.webp";
+	url.value = props.imageUrl ? props.imageUrl : "/images/placeholder.webp";
 });
 // const url = ref(props.imageUrl ?? "/images/placeholder.webp");
 
@@ -31,9 +33,12 @@ const imageChanged = () => {
 			name="image"
 			type="file"
 			accept="image/*"
-			validation="image"
+			validation="required|image"
 			@input="imageChanged"
 		>
 		</FormKit>
+		<div class="text-red-500 text-xs">
+			{{ errors.image }}
+		</div>
 	</div>
 </template>

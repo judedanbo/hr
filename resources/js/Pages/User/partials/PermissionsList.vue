@@ -1,8 +1,13 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-defineProps({
-	permissions: { type: Array, default: () => null },
-});
+import { usePage } from "@inertiajs/inertia-vue3";
+import { computed } from "vue";
+// defineProps({
+// 	permissions: { type: Array, default: () => null },
+// });
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const emit = defineEmits(["deletePermission"]);
 
@@ -24,14 +29,14 @@ const clicked = (action, model) => {
 						scope="col"
 						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 sm:pl-0"
 					>
-						Permissions
+						Permissions name
 					</th>
-					<th
+					<!-- <th
 						scope="col"
 						class="hidden px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell"
 					>
 						Start
-					</th>
+					</th> -->
 
 					<th
 						scope="col"
@@ -42,28 +47,28 @@ const clicked = (action, model) => {
 			<tbody>
 				<tr
 					v-for="permission in permissions"
-					:key="permission.id"
+					:key="permission"
 					class="border-b border-gray-200 dark:border-gray-400/30"
 				>
 					<td class="max-w-0 py-2 pl-2 pr-3 text-sm sm:pl-0 w-2/5">
 						<div class="font-medium text-gray-900 dark:text-gray-100">
-							{{ permission.name }}
+							{{ permission }}
 						</div>
-						<div class="mt-1 truncate text-gray-500 text-xs dark:text-gray-100">
+						<!-- <div class="mt-1 truncate text-gray-500 text-xs dark:text-gray-100">
 							{{ permission.remarks }}
-						</div>
+						</div> -->
 					</td>
-					<td
+					<!-- <td
 						class="hidden p-1 text-xs text-gray-500 dark:text-gray-100 sm:table-cell"
 					>
 						{{ permission.start_date }}
-					</td>
+					</td> -->
 
 					<td class="w-8 flex justify-end">
 						<SubMenu
 							v-if="
-								$page.props.permissions.includes('edit_permission') ||
-								$page.props.permissions.includes('delete_permission')
+								permissions.includes('update permission') ||
+								permissions.includes('delete permission')
 							"
 							:items="['Revoke']"
 							@item-clicked="(value) => clicked(value, permission)"

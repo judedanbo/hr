@@ -33,5 +33,15 @@ class StaffUserSeeder extends Seeder
                 'edit dependent',
                 'delete dependent',
             ]);
+        Role::findByName('super-administrator')
+            ->givePermissionTo([
+                'view staff',
+                'upload avatar',
+                'edit avatar',
+                'view dependent',
+                'create dependent',
+                'edit dependent',
+                'delete dependent',
+            ]);
     }
 }

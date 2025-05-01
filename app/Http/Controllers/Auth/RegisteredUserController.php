@@ -12,6 +12,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
@@ -39,7 +40,17 @@ class RegisteredUserController extends Controller
      */
     public function store(RegisterRequest $request)
     {
-
+        if (Auth::check()) {
+            return redirect(RouteServiceProvider::HOME);
+        }
+        // validate staff number
+        $request->validate([
+            'staff_number' => ['required', 'string', 'max:15'],
+            'surname' => ['required', 'string', 'max:50'],
+            'first_name' => ['required', 'string', 'max:60'],
+            // 'email' => ['required', 'string', 'max:255', 'unique:users,email'],
+        ]);
+        // check if staff number exists
         $staff = InstitutionPerson::where('staff_number', $request->staff_number)
             ->with('person.contacts')
             ->first();
@@ -68,29 +79,38 @@ class RegisteredUserController extends Controller
             return back()->withErrors(['staff_number' => 'User account already exists']);
         }
         // create user
-        $user = User::create([
-            'name' => $fullName,
-            'email' => $email,
-            'password' => Hash::make($password),
-        ]);
-        // update contact info with email
-        $staff->person->contacts()->create([
-            'contact_type' => ContactTypeEnum::EMAIL,
-            'contact' => $email,
-        ]);
+        DB::transaction(function () use ($fullName, $password, $staff, $email) {
+            // $user = User::create([
+            //     'name' => $fullName,
+            //     'email' => $email,
+            //     'password' => Hash::make($password),
+            // ]);
 
-        // send email to user with password
+            $user = $staff->person->user()->create([
+                'name' => $fullName,
+                'email' => $email,
+                'password' => Hash::make($password),
+            ]);
 
-        // add user to role
-        $user->assignRole('staff');
+            // update contact info with email
+            $staff->person->contacts()->create([
+                'contact_type' => ContactTypeEnum::EMAIL,
+                'contact' => $email,
+            ]);
+            // add user to role
+            $user->assignRole('staff');
+            // send event to registered user
+            event(new Registered($user));
 
-        event(new Registered($user));
+            // add user to staff
 
-        Mail::to($email)->send(
-            new \App\Mail\UserCreated($user, $password)
-        );
 
-        // Auth::login($user);
+            // send email to user with password
+
+            Mail::to($email)->send(
+                new \App\Mail\UserCreated($user, $password)
+            );
+        });
 
         return redirect()->route('login')->with('success', 'User created successfully');
     }

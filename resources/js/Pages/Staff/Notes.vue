@@ -1,12 +1,15 @@
 <script setup>
 import { format, differenceInYears } from "date-fns";
-import { Link } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/inertia-vue3";
 import AddQualification from "./partials/AddQualification.vue";
 import Modal from "@/Components/NewModal.vue";
 import NotesDetails from "./NotesDetails.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
 import NewNote from "./NewNote.vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 defineProps({
 	notes: Array,
@@ -45,13 +48,13 @@ const formattedDob = (dob) => {
 
 				<div class="flow-root sm:mx-0 w-full px-4">
 					<NewNote
-						v-if="$page.props.permissions.includes('create staff notes')"
+						v-if="permissions.includes('create staff notes')"
 						:notable_id="notable_id"
 						:notable_type="notable_type"
 						:user="user"
 					/>
 					<NotesDetails
-						v-if="$page.props.permissions.includes('view staff notes')"
+						v-if="permissions.includes('view staff notes')"
 						:notes="notes"
 					/>
 					<!-- <div v-else class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center ">No notes found.</div> -->

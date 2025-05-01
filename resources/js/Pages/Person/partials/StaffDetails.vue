@@ -1,8 +1,12 @@
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/inertia-vue3";
 import StaffItem from "./StaffItem.vue";
 import StaffType from "../../StaffType/Index.vue";
 import StaffStatus from "../../StaffStatus/Index.vue";
+import { computed } from "vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 defineProps({
 	staff: {
 		type: Object,
@@ -31,8 +35,8 @@ defineProps({
 				<div class="flex-none self-end px-6 pt-4">
 					<Link
 						v-if="
-							$page.props.permissions.includes('update staff') ||
-							$page.props.permissions.includes('delete staff')
+							permissions.includes('update staff') ||
+							permissions.includes('delete staff')
 						"
 						:href="route('staff.edit', { staff: sta.staff_id })"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"

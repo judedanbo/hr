@@ -23,5 +23,16 @@ class DatabaseSeeder extends Seeder
         // ]);
         // $this->call(AdminUserSeeder::class);
         $this->call(PermissionSeeder::class);
+        $this->call(StaffUserSeeder::class);
+        $this->call(UserPermissionsSeeder::class);
+        $this->call(SeparationPermissionsSeeder::class);
+        $this->call(DependentSeeder::class);
+        $this->call(UnitsPermissionSeeder::class);
+        $this->call(JobsPermissionSeeder::class);
+        $this->call(JobsCategoryPermissionSeeder::class);
+        $this->call(ReportPermissionSeeder::class);
+        $this->call(PromotionsPermissionSeeder::class);
+        $this->call(QualificationPermissionSeeder::class);
+        $this->call(SuperAdminSeeder::class);
     }
 }

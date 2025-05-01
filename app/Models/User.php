@@ -57,4 +57,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Person::class);
     }
+
+    public function isStaff(): bool
+    {
+        return $this->person?->isStaff() ?? false;
+    }
 }

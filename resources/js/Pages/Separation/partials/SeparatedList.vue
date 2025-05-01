@@ -8,6 +8,12 @@ import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
 import StaffNameCard from "../../Staff/partials/StaffNameCard.vue";
 import StaffRetirementCard from "../../Staff/partials/StaffRetirementCard.vue";
+import {
+	PhoneIcon,
+	AtSymbolIcon,
+	MapPinIcon,
+	HomeIcon,
+} from "@heroicons/vue/20/solid";
 // import UnitNameCard from "./UnitNameCard.vue";
 defineProps({
 	separated: { type: Array, required: true },
@@ -39,14 +45,31 @@ const tableCols = ["Name", "Ghana Card", "Contact", "Separation"];
 								</TableData>
 								<TableData>
 									{{ staff.ghana_card }}
-									<!-- <StaffRetirementCard :staff="staff" /> -->
 								</TableData>
-								<TableData>
-									{{ staff.contact }}
-									<!-- <StaffRetirementCard :staff="staff" /> -->
+								<TableData class="space-y-1">
+									<div v-for="contact in staff.contacts" :key="contact.id">
+										<p class="text-sm">
+											<PhoneIcon
+												v-if="contact.type == 'Phone number'"
+												class="h-4 w-4 inline-block mr-1"
+											/>
+											<AtSymbolIcon
+												v-if="contact.type == 'Email Address'"
+												class="h-4 w-4 inline-block mr-1"
+											/>
+											<MapPinIcon
+												v-if="contact.type == 'Ghana PostGPS'"
+												class="h-4 w-4 inline-block mr-1"
+											/>
+											<HomeIcon
+												v-if="contact.type == 'Address'"
+												class="h-4 w-4 inline-block mr-1"
+											/>
+											{{ contact.value }}
+										</p>
+									</div>
 								</TableData>
 								<TableData align="right">
-									<!-- {{ staff.statuses }} -->
 									<div v-for="status in staff.statuses">
 										{{ status.status }}
 										<p>

@@ -1,6 +1,7 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { useToggle } from "@vueuse/core";
 import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
@@ -12,6 +13,8 @@ defineProps({
 	contacts: { type: Array, required: true },
 	person: { type: Number, required: true },
 });
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const emit = defineEmits(["editContact", "deleteDependent"]);
 const contactModel = ref(null);
@@ -150,8 +153,8 @@ let toggleEditContactModal = useToggle(openEditContactModal);
 								<td class="flex justify-end">
 									<SubMenu
 										v-if="
-											$page.props.permissions.includes('update staff') ||
-											$page.props.permissions.includes('delete staff')
+											permissions.includes('update staff') ||
+											permissions.includes('delete staff')
 										"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, contact)"

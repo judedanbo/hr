@@ -89,7 +89,7 @@ const submitHandler = (data, node) => {
 			id="addStaffForm"
 			type="form"
 			name="addStaffForm"
-			submit-label="Add Staff"
+			submit-label="Save"
 			:actions="false"
 			wrapper-class="mx-auto"
 			@submit="submitHandler"

@@ -4,15 +4,27 @@ import SubMenu from "@/Components/SubMenu.vue";
 import ToolTip from "@/Components/ToolTip.vue";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import DocumentPreview from "./partials/DocumentPreview.vue";
 
 const emit = defineEmits(["editQualification", "deleteQualification"]);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 defineProps({
 	qualifications: {
 		type: Array,
 		default: () => [],
+	},
+	canEdit: {
+		type: Boolean,
+		default: false,
+	},
+	canDelete: {
+		type: Boolean,
+		default: false,
 	},
 });
 
@@ -162,9 +174,9 @@ const subMenuClicked = (action, model) => {
 					<!-- </td> -->
 					<td class="flex justify-end">
 						<SubMenu
-							v-if="
-								$page.props.permissions.includes('create staff qualification')
-							"
+							v-if="canEdit || canDelete"
+							:can-edit="canEdit"
+							:can-delete="canDelete"
 							:items="['Edit', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, qualification)"
 						/>

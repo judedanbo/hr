@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\Identity;
 use App\Models\InstitutionPerson;
+use App\Models\Separation;
 use App\Models\Status;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -12,14 +13,17 @@ class SeparationController extends Controller
 {
     public function index()
     {
-        $separated = InstitutionPerson::query()
-            ->retired()
+        if (request()->user()->cannot('view all separations')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
+        $separated = Separation::query()
+            // ->retired()
             // ->where('current_status', '!=', 'A')
             ->with(['person' => function ($query) {
                 $query->with(['contacts', 'identities']);
             }, 'statuses', 'notes'])
-            ->currentUnit()
-            ->currentRank()
+            // ->currentUnit()
+            // ->currentRank()
             ->search(request()->search)
             ->paginate(10)
             ->withQueryString()
@@ -31,16 +35,16 @@ class SeparationController extends Controller
                         'note' => $staff->notes->first()?->note,
                         'type' => $staff->notes->first()?->note_type->label(),
                     ],
-                    'statuses' => $staff->statuses->map(function ($status) {
-                        return [
-                            'stat' => $status,
-                            'status' => $status->status->label(),
-                            'start_date' => $status->start_date?->format('d M Y'),
-                            'end_date' => $status->end_date?->format('d M Y'),
-                            'remarks' => $status->remarks,
-                            'description' => $status->description,
-                        ];
-                    }),
+                    // 'statuses' => $staff->statuses->map(function ($status) {
+                    //     return [
+                    //         'stat' => $status,
+                    //         'status' => $status->status->label(),
+                    //         'start_date' => $status->start_date?->format('d M Y'),
+                    //         'end_date' => $status->end_date?->format('d M Y'),
+                    //         'remarks' => $status->remarks,
+                    //         'description' => $status->description,
+                    //     ];
+                    // }),
                     'file_number' => $staff->file_number,
                     'staff_number' => $staff->staff_number,
                     'old_staff_number' => $staff->old_staff_number,
@@ -55,9 +59,14 @@ class SeparationController extends Controller
                     'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                     'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                     'ghana_card' => $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
-                    'contact' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(function ($item) {
-                        return $item->contact;
-                    })->implode(', ') : '',
+                    'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(function ($item) {
+                        return [
+                            'id' => $item->id .  $item->contact_type_id .  $item->contact,
+                            'type' => $item->contact_type->label(),
+                            'value' => $item->contact
+
+                        ];
+                    }) : '',
                     'current_rank' => $staff->currentRank ? [
                         'id' => $staff->currentRank?->id,
                         'name' => $staff->currentRank?->job?->name,

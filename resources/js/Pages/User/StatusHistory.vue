@@ -1,7 +1,8 @@
 <script setup>
 import ChangeStatus from "./partials/ChangeStatus.vue";
 import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 
@@ -12,6 +13,9 @@ let props = defineProps({
 	staff: Number,
 	institution: Number,
 });
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 let openStatusModal = ref(false);
 const toggleStatusModal = useToggle(openStatusModal);
@@ -123,8 +127,8 @@ const deleteStaffHistory = () => {
 								<td class="flex justify-end">
 									<SubMenu
 										v-if="
-											$page.props.permissions.includes('update staff') ||
-											$page.props.permissions.includes('delete staff')
+											permissions.includes('update staff') ||
+											permissions.includes('delete staff')
 										"
 										@itemClicked="(action) => subMenuClicked(action, status)"
 										:items="['Edit', 'Delete']"

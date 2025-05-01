@@ -102,13 +102,13 @@ class UserController extends Controller
                         'start_date' => $role->created_at->format('d M Y'),
                     ];
                 }),
-                'permissions' => $user->getAllPermissions()->map(function ($permission) {
-                    return [
-                        'id' => $permission->id,
-                        'name' => $permission->name,
-                        'start_date' => $permission->created_at->format('d M Y'),
-                    ];
-                }),
+                // 'permissions' => $user->getAllPermissions()->map(function ($permission) {
+                //     return [
+                //         'id' => $permission->id,
+                //         'name' => $permission->name,
+                //         'start_date' => $permission->created_at->format('d M Y'),
+                //     ];
+                // }),
             ],
         ]);
     }

@@ -1,13 +1,16 @@
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/inertia-vue3";
 import DeleteDependentModal from "@/Components/DeleteDependentModal.vue";
 import AddDependentModal from "@/Pages/Staff/AddDependentModal.vue";
 import { MagnifyingGlassIcon, UserPlusIcon } from "@heroicons/vue/24/outline";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 defineProps({
 	staff: Object,
 });
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 let addDependent = () => {
 	showAddDepModal.value = true;
@@ -102,8 +105,8 @@ let showPerson = (id) => {
 
 				<button
 					v-if="
-						$page.props.permissions.includes('update staff') ||
-						$page.props.permissions.includes('delete staff')
+						permissions.includes('update staff') ||
+						permissions.includes('delete staff')
 					"
 					@click.stop.prevent="addDependent"
 					type="button"

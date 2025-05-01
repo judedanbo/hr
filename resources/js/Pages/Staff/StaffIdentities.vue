@@ -1,6 +1,7 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
 import { useToggle } from "@vueuse/core";
 import AddIdentity from "../Person/partials/AddIdentity.vue";
 import EditIdentity from "../Person/partials/EditIdentity.vue";
@@ -12,6 +13,9 @@ const props = defineProps({
 	identities: { type: Array, default: () => [] },
 	person: { type: Number, required: true },
 });
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const emit = defineEmits(["editContact", "deleteIdentity"]);
 const identityModel = ref(null);
@@ -70,8 +74,8 @@ const deleteModalIdentity = () => {
 				</div>
 				<button
 					v-if="
-						$page.props.permissions.includes('update staff') ||
-						$page.props.permissions.includes('delete staff')
+						permissions.includes('update staff') ||
+						permissions.includes('delete staff')
 					"
 					class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 					@click="toggleIdentityModal()"
@@ -116,8 +120,8 @@ const deleteModalIdentity = () => {
 								<td class="flex justify-center">
 									<SubMenu
 										v-if="
-											$page.props.permissions.includes('update staff') ||
-											$page.props.permissions.includes('delete staff')
+											permissions.includes('update staff') ||
+											permissions.includes('delete staff')
 										"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, identity)"

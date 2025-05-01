@@ -27,6 +27,9 @@ class InstitutionPersonController extends Controller
      */
     public function index()
     {
+        if (request()->user()->cannot('view all staff')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
         $staff = InstitutionPerson::query()
             ->active()
             ->with('person')
@@ -82,6 +85,9 @@ class InstitutionPersonController extends Controller
      */
     public function create()
     {
+        if (request()->user()->cannot('create staff')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
         return Inertia::render('Staff/Create');
     }
 
@@ -95,6 +101,9 @@ class InstitutionPersonController extends Controller
     public function store(StoreInstitutionPersonRequest $request)
     {
         // return $request->staffData;
+        if (request()->user()->cannot('create staff')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
         $staff = null;
         $transaction = DB::transaction(function () use ($request, $staff) {
             $person = Person::create($request->staffData['bio']);
@@ -143,6 +152,15 @@ class InstitutionPersonController extends Controller
      */
     public function show($staffId)
     {
+        if (request()->user()->cannot('view staff')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
+        if (request()->user()->isStaff()) {
+            if (request()->user()->person->institution->first()->staff->id != $staffId) {
+                return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+            }
+            // return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
         $staff = InstitutionPerson::query()
             ->with(
                 [
@@ -341,6 +359,7 @@ class InstitutionPersonController extends Controller
                     'nationality' => $dep->person->nationality?->label(),
                     'nationality_form' => $dep->person->nationality,
                     'marital_status' => $dep->person->marital_status,
+                    'image' => $dep->person->image ? '/storage/' . $dep->person->image : null,
                     'religion' => $dep->person->religion,
                     'gender' => $dep->person->gender?->label(),
                     'gender_form' => $dep->person->gender,
@@ -357,6 +376,9 @@ class InstitutionPersonController extends Controller
 
     public function promote(Request $request, InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('create staff promotion')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new promotion');
+        }
         $request->validate([
             'rank_id' => ['required', 'exists:jobs,id'],
             'start_date' => ['required', 'date'],
@@ -381,6 +403,9 @@ class InstitutionPersonController extends Controller
 
     public function promotions(InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('view staff promotion')) {
+            return (['error', 'You do not have permission to view promotions']);
+        }
         $staff->load('ranks', 'person');
 
         return [
@@ -434,6 +459,9 @@ class InstitutionPersonController extends Controller
      */
     public function edit(InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('update staff')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
         $staff->load('person');
 
         return [
@@ -458,7 +486,7 @@ class InstitutionPersonController extends Controller
                 'religion' => $staff->person->religion,
                 'nationality' => $staff->person->nationality,
                 'ethnicity' => $staff->person->ethnicity,
-                'image' => $staff->person->image ? '/storage' . $staff->person->image : null,
+                'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
                 'about' => $staff->person->about,
             ],
         ];
@@ -471,6 +499,9 @@ class InstitutionPersonController extends Controller
      */
     public function update(UpdateStaffRequest $request, InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('update staff')) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        }
         // return $request->validated();
         $validated = $request->validated();
         $personalInformation = $validated['staffData']['personalInformation'];
@@ -494,6 +525,9 @@ class InstitutionPersonController extends Controller
 
     public function writeNote(StoreNoteRequest $request, InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('create staff note')) {
+            return redirect()->back()->with('error', 'You do not have permission to add a new note');
+        }
         // dd($request->all());
         // dd()
         // $files = [];
@@ -520,6 +554,9 @@ class InstitutionPersonController extends Controller
 
     public function assignPosition(StoreStaffPositionRequest $request, InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('create staff position')) {
+            return redirect()->back()->with('error', 'You do not have permission to add a new position');
+        }
         $validated = $request->validated();
         DB::transaction(function () use ($staff, $validated) {
             Position::withTrashed()
@@ -540,6 +577,9 @@ class InstitutionPersonController extends Controller
 
     public function updatePosition(UpdateStaffPositionRequest $request, InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('update staff position')) {
+            return redirect()->back()->with('error', 'You do not have permission to update this position');
+        }
         $validated = $request->validated();
         $staff->positions()->syncWithPivotValues($validated['position_id'], [
             'start_date' => $validated['start_date'] ?? null,
@@ -551,6 +591,12 @@ class InstitutionPersonController extends Controller
 
     public function deletePosition(InstitutionPerson $staff)
     {
+        if (request()->user()->cannot('delete staff position')) {
+            return redirect()->back()->with('error', 'You do not have permission to delete this position');
+        }
+        $validated = request()->validate([
+            'position_id' => ['required', 'exists:positions,id'],
+        ]);
         $staff->positions()->detach(request('position_id'));
 
         return redirect()->back()->with('success', 'Position updated successfully.');

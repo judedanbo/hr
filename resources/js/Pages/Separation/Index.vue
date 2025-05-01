@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/inertia-vue3";
 import { ref, computed, onMounted } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import Pagination from "@/Components/Pagination.vue";
@@ -21,6 +21,9 @@ import PageHeading from "@/Components/PageHeading.vue";
 import { Link } from "@inertiajs/inertia-vue3";
 import PageActions from "@/Components/PageActions.vue";
 import PageStats from "@/Components/PageStats.vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 const navigation = computed(() => useNavigation(props.separated));
 import {
@@ -137,9 +140,7 @@ onMounted(() => {
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
 				<div
-					v-if="
-						$page.props.permissions.includes('download separated staff data')
-					"
+					v-if="permissions.includes('download separated staff data')"
 					class="flex flex-wrap gap-5 mt-4 items-center justify-center"
 				>
 					<a

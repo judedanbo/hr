@@ -4,35 +4,15 @@
 			<li>
 				<ul role="list" class="-mx-2 space-y-1">
 					<li v-for="item in navigation" :key="item.name">
-						<Link
-							v-if="!item.children"
-							:href="item.href"
-							:class="[
-								item.current
-									? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
-									: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
-								'group flex gap-x-3 py-2 px-8  text-sm leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
-							]"
-						>
-							<component
-								:is="item.icon"
-								:class="[
-									item.current
-										? 'text-green-800 dark:text-gray-800'
-										: 'text-gray-800 dark:text-gray-50 group-hover:text-green-600 dark:group-hover:text-gray-600',
-									'h-6 w-6 shrink-0',
-								]"
-								aria-hidden="true"
-							/>
-							{{ item.name }}
-						</Link>
-						<Disclosure v-else v-slot="{ open }" as="div">
-							<DisclosureButton
+						<template v-if="item.visible !== false">
+							<Link
+								v-if="!item.children"
+								:href="item.href"
 								:class="[
 									item.current
 										? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
 										: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
-									'flex w-full gap-x-3 py-2 px-8  text-sm leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
+									'group flex gap-x-3 py-2 px-8  text-sm leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
 								]"
 							>
 								<component
@@ -46,31 +26,53 @@
 									aria-hidden="true"
 								/>
 								{{ item.name }}
-								<ChevronRightIcon
+							</Link>
+							<Disclosure v-else v-slot="{ open }" as="div">
+								<DisclosureButton
 									:class="[
-										open ? 'rotate-90 text-gray-800' : 'text-gray-400',
-										'ml-auto h-5 w-5 shrink-0',
+										item.current
+											? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
+											: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
+										'flex w-full gap-x-3 py-2 px-8  text-sm leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
 									]"
-									aria-hidden="true"
-								/>
-							</DisclosureButton>
-							<DisclosurePanel as="ul" class="mt-1 px-2">
-								<li v-for="subItem in item.children" :key="subItem.name">
-									<!-- 44px -->
-									<DisclosureButton
-										as="a"
-										:href="subItem.href"
+								>
+									<component
+										:is="item.icon"
 										:class="[
-											subItem.current
-												? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
-												: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
-											'block rounded-md py-2 pl-9 px-8 text-xs leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
+											item.current
+												? 'text-green-800 dark:text-gray-800'
+												: 'text-gray-800 dark:text-gray-50 group-hover:text-green-600 dark:group-hover:text-gray-600',
+											'h-6 w-6 shrink-0',
 										]"
-										>{{ subItem.name }}</DisclosureButton
-									>
-								</li>
-							</DisclosurePanel>
-						</Disclosure>
+										aria-hidden="true"
+									/>
+									{{ item.name }}
+									<ChevronRightIcon
+										:class="[
+											open ? 'rotate-90 text-gray-800' : 'text-gray-400',
+											'ml-auto h-5 w-5 shrink-0',
+										]"
+										aria-hidden="true"
+									/>
+								</DisclosureButton>
+								<DisclosurePanel as="ul" class="mt-1 px-2">
+									<li v-for="subItem in item.children" :key="subItem.name">
+										<!-- 44px -->
+										<DisclosureButton
+											as="a"
+											:href="subItem.href"
+											:class="[
+												subItem.current
+													? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
+													: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
+												'block rounded-md py-2 pl-9 px-8 text-xs leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
+											]"
+											>{{ subItem.name }}</DisclosureButton
+										>
+									</li>
+								</DisclosurePanel>
+							</Disclosure>
+						</template>
 					</li>
 				</ul>
 			</li>

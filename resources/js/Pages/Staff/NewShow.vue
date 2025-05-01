@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/inertia-vue3";
 import StaffDates from "./StaffDates.vue";
 import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
@@ -17,18 +17,44 @@ import Address from "./Address.vue";
 import StaffIdentities from "./StaffIdentities.vue";
 import Notes from "./Notes.vue";
 import { useToggle } from "@vueuse/core";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { PencilIcon } from "@heroicons/vue/20/solid";
 import Avatar from "../Person/partials/Avatar.vue";
 import NewModal from "@/Components/NewModal.vue";
 import EditStaffForm from "./EditStaffForm.vue";
 import EditContactForm from "./EditContactForm.vue";
+import EditAvatarForm from "./EditAvatarForm.vue";
+import DeleteAvatar from "./DeleteAvatar.vue";
+import { Inertia } from "@inertiajs/inertia";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
 let openEditModal = ref(false);
 
+const deleteAvatar = () => {
+	Inertia.delete(
+		route("person.avatar.delete", {
+			person: props.person.id,
+		}),
+		{
+			preserveScroll: true,
+			onSuccess: () => {
+				toggleDeleteAvatarModal();
+			},
+		},
+	);
+};
+
 let toggle = useToggle(openEditModal);
+
+const showAvatarModel = ref(false);
+const toggleAvatarModal = useToggle(showAvatarModel);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
+
+const openDeleteAvatarModel = ref(false);
+const toggleDeleteAvatarModal = useToggle(openDeleteAvatarModel);
 
 let togglePromotionForm = useToggle(showPromotionForm);
 let toggleTransferForm = useToggle(showTransferForm);
@@ -49,7 +75,7 @@ let props = defineProps({
 	contacts: { type: Array, default: () => null },
 	qualifications: { type: Array, default: () => null },
 	filters: { type: Object, default: () => null },
-	permissions: { type: Object, default: () => null },
+	// permissions: { type: Object, default: () => null },
 });
 
 let BreadcrumbLinks = [
@@ -102,37 +128,85 @@ const editContactModal = () => {
 
 				<div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
 					<div
-						class="mx-auto flex flex-wrap max-w-2xl items-center md:justify-between lg:justify-start gap-x-8 lg:mx-0 lg:max-w-none"
+						class="mx-auto flex flex-wrap max-w-2xl items-center justify-center lg:justify-start gap-x-8 lg:mx-0 lg:max-w-none"
 					>
 						<div
-							class="flex flex-wrap items-center justify-center md:justify-between lg:justify-start gap-x-6 w-full md:w-1/2"
+							class="flex flex-wrap flex-col sm:flex-row items-center justify-center lg:justify-start gap-x-6 md:w-full"
 						>
 							<!-- {{ person.image }} -->
 							<Avatar
+								@change-avatar="toggleAvatarModal()"
 								:initials="person.initials"
 								:image="person.image"
 								size="lg"
-								class=""
 							/>
-							<div class="">
-								<div
-									class="mt-1 text-xl font-semibold leading-6 text-gray-900 dark:text-white"
-								>
-									{{ person.name }}
-								</div>
-								<div class="flex justify-between">
-									<Roles :person="person.id" class="" />
+							<div class="flex flex-col">
+								<div>
 									<div
-										class="text-sm leading-6 text-gray-500 dark:text-gray-300 flex gap-4 justify-center"
+										class="mt-2 text-xl text-center font-semibold leading-6 text-gray-900 dark:text-white"
 									>
-										<!-- File Number -->
-										<div class="">
-											{{ staff.file_number }}
-										</div>
-										<div class="">
-											{{ staff.staff_number }}
+										{{ person.name }}
+									</div>
+									<div class="flex justify-between mt-2">
+										<Roles :person="person.id" class="" />
+										<div
+											class="text-sm leading-6 text-gray-500 dark:text-gray-300 flex gap-4 justify-center"
+										>
+											<!-- File Number -->
+											<div class="">
+												{{ staff.file_number }}
+											</div>
+											<div class="">
+												{{ staff.staff_number }}
+											</div>
 										</div>
 									</div>
+									<div class="mt-4 md:mt-0">
+										<div
+											class="text-sm leading-6 text-gray-500 dark:text-gray-300"
+										>
+											<span class="text-gray-700 dark:text-gray-100">{{
+												staff.positions[0]?.name
+											}}</span>
+										</div>
+									</div>
+									<div
+										@click="toggleDeleteAvatarModal()"
+										v-if="person.image"
+										class="mt-2 cursor-pointer text=sm leading-6 text-red-500 dark:text-red-400"
+									>
+										Delete Image
+									</div>
+								</div>
+
+								<div
+									class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit mt-0 md:mt-4 lg:mt-0"
+								>
+									<button
+										v-if="permissions.includes('create staff promotion')"
+										type="button"
+										class="text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
+										@click="togglePromotionForm()"
+									>
+										Promote
+									</button>
+									<button
+										v-if="permissions.includes('create staff transfers')"
+										type="button"
+										class="text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
+										@click="toggleTransferForm()"
+									>
+										Transfer
+									</button>
+									<a
+										v-if="permissions.includes('update staff')"
+										href="#"
+										class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+										@click.prevent="toggle()"
+									>
+										<PencilIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+										Edit
+									</a>
 								</div>
 							</div>
 						</div>
@@ -140,56 +214,9 @@ const editContactModal = () => {
 						<div
 							v-if="staff.statuses.length > 0"
 							class="flex justify-end mt-1 md:mt-0 w-full"
-						>
-							<!-- <div class="text-sm leading-6 text-gray-500 dark:text-gray-300"> -->
-							<!-- <span class="hidden"> Current Status </span> -->
-							<!-- <Roles :person="person.id" class="" /> -->
-							<!-- <span class="text-gray-700 dark:text-gray-100">{{
-										staff.statuses[0]?.status_display
-									}}</span> -->
-							<!-- </div> -->
-						</div>
-						<div class="mt-4 md:mt-0">
-							<div class="text-sm leading-6 text-gray-500 dark:text-gray-300">
-								<span class="text-gray-700 dark:text-gray-100">{{
-									staff.positions[0]?.name
-								}}</span>
-							</div>
-						</div>
+						></div>
+
 						<!-- </div> -->
-						<div
-							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
-						>
-							<button
-								v-if="
-									$page.props.permissions.includes('create staff promotion')
-								"
-								type="button"
-								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-								@click="togglePromotionForm()"
-							>
-								Promote
-							</button>
-							<button
-								v-if="
-									$page.props.permissions.includes('create staff transfers')
-								"
-								type="button"
-								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-								@click="toggleTransferForm()"
-							>
-								Transfer
-							</button>
-							<a
-								v-if="$page.props.permissions.includes('update staff')"
-								href="#"
-								class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-								@click.prevent="toggle()"
-							>
-								<PencilIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-								Edit
-							</a>
-						</div>
 					</div>
 				</div>
 			</header>
@@ -248,6 +275,7 @@ const editContactModal = () => {
 									@close-form="toggleTransferForm()"
 								/>
 								<StaffPosition
+									v-if="permissions.includes('update staff positions')"
 									:positions="staff.positions"
 									:staff="{
 										id: staff.staff_id,
@@ -314,6 +342,28 @@ const editContactModal = () => {
 				<EditContactForm
 					:contact="staff.staff_id"
 					@form-submitted="(model) => editContactModal(model)"
+				/>
+			</NewModal>
+			<NewModal :show="showAvatarModel" @close="toggleAvatarModal()">
+				<!-- {{ staff }} -->
+				<EditAvatarForm
+					:avatar="person.image"
+					:staff="{
+						id: staff.staff_id,
+						name: person.name,
+						image: person.image,
+						person_id: person.id,
+					}"
+					@imageUpdated="toggleAvatarModal()"
+				/>
+			</NewModal>
+			<NewModal
+				:show="openDeleteAvatarModel"
+				@close="toggleDeleteAvatarModal()"
+			>
+				<DeleteAvatar
+					@delete-confirmed="deleteAvatar()"
+					@close="toggleDeleteAvatarModal()"
 				/>
 			</NewModal>
 		</main>

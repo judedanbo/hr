@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUpdated } from "vue";
+import { ref, onMounted, onUpdated, computed } from "vue";
 import MainNav from "../Components/MainNav.vue";
 import NewNav from "../Components/NewNav.vue";
 import TopMenu from "@/Components/TopMenu.vue";
@@ -24,6 +24,8 @@ import {
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 const navigation = [
 	{
 		name: "Dashboard",
@@ -36,24 +38,30 @@ const navigation = [
 		href: route("staff.index"),
 		icon: UsersIcon,
 		current: route().current("staff.*"),
+		visible:
+			permissions.value.includes("view all staff") ||
+			permissions.value.includes("view staff"),
 	},
 	{
 		name: "Separations",
 		href: route("separation.index"),
 		icon: UsersIcon,
 		current: route().current("separation.*"),
+		visible: permissions.value.includes("view all separations"),
 	},
 	{
 		name: "Departments",
 		href: route("unit.index"),
 		icon: FolderIcon,
 		current: route().current("unit.*"),
+		visible: permissions.value.includes("view all units"),
 	},
 	{
 		name: "Ranks",
 		href: route("job.index"),
 		icon: CalendarIcon,
 		current: route().current("job.*") || route().current("job.*"),
+		visible: permissions.value.includes("view all jobs"),
 	},
 	{
 		name: "Harmonized Grades",
@@ -61,18 +69,21 @@ const navigation = [
 		icon: CalendarIcon,
 		current:
 			route().current("job-category.*") || route().current("job-category.*"),
+		visible: permissions.value.includes("view job category"),
 	},
 	{
 		name: "Next Promotions",
 		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,
 		current: route().current("promotion.batch.show"),
+		visible: permissions.value.includes("view all staff promotions"),
 	},
 	{
 		name: "Past Promotions",
 		href: route("promotion.index"),
 		icon: DocumentDuplicateIcon,
 		current: route().current("promotion.index"),
+		visible: permissions.value.includes("view past promotions"),
 	},
 	{
 		name: "Reports",
@@ -106,12 +117,8 @@ const navigation = [
 				current: route().current("report.unit"),
 			},
 		],
+		visible: permissions.value.includes("view all reports"),
 	},
-];
-const teams = [
-	{ id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
-	{ id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
-	{ id: 3, name: "Workcation", href: "#", initial: "W", current: false },
 ];
 const userNavigation = [
 	// { name: "Your profile", href: "#" },
@@ -263,6 +270,7 @@ const closeAlert = (index) => {
 
 			<main class="pb-6 bg-gray-100 dark:bg-gray-600 min-h-screen">
 				<div class="">
+					<!-- permissions: {{ permissions }} -->
 					<slot />
 				</div>
 			</main>

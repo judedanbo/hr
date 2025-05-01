@@ -1,16 +1,17 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-import { Link } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import AddQualification from "@/Pages/Qualification/Add.vue";
 import EditQualification from "@/Pages/Qualification/Edit.vue";
 import DeleteQualification from "@/Pages/Qualification/Delete.vue";
-import Modal from "@/Components/NewModal.vue";
-import { ref } from "vue";
+import { usePage } from "@inertiajs/inertia-vue3";
+import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
 import NewModal from "@/Components/NewModal.vue";
 import QualificationList from "../Qualification/QualificationList.vue";
 
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 // Edit Qualification
 const openEditModal = ref(false);
 const toggleEditModal = useToggle(openEditModal);
@@ -75,9 +76,8 @@ const deleteQualification = () => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							$page.props.permissions.includes('update staff') ||
-							$page.props.permissions.includes('delete staff') ||
-							$page.props.permissions.includes('create staff qualification')
+							permissions.includes('update staff') ||
+							permissions.includes('create staff qualification')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleQualificationModal()"
@@ -87,6 +87,8 @@ const deleteQualification = () => {
 				</div>
 				<QualificationList
 					:qualifications="qualifications"
+					:can-edit="permissions.includes('edit staff qualification')"
+					:can-delete="permissions.includes('delete staff qualification')"
 					@edit-qualification="(model) => editQualification(model)"
 					@delete-qualification="(model) => confirmDelete(model)"
 				/>
