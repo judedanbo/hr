@@ -1,12 +1,12 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import RankOverview from "./partials/RankOverview.vue";
 import RankStaff from "./partials/RankStaff.vue";
 import RankPromote from "./partials/RankPromote.vue";
 import AllStaff from "./partials/AllStaff.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import PageTitle from "@/Components/PageTitle.vue";
 import PageHeading from "@/Components/PageHeading.vue";
@@ -14,6 +14,9 @@ import Modal from "@/Components/NewModal.vue";
 import EditRank from "./partials/EditRank.vue";
 import { useToggle } from "@vueuse/core";
 import DeleteJob from "./partials/DeleteJob.vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 let props = defineProps({
 	job: Object,
 	filters: Object,
@@ -80,6 +83,7 @@ const toggleDeleteModal = useToggle(openConfirmDeleteDialog);
 
 const deleteJob = () => {
 	Inertia.delete(route("job.delete", { job: props.job.id }));
+	toggleDeleteModal();
 };
 </script>
 <template>
@@ -102,6 +106,7 @@ const deleteJob = () => {
 					Download promotion list
 				</a>
 				<button
+					v-if="permissions.includes('edit job')"
 					type="button"
 					class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					@click="toggleEditModal()"

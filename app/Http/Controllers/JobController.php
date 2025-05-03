@@ -15,6 +15,9 @@ class JobController extends Controller
 {
     public function index()
     {
+        // if (!auth()->user()->can('view all jobs')) {
+        //     return redirect()->route('dashboard')->with('error', 'You do not have permission to view all ranks.');
+        // }
         return Inertia::render('Job/Index', [
             'jobs' => Job::query()
                 ->searchRank(request()->search)
@@ -66,12 +69,16 @@ class JobController extends Controller
 
     public function create()
     {
+
         return Job::select(['id as value', 'name as label'])
             ->get();
     }
 
     public function show($job)
     {
+        // if (!auth()->user()->can('view job')) {
+        //     return redirect()->route('dashboard')->with('error', 'You do not have permission to view this job.');
+        // }
         $job = Job::query()
             ->with([
                 'staff' => function ($query) use ($job) {
@@ -166,6 +173,9 @@ class JobController extends Controller
 
     public function store(StoreJobRequest $request)
     {
+        if (!auth()->user()->can('create job')) {
+            return redirect()->back()->with('error', 'You do not have permission to create a job.');
+        }
         Job::create($request->validated());
 
         return redirect()->route('job.index')->with('success', 'Job created.');
@@ -382,6 +392,9 @@ class JobController extends Controller
 
     public function delete(Job $job)
     {
+        if (!auth()->user()->can('delete job')) {
+            return redirect()->back()->with('error', 'You do not have permission to delete this rank.');
+        }
         $job->delete();
 
         return redirect()->route('job.index')->with('success', 'Rank updated.');
@@ -389,6 +402,9 @@ class JobController extends Controller
 
     public function summary(Excel $excel)
     {
+        if (!auth()->user()->can('download job summary')) {
+            return redirect()->back()->with('error', 'You do not have permission to download this data.');
+        }
         return $excel->download(new GradeSummaryExport, 'grades.xlsx');
     }
 }

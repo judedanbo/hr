@@ -27,8 +27,8 @@ class InstitutionPersonController extends Controller
      */
     public function index()
     {
-        if (request()->user()->cannot('view all staff')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        if (request()->user()->cannot('viewAny', InstitutionPerson::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view all staff');
         }
         $staff = InstitutionPerson::query()
             ->active()
@@ -86,7 +86,7 @@ class InstitutionPersonController extends Controller
     public function create()
     {
         if (request()->user()->cannot('create staff')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
         return Inertia::render('Staff/Create');
     }
@@ -102,7 +102,7 @@ class InstitutionPersonController extends Controller
     {
         // return $request->staffData;
         if (request()->user()->cannot('create staff')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
         $staff = null;
         $transaction = DB::transaction(function () use ($request, $staff) {
@@ -153,13 +153,12 @@ class InstitutionPersonController extends Controller
     public function show($staffId)
     {
         if (request()->user()->cannot('view staff')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view staff details');
         }
         if (request()->user()->isStaff()) {
             if (request()->user()->person->institution->first()->staff->id != $staffId) {
-                return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+                return redirect()->route('dashboard')->with('error', 'You do not have permission to view details of this staff');
             }
-            // return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
         }
         $staff = InstitutionPerson::query()
             ->with(
@@ -196,7 +195,8 @@ class InstitutionPersonController extends Controller
         if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
-        // dd();
+        // dd($request->session()->all());
+        // request()->session()->reflash();
         return Inertia::render('Staff/NewShow', [
             'user' => [
                 'id' => auth()->user()->id,
@@ -460,7 +460,7 @@ class InstitutionPersonController extends Controller
     public function edit(InstitutionPerson $staff)
     {
         if (request()->user()->cannot('update staff')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to edit this staff\'s details');
         }
         $staff->load('person');
 
@@ -500,7 +500,7 @@ class InstitutionPersonController extends Controller
     public function update(UpdateStaffRequest $request, InstitutionPerson $staff)
     {
         if (request()->user()->cannot('update staff')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to edit this staff\'s details');
         }
         // return $request->validated();
         $validated = $request->validated();
@@ -525,7 +525,7 @@ class InstitutionPersonController extends Controller
 
     public function writeNote(StoreNoteRequest $request, InstitutionPerson $staff)
     {
-        if (request()->user()->cannot('create staff note')) {
+        if (request()->user()->cannot('create staff notes')) {
             return redirect()->back()->with('error', 'You do not have permission to add a new note');
         }
         // dd($request->all());

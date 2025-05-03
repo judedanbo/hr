@@ -299,6 +299,7 @@ const editContactModal = () => {
 						/>
 						<!-- Qualifications -->
 						<Notes
+							v-if="permissions.includes('view staff notes')"
 							class="w-full"
 							:notes="staff.notes"
 							notable_type="App\Models\InstitutionPerson"

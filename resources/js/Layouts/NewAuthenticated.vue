@@ -26,6 +26,7 @@ import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 const page = usePage();
 const permissions = computed(() => page.props.value.auth.permissions);
+const alert = computed(() => page.props.value.flash);
 const navigation = [
 	{
 		name: "Dashboard",
@@ -127,29 +128,7 @@ const userNavigation = [
 ];
 
 const sidebarOpen = ref(false);
-//  flash message
-const alertOpen = ref(true);
-const toggleAlert = useToggle(alertOpen);
-const alert = ref(null);
-// onMounted(() => {
-//     alert.value = usePage().props.value.flash;
-//     // if (alert) {
-//     //     toggleAlert();
-//     //     setTimeout(() => {
-//     //         toggleAlert();
-//     //     }, 3000);
-//     // }
-// });
 
-onUpdated(() => {
-	alert.value = usePage().props.value.flash;
-	// setTimeout(() => {
-	//     alert.value = null;
-	// }, 3000);
-	// if (alert.success !== null) {
-	//     toggleAlert();
-	// }
-});
 const closeAlert = (index) => {
 	delete alert.value[Object.keys(alert.value)[index]];
 };

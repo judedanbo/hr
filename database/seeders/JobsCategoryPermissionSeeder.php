@@ -22,5 +22,6 @@ class JobsCategoryPermissionSeeder extends Seeder
         Permission::create(['name' => 'delete job category']);
         Permission::create(['name' => 'restore job category']);
         Permission::create(['name' => 'destroy job category']);
+        Permission::create(['name' => 'download job summary']);
     }
 }

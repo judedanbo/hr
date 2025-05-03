@@ -13,8 +13,8 @@ class SeparationController extends Controller
 {
     public function index()
     {
-        if (request()->user()->cannot('view all separations')) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this page');
+        if (request()->user()->cannot('viewAny', Separation::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view separated staff');
         }
         $separated = Separation::query()
             // ->retired()

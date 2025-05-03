@@ -105,13 +105,17 @@ Route::controller(PermissionController::class)->middleware(['auth', 'password_ch
 });
 
 Route::get('/dashboard', function () {
+    request()->session()->reflash();
+    $error = request()->session()->get('error');
+    // dd($error);
     if (auth()->user()->hasRole('super-administrator')) {
         return redirect()->route('institution.show', [1]);
     }
     if (auth()->user()->hasRole('staff')) {
         // dd(auth()->user()->person);
         if (auth()->user()->person) {
-            return redirect()->route('staff.show', [auth()->user()->person->institution->first()->staff->id]);
+            return redirect()
+                ->route('staff.show', [auth()->user()->person->institution->first()->staff->id]);
         }
     }
     // TODO: design custom page for users without staff information

@@ -14,6 +14,9 @@ class JobCategoryController extends Controller
 {
     public function index()
     {
+        if (!auth()->user()->can('view all job categories')) {
+            return redirect()->back()->with('error', 'You are not authorized to view this page.');
+        }
         return Inertia::render('JobCategory/Index', [
             'categories' => JobCategory::query()
                 ->withCount(
@@ -75,6 +78,7 @@ class JobCategoryController extends Controller
 
     public function store(StoreJobCategoryRequest $request)
     {
+        $this->can('create', JobCategory::class);
         $jobCategory = JobCategory::create($request->all());
 
         return redirect()->route('job-category.index')->with('success', 'Job Category created.');

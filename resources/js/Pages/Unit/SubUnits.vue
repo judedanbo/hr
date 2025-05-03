@@ -7,6 +7,7 @@ defineProps({
 	type: String,
 	subs: Object,
 	searchText: String,
+	download: { type: Boolean, default: false },
 });
 
 defineEmits(["update:modelValue"]);
@@ -76,6 +77,7 @@ const exportToExcel = (subUnitId) => {
 						>
 							<div class="flex items-center gap-x-2">
 								<a
+									v-if="download"
 									class="flex gap-x-1 rounded-md dark:bg-gray-600 p-3 text-sm font-semibold text-green-800 dark:text-white shadow-sm hover:bg-green-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
 									href="#"
 									tool-tip="download list"

@@ -16,6 +16,9 @@ class UnitController extends Controller
 {
     public function index($institution = null)
     {
+        if (request()->user()->cannot('viewAny', Unit::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view units');
+        }
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
@@ -162,6 +165,9 @@ class UnitController extends Controller
 
     public function show($unit)
     {
+        if (request()->user()->cannot('view', Unit::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this unit');
+        }
         $unit = Unit::query()
             ->with([
                 'institution',
@@ -381,6 +387,9 @@ class UnitController extends Controller
 
     public function store(StoreUnitRequest $request)
     {
+        if (request()->user()->cannot('create', Unit::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to create a unit');
+        }
         $unit = Unit::create($request->validated());
 
         return redirect()->route('unit.show', $unit->id)->with('success', 'Unit created successfully');
@@ -388,6 +397,9 @@ class UnitController extends Controller
 
     public function update(UpdateUnitRequest $request, Unit $unit)
     {
+        if (request()->user()->cannot('edit', Unit::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to update this unit');
+        }
         $unit->update($request->validated());
 
         return redirect()->back()->with('success', 'Unit updated successfully');
@@ -395,6 +407,9 @@ class UnitController extends Controller
 
     public function delete(Unit $unit)
     {
+        if (request()->user()->cannot('delete', Unit::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to delete this unit');
+        }
         $unit->delete();
 
         return redirect()->back()->with('success', 'Unit deleted successfully');
@@ -418,6 +433,9 @@ class UnitController extends Controller
 
     public function addSub(Request $request, Unit $unit)
     {
+        if (request()->user()->cannot('create', Unit::class)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to add a sub unit');
+        }
         $newSub = $request->only(
             ['name', 'short_name', 'type', 'unit_id', 'start_date', 'end_date']
         );
@@ -439,6 +457,9 @@ class UnitController extends Controller
 
     public function download(Unit $unit)
     {
+        if (request()->user()->cannot('download unit staff', Unit::class)) {
+            return redirect()->back()->with('error', 'You do not have permission to download this unit\'s staff');
+        }
         return Excel::download(
             new UnitStaffExport($unit),
             Str::of($unit->name)

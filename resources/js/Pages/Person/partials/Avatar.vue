@@ -45,8 +45,9 @@ const props = defineProps({
 		</div>
 		<a
 			v-if="
-				permissions.includes('upload avatar') ||
-				permissions.includes('update avatar')
+				size !== 'sm' &&
+				(permissions.includes('upload avatar') ||
+					permissions.includes('update avatar'))
 			"
 			href="#"
 			@click.prevent="emit('change-avatar')"

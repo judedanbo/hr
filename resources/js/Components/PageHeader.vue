@@ -24,6 +24,10 @@ const props = defineProps({
 		type: String,
 		default: "",
 	},
+	addPermission: {
+		type: Boolean,
+		default: true, // TODO: Change this to false
+	},
 });
 const search = ref(props.search);
 debouncedWatch(
@@ -46,6 +50,7 @@ debouncedWatch(
 		<InfoCard :title="title" :value="total" link="#" />
 
 		<a
+			v-if="addPermission"
 			class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 			href="#"
 			@click.prevent="emit('actionClicked')"

@@ -9,6 +9,10 @@ const props = defineProps({
 		type: Object,
 		required: true,
 	},
+	download: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 defineEmits(["update:modelValue"]);
@@ -26,6 +30,7 @@ const exportToExcel = () => {
 				<span>Staff ({{ unit.staff_number }})</span>
 			</p>
 			<a
+				v-if="download"
 				class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
 				href="#"
 				@click.prevent="exportToExcel()"

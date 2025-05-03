@@ -1,8 +1,5 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
 import { usePage } from "@inertiajs/inertia-vue3";
-import AddQualification from "./partials/AddQualification.vue";
-import Modal from "@/Components/NewModal.vue";
 import NotesDetails from "./NotesDetails.vue";
 import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
