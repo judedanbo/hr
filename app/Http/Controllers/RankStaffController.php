@@ -30,7 +30,7 @@ class RankStaffController extends Controller
             ->with(['person', 'units', 'ranks'])
             ->paginate()
             ->withQueryString()
-            ->through(fn ($staff) => [
+            ->through(fn($staff) => [
                 'id' => $staff->id,
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
@@ -97,7 +97,7 @@ class RankStaffController extends Controller
             ->with(['person', 'units', 'ranks'])
             ->paginate()
             ->withQueryString()
-            ->through(fn ($staff) => [
+            ->through(fn($staff) => [
                 'id' => $staff->id,
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
@@ -130,7 +130,7 @@ class RankStaffController extends Controller
             ->with(['person', 'units', 'ranks'])
             ->paginate()
             ->withQueryString()
-            ->through(fn ($staff) => [
+            ->through(fn($staff) => [
                 'id' => $staff->id,
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
@@ -168,7 +168,7 @@ class RankStaffController extends Controller
             ->with(['person', 'units', 'ranks'])
             ->paginate()
             ->withQueryString()
-            ->through(fn ($staff) => [
+            ->through(fn($staff) => [
                 'id' => $staff->id,
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
@@ -206,6 +206,29 @@ class RankStaffController extends Controller
 
     public function exportPromotion(Job $rank)
     {
+        if (!request()->user()->can('download unit promotion')) {
+            activity()
+                ->causedBy(request()->user())
+                ->performedOn($rank)
+                ->event('download')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Promotion list for ' . $rank->name);
+            return redirect()->back()->with('error', 'You are not authorized to download this file');
+        }
+        activity()
+            ->causedBy(request()->user())
+            ->performedOn($rank)
+            ->event('download')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Promotion list for ' . $rank->name);
         return Excel::download(new RankPromotionListExport($rank, request()->batch), request()->batch . ' ' . date('Y') . ' ' . Str::of($rank->name)->plural() . ' promotion list.xlsx');
     }
 

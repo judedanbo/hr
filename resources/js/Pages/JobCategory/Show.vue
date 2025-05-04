@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
-import { ref } from "vue";
+import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { ref, computed } from "vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
@@ -10,10 +10,14 @@ import AddJobsToCategory from "./partials/AddJobsToCategory.vue";
 import EditJobsToCategory from "./partials/EditJobsToCategory.vue";
 import DeleteCategory from "./partials/DeleteCategory.vue";
 import { Inertia } from "@inertiajs/inertia";
+import NoPermission from "@/Components/NoPermission.vue";
 
 let openAddDialog = ref(false);
 
 let toggle = useToggle(openAddDialog);
+
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 
 let openEditDialog = ref(false);
 const toggleEditCategory = useToggle(openEditDialog);
@@ -52,13 +56,13 @@ let BreadCrumpLinks = [
 
 	<MainLayout>
 		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-			<div class="overflow-hidden shadow-sm sm:rounded-lg">
+			<div
+				v-if="permissions.includes('view job category')"
+				class="overflow-hidden shadow-sm sm:rounded-lg"
+			>
 				<div class="p-2 border-b border-gray-200">
-					<div
-						class="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 lg:grid-cols-4"
-					></div>
 					<BreadCrumpVue :links="BreadCrumpLinks" />
-					<h2 class="text-3xl text-gray-900 dark:text-gray-50 mt-4">
+					<h2 class="text-3xl text-gray-900 dark:text-gray-50 my-4">
 						Ranks/Grades Categories
 					</h2>
 					<JobCategory
@@ -69,6 +73,7 @@ let BreadCrumpLinks = [
 					/>
 				</div>
 			</div>
+			<NoPermission v-else />
 		</div>
 		<Modal :show="openAddDialog" @close="toggle()">
 			<AddJobsToCategory @form-submitted="toggle()" />

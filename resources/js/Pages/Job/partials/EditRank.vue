@@ -31,10 +31,6 @@ onBeforeMount(async () => {
 	categories.value = response2.data;
 });
 
-const today = format(new Date(), "yyyy-MM-dd");
-const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
-const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
-
 const submitHandler = (data, node) => {
 	Inertia.patch(route("job.update", { job: props.job.id }), data, {
 		preserveScroll: true,

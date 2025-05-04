@@ -76,9 +76,9 @@
 					</li>
 				</ul>
 			</li>
-			<li class="mt-auto">
+			<li v-if="permissions.includes('view admin settings')" class="mt-auto">
 				<Link
-					href="#"
+					:href="route('settings.index')"
 					class="group flex gap-x-3 rounded-md py-2 px-6 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
 				>
 					<Cog6ToothIcon
@@ -93,19 +93,11 @@
 </template>
 
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/inertia-vue3";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
-
-import {
-	Cog6ToothIcon,
-	CalendarIcon,
-	ChartPieIcon,
-	DocumentDuplicateIcon,
-	FolderIcon,
-	HomeIcon,
-	UsersIcon,
-} from "@heroicons/vue/24/outline";
+import { computed } from "vue";
+import { Cog6ToothIcon } from "@heroicons/vue/24/outline";
 
 defineProps({
 	navigation: {
@@ -113,31 +105,6 @@ defineProps({
 		required: true,
 	},
 });
-// const navigation = [
-// 	{ name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-// 	{
-// 		name: "Teams",
-// 		icon: UsersIcon,
-// 		current: false,
-// 		children: [
-// 			{ name: "Engineering", href: "#" },
-// 			{ name: "Human Resources", href: "#" },
-// 			{ name: "Customer Success", href: "#" },
-// 		],
-// 	},
-// 	{
-// 		name: "Projects",
-// 		icon: FolderIcon,
-// 		current: false,
-// 		children: [
-// 			{ name: "GraphQL API", href: "#" },
-// 			{ name: "iOS App", href: "#" },
-// 			{ name: "Android App", href: "#" },
-// 			{ name: "New Customer Portal", href: "#" },
-// 		],
-// 	},
-// 	{ name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-// 	{ name: "Documents", href: "#", icon: DocumentDuplicateIcon, current: false },
-// 	{ name: "Reports", href: "#", icon: ChartPieIcon, current: false },
-// ];
+const page = usePage();
+const permissions = computed(() => page.props.value.auth.permissions);
 </script>

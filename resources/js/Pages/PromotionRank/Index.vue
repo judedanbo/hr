@@ -25,21 +25,6 @@ const searchStaff = (value) => {
 };
 const navigation = computed(() => useNavigation(props.promotions));
 
-// const searchStaff = (value) => {
-// 	Inertia.get(
-// 		route("promotion.batch.show", { year: year.value, month: month.value }),
-// 		{ search: value },
-// 		{ preserveState: true, replace: true, preserveScroll: true },
-// 	);
-// };
-
-// watch(search, (value) => {
-// 	Inertia.get(
-// 		route("promotion.batch.show", { year: 2023 }),
-// 		{ search: value },
-// 		{ preserveState: true, replace: true, preserveScroll: true },
-// 	);
-// });
 const exportToExcel = () => {
 	window.location = route("export.promotion-list");
 };
@@ -49,8 +34,7 @@ const openPromotion = (
 	batch = null,
 	year = new Date().getFullYear(),
 ) => {
-	Inertia.get(route("promotion.batch.show", { year: year }), {
-		rank: jobId,
+	Inertia.get(route("promotion.batch.show", { rank: jobId, year: year }), {
 		batch: batch,
 	});
 };

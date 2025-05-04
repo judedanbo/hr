@@ -13,6 +13,7 @@ import { useSearch } from "@/Composables/search";
 import JobsList from "./partials/JobsList.vue";
 import { Inertia } from "@inertiajs/inertia";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+import NoPermission from "@/Components/NoPermission.vue";
 
 let openAddDialog = ref(false);
 
@@ -45,13 +46,17 @@ const searchJobs = (value) => {
 <template>
 	<MainLayout>
 		<Head title="Departments" />
-		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+		<main
+			v-if="permissions.includes('view all jobs')"
+			class="max-w-7xl mx-auto sm:px-6 lg:px-8"
+		>
 			<BreadCrumpVue :links="BreadCrumpLinks" />
 			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
 				<PageHeader
 					title="Ranks"
 					:total="jobs.total"
 					:search="search"
+					:add-permission="permissions.includes('create job')"
 					action-text="Add Rank"
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchJobs(value)"
@@ -80,6 +85,7 @@ const searchJobs = (value) => {
 				<!-- {{ navigation }} -->
 			</div>
 		</main>
+		<NoPermission v-else />
 		<Modal @close="toggle()" :show="openAddDialog">
 			<AddRank @formSubmitted="toggle()" />
 		</Modal>

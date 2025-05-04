@@ -15,9 +15,18 @@ class JobController extends Controller
 {
     public function index()
     {
-        // if (!auth()->user()->can('view all jobs')) {
-        //     return redirect()->route('dashboard')->with('error', 'You do not have permission to view all ranks.');
-        // }
+        if (!auth()->user()->can('view all jobs')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('View All Jobs');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view all ranks.');
+        }
         return Inertia::render('Job/Index', [
             'jobs' => Job::query()
                 ->searchRank(request()->search)
@@ -76,9 +85,18 @@ class JobController extends Controller
 
     public function show($job)
     {
-        // if (!auth()->user()->can('view job')) {
-        //     return redirect()->route('dashboard')->with('error', 'You do not have permission to view this job.');
-        // }
+        if (!auth()->user()->can('view job')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('View Job');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this job.');
+        }
         $job = Job::query()
             ->with([
                 'staff' => function ($query) use ($job) {
@@ -174,6 +192,15 @@ class JobController extends Controller
     public function store(StoreJobRequest $request)
     {
         if (!auth()->user()->can('create job')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('create')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Created Job');
             return redirect()->back()->with('error', 'You do not have permission to create a job.');
         }
         Job::create($request->validated());
@@ -385,7 +412,20 @@ class JobController extends Controller
 
     public function update(StoreJobRequest $request, Job $job)
     {
-        $job->update($request->validated());
+        if (!auth()->user()->can('edit job')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($job)
+                ->event('update')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Updated Rank');
+
+            return redirect()->back()->with('error', 'You do not have permission to edit this rank.');
+        }
 
         return redirect()->route('job.index')->with('success', 'Rank updated.');
     }
@@ -393,6 +433,16 @@ class JobController extends Controller
     public function delete(Job $job)
     {
         if (!auth()->user()->can('delete job')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($job)
+                ->event('delete')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Deleted Rank');
             return redirect()->back()->with('error', 'You do not have permission to delete this rank.');
         }
         $job->delete();
@@ -403,8 +453,26 @@ class JobController extends Controller
     public function summary(Excel $excel)
     {
         if (!auth()->user()->can('download job summary')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('download')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Rank Summary');
             return redirect()->back()->with('error', 'You do not have permission to download this data.');
         }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('download')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Rank Summary');
         return $excel->download(new GradeSummaryExport, 'grades.xlsx');
     }
 }

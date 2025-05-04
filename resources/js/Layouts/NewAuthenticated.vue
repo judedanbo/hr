@@ -84,7 +84,7 @@ const navigation = [
 		href: route("promotion.index"),
 		icon: DocumentDuplicateIcon,
 		current: route().current("promotion.index"),
-		visible: permissions.value.includes("view past promotions"),
+		visible: permissions.value.includes("view all past promotions"),
 	},
 	{
 		name: "Reports",

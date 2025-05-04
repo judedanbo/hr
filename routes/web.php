@@ -38,6 +38,7 @@ use App\Http\Controllers\RankStaffController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SeparationController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffReportController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
@@ -419,7 +420,7 @@ Route::controller(PromotionController::class)->middleware(['auth', 'password_cha
 
 Route::controller(PromotionBatchController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
-    Route::get('/next-promotions/{year?}', 'show')->name('promotion.batch.show');
+    Route::get('/next-promotions/{rank}/{year?}', 'show')->name('promotion.batch.show');
 });
 
 Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {
@@ -511,3 +512,4 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
+Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');

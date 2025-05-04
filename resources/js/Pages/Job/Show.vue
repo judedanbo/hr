@@ -14,6 +14,8 @@ import Modal from "@/Components/NewModal.vue";
 import EditRank from "./partials/EditRank.vue";
 import { useToggle } from "@vueuse/core";
 import DeleteJob from "./partials/DeleteJob.vue";
+import { NoSymbolIcon } from "@heroicons/vue/20/solid";
+import NoPermission from "@/Components/NoPermission.vue";
 
 const page = usePage();
 const permissions = computed(() => page.props.value.auth.permissions);
@@ -66,9 +68,6 @@ const startSearch = (value) => {
 	search.value = value;
 };
 
-const reload = () => {
-	this.$forceUpdate();
-};
 const selectedStaff = ref([]);
 const updateStaffList = (staffList) => {
 	selectedStaff.value = staffList;
@@ -89,7 +88,10 @@ const deleteJob = () => {
 <template>
 	<Head :title="job.name" />
 	<MainLayout>
-		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8">
+		<main
+			v-if="permissions.includes('view job')"
+			class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8"
+		>
 			<PageHeading
 				:name="job.name"
 				@searchStaff="(searchValue) => startSearch(searchValue)"
@@ -97,6 +99,7 @@ const deleteJob = () => {
 			/>
 			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<a
+					v-if="permissions.includes('view job')"
 					class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					:href="
 						route('rank-staff.export-rank-promote', { rank: props.job.id })
@@ -115,6 +118,7 @@ const deleteJob = () => {
 				</button>
 
 				<button
+					v-if="permissions.includes('delete job')"
 					type="button"
 					class="block rounded-md bg-rose-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900"
 					@click="toggleDeleteModal()"
@@ -133,6 +137,7 @@ const deleteJob = () => {
 				@updateStaffList="(staffList) => updateStaffList(staffList)"
 			/>
 		</main>
+		<!-- <NoPermission v-else /> -->
 		<Modal @close="toggleEditModal()" :show="openEditDialog">
 			<EditRank :job="job" @formSubmitted="toggleEditModal()" />
 		</Modal>

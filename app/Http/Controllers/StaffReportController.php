@@ -18,6 +18,7 @@ use App\Exports\SeparatedVoluntaryExport;
 use App\Exports\StaffDetailsExport;
 use App\Exports\StaffPositionExport;
 use App\Exports\StaffToRetireExport;
+use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Excel;
 
 class StaffReportController extends Controller
@@ -29,6 +30,27 @@ class StaffReportController extends Controller
 
     public function export(Excel $excel)
     {
+        if (Gate::denies('view staff position')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('download')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted download staff position');
+            return redirect()->back()->with('error', 'You are not authorized to download this file');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('download')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('downloaded staff position');
         return $excel->download(new StaffPositionExport, 'staff-position.xlsx');
     }
 

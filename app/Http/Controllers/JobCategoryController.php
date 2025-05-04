@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Exports\HarmonizedGradeSummaryExport;
 use App\Http\Requests\StoreJobCategoryRequest;
 use App\Http\Requests\UpdateJobCategoryRequest;
+use App\Models\Job;
 use App\Models\JobCategory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Excel;
 
@@ -14,9 +16,27 @@ class JobCategoryController extends Controller
 {
     public function index()
     {
-        if (!auth()->user()->can('view all job categories')) {
-            return redirect()->back()->with('error', 'You are not authorized to view this page.');
+        if (!Gate::allows('view all job categories')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('index')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted access to view all job categories');
+            return redirect()->back()->with('error', 'You are not authorized to all job categories.');
         }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('index')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed all job categories');
         return Inertia::render('JobCategory/Index', [
             'categories' => JobCategory::query()
                 ->withCount(
@@ -78,7 +98,18 @@ class JobCategoryController extends Controller
 
     public function store(StoreJobCategoryRequest $request)
     {
-        $this->can('create', JobCategory::class);
+        if (!Gate::allows('create job category')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('store')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to create a job category');
+            return redirect()->back()->with('error', 'You are not authorized to create a job category.');
+        }
         $jobCategory = JobCategory::create($request->all());
 
         return redirect()->route('job-category.index')->with('success', 'Job Category created.');
@@ -86,6 +117,18 @@ class JobCategoryController extends Controller
 
     public function show(JobCategory $jobCategory)
     {
+        if (!Gate::allows('view job category')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('show')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to view a job category');
+            return redirect()->back()->with('error', 'You are not authorized to view this job category.');
+        }
         $jobCategory->load(['parent', 'jobs', 'institution'])
             ->load(['jobs' => function ($query) {
                 $query->withCount([
@@ -108,6 +151,16 @@ class JobCategoryController extends Controller
         // if ($jobCategory->jobs->count() === 1) {
         //     return redirect()->route('job.show', ['job' => $jobCategory->jobs->first()->id]);
         // }
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($jobCategory)
+            ->event('show')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed a job category');
         return Inertia::render('JobCategory/Show', [
             'category' => [
                 'id' => $jobCategory->id,
@@ -159,6 +212,18 @@ class JobCategoryController extends Controller
      */
     public function update(UpdateJobCategoryRequest $request, JobCategory $jobCategory)
     {
+        if (!Gate::allows('edit job category')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('update')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to update a job category');
+            return redirect()->back()->with('error', 'You are not authorized to update this job category.');
+        }
         $jobCategory->update($request->all());
 
         return redirect()->route('job-category.index')->with('success', 'Job Category updated.');
@@ -166,9 +231,44 @@ class JobCategoryController extends Controller
 
     public function delete(JobCategory $jobCategory)
     {
+        if (!Gate::allows('delete job category')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('delete')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to delete a job category');
+            return redirect()->back()->with('error', 'You are not authorized to delete this job category.');
+        }
         $jobCategory->delete();
 
         return redirect()->route('job-category.index')->with('success', 'Job Category deleted.');
+    }
+    /**
+     * Restore the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function restore(JobCategory $jobCategory)
+    {
+        if (!Gate::allows('restore job category')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('restore')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to restore a job category');
+            return redirect()->back()->with('error', 'You are not authorized to restore this job category.');
+        }
+        $jobCategory->restore();
+
+        return redirect()->route('job-category.index')->with('success', 'Job Category restored.');
     }
 
     /**
@@ -178,13 +278,46 @@ class JobCategoryController extends Controller
      */
     public function destroy(JobCategory $jobCategory)
     {
-        $jobCategory->delete();
+        if (!Gate::allows('destroy job category')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('destroy')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to destroy a job category');
+            return redirect()->back()->with('error', 'You are not authorized to destroy this job category.');
+        }
+        $jobCategory->forceDelete();
 
         return redirect()->route('job-category.index')->with('success', 'Job Category deleted.');
     }
 
     public function summary(Excel $excel)
     {
+        if (!Gate::allows('download job summary')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('download')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to download job category summary');
+            return redirect()->back()->with('error', 'You are not authorized to download job summary.');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('download')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('downloaded job category summary');
         return $excel->download(new HarmonizedGradeSummaryExport, 'harmonized grades summary.xlsx');
     }
 }

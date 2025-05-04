@@ -6,6 +6,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -20,6 +21,27 @@ class UserController extends Controller
      */
     public function index()
     {
+        if (Gate::denies('view all users')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('index')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted access to view all users');
+            return redirect()->back()->with('error', 'You are not authorized to view all users');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('index')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed all users');
         $users = User::query()
             ->with('roles', 'permissions')
             ->withCount(['roles', 'permissions'])
@@ -65,6 +87,18 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        if (Gate::denies('create user')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('store')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to create a new user');
+            return redirect()->back()->with('error', 'You are not authorized to create a new user');
+        }
         $password = Str::random(8);
         $bio = $request->all()['userData']['bio'];
         $bio['password'] = Hash::make($password); //bcrypt('password');
@@ -87,8 +121,31 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        if (Gate::denies('view user')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($user)
+                ->event('show')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to view a user');
+            return redirect()->back()->with('error', 'You are not authorized to view this user');
+        }
         $user->load(['roles', 'permissions']);
 
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->event('show')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed a user');
         return Inertia::render('User/Show', [
             'user' => [
                 'id' => $user->id,
@@ -131,6 +188,18 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        if (Gate::denies('edit user')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('update')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to update a user');
+            return redirect()->back()->with('error', 'You are not authorized to update this user');
+        }
         // return $request->validated();
         $user->update($request->validated());
 
@@ -144,7 +213,18 @@ class UserController extends Controller
      */
     public function delete(User $user)
     {
-
+        if (Gate::denies('delete user')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('delete')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to delete a user');
+            return redirect()->back()->with('error', 'You are not authorized to delete this user');
+        }
         $user->delete();
 
         return redirect()->route('user.index')->with('success', 'User deleted successfully');

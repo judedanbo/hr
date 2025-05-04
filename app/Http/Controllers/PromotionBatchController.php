@@ -7,12 +7,34 @@ use App\Models\Job;
 use App\Models\JobCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class PromotionBatchController extends Controller
 {
     public function index()
     {
+        if (Gate::denies('view all staff promotions')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('index')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted access to view all staff promotions');
+            return redirect()->back()->with('error', 'You are not authorized to view this page');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('index')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed all staff promotions');
         $ranks = Job::query()
             ->otherRanks()
             ->withCount([
@@ -29,7 +51,7 @@ class PromotionBatchController extends Controller
                 ->whereColumn('job_categories.id', 'jobs.job_category_id'))
             ->paginate()
             ->withQueryString()
-            ->through(fn ($promotion) => [
+            ->through(fn($promotion) => [
                 'job_id' => $promotion->id,
                 'job_name' => $promotion->name,
                 'april' => $promotion->staff_to_promote_april_count,
@@ -47,11 +69,34 @@ class PromotionBatchController extends Controller
         ]);
     }
 
-    public function show(Request $request, $year)
+    public function show(Request $request, Job $rank, $year)
     {
-        $staff = Job::find($request->rank)
+        if (Gate::denies('view staff promotion')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($rank)
+                ->event('show')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted access to view staff promotion');
+            return redirect()->back()->with('error', 'You are not authorized to view this page');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($rank)
+            ->event('show')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed staff promotion');
+        $staff = Job::find($rank->id)
             ->activeStaff()
-            ->active() // TODO Check for staff who has exited this ranks
+            // ->active() // TODO Check for staff who has exited this ranks
             ->when(request()->search, function ($query, $search) {
                 $query->whereHas('person', function ($query) use ($search) {
                     $query->search($search);
@@ -91,7 +136,7 @@ class PromotionBatchController extends Controller
             ->with(['person', 'units', 'ranks'])
             ->paginate()
             ->withQueryString()
-            ->through(fn ($staff) => [
+            ->through(fn($staff) => [
                 'staff_id' => $staff->id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,

@@ -61,6 +61,8 @@ const emit = defineEmits(["addRank", "editRank", "deleteRank"]);
 			@add-rank="emit('addRank')"
 			@edit-rank="emit('editRank')"
 			@delete-rank="emit('deleteRank')"
+			@restore-rank="emit('restoreRank')"
+			@destroy-rank="emit('destroyRank')"
 			:jobs="category.jobs"
 			class="mt-4"
 		/>

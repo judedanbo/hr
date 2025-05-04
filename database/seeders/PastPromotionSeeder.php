@@ -5,9 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
-class SuperAdminSeeder extends Seeder
+class PastPromotionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,8 +15,7 @@ class SuperAdminSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view admin settings']);
-        Role::findByName('super-administrator')
-            ->givePermissionTo(Permission::all());
+        Permission::create(['name' => 'view all past promotions']);
+        Permission::create(['name' => 'view past promotion']);
     }
 }

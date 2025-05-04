@@ -13,6 +13,7 @@ import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 import Pagination from "@/Components/Pagination.vue";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+import NoPermission from "@/Components/NoPermission.vue";
 
 const navigation = computed(() => useNavigation(props.categories));
 
@@ -48,7 +49,10 @@ let openCategory = (categoryId) => {
 	<MainLayout>
 		<!-- {{ categories.data[0].institution_id }} -->
 		<Head title="Harmonized Categories" />
-		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+		<main
+			v-if="permissions.includes('view all job categories')"
+			class="max-w-7xl mx-auto sm:px-6 lg:px-8"
+		>
 			<BreadCrumpVue :links="BreadCrumpLinks" />
 			<div
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
@@ -87,6 +91,7 @@ let openCategory = (categoryId) => {
 				</CategoryTable>
 			</div>
 		</main>
+		<NoPermission v-else />
 		<Modal :show="openAddDialog" @close="toggle()">
 			<AddCategory
 				:institution="categories.data[0].institution_id"

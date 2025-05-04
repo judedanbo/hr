@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class PromotionController extends Controller
@@ -26,6 +27,27 @@ class PromotionController extends Controller
 
     public function index()
     {
+        if (Gate::denies('view all past promotions')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('index')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted access to view all staff promotions');
+            return redirect()->back()->with('error', 'You are not authorized to view past promotions');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('index')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed all staff promotions');
         $promotions = InstitutionPerson::query()
             ->active()
             ->selectRaw(
@@ -70,8 +92,18 @@ class PromotionController extends Controller
 
     public function show(Request $request, ?int $year = null)
     {
-
-        // dd($request->year);
+        if (Gate::denies('view past promotion')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('show')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted access to view staff promotion');
+            return redirect()->back()->with('error', 'You are not authorized to view this page');
+        }
         $rank = Job::find($request->rank)?->only('id', 'name');
 
         if ($year == null) {
@@ -151,7 +183,15 @@ class PromotionController extends Controller
         // return $promotions;
         $promotions = $promotions->sortByDesc('rank_name')->groupBy('rank_name');
 
-
+        activity()
+            ->causedBy(auth()->user())
+            ->event('show')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed staff promotion');
         return Inertia::render(
             'Promotion/Show',
             [
