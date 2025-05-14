@@ -19,6 +19,10 @@ let props = defineProps({
 		type: Number,
 		required: true,
 	},
+	canAdd: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const openAddRoleModal = ref(false);
@@ -52,7 +56,7 @@ const deleteRole = (user, role) => {
 	<main>
 		<h2 class="sr-only">User Roles</h2>
 		<div
-			class="rounded-lg bg-gray-50 dark:bg-gray-500 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80"
+			class="rounded-lg bg-green-200 dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80"
 		>
 			<dl class="flex flex-wrap">
 				<div class="flex-auto pl-6 pt-6">
@@ -64,6 +68,7 @@ const deleteRole = (user, role) => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
+						v-if="canAdd"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleAddRoleModal()"
 					>

@@ -68,7 +68,6 @@ const tableCols = [
 							<TableRow>
 								<TableData>
 									{{ user.name }}
-									<!-- <UserNameCard :user="user" /> -->
 								</TableData>
 								<TableData>
 									{{ user.email }}
@@ -84,6 +83,12 @@ const tableCols = [
 								</TableData>
 								<TableData class="flex justify-end">
 									<SubMenu
+										:canEdit="permissions.includes('update staff')"
+										:canDelete="permissions.includes('delete staff')"
+										:canView="permissions.includes('view staff')"
+										:canChangeUserPassword="
+											permissions.includes('reset user password')
+										"
 										v-if="
 											permissions.includes('update staff') ||
 											permissions.includes('delete staff')

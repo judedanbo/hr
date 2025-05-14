@@ -18,7 +18,7 @@ const clicked = (action, model) => {
 };
 </script>
 <template>
-	<body class="-mx-4 mt-4 flow-root sm:mx-0 w-full px-4">
+	<body class="mt-4 flow-root sm:mx-0 w-full px-4 bg-green-50 dark:bg-gray-500">
 		<table v-if="roles?.length > 0" class="min-w-full">
 			<colgroup></colgroup>
 			<thead
@@ -66,11 +66,9 @@ const clicked = (action, model) => {
 
 					<td class="w-8 flex justify-end">
 						<SubMenu
-							v-if="
-								permissions.includes('edit_role') ||
-								permissions.includes('delete_role')
-							"
+							v-if="permissions.includes('assign roles to user')"
 							:items="['Revoke']"
+							:can-edit="permissions.includes('assign roles to user')"
 							@item-clicked="(value) => clicked(value, role)"
 						/>
 					</td>

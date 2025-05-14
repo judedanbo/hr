@@ -24,7 +24,7 @@ class StaffUserSeeder extends Seeder
         Permission::create(['name' => 'delete dependent']);
 
         Role::create(['name' => 'staff'])
-            ->givePermissionTo([
+            ->syncPermissions([
                 'view staff',
                 'upload avatar',
                 'edit avatar',

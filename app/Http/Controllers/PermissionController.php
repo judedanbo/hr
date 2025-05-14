@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
@@ -15,11 +16,35 @@ class PermissionController extends Controller
 
     public function list()
     {
-        return Permission::get(['name as value', 'name as label']);
+        return Permission::get(['id as value', 'name as label']);
     }
 
     public function addPermission(Request $request, User $user)
     {
+        if (Gate::denies('assign permissions to user')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($user)
+                ->event('assign permission to user')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'permissions' => $request->permissions,
+                ])
+                ->log('attempted to add/update a user permissions');
+            return redirect()->back()->with('error', 'You do not have permission to add/update permissions to users');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->event('assign permission to user')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('add/update a user permission');
         $user->syncPermissions($request->permissions);
 
         return redirect()->back()->with('success', 'Permission added successfully');

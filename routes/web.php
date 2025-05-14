@@ -513,3 +513,5 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
 Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');
+
+Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed'])->name('role.store');

@@ -1,4 +1,5 @@
 <script setup>
+import { CheckIcon } from "@heroicons/vue/20/solid";
 import { onMounted, ref } from "vue";
 
 const props = defineProps({
@@ -14,6 +15,7 @@ onMounted(async () => {
 });
 </script>
 <template>
+	<!-- {{ userRoles }} -->
 	<div>
 		<FormKit
 			v-model="userRoles"
@@ -25,7 +27,11 @@ onMounted(async () => {
 			placeholder="Select new Rank"
 			:options="roles"
 			error-visibility="submit"
-		/>
+		>
+			<template #decoratorIcon="context">
+				<CheckIcon class="w-5 h-5 text-white" v-if="context.value" />
+			</template>
+		</FormKit>
 		<!-- <fieldset id="roles" name="roles">
 			<label v-for="role in roles" :key="role.value" :for="role.value">
 				<input

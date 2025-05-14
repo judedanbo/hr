@@ -1,16 +1,20 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/inertia-vue3";
 import Summary from "@/Pages/Person/Summary.vue";
 import UserRoles from "./partials/UserRoles.vue";
 import UserPermissions from "./partials/UserPermissions.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
+import BreadCrump from "@/Components/BreadCrump.vue";
+
 import { useToggle } from "@vueuse/core";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 import NewModal from "@/Components/NewModal.vue";
 import EditStaffForm from "./EditStaffForm.vue";
 import EditContactForm from "./EditContactForm.vue";
+import NoItem from "@/Components/NoItem.vue";
+import NoPermission from "@/Components/NoPermission.vue";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -25,10 +29,16 @@ let props = defineProps({
 	user: { type: Object, default: () => null },
 });
 
-let BreadcrumbLinks = [
-	{ name: "Staff", url: "/staff" },
-	// { name: props.person.name, url: "/" },
+let breadcrumbLinks = [
+	{ name: "Dashboard", url: "" },
+	{ name: "Users", url: "/users" },
+	{ name: props.user.name, url: "/" },
+	4, // { name: props.person.name, url: "/" },
 ];
+const page = usePage();
+const permissions = computed(() => {
+	return page.props.value.auth.permissions;
+});
 const openEditContact = ref(false);
 const toggleEditContactModal = useToggle(openEditContact);
 // const confirmDelete = useToggle(openEditModal);
@@ -41,7 +51,8 @@ const editContactModal = () => {
 	<Head :title="user.name" />
 
 	<MainLayout>
-		<main>
+		<main v-if="permissions.includes('view user')">
+			<BreadCrump :links="breadcrumbLinks" />
 			<header
 				class="relative isolate pt-4 border dark:border-gray-600 rounded-lg"
 			>
@@ -121,6 +132,7 @@ const editContactModal = () => {
 							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
 						>
 							<button
+								v-if="permissions.includes('assign roles to user')"
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="togglePermissionsForm()"
@@ -128,6 +140,7 @@ const editContactModal = () => {
 								Add Roles
 							</button>
 							<button
+								v-if="permissions.includes('assign permissions to user')"
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="toggleTransferForm()"
@@ -149,28 +162,21 @@ const editContactModal = () => {
 			</header>
 
 			<div class="mx-auto max-w-7xl py-4">
-				<div
-					class="mx-auto lg:grid max-w-2xl grid-cols-1 grid-rows-1 items-start lg:mx-0 px-4 lg:max-w-none lg:grid-cols-3 gap-4"
-				>
-					<div class="md:col-start-3 flex flex-wrap gap-4 w-full">
-						<!-- Employment summary -->
-						<!-- <Summary :person="user" @open-edit-person="toggle()" /> -->
-					</div>
-
-					<div
-						class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 space-y-4"
-					>
-						<!-- Employment History -->
+				<div class="mx-auto max-w-2xl items-start lg:mx-0 px-4 gap-4">
+					<div class="flex flex-col md:flex-row gap-4 w-full">
 						<UserPermissions
-							:permissions="user.permissions"
 							:user="user.id"
-							class="w-full xl:flex-1"
+							:permissions="user.permissions"
+							:can-add="permissions.includes('assign permissions to user')"
+							class="w-full md:w-3/5"
 							@close-form="togglePermissionsForm()"
 						/>
+						<!-- <NoPermission v-else /> -->
 						<UserRoles
 							:roles="user.roles"
 							:user="user.id"
-							class="w-full xl:flex-1"
+							class="flex-1"
+							:canAdd="permissions.includes('assign roles to user')"
 							@close-form="toggleRolesForm()"
 						/>
 					</div>
@@ -188,5 +194,6 @@ const editContactModal = () => {
 				/>
 			</NewModal>
 		</main>
+		<NoPermission v-else />
 	</MainLayout>
 </template>

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -159,13 +160,13 @@ class UserController extends Controller
                         'start_date' => $role->created_at->format('d M Y'),
                     ];
                 }),
-                // 'permissions' => $user->getAllPermissions()->map(function ($permission) {
-                //     return [
-                //         'id' => $permission->id,
-                //         'name' => $permission->name,
-                //         'start_date' => $permission->created_at->format('d M Y'),
-                //     ];
-                // }),
+                'permissions' => $user->getAllPermissions()->map(function ($permission) {
+                    return [
+                        'id' => $permission->id,
+                        'name' => $permission->name,
+                        'start_date' => $permission->created_at->format('d M Y'),
+                    ];
+                }),
             ],
         ]);
     }
@@ -267,15 +268,41 @@ class UserController extends Controller
 
     public function resetPassword(User $user)
     {
-        $password = Str::random(8);
+        if (Gate::denies('reset user password')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('reset user password')
+                ->performedOn($user)
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to reset a user password');
+            return redirect()->back()->with('error', 'You are not authorized to reset this user password');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->event('reset user password')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('reset a users password');
+
         // $user = User::where(request()->user->id)->first();
-        $user->update([
-            'password' => Hash::make($password),
-            'password_change_at' => null,
-        ]);
-        Mail::to($user->email)->send(
-            new \App\Mail\PasswordReset($user, $password)
-        );
+        DB::transaction(function () use ($user) {
+            $password = Str::random(8);
+            $user->update([
+                'password' => Hash::make($password),
+                'password_change_at' => null,
+            ]);
+            Mail::to($user->email)->send(
+                new \App\Mail\PasswordReset($user, $password)
+            );
+        });
 
         return redirect()->route('user.index')->with('success', 'Password reset successfully');
     }

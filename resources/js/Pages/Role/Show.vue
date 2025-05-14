@@ -20,17 +20,19 @@ import NewModal from "@/Components/NewModal.vue";
 // import EditContactForm from "./EditContactForm.vue";
 import RolePermissions from "./partials/RolePermissions.vue";
 import RoleUsers from "./partials/RoleUsers.vue";
+import { PlusIcon } from "@heroicons/vue/20/solid";
+import AddPermissionForm from "./partials/AddPermissionForm.vue";
 
 const permissionNavigation = computed(() => useNavigation(props.permissions));
 const userNavigation = computed(() => useNavigation(props.users));
 let showPromotionForm = ref(false);
-let showTransferForm = ref(false);
+let showAddPermissionForm = ref(false);
 let openEditModal = ref(false);
 
 let toggle = useToggle(openEditModal);
 
 let togglePermissionsForm = useToggle(showPromotionForm);
-let toggleTransferForm = useToggle(showTransferForm);
+let toggleAddPermissionForm = useToggle(showAddPermissionForm);
 
 let props = defineProps({
 	role: { type: Object, default: () => null },
@@ -133,17 +135,17 @@ const editContactModal = () => {
 						<div
 							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
 						>
-							<button
+							<!-- <button
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="togglePermissionsForm()"
 							>
 								Add Roles
-							</button>
+							</button> -->
 							<button
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-								@click="toggleTransferForm()"
+								@click="toggleAddPermissionForm()"
 							>
 								Add Permissions
 							</button>
@@ -173,18 +175,6 @@ const editContactModal = () => {
 					<div
 						class="col-start-1 col-span-3 lg:col-span-2 lg:row-span-2 lg:row-end-2 space-y-4"
 					>
-						<!-- Employment History -->
-						<!-- {{ permissions }} -->
-						<RolePermissions
-							:permissions="permissions"
-							:role="role.id"
-							class="w-full xl:flex-1"
-							@close-form="togglePermissionsForm()"
-						>
-							<template #pagination>
-								<Pagination :navigation="permissionNavigation" />
-							</template>
-						</RolePermissions>
 						<RoleUsers
 							:users="users"
 							:role="role.id"
@@ -195,9 +185,27 @@ const editContactModal = () => {
 								<Pagination :navigation="userNavigation" />
 							</template>
 						</RoleUsers>
+						<RolePermissions
+							:permissions="permissions"
+							:role="role.id"
+							class="w-full xl:flex-1"
+							@close-form="togglePermissionsForm()"
+						>
+							<template #pagination>
+								<Pagination :navigation="permissionNavigation" />
+							</template>
+						</RolePermissions>
 					</div>
 				</div>
 			</div>
 		</main>
+		<NewModal
+			:show="showAddPermissionForm"
+			@close="toggleAddPermissionForm()"
+			title="Edit Role"
+			subtitle="Edit role details"
+		>
+			<AddPermissionForm />
+		</NewModal>
 	</MainLayout>
 </template>

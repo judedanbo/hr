@@ -47,7 +47,9 @@ defineProps({
 						<DialogPanel
 							class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
 						>
-							<div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+							<div
+								class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4"
+							>
 								<div class="sm:flex sm:items-start">
 									<div
 										class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
@@ -60,22 +62,22 @@ defineProps({
 									<div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
 										<DialogTitle
 											as="h3"
-											class="text-base font-semibold leading-6 text-gray-900"
-											>Delete User</DialogTitle
+											class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100"
+											>Delete Role</DialogTitle
 										>
 										<div class="mt-2">
-											<p class="text-sm text-gray-500">
-												You are about to delete {{ model.name }}
+											<p class="text-sm text-gray-500 dark:text-gray-100">
+												You are about to delete the {{ model.name }} role
 												<br />
 												<br />
-												Are you sure you want to delete this user?
+												Are you sure you want to delete this role?
 											</p>
 										</div>
 									</div>
 								</div>
 							</div>
 							<div
-								class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
+								class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-gray-700"
 							>
 								<button
 									type="button"

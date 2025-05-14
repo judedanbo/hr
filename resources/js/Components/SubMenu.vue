@@ -10,6 +10,8 @@ defineProps({
 	items: { type: Array, default: () => [] },
 	canEdit: { type: Boolean, default: false },
 	canDelete: { type: Boolean, default: false },
+	canView: { type: Boolean, default: false },
+	canChangeUserPassword: { type: Boolean, default: false },
 });
 const emit = defineEmits(["itemClicked"]);
 </script>
@@ -18,7 +20,7 @@ const emit = defineEmits(["itemClicked"]);
 		<MenuButton
 			class="ml-3 block py-3 rounded-lg hover:bg-green-50 dark:hover:bg-gray-50 group"
 		>
-			<span class="sr-only">More</span>
+			<span class="sr-only">Menu</span>
 			<EllipsisVerticalIcon
 				class="h-5 w-5 text-gray-500 dark:text-gray-300 group-hover:text-green-500 dark:group-hover:text-gray-700"
 				aria-hidden="true"
@@ -39,7 +41,11 @@ const emit = defineEmits(["itemClicked"]);
 				<template v-for="item in items" :key="item">
 					<MenuItem
 						v-if="
-							(item === 'Edit' && canEdit) || (item === 'Delete' && canDelete)
+							(item === 'Edit' && canEdit) ||
+							(item === 'Revoke' && canEdit) ||
+							(item === 'Delete' && canDelete) ||
+							(item === 'Open' && canView) ||
+							(item === 'Reset Password' && canChangeUserPassword)
 						"
 						v-slot="{ active }"
 						@click="emit('itemClicked', item)"
