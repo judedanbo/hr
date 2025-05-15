@@ -31,8 +31,8 @@ let props = defineProps({
 
 let breadcrumbLinks = [
 	{ name: "Dashboard", url: "" },
-	{ name: "Users", url: "/users" },
-	{ name: props.user.name, url: "/" },
+	{ name: "Users", url: "/user" },
+	{ name: props.user.name },
 	4, // { name: props.person.name, url: "/" },
 ];
 const page = usePage();

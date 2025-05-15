@@ -2,7 +2,7 @@
 import { Inertia } from "@inertiajs/inertia";
 import { usePage } from "@inertiajs/inertia-vue3";
 import { onMounted, ref, computed } from "vue";
-import { CheckIcon } from "@heroicons/vue/20/solid";
+import { CheckIcon } from "@heroicons/vue/24/solid";
 const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
@@ -21,18 +21,8 @@ onMounted(async () => {
 		return {
 			value: permission.label,
 			label: permission.label,
-			// attrs: { disabled: props.user.permissions.includes(permission.value) },
 		};
 	});
-
-	// const response2 = await axios.get(
-	// 	route("user.permissions", { user: props.user }),
-	// );
-	// userPermissions.value = response2.data;
-	// const userRolesResponse = await axios.get(
-	// 	route("user.roles-permissions", { user: props.user }),
-	// );
-	// userRolesPermission.value = userRolesResponse.data;
 });
 
 // const permissionList = computed(() => {

@@ -34,8 +34,18 @@ class RoleController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('view all roles');
+        // $roles = Role::with(['permissions', 'users'])->get();
         return Inertia::render('Role/Index', [
-            'roles' => Role::withCount(['permissions', 'users'])->paginate(),
+            'roles' => Role::withCount(['permissions', 'users'])
+                ->paginate()
+                ->through(fn($role) => [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                    'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
+                    'permissions_count' => $role->permissions_count,
+                    'users_count' => $role->users_count,
+                ])
+                ->withQueryString(),
             'filters' => ['search' => request()->search],
         ]);
         // return Role::with(['permissions', 'users'])->get();
@@ -294,5 +304,37 @@ class RoleController extends Controller
         $user->removeRole($request->role);
 
         return redirect()->back()->with('success', 'Role revoked successfully');
+    }
+
+    function addPermission(Request $request, Role $role)
+    {
+        if (Gate::denies('assign permissions to role')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($role)
+                ->event('assign permission to role')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'permission' => $request->permissions,
+                ])
+                ->log('attempted to add/update a role permissions')
+            ;
+            return redirect()->back()->with('error', 'You do not have permission to add/update permissions to roles');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($role)
+            ->event('assign permission to role')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('add/update a role permissions');
+        $role->syncPermissions($request->permissions);
+
+        return redirect()->back()->with('success', 'Permission update successfully');
     }
 }

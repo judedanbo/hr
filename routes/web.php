@@ -37,6 +37,7 @@ use App\Http\Controllers\QualificationDocumentController;
 use App\Http\Controllers\RankStaffController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffReportController;
@@ -57,6 +58,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\Permission\Contracts\Role;
 
 require __DIR__ . '/auth.php';
 
@@ -515,3 +517,5 @@ Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name
 Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');
 
 Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed'])->name('role.store');
+Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed'])->name('role.add.permissions');
+Route::get('/role/{role}/permissions', RolePermissionController::class)->middleware(['auth', 'password_changed'])->name('role.permissions');

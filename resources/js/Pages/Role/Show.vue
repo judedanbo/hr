@@ -22,6 +22,7 @@ import RolePermissions from "./partials/RolePermissions.vue";
 import RoleUsers from "./partials/RoleUsers.vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import AddPermissionForm from "./partials/AddPermissionForm.vue";
+import BreadCrump from "@/Components/BreadCrump.vue";
 
 const permissionNavigation = computed(() => useNavigation(props.permissions));
 const userNavigation = computed(() => useNavigation(props.users));
@@ -40,8 +41,15 @@ let props = defineProps({
 	users: { type: Object, default: () => null },
 });
 
-let BreadcrumbLinks = [
-	{ name: "Staff", url: "/staff" },
+let breadcrumbLinks = [
+	{
+		name: "Roles",
+		url: "/role",
+	},
+	{
+		name: props.role.display_name,
+		url: "/roles/" + props.role.id,
+	},
 	// { name: props.person.name, url: "/" },
 ];
 const openEditContact = ref(false);
@@ -57,6 +65,8 @@ const editContactModal = () => {
 
 	<MainLayout>
 		<main>
+			<BreadCrump :links="breadcrumbLinks" />
+
 			<header
 				class="relative isolate pt-4 border dark:border-gray-600 rounded-lg"
 			>
@@ -205,7 +215,11 @@ const editContactModal = () => {
 			title="Edit Role"
 			subtitle="Edit role details"
 		>
-			<AddPermissionForm />
+			<AddPermissionForm
+				:role="role.id"
+				role-permissions="permissions"
+				@form-submitted="toggleAddPermissionForm()"
+			/>
 		</NewModal>
 	</MainLayout>
 </template>

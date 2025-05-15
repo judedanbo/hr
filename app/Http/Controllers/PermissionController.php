@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Str;
+
 
 class PermissionController extends Controller
 {
@@ -16,7 +18,14 @@ class PermissionController extends Controller
 
     public function list()
     {
-        return Permission::get(['id as value', 'name as label']);
+        $permissions = Permission::all();
+        return $permissions->map(function ($permission) {
+            return [
+                'value' => $permission->name,
+                'label' => $permission->name,
+                // 'display_name' => Str::of($permission->name)->replace('-', ' ')->title(),
+            ];
+        });
     }
 
     public function addPermission(Request $request, User $user)
