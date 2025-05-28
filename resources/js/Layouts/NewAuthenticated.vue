@@ -21,6 +21,7 @@ import {
 	HomeIcon,
 	UsersIcon,
 	XMarkIcon,
+	UserGroupIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -119,6 +120,27 @@ const navigation = [
 			},
 		],
 		visible: permissions.value.includes("view all reports"),
+	},
+	{
+		name: "Users",
+		href: route("user.index"),
+		icon: UsersIcon,
+		current: route().current("user.*"),
+		visible: permissions.value.includes("view all users"),
+	},
+	{
+		name: "Roles",
+		href: route("role.index"),
+		icon: UserGroupIcon,
+		current: route().current("role.*"),
+		visible: permissions.value.includes("view all roles"),
+	},
+	{
+		name: "Audit Logs",
+		href: route("audit-log.index"),
+		icon: UsersIcon,
+		current: route().current("logs.*"),
+		visible: permissions.value.includes("view all audit logs"),
 	},
 ];
 const userNavigation = [

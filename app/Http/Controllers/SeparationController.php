@@ -3,19 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Identity;
-use App\Models\InstitutionPerson;
 use App\Models\Separation;
-use App\Models\Status;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class SeparationController extends Controller
 {
     public function index()
     {
-        if (request()->user()->cannot('viewAny', Separation::class)) {
+        if (Gate::denies('view all separations')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view separated staff')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to view separated staff');
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view separated staff');
         }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view separated staff')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed separated staff');
         $separated = Separation::query()
             // ->retired()
             // ->where('current_status', '!=', 'A')
@@ -64,7 +80,6 @@ class SeparationController extends Controller
                             'id' => $item->id .  $item->contact_type_id .  $item->contact,
                             'type' => $item->contact_type->label(),
                             'value' => $item->contact
-
                         ];
                     }) : '',
                     'current_rank' => $staff->currentRank ? [
@@ -76,7 +91,6 @@ class SeparationController extends Controller
                         'end_date' => $staff->currentRank->end_date?->format('d M Y'),
                         'remarks' => $staff->currentRank->remarks,
                     ] : null,
-
                 ];
             });
 
@@ -88,6 +102,27 @@ class SeparationController extends Controller
 
     public function show()
     {
+        if (Gate::denies('view separation')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view separated staff')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to view separated staff');
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view separated staff');
+        }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view separated staff')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed separated staff');
         return Inertia::render('Separation/Show', []);
     }
 }

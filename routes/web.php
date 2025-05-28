@@ -7,6 +7,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanks;
 use App\Http\Controllers\ContactTypeController;
@@ -519,3 +520,8 @@ Route::get('/settings', SettingsController::class)->middleware(['auth', 'passwor
 Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed'])->name('role.store');
 Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed'])->name('role.add.permissions');
 Route::get('/role/{role}/permissions', RolePermissionController::class)->middleware(['auth', 'password_changed'])->name('role.permissions');
+Route::controller(AuditLogController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/audit-log', 'index')->name('audit-log.index');
+    Route::get('/audit-log/{auditLog}', 'show')->name('audit-log.show');
+    Route::delete('/audit-log/{auditLog}', 'delete')->name('audit-log.delete');
+});

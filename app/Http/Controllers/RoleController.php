@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate as Gate;
 use Illuminate\Support\Str;
@@ -76,6 +77,12 @@ class RoleController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('view a role');
+        $role->load(['permissions' => function (Builder $query) {
+            $query->withCount('users');
+            $query->paginate(5);
+            // $query->withQueryString();
+        }, 'users']);
+        dd($role->permissions);
         return Inertia::render('Role/Show', [
             'role' => [
                 'id' => $role->id,
@@ -85,9 +92,14 @@ class RoleController extends Controller
             'users' => $role->users()
                 ->withCount('permissions')
                 ->paginate(),
-            'permissions' => $role->permissions()
-                ->withCount('users')
-                ->paginate(5),
+            'permissions' => $role
+                ->permissions
+                ->map(fn($permission) => [
+                    'id' => $permission->id,
+                    'name' => $permission->name,
+                    'displayName' => Str::of($permission->name)->replace('-', ' ')->title(),
+                    'userCount' => $permission->user_count,
+                ])
         ]);
     }
 

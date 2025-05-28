@@ -41,7 +41,7 @@ class SeparationPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->can('create separation');
     }
 
     /**
@@ -53,7 +53,7 @@ class SeparationPolicy
      */
     public function update(User $user, Separation $separation)
     {
-        //
+        return $user->can('update separation');
     }
 
     /**
@@ -65,7 +65,7 @@ class SeparationPolicy
      */
     public function delete(User $user, Separation $separation)
     {
-        //
+        return $user->can('delete separation');
     }
 
     /**
@@ -77,7 +77,7 @@ class SeparationPolicy
      */
     public function restore(User $user, Separation $separation)
     {
-        //
+        return $user->can('restore separation');
     }
 
     /**
@@ -89,6 +89,6 @@ class SeparationPolicy
      */
     public function forceDelete(User $user, Separation $separation)
     {
-        //
+        return $user->can('force delete separation');
     }
 }
