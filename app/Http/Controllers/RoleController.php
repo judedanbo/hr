@@ -82,7 +82,7 @@ class RoleController extends Controller
             $query->paginate(5);
             // $query->withQueryString();
         }, 'users']);
-        dd($role->permissions);
+        // dd($role->permissions);
         return Inertia::render('Role/Show', [
             'role' => [
                 'id' => $role->id,

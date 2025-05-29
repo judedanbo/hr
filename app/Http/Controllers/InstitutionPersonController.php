@@ -15,6 +15,7 @@ use App\Models\Position;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -27,9 +28,27 @@ class InstitutionPersonController extends Controller
      */
     public function index()
     {
-        if (request()->user()->cannot('viewAny', InstitutionPerson::class)) {
+        if (Gate::denies('view all staff')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view all staff')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('attempted to view all staff');
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view all staff');
         }
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view all staff')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('viewed all staff');
         $staff = InstitutionPerson::query()
             ->active()
             ->with('person')
