@@ -68,6 +68,7 @@ const clicked = (action, model) => {
 						<SubMenu
 							v-if="permissions.includes('assign roles to user')"
 							:items="['Revoke']"
+							:can-revoke="permissions.includes('update permission')"
 							:can-edit="permissions.includes('assign roles to user')"
 							@item-clicked="(value) => clicked(value, role)"
 						/>

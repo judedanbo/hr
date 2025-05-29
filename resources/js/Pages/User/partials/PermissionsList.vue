@@ -72,6 +72,7 @@ const clicked = (action, model) => {
 								permissions.includes('update permission') ||
 								permissions.includes('delete permission')
 							"
+							:can-revoke="permissions.includes('update permission')"
 							:items="['Revoke']"
 							@item-clicked="(value) => clicked(value, permission)"
 						/>

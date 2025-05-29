@@ -85,6 +85,8 @@ const clicked = (action, model) => {
 								permissions?.includes('update staff') ||
 								permissions?.includes('delete_staff')
 							"
+							:can-edit="permissions?.includes('update staff')"
+							:can-delete="permissions?.includes('delete staff')"
 							:items="['Edit', 'Delete']"
 							@item-clicked="(value) => clicked(value, promotion)"
 						/>

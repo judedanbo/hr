@@ -118,6 +118,8 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 											permissions.includes('update staff') ||
 											permissions.includes('delete staff')
 										"
+										:can-edit="permissions.includes('update staff')"
+										:can-delete="permissions.includes('delete staff')"
 										@itemClicked="(action) => subMenuClicked(action, type)"
 										:items="['Edit', 'Delete']"
 									/>

@@ -99,6 +99,9 @@ let props = defineProps({
 						</td>
 						<td class="flex justify-end">
 							<SubMenu
+								:can-edit="permissions.includes('update staff')"
+								:can-delete="permissions.includes('delete staff')"
+								:can-approve="permissions.includes('approve transfer')"
 								:items="['Approve', 'Edit', 'Delete']"
 								@item-clicked="(action) => subMenuClicked(action, transfer)"
 							/>

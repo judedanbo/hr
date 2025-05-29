@@ -11,6 +11,8 @@ defineProps({
 	canEdit: { type: Boolean, default: false },
 	canDelete: { type: Boolean, default: false },
 	canView: { type: Boolean, default: false },
+	canApprove: { type: Boolean, default: false },
+	canRevoke: { type: Boolean, default: false },
 	canChangeUserPassword: { type: Boolean, default: false },
 });
 const emit = defineEmits(["itemClicked"]);
@@ -45,6 +47,8 @@ const emit = defineEmits(["itemClicked"]);
 							(item === 'Revoke' && canEdit) ||
 							(item === 'Delete' && canDelete) ||
 							(item === 'Open' && canView) ||
+							(item === 'Approve' && canApprove) ||
+							(item === 'Revoke' && canRevoke) ||
 							(item === 'Reset Password' && canChangeUserPassword)
 						"
 						v-slot="{ active }"

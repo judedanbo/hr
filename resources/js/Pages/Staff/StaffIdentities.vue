@@ -123,6 +123,8 @@ const deleteModalIdentity = () => {
 											permissions.includes('update staff') ||
 											permissions.includes('delete staff')
 										"
+										:can-edit="permissions.includes('update staff')"
+										:can-delete="permissions.includes('delete staff')"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, identity)"
 									/>
