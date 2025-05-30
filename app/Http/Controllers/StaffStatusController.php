@@ -4,16 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStaffStatusRequest;
 use App\Http\Requests\UpdateStaffStatusRequest;
-use App\Models\Institution;
 use App\Models\InstitutionPerson;
 use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class StaffStatusController extends Controller
 {
     public function store(StoreStaffStatusRequest $request)
     {
+        if (Gate::denies('create staff status')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('create staff status')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Failed to create staff status for staff ID: ' . $request->staff_id);
+            return redirect()->back()->with('error', 'You do not have permission to create a staff status');
+        }
         // return $request->all();
         DB::transaction(function () use ($request) {
 
@@ -45,11 +57,24 @@ class StaffStatusController extends Controller
             Status::create($request->all());
         });
 
-        return redirect()->back()->with('success', 'Staff status changed');
+        return redirect()->route('staff.index')->with('success', 'Staff status changed');
     }
 
     public function update(UpdateStaffStatusRequest $request, Status $staffStatus)
     {
+        if (Gate::denies('edit staff status')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($staffStatus)
+                ->event('edit staff status')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Failed to edit staff status for staff ID: ' . $staffStatus->staff_id);
+            return redirect()->back()->with('error', 'You do not have permission to edit this staff status');
+        }
         $staffStatus->update($request->validated());
 
         return redirect()->back()->with('success', 'Staff status updated');
@@ -57,6 +82,19 @@ class StaffStatusController extends Controller
 
     public function delete(Status $staffStatus)
     {
+        if (Gate::denies('delete staff status')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($staffStatus)
+                ->event('delete staff status')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Failed to delete staff status for staff ID: ' . $staffStatus->staff_id);
+            return redirect()->back()->with('error', 'You do not have permission to delete this staff status');
+        }
         $staffStatus->delete();
 
         return redirect()->back()->with('success', 'Staff status deleted');
