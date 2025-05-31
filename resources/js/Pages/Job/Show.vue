@@ -15,6 +15,8 @@ import EditRank from "./partials/EditRank.vue";
 import { useToggle } from "@vueuse/core";
 import DeleteJob from "./partials/DeleteJob.vue";
 import { NoSymbolIcon } from "@heroicons/vue/20/solid";
+import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+
 import NoPermission from "@/Components/NoPermission.vue";
 
 const page = usePage();

@@ -18,6 +18,7 @@ import {
 	CategoryScale,
 	LinearScale,
 } from "chart.js";
+import Pagination from "@/Components/Pagination.vue";
 
 const navigation = computed(() => useNavigation(jobStats.value.staff));
 ChartJS.register(
@@ -166,7 +167,7 @@ const genderData = computed(() => {
 			</div>
 			<div class="flex-grow h-full">
 				<RankUnitList :units="jobStats">
-					<template #pagination>
+					<template #nPagination>
 						{{ navigation }}
 						<Pagination :navigation="navigation" />
 					</template>

@@ -279,6 +279,7 @@ class JobController extends Controller
                 "units.name,
                 SUM(IF(people.gender = 'M', 1, 0)) AS male_staff_count,
                 SUM(IF(people.gender = 'F', 1, 0)) AS female_staff_count,
+                MAX(job_staff.id) AS last_promotion_date,
                 count(*) as total_staff"
             )
             ->join('staff_unit', 'staff_unit.staff_id', 'institution_person.id')
