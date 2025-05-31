@@ -33,7 +33,7 @@ const imageChanged = () => {
 			name="image"
 			type="file"
 			accept="image/*"
-			validation="required|image"
+			validation="image"
 			@input="imageChanged"
 		>
 		</FormKit>
