@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UpdatePositionRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UpdatePositionRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('update position');
+        return Gate::allows('update position');
     }
 
     /**

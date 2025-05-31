@@ -8,6 +8,7 @@ use App\Http\Requests\StoreJobRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Unit;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Excel;
 
@@ -15,7 +16,7 @@ class JobController extends Controller
 {
     public function index()
     {
-        if (!auth()->user()->can('view all jobs')) {
+        if (Gate::denies('view all jobs')) {
             activity()
                 ->causedBy(auth()->user())
                 ->event('view')
@@ -85,7 +86,7 @@ class JobController extends Controller
 
     public function show($job)
     {
-        if (!auth()->user()->can('view job')) {
+        if (Gate::denies('view job')) {
             activity()
                 ->causedBy(auth()->user())
                 ->event('view')
@@ -191,7 +192,7 @@ class JobController extends Controller
 
     public function store(StoreJobRequest $request)
     {
-        if (!auth()->user()->can('create job')) {
+        if (Gate::denies('create job')) {
             activity()
                 ->causedBy(auth()->user())
                 ->event('create')
@@ -412,7 +413,7 @@ class JobController extends Controller
 
     public function update(StoreJobRequest $request, Job $job)
     {
-        if (!auth()->user()->can('edit job')) {
+        if (Gate::denies('edit job')) {
             activity()
                 ->causedBy(auth()->user())
                 ->performedOn($job)
@@ -432,7 +433,7 @@ class JobController extends Controller
 
     public function delete(Job $job)
     {
-        if (!auth()->user()->can('delete job')) {
+        if (Gate::denies('delete job')) {
             activity()
                 ->causedBy(auth()->user())
                 ->performedOn($job)
@@ -452,7 +453,7 @@ class JobController extends Controller
 
     public function summary(Excel $excel)
     {
-        if (!auth()->user()->can('download job summary')) {
+        if (Gate::denies('download job summary')) {
             activity()
                 ->causedBy(auth()->user())
                 ->event('download')

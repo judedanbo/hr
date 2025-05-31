@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StorePositionRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class StorePositionRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('create position');
+        return Gate::allows('create position');
     }
 
     /**

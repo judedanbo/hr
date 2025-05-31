@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreStaffPositionRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class StoreStaffPositionRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('create staff position');
+        return Gate::allows('create staff position');
     }
 
     /**
