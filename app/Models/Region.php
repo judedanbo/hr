@@ -25,8 +25,19 @@ class Region extends Model
         return $this->hasMany(District::class);
     }
 
-    public function units(): BelongsToMany
-    {
-        return $this->belongsToMany(Unit::class);
-    }
+    // public function getOfficesNumberAttribute(): int
+    // {
+    //     return $this->districts()
+    //         ->withCount('offices')
+    //         ->get()
+    //         ->sum('offices_count');
+    // }
+
+    // function getUnitsNumberAttribute(): int
+    // {
+    //     return $this->districts()
+    //         // ->withCount('offices.units')
+    //         ->get()
+    //         ->sum('units_number');
+    // }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Enums;
 
-enum DistrictTypeEnum: int
+enum DistrictTypeEnum: string
 {
-    case DISTRICT = 1;
-    case MUNICIPAL = 2;
-    case METROPOLITAN = 3;
+    case DISTRICT = 'district';
+    case MUNICIPAL = 'municipal';
+    case METROPOLITAN = 'metropolitan';
 
     public function label(): string
     {

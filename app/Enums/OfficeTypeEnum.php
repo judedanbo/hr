@@ -2,11 +2,15 @@
 
 namespace App\Enums;
 
-enum OfficeTypeEnum: int
+enum OfficeTypeEnum: string
 {
-    case HEADQUARTERS = 1;
-    case REGIONAL = 2;
-    case DISTRICT = 3;
+    case HEADQUARTERS = 'headquarters';
+    case REGIONAL = 'regional';
+    case ANNEX = 'annex';
+    case UNIT = 'unit';
+    case SECTOR = 'sector';
+    case BRANCH = 'branch';
+    case DISTRICT = 'district';
 
     public function label(): string
     {
@@ -14,6 +18,10 @@ enum OfficeTypeEnum: int
             self::HEADQUARTERS => 'Headquarters',
             self::REGIONAL => 'Regional Office',
             self::DISTRICT => 'District Office',
+            self::ANNEX => 'Headquarters Annex',
+            self::UNIT => 'Unit Office',
+            self::SECTOR => 'Sector Office',
+            self::BRANCH => 'Branch Office',
             default => 'Office type not provided'
         };
     }

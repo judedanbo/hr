@@ -95,10 +95,11 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 				{{ props.unit.name }}
 			</h2>
 		</template> -->
-		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+		<main class="max-w-7xl mx-auto">
 			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<div class="text-2xl m-4 text-gray-700 dark:text-gray-50">
+			<div class="text-3xl m-4 text-gray-900 dark:text-gray-50">
 				{{ unit.name }}
+				<span v-if="unit.type" class="block text-xl">{{ unit.type }}</span>
 			</div>
 			<div class="shadow-sm sm:rounded-lg px-6 mt-2 border-b border-gray-200">
 				<section class="sm:flex items-center justify-between my-2">
@@ -131,9 +132,7 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 					</div>
 				</section>
 
-				<div
-					class="sm:flex flex-col xl:flex-row items-start justify-evenly min-w-full gap-x-12"
-				>
+				<div class="flex flex-col items-center justify-center gap-x-4">
 					<SubUnits
 						v-if="unit.subs.length > 0"
 						v-model="dept"

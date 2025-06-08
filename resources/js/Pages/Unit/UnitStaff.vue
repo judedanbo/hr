@@ -25,7 +25,7 @@ const exportToExcel = () => {
 	<section class="w-full">
 		<header class="flex justify-between items-center">
 			<p
-				class="font-bold text-xl px-8 py-4 text-gray-700 dark:text-white tracking-wide"
+				class="font-bold text-2xl px-8 py-4 text-gray-700 dark:text-white tracking-wide"
 			>
 				<span>Staff ({{ unit.staff_number }})</span>
 			</p>
@@ -83,28 +83,28 @@ const exportToExcel = () => {
 							>
 								<Avatar :initials="sta.initials" :image="sta.image" />
 								<div
-									class="truncate text-sm font-medium leading-6 text-gray-700 dark:text-white"
+									class="truncate text-xl font-medium leading-6 text-gray-700 dark:text-white space-y-2"
 								>
 									{{ sta.name }}
-									<div class="font-mono text-sm leading-6 text-gray-400">
+									<div class="font-mono leading-6 text-gray-400 mt-3">
 										First Appointment:
 										{{ sta.hire_date }}
 									</div>
-									<div class="font-mono text-sm leading-6 text-gray-400">
+									<div class="font-mono leading-6 text-gray-400">
 										Staff No.: {{ sta.staff_number }} / File No.:
 										{{ sta.file_number }}
 									</div>
 								</div>
 							</Link>
 						</td>
-						<td class="p-4 hidden md:block">
-							<div class="font-mono text-sm leading-6 text-gray-400">
+						<td class="p-4 hidden md:block space-y-2">
+							<div class="font-mono leading-6 text-gray-400">
 								{{ sta.rank?.name }}
 							</div>
-							<div class="font-mono text-sm leading-6 text-gray-400">
+							<div class="font-mono leading-6 text-gray-400">
 								{{ sta.rank?.start_date }}
 							</div>
-							<div class="font-mono text-sm leading-6 text-gray-400">
+							<div class="font-mono leading-6 text-gray-400">
 								{{ sta.rank?.remarks }}
 							</div>
 						</td>

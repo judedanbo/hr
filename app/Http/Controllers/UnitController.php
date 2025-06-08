@@ -24,6 +24,7 @@ class UnitController extends Controller
                 ->departments()
                 ->with([
                     'institution:id,name,abbreviation',
+                    'currentOffice.district.region',
                     // 'staff' => function ($query) {
                     //     $query->active();
                     //     $query->select('institution_person.id', 'person_id', 'file_number', 'staff_number', 'hire_date');
@@ -133,6 +134,20 @@ class UnitController extends Controller
                         'id' => $unit->id,
                         'name' => $unit->name,
                         'short_name' => $unit->short_name,
+                        'type' => $unit->type->label(),
+                        'office' => $unit->currentOffice ? [
+                            'id' => $unit->currentOffice->id, //->id,
+                            'name' => $unit->currentOffice->name,
+                            'district' => $unit->currentOffice->district ? [
+                                'id' => $unit->currentOffice->district->id,
+                                'name' => $unit->currentOffice->district->name,
+                                'region' => $unit->currentOffice->district->region ? [
+                                    'id' => $unit->currentOffice->district->region->id,
+                                    'name' => $unit->currentOffice->district->region->name,
+                                ] : null,
+
+                            ] : null,
+                        ] : null,
                         // 'count' =>  $unit->subs->sum(function ($sub) {
                         //     // return $sub->subs->sum('staff_count');
                         // }),
@@ -172,6 +187,7 @@ class UnitController extends Controller
             ->with([
                 'institution',
                 'parent',
+                'currentOffice.district.region',
                 'staff' => function ($query) {
                     $query->with(['person', 'ranks', 'units']);
                     $query->active();
@@ -358,6 +374,7 @@ class UnitController extends Controller
                 'subs' => $unit?->subs ? $unit->subs->map(fn($sub) => [
                     'id' => $sub->id,
                     'name' => $sub->name,
+                    'type' => $sub->type->label(),
                     'subs' => $sub->subs_count,
                     'staff_count' => $sub->staff_count + $sub->subs->sum(function ($sub) {
                         return $sub->staff_count + $sub->subs->sum('staff_count');
@@ -368,6 +385,19 @@ class UnitController extends Controller
                     'female_staff' => $sub->female_staff + $sub->subs->sum(function ($sub) {
                         return $sub->female_staff + $sub->subs->sum('female_staff');
                     }),
+                    'office' => $unit->currentOffice ? [
+                        'id' => $unit->currentOffice->id, //->id,
+                        'name' => $unit->currentOffice->name,
+                        'district' => $unit->currentOffice->district ? [
+                            'id' => $unit->currentOffice->district->id,
+                            'name' => $unit->currentOffice->district->name,
+                            'region' => $unit->currentOffice->district->region ? [
+                                'id' => $unit->currentOffice->district->region->id,
+                                'name' => $unit->currentOffice->district->region->name,
+                            ] : null,
+
+                        ] : null,
+                    ] : null,
                     // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
                     //     'id' => $stafff->id,
                     //     'name' => $stafff->full_name,

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +57,16 @@ class Unit extends Model
             ->latest();
     }
 
+    public function offices(): BelongsToMany
+    {
+        return $this->belongsToMany(Office::class)
+            ->latest();
+    }
+
+    public function currentOffice(): HasOne
+    {
+        return $this->hasOne(Office::class, 'id', 'id')->latestOfMany();
+    }
     /**
      * Get all of the subs for the Unit
      */

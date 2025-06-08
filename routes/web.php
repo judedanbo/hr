@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanks;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
@@ -36,6 +38,8 @@ use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
 use App\Http\Controllers\RankStaffController;
+use App\Http\Controllers\RankStaffStatsController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\Reports\RecruitmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
@@ -50,9 +54,11 @@ use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StaffListController;
 use App\Models\Dependent;
+use App\Models\District;
 use App\Models\Institution;
 use App\Models\Job;
 use App\Models\JobCategory;
+use App\Models\Office;
 use App\Models\Person;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
@@ -524,4 +530,33 @@ Route::controller(AuditLogController::class)->middleware(['auth', 'password_chan
     Route::get('/audit-log', 'index')->name('audit-log.index');
     Route::get('/audit-log/{auditLog}', 'show')->name('audit-log.show');
     Route::delete('/audit-log/{auditLog}', 'delete')->name('audit-log.delete');
+});
+
+Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->name('rank-staff-stats');
+
+Route::controller(RegionController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/region', 'index')->name('region.index');
+    Route::get('/region/create', 'create')->name('region.create');
+    Route::post('/region', 'store')->name('region.store');
+    Route::get('/region/{region}', 'show')->name('region.show');
+    Route::patch('/region/{region}', 'update')->name('region.update');
+    Route::delete('/region/{region}', 'delete')->name('region.delete');
+});
+
+Route::controller(DistrictController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/district', 'index')->name('district.index');
+    Route::get('/district/create', 'create')->name('district.create');
+    Route::post('/district', 'store')->name('district.store');
+    Route::get('/district/{district}', 'show')->name('district.show');
+    Route::patch('/district/{district}', 'update')->name('district.update');
+    Route::delete('/district/{district}', 'delete')->name('district.delete');
+});
+
+Route::controller(OfficeController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/office', 'index')->name('office.index');
+    Route::get('/office/create', 'create')->name('office.create');
+    Route::post('/office', 'store')->name('office.store');
+    Route::get('/office/{office}', 'show')->name('office.show');
+    Route::patch('/office/{office}', 'update')->name('office.update');
+    Route::delete('/office/{office}', 'delete')->name('office.delete');
 });
