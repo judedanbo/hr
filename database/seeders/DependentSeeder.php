@@ -17,7 +17,7 @@ class DependentSeeder extends Seeder
         Permission::create(['name' => 'view all dependents']);
         // Permission::create(['name' => 'view dependent']);
         // Permission::create(['name' => 'create dependent']);
-        // Permission::create(['name' => 'update dependent']);
+        Permission::create(['name' => 'update dependent']);
         // Permission::create(['name' => 'delete dependent']);
         Permission::create(['name' => 'restore dependent']);
         Permission::create(['name' => 'destroy dependent']);

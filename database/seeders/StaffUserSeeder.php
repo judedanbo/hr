@@ -16,7 +16,7 @@ class StaffUserSeeder extends Seeder
      */
     public function run()
     {
-        // Permission::create(['name' => 'upload avatar']);
+        Permission::create(['name' => 'upload avatar']);
         Permission::create(['name' => 'edit avatar']);
         Permission::create(['name' => 'view dependent']);
         Permission::create(['name' => 'create dependent']);
