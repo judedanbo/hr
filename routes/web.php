@@ -119,6 +119,10 @@ Route::get('/dashboard', function () {
     $error = request()->session()->get('error');
     // dd($error);
     if (auth()->user()->hasRole('super-administrator')) {
+        if (Institution::count() < 1) {
+            session()->flash('error', 'Please create institution to proceed');
+            return redirect()->route('institution.index');
+        }
         return redirect()->route('institution.show', [1]);
     }
     if (auth()->user()->hasRole('staff')) {

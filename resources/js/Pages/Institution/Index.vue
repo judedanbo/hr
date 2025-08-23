@@ -4,7 +4,7 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch, computed } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import { useToggle } from "@vueuse/core";
@@ -16,6 +16,10 @@ import Edit from "./Edit.vue";
 import Delete from "./Delete.vue";
 import FlyoutMenu from "@/Components/FlyoutMenu.vue";
 import { useNavigation } from "@/Composables/navigation";
+import NoPermission from "@/Components/NoPermission.vue";
+
+const page = usePage();
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let props = defineProps({
 	institutions: Object,
@@ -87,7 +91,10 @@ let BreadCrumpLinks = [
 	<Head title="Institutions" />
 
 	<MainLayout>
-		<div class="max-w-7xl mx-auto px-0 lg:px-8">
+		<div
+			v-if="permissions?.includes('view all institutions')"
+			class="max-w-7xl mx-auto px-0 lg:px-8"
+		>
 			<div
 				class="bg-gray-100 dark:bg-gray-600 overflow-hidden shadow-sm lg:rounded-lg w-full"
 			>
@@ -95,6 +102,7 @@ let BreadCrumpLinks = [
 					<BreadCrumpVue :links="BreadCrumpLinks" />
 					<div class="flex justify-center items-center">
 						<FormKit
+							v-if="permissions?.includes('view all institutions')"
 							v-model="search"
 							prefix-icon="search"
 							type="search"
@@ -102,6 +110,7 @@ let BreadCrumpLinks = [
 							autofocus
 						/>
 						<a
+							v-if="permissions?.includes('create institution')"
 							href="#"
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 							@click.prevent="toggleCreateModal()"
@@ -257,6 +266,7 @@ let BreadCrumpLinks = [
 				/>
 			</Modal>
 		</div>
+		<NoPermission v-else />
 	</MainLayout>
 </template>
 
