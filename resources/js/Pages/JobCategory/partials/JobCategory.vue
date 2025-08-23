@@ -4,7 +4,7 @@ import {
 	PlusIcon,
 	QueueListIcon,
 } from "@heroicons/vue/20/solid";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import Ranks from "./Ranks.vue";
 defineProps({
 	category: Object,
@@ -58,13 +58,13 @@ const emit = defineEmits(["addRank", "editRank", "deleteRank"]);
 			</div>
 		</div>
 		<Ranks
+			:jobs="category.jobs"
+			class="mt-4"
 			@add-rank="emit('addRank')"
 			@edit-rank="emit('editRank')"
 			@delete-rank="emit('deleteRank')"
 			@restore-rank="emit('restoreRank')"
 			@destroy-rank="emit('destroyRank')"
-			:jobs="category.jobs"
-			class="mt-4"
 		/>
 	</div>
 </template>

@@ -40,15 +40,15 @@ const label = computed(() => {
 	<div class="top-16 w-72">
 		<Listbox
 			:multiple="props.multiple"
-			@update:modelValue="(name) => emit('update:modelValue', name)"
 			:model-value="props.modelValue"
+			@update:modelValue="(name) => emit('update:modelValue', name)"
 		>
 			<div class="relative mt-1">
 				<ListboxButton
 					class="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm"
 				>
-					<span class="block truncate" v-if="label">{{ label }}</span>
-					<span class="block truncate" v-else v-text="placeholder"></span>
+					<span v-if="label" class="block truncate">{{ label }}</span>
+					<span v-else class="block truncate" v-text="placeholder"></span>
 					<span
 						class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
 					>
@@ -68,8 +68,8 @@ const label = computed(() => {
 						class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
 					>
 						<ListboxOption
-							v-slot="{ active, selected }"
 							v-for="option in options"
+							v-slot="{ active, selected }"
 							:key="option.id"
 							:value="option.name"
 							as="template"

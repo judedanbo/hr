@@ -1,5 +1,5 @@
 <script setup>
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 import NoItem from "@/Components/NoItem.vue";
 import MainTable from "@/Components/MainTable.vue";
@@ -23,7 +23,7 @@ const props = defineProps({
 	},
 });
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 const subMenuClicked = (action, model) => {
 	if (action == "Open") {
 		// @click="emit('openUser', user.id)"
@@ -83,18 +83,18 @@ const tableCols = [
 								</TableData>
 								<TableData class="flex justify-end">
 									<SubMenu
-										:canEdit="permissions.includes('update staff')"
-										:canDelete="permissions.includes('delete staff')"
-										:canView="permissions.includes('view staff')"
-										:canChangeUserPassword="
-											permissions.includes('reset user password')
-										"
 										v-if="
-											permissions.includes('update staff') ||
-											permissions.includes('delete staff')
+											permissions?.includes('update staff') ||
+											permissions?.includes('delete staff')
 										"
-										@itemClicked="(action) => subMenuClicked(action, user)"
+										:can-edit="permissions?.includes('update staff')"
+										:can-delete="permissions?.includes('delete staff')"
+										:can-view="permissions?.includes('view staff')"
+										:can-change-user-password="
+											permissions?.includes('reset user password')
+										"
 										:items="['Open', 'Reset Password', 'Edit', 'Delete']"
+										@itemClicked="(action) => subMenuClicked(action, user)"
 									/>
 								</TableData>
 							</TableRow>

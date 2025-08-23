@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import IdentityForm from "./IdentityForm.vue";
 
@@ -10,7 +10,7 @@ let props = defineProps({
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(
+	router.post(
 		route("person.identity.create", { person: props.person }),
 		data,
 		{
@@ -30,11 +30,11 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Identification</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit
+				id="person_id"
 				type="hidden"
 				name="person_id"
-				id="person_id"
 				:value="props.person"
 			/>
 			<IdentityForm />

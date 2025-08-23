@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import { format, addDays, subYears } from "date-fns";
 const emit = defineEmits(["formSubmitted"]);
@@ -27,7 +27,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("job-category.store"), data, {
+	router.post(route("job-category.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -43,7 +43,7 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Harmonized Grade</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<!-- <FormKit
 				type="select"
 				name="institution_id"
@@ -55,32 +55,32 @@ const submitHandler = (data, node) => {
 				error-visibility="submit"
 			/> -->
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				label="Category name"
 				validation="required|string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution_id"
 				type="hidden"
 				name="institution_id"
-				id="institution_id"
 				:value="institution"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="short_name"
 				type="text"
 				name="short_name"
-				id="short_name"
 				label="Abbreviation"
 				validation="required|string|length:2,10"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="level"
 				type="number"
 				name="level"
-				id="level"
 				label="Level"
 				min="1"
 				max="50"
@@ -89,9 +89,9 @@ const submitHandler = (data, node) => {
 			/>
 
 			<FormKit
+				id="job_category_id"
 				type="select"
 				name="job_category_id"
-				id="job_category_id"
 				placeholder="Select parent category"
 				validation="number|min:1|max:100"
 				label="Next Level"
@@ -101,9 +101,9 @@ const submitHandler = (data, node) => {
 
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:min="end_date"
 					:max="start_date"
 					label="Start date"

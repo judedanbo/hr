@@ -19,9 +19,9 @@ const end_date = format(addYears(new Date(), 3), "yyyy-MM-dd");
 </script>
 <template>
 	<FormKit
+		id="status"
 		type="select"
 		name="status"
-		id="status"
 		validation="required|string"
 		label="Status"
 		placeholder="Select Status"
@@ -30,9 +30,9 @@ const end_date = format(addYears(new Date(), 3), "yyyy-MM-dd");
 	/>
 	<div class="sm:flex gap-4">
 		<FormKit
+			id="start_date"
 			type="date"
 			name="start_date"
-			id="start_date"
 			:max="today"
 			label="Start date"
 			:validation="'required|date_before:' + end_date"
@@ -40,9 +40,9 @@ const end_date = format(addYears(new Date(), 3), "yyyy-MM-dd");
 			outer-class="md:flex-1"
 		/>
 		<FormKit
+			id="end_date"
 			type="date"
 			name="end_date"
-			id="end_date"
 			:max="end_date"
 			label="End date"
 			:validation="'date_before:' + end_date"
@@ -51,9 +51,9 @@ const end_date = format(addYears(new Date(), 3), "yyyy-MM-dd");
 		/>
 	</div>
 	<FormKit
+		id="description"
 		type="text"
 		name="description"
-		id="description"
 		label="Description"
 		validation="string|length:2,120"
 		validation-visibility="submit"

@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import StaffStatusForm from "./partials/StaffStatusForm.vue";
 const emit = defineEmits(["formSubmitted", "editHistory", "deleteHistory"]);
 defineProps({
@@ -9,7 +9,7 @@ defineProps({
 	institution: Number,
 });
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("staff-status.update", {
 			staff: data.id,
 			staffStatus: data.id,
@@ -32,21 +32,21 @@ const submitHandler = (data, node) => {
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Change Staff Status</h1>
 		<FormKit
-			@submit="submitHandler"
 			type="form"
 			submit-label="Save"
 			:value="staffStatus"
+			@submit="submitHandler"
 		>
-			<FormKit type="hidden" id="staff_id" name="staff_id" :value="staff.id" />
+			<FormKit id="staff_id" type="hidden" name="staff_id" :value="staff.id" />
 			<FormKit
-				type="hidden"
 				id="institution_id"
+				type="hidden"
 				name="institution_id"
 				:value="institution"
 			/>
 			<FormKit
-				type="hidden"
 				id="hire_date"
+				type="hidden"
 				name="hire_date"
 				:value="staff.hire_date"
 			/>

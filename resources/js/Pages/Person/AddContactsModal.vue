@@ -1,7 +1,7 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
 	<TransitionRoot as="template" :show="isVisible">
-		<Dialog @close="$emit('closeModal')" as="div" class="relative z-10">
+		<Dialog as="div" class="relative z-10" @close="$emit('closeModal')">
 			<TransitionChild
 				as="template"
 				enter="ease-out duration-300"
@@ -53,9 +53,9 @@
 									</div>
 
 									<XMarkIcon
-										@click="$emit('closeModal')"
 										title="close"
 										class="w-7 h-7 p-1 text-red-400 hover:bg-gray-100 hover:font-bold rounded-full"
+										@click="$emit('closeModal')"
 									/>
 								</div>
 							</div>
@@ -67,8 +67,8 @@
 								>
 									<!-- Modal content -->
 									<form
-										@submit.prevent="submit"
 										class="relative bg-white rounded-lg shadow dark:bg-gray-700"
+										@submit.prevent="submit"
 									>
 										<!-- Modal body -->
 										<div class="p-6 space-y-6">
@@ -81,8 +81,8 @@
 													>
 
 													<select
-														v-model="form.contact_type_id"
 														id="contact_type_id"
+														v-model="form.contact_type_id"
 														class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														required
 													>
@@ -96,8 +96,8 @@
 													</select>
 													<p
 														v-if="form.errors.type_id"
-														v-text="form.errors.type_id"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.type_id"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -107,18 +107,18 @@
 														>Contact</label
 													>
 													<input
+														id="contact"
 														v-model="form.contact"
 														type="text"
 														name="contact"
-														id="contact"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="contact"
 														required=""
 													/>
 													<p
 														v-if="form.errors.contact"
-														v-text="form.errors.contact"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.contact"
 													></p>
 												</div>
 											</div>
@@ -163,7 +163,7 @@ import {
 	XMarkIcon,
 	ArrowPathIcon,
 } from "@heroicons/vue/24/outline";
-import { useForm } from "@inertiajs/inertia-vue3";
+import { useForm } from "@inertiajs/vue3";
 
 let props = defineProps({
 	isVisible: {

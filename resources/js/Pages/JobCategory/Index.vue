@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
@@ -20,7 +20,7 @@ const navigation = computed(() => useNavigation(props.categories));
 let openAddDialog = ref(false);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let toggle = useToggle(openAddDialog);
 
@@ -41,7 +41,7 @@ const searchCategories = (value) => {
 };
 
 let openCategory = (categoryId) => {
-	Inertia.visit(route("job-category.show", { jobCategory: categoryId }));
+	router.visit(route("job-category.show", { jobCategory: categoryId }));
 };
 </script>
 
@@ -50,7 +50,7 @@ let openCategory = (categoryId) => {
 		<!-- {{ categories.data[0].institution_id }} -->
 		<Head title="Harmonized Categories" />
 		<main
-			v-if="permissions.includes('view all job categories')"
+			v-if="permissions?.includes('view all job categories')"
 			class="max-w-7xl mx-auto sm:px-6 lg:px-8"
 		>
 			<BreadCrumpVue :links="BreadCrumpLinks" />
@@ -67,8 +67,8 @@ let openCategory = (categoryId) => {
 				/>
 				<div
 					v-if="
-						permissions.includes('download active staff data') ||
-						permissions.includes('download separated staff data')
+						permissions?.includes('download active staff data') ||
+						permissions?.includes('download separated staff data')
 					"
 					class="flex gap-x-5"
 				>

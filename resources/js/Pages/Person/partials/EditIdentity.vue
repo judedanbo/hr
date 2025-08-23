@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import IdentityForm from "@/Pages/Person/partials/IdentityForm.vue";
 
@@ -23,7 +23,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(
+	router.post(
 		route("person.identity.update", {
 			person: props.person,
 			identity: props.identity.id,

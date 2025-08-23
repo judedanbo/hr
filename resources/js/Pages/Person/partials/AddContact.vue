@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import ContactForm from "@/Pages/Person/partials/ContactForm.vue";
 
@@ -21,7 +21,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("person.contact.create", { person: props.person }), data, {
+	router.post(route("person.contact.create", { person: props.person }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -37,11 +37,11 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Contacts</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit
+				id="person_id"
 				type="hidden"
 				name="person_id"
-				id="person_id"
 				:value="props.person"
 			/>
 			<ContactForm />

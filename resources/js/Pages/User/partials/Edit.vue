@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -25,7 +25,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("staff.promote.update", {
 			staff: data.staff_id,
 			promotion: data.id,
@@ -50,7 +50,6 @@ const submitHandler = (data, node) => {
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Staff promotion</h1>
 
 		<FormKit
-			@submit="submitHandler"
 			type="form"
 			submit-label="Save"
 			:value="{
@@ -60,13 +59,14 @@ const submitHandler = (data, node) => {
 				remarks: model.remarks,
 				staff_id: model.staff_id,
 			}"
+			@submit="submitHandler"
 		>
 			<FormKit type="hidden" name="id" :value="model.id" />
 			<FormKit type="hidden" name="staff_id" :value="model.staff_id" />
 			<FormKit
+				id="rank_id"
 				type="select"
 				name="rank_id"
-				id="rank_id"
 				validation="required|integer|min:1|max:2000"
 				label="New Rank"
 				placeholder="Select new Rank"
@@ -76,17 +76,17 @@ const submitHandler = (data, node) => {
 			</FormKit>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					label="Start date"
 					validation-visibility="submit"
 					inner-class="w-1/2"
 				/>
 				<FormKit
+					id="end_date"
 					type="date"
 					name="end_date"
-					id="end_date"
 					:value="today"
 					label="End date"
 					validation-visibility="submit"
@@ -94,9 +94,9 @@ const submitHandler = (data, node) => {
 				/>
 			</div>
 			<FormKit
+				id="remarks"
 				type="text"
 				name="remarks"
-				id="remarks"
 				label="Remarks"
 				validation="string"
 				validation-visibility="submit"

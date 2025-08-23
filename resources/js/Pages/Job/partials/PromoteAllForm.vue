@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted, computed } from "vue";
 import { format } from "date-fns";
 const props = defineProps({
@@ -28,7 +28,7 @@ onMounted(async () => {
 
 const submitHandler = (data, node) => {
 	emit("unitSelected", data);
-	// Inertia.post(route("staff.promote.all"), data, {
+	// router.post(route("staff.promote.all"), data, {
 	// 	preserveState: true,
 	// 	onSuccess: () => {
 	// 		node.reset();

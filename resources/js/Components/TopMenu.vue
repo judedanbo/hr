@@ -1,6 +1,6 @@
 <script setup>
 import { useDark, useToggle } from "@vueuse/core";
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { BellIcon, MoonIcon, SunIcon } from "@heroicons/vue/24/outline";
@@ -9,7 +9,7 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const page = usePage();
-const user = computed(() => page.props.value.auth.user);
+const user = computed(() => page.props.value?.auth.user);
 defineProps({
 	userNavigation: Array,
 });
@@ -25,16 +25,16 @@ defineProps({
 			>
 				<span class="sr-only">Toggle Dark /Light mode</span>
 				<SunIcon
-					@click="toggleDark()"
 					v-if="isDark"
 					class="h-6 w-6"
 					aria-hidden="true"
+					@click="toggleDark()"
 				/>
 				<MoonIcon
-					@click="toggleDark()"
 					v-else
 					class="h-6 w-6"
 					aria-hidden="true"
+					@click="toggleDark()"
 				/>
 			</button>
 
@@ -74,7 +74,7 @@ defineProps({
 						<span
 							class="ml-4 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
 							aria-hidden="true"
-							>{{ user.name }}</span
+							>{{ user?.name }}</span
 						>
 						<ChevronDownIcon
 							class="ml-2 h-5 w-5 text-gray-400"

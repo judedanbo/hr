@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -25,7 +25,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("unit.store"), data, {
+	router.post(route("unit.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -43,25 +43,25 @@ const submitHandler = (data, node) => {
 		<h1 class="text-2xl pb-4 dark:text-gray-100">
 			Add new Department/Section/Unit
 		</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit
+				id="institution_id"
 				type="hidden"
 				name="institution_id"
-				id="institution_id"
 				:value="institutionId"
 			/>
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				label="Name of department/sec/unit"
 				validation="required|string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="type"
 				type="select"
 				name="type"
-				id="type"
 				placeholder="Select unit type"
 				:options="unitTypes"
 				label="Parent unit type"
@@ -69,18 +69,18 @@ const submitHandler = (data, node) => {
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution"
 				type="hidden"
 				name="institution"
-				id="institution"
 				:value="institutionName"
 				validation="string|length:2,100"
 				validation-visibility="submit"
 				disabled="true"
 			/>
 			<FormKit
+				id="unit_id"
 				type="select"
 				name="unit_id"
-				id="unit_id"
 				:options="allUnits"
 				placeholder="Select parent department/sec/unit"
 				label="Parent department/sec/unit"
@@ -88,9 +88,9 @@ const submitHandler = (data, node) => {
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="start_date"
 				type="date"
 				name="start_date"
-				id="start_date"
 				label="Date Created"
 				:min="start_date"
 				:max="end_date"

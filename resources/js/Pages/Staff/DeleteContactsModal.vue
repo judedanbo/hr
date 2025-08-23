@@ -1,7 +1,7 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
 	<TransitionRoot as="template" :show="isVisible">
-		<Dialog @close="$emit('closeModal')" as="div" class="relative z-10">
+		<Dialog as="div" class="relative z-10" @close="$emit('closeModal')">
 			<TransitionChild
 				as="template"
 				enter="ease-out duration-300"
@@ -66,17 +66,17 @@
 								class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
 							>
 								<button
-									@click.prevent="deleteDependent"
 									type="button"
 									class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+									@click.prevent="deleteDependent"
 								>
 									Remove
 								</button>
 								<button
+									ref="cancelButtonRef"
 									type="button"
 									class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
 									@click="$emit('closeModal')"
-									ref="cancelButtonRef"
 								>
 									Cancel
 								</button>
@@ -99,8 +99,8 @@ import {
 	TransitionRoot,
 } from "@headlessui/vue";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
-import { Link } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Link } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 const open = ref(true);
 
 const emit = defineEmits(["closeModal"]);
@@ -113,7 +113,7 @@ let props = defineProps({
 	dependent: Object,
 });
 let deleteDependent = () => {
-	Inertia.delete(route("dependent.delete", { dependent: props.dependent.id }));
+	router.delete(route("dependent.delete", { dependent: props.dependent.id }));
 	emit("closeModal");
 };
 </script>

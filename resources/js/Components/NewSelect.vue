@@ -38,10 +38,10 @@ const label = computed(() => {
 </script>
 <template>
 	<Listbox
-		@update:modelValue="(value) => emit('update:modelValue', value)"
 		as="div"
 		model-value="props.modelValue"
 		class="w-full"
+		@update:modelValue="(value) => emit('update:modelValue', value)"
 	>
 		<ListboxLabel
 			v-if="listLabel"
@@ -70,9 +70,9 @@ const label = computed(() => {
 					class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
 				>
 					<ListboxOption
-						as="template"
 						v-for="option in options"
 						:key="option.value"
+						as="template"
 						:value="option.value"
 					>
 						<li

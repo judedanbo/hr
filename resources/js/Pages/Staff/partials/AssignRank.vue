@@ -36,8 +36,8 @@ onMounted(async () => {
 
 	<div class="flex gap-4">
 		<FormKit
-			v-model="input_start_date"
 			id="start_date"
+			v-model="input_start_date"
 			type="date"
 			name="start_date"
 			:max="max_date"

@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -30,7 +30,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 50), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.transfer.store", { staff: data.staff_id }), data, {
+	router.post(route("staff.transfer.store", { staff: data.staff_id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();

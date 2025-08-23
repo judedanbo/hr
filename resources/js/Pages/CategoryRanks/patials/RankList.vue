@@ -6,7 +6,7 @@ import TableBody from "@/Components/TableBody.vue";
 import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 defineProps({
 	ranks: {
 		type: Array,
@@ -15,7 +15,7 @@ defineProps({
 });
 const tableCols = ["Ranks", "Staff"];
 const openRank = (id) => {
-	Inertia.visit(route("job.show", id));
+	router.visit(route("job.show", id));
 };
 </script>
 <template>

@@ -8,9 +8,9 @@ defineProps({
 </script>
 <template>
 	<FormKit
+		id="staff_id"
 		type="hidden"
 		name="staff_id"
-		id="staff_id"
 		:value="staffId"
 		validation="required|min:1|max:90000"
 	/>
@@ -21,9 +21,9 @@ defineProps({
     :value="person?.id"
     validation="required|min:1|max:90000"/> -->
 	<FormKit
+		id="relation"
 		type="text"
 		name="relation"
-		id="relation"
 		label="Relation to Staff"
 		placeholder="Relation to staff"
 		validation="required|length:2,40"

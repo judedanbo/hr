@@ -1,10 +1,10 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { format } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
@@ -26,7 +26,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("staff.index"),
 			{ search: search.value },
 			{ preserveState: true, replace: true },
@@ -36,7 +36,7 @@ debouncedWatch(
 );
 
 let openStaff = (staff) => {
-	Inertia.visit(route("staff.show", { staff: staff }));
+	router.visit(route("staff.show", { staff: staff }));
 };
 
 let formatDate = (dateString) => {
@@ -73,9 +73,9 @@ let BreadCrumpLinks = [
 
 						<!-- <BreezeButton @click="toggle()">Add New Staff</BreezeButton> -->
 						<a
-							@click.prevent="toggle()"
 							href="#"
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+							@click.prevent="toggle()"
 						>
 							<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 							New Status
@@ -123,8 +123,8 @@ let BreadCrumpLinks = [
 											<tr
 												v-for="status in statuses"
 												:key="status.id"
-												@click="openStaff(status.id)"
 												class="cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-lg"
+												@click="openStaff(status.id)"
 											>
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">
@@ -159,7 +159,7 @@ let BreadCrumpLinks = [
 			</div>
 		</div>
 	</MainLayout>
-	<Modal @close="toggle()" :show="openDialog">
+	<Modal :show="openDialog" @close="toggle()">
 		<!-- <AddStaffForm @form-submitted="toggle()" /> -->
 	</Modal>
 	<!-- <AddStaff @closeDialog="openDialog = false" :open="openDialog" /> -->

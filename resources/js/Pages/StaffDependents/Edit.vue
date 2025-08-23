@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
@@ -51,7 +51,7 @@ const updateDependent = (data, node) => {
 		fd.append("image", data.dependentForm.image.image[0].file);
 	}
 
-	Inertia.post(
+	router.post(
 		route("dependent.update", {
 			dependent: data.dependentForm.personalInformation.id,
 		}),
@@ -76,27 +76,27 @@ const updateDependent = (data, node) => {
 		<!-- {{ dependent }} -->
 		<FormKit
 			type="form"
-			@submit="updateDependent"
 			:actions="false"
 			wrapper-class="mx-auto"
+			@submit="updateDependent"
 		>
 			<!-- <Staff :steps="staff" /> -->
 			<FormKit
-				type="hidden"
 				id="dependent_id"
+				type="hidden"
 				name="dependent_id"
 				:value="dependent.id"
 			/>
 			<FormKit
-				type="multi-step"
 				id="dependentForm"
+				type="multi-step"
 				name="dependentForm"
 				:allow-incomplete="true"
 				tab-style="progress"
 			>
 				<FormKit
-					type="step"
 					id="personalInformation"
+					type="step"
 					name="personalInformation"
 					:value="{
 						id: dependent.id,
@@ -113,16 +113,16 @@ const updateDependent = (data, node) => {
 				>
 					<PersonalInformationForm />
 				</FormKit>
-				<FormKit type="step" id="image" name="image">
-					<ImageUpload :imageUrl="dependent.image" />
+				<FormKit id="image" type="step" name="image">
+					<ImageUpload :image-url="dependent.image" />
 				</FormKit>
 				<FormKit
+					id="relation"
 					:value="{ relation: dependent.relation }"
 					type="step"
-					id="relation"
 					name="relation"
 				>
-					<AddDependentForm :staffId="staffId" />
+					<AddDependentForm :staff-id="staffId" />
 					<template #stepNext>
 						<FormKit type="submit" label="Save Dependent" />
 					</template>

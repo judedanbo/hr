@@ -1,8 +1,8 @@
 <script setup>
 import NewLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 
 import { ref, watch } from "vue";
@@ -70,7 +70,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("institution.show", {
 				institution: props.institution.id,
 			}),
@@ -92,9 +92,9 @@ debouncedWatch(
 				<div class="flex justify-between items-center">
 					<!-- <PageNav :pageMenu="navMenu" /> -->
 					<a
-						@click.prevent="newDepartment()"
 						href="#"
 						class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+						@click.prevent="newDepartment()"
 					>
 						<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						New unit
@@ -219,34 +219,34 @@ debouncedWatch(
 						>
 							<template v-for="department in departments" :key="department.id">
 								<UnitCard
+									:unit="department"
 									@editItem="(id) => editDepartment(id)"
 									@delete-item="(id) => deleteUnit(id)"
-									:unit="department"
 								/>
 							</template>
 						</ul>
 					</div>
 				</div>
 			</div>
-			<Modal @close="toggle()" :show="open">
+			<Modal :show="open" @close="toggle()">
 				<AddForm
-					:institutionName="institution.name"
-					:institutionId="institution.id"
+					:institution-name="institution.name"
+					:institution-id="institution.id"
 				/>
 			</Modal>
-			<Modal @close="toggleEditForm()" :show="openEditForm">
+			<Modal :show="openEditForm" @close="toggleEditForm()">
 				<!-- {{ selectedUnit }} -->
 				<EditForm
-					@formSubmitted="toggleEditForm()"
-					:institutionName="institution.name"
-					:institutionId="institution.id"
+					:institution-name="institution.name"
+					:institution-id="institution.id"
 					:unit="selectedUnit"
+					@formSubmitted="toggleEditForm()"
 				/>
 			</Modal>
-			<Modal @close="toggleDeleteModal()" :show="openDeleteModal">
+			<Modal :show="openDeleteModal" @close="toggleDeleteModal()">
 				<DeleteUnit
+					:selected-model="selectedUnit"
 					@unit-deleted="toggleDeleteModal()"
-					:selectedModel="selectedUnit"
 				/>
 			</Modal>
 		</main>

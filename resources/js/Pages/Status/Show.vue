@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import { formatDistance } from "date-fns";
 
 import { useToggle } from "@vueuse/core";
@@ -58,9 +58,9 @@ let search = ref("");
 
 						<!-- <BreezeButton @click="toggle()">Add New Staff</BreezeButton> -->
 						<a
-							@click.prevent="toggle()"
 							href="#"
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+							@click.prevent="toggle()"
 						>
 							<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 							New Staff
@@ -119,8 +119,8 @@ let search = ref("");
 											<tr
 												v-for="person in staff"
 												:key="person.id"
-												@click="openStaff(person.id)"
 												class="cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-lg"
+												@click="openStaff(person.id)"
 											>
 												<td class="px-6 py-4 whitespace-nowrap">
 													<div class="flex items-center">

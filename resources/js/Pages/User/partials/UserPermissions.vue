@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, watch, computed } from "vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
@@ -50,7 +50,7 @@ const confirmDeletePermission = (model) => {
 };
 
 const deletePermission = (user, permission) => {
-	Inertia.patch(route("user.revoke.permissions", { user: user }), {
+	router.patch(route("user.revoke.permissions", { user: user }), {
 		permission,
 		preserveScroll: true,
 	});

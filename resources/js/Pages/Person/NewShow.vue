@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import Address from "./Address.vue";
 import { useToggle } from "@vueuse/core";
 import PromotionHistory from "../Staff/PromotionHistory.vue";
@@ -19,7 +19,7 @@ import RolesDetail from "./partials/RolesDetail.vue";
 let showEditForm = ref(false);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let toggleEditForm = useToggle(showEditForm);
 
@@ -102,8 +102,8 @@ let BreadcrumbLinks = [
 						<div class="flex items-center gap-x-4 sm:gap-x-6">
 							<button
 								v-if="
-									permissions.includes('update staff') ||
-									permissions.includes('delete staff')
+									permissions?.includes('update staff') ||
+									permissions?.includes('delete staff')
 								"
 								class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 								@click="toggleEditForm()"

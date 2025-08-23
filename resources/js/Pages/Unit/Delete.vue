@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 const emit = defineEmits(["cancelDelete", "institutionDeleted", "UnitDeleted"]);
@@ -9,7 +9,7 @@ let props = defineProps({
 });
 
 const deleteUnit = (unit) => {
-	Inertia.delete(route("unit.delete", { unit: unit }), {
+	router.delete(route("unit.delete", { unit: unit }), {
 		PreserveScroll: true,
 		onSuccess: () => {
 			emit("UnitDeleted");

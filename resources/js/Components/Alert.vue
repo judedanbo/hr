@@ -57,9 +57,9 @@ onMounted(() => {
 					>
 						<span class="sr-only">Dismiss</span>
 						<XMarkIcon
-							@click="emit('close')"
 							class="h-5 w-5"
 							aria-hidden="true"
+							@click="emit('close')"
 						/>
 					</button>
 				</div>

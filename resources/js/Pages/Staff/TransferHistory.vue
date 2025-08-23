@@ -1,11 +1,11 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import TransferStaff from "./partials/TransferStaff.vue";
 import Modal from "@/Components/NewModal.vue";
 import NewModal from "@/Components/NewModal.vue";
 import DeleteTransfer from "@/Pages/Transfer/Delete.vue";
 import { ref, watch, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import TransferList from "./TransferList.vue";
 import EditTransfer from "./partials/EditTransfer.vue";
@@ -21,7 +21,7 @@ const editTransfer = (model) => {
 	toggleEditTransferModal();
 };
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 const openApproveTransferModal = ref(false);
 const toggleApproveTransferModal = useToggle(openApproveTransferModal);
 const approveModel = ref(null);
@@ -38,7 +38,7 @@ const confirmDeleteTransfer = (model) => {
 	toggleDeleteTransferModal();
 };
 const deleteTransfer = (staff_id, unit_id) => {
-	Inertia.delete(
+	router.delete(
 		route("staff.transfer.delete", {
 			staff: staff_id,
 			unit: unit_id,
@@ -102,7 +102,7 @@ watch(
 				</div>
 				<div v-if="transfer" class="flex-none self-end px-6 pt-4">
 					<button
-						v-if="permissions.includes('create staff transfers')"
+						v-if="permissions?.includes('create staff transfers')"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleTransferModal()"
 					>

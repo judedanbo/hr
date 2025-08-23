@@ -1,6 +1,6 @@
 <script setup>
 import { PaperClipIcon } from "@heroicons/vue/20/solid";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import NewSelect from "@/Components/NewSelect.vue";
 import Avatar from "@/Components/Avatar.vue";
@@ -32,8 +32,8 @@ const form = ref({
 
 const saveNote = () => {
 	// console.log(form.value);
-	// Inertia.post(route("notes.store"), form.value, {
-	Inertia.post(
+	// router.post(route("notes.store"), form.value, {
+	router.post(
 		route("staff.write-note", { staff: props.notable_id }),
 		form.value,
 		{
@@ -55,16 +55,16 @@ const saveNote = () => {
 	<div class="mt-4 flex gap-x-3">
 		<!-- <Avatar :person_id="props.user.id" /> -->
 
-		<form @submit.prevent="saveNote()" class="relative flex-auto">
+		<form class="relative flex-auto" @submit.prevent="saveNote()">
 			<div
 				class="overflow-hidden rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-400 focus-within:ring-2 focus-within:ring-green-500 dark:focus-within:ring-gray-200"
 			>
 				<label for="note" class="sr-only">Add note</label>
 				<textarea
+					id="note"
 					v-model="form.note"
 					rows="2"
 					name="note"
-					id="note"
 					class="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-200 focus:ring-0 sm:text-sm sm:leading-6"
 					placeholder="Add note..."
 				/>
@@ -76,8 +76,8 @@ const saveNote = () => {
 				<div class="flex items-center space-x-5">
 					<div class="flex items-center">
 						<FormKit
-							v-model="form.document"
 							id="noteDocument"
+							v-model="form.document"
 							name="document"
 							type="file"
 							accept=".png, jpeg, jpg, .pdf, .doc, .docx"
@@ -94,8 +94,8 @@ const saveNote = () => {
 					</div>
 					<div class="flex items-center w-56">
 						<NewSelect
-							v-model="form.note_type"
 							v-if="noteTypes"
+							v-model="form.note_type"
 							:options="noteTypes"
 							class=""
 						/>

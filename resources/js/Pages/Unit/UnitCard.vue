@@ -1,7 +1,7 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisHorizontalIcon } from "@heroicons/vue/20/solid";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 const emit = defineEmits(["editItem", "deleteItem"]);
 
 const edit = (id) => {
@@ -61,16 +61,16 @@ defineProps({
 						</MenuItem>
 						<MenuItem>
 							<p
-								@click.prevent="edit(unit.id)"
 								class="block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-50 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+								@click.prevent="edit(unit.id)"
 							>
 								Edit<span class="sr-only">, {{ unit.name }}</span>
 							</p>
 						</MenuItem>
 						<MenuItem>
 							<p
-								@click.prevent="deleteUnit(unit.id)"
 								class="block px-3 py-1 text-sm leading-6 text-red-900 dark:text-red-500 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+								@click.prevent="deleteUnit(unit.id)"
 							>
 								Remove<span class="sr-only">, {{ unit.name }}</span>
 							</p>

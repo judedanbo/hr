@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 const emit = defineEmits(["formSubmitted"]);
 
 import { format, addDays, subYears } from "date-fns";
@@ -13,7 +13,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("qualification.store"), data, {
+	router.post(route("qualification.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -29,52 +29,52 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="p-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Qualification</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
-			<FormKit type="hidden" name="person_id" id="person_id" :value="person" />
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
+			<FormKit id="person_id" type="hidden" name="person_id" :value="person" />
 			<FormKit
+				id="course"
 				type="text"
 				name="course"
-				id="course"
 				label="Course"
 				validation="required|string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution"
 				type="text"
 				name="institution"
-				id="institution"
 				label="Institution"
 				validation="string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="qualification"
 				type="text"
 				name="qualification"
-				id="qualification"
 				label="Qualification"
 				validation="string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="qualification_number"
 				type="text"
 				name="qualification_number"
-				id="qualification_number"
 				label="Qualification Number"
 				validation="string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="level"
 				type="text"
 				name="level"
-				id="level"
 				label="Level"
 				validation="string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="year"
 				type="text"
 				name="year"
-				id="year"
 				label="Year of Graduation"
 				validation="string|length:2,100"
 				validation-visibility="submit"

@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import Tab from "@/Components/Tab.vue";
 import StaffRanks from "./StaffRanks.vue";
 import StaffUnits from "./StaffUnits.vue";

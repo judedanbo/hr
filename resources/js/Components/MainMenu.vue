@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, useSlots } from "vue";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import { ChevronUpIcon, BellIcon } from "@heroicons/vue/24/outline";
 const hasSlots = useSlots();
 
@@ -42,9 +42,9 @@ const classes = computed(() =>
 			</span>
 			<ChevronUpIcon
 				v-if="hasSlots.default"
-				@click="isOpen = !isOpen"
 				:class="isOpen === true ? 'rotate-90' : 'rotate-180'"
 				class="w-6 p-1 text-white group-hover:bg-green-50 rounded-full group-hover:text-green-800 transition-all"
+				@click="isOpen = !isOpen"
 			/>
 			<!-- <div
                 class="inline-block absolute invisible group-hover:visible z-10 py-2 px-3 text-sm font-medium text-green-800 bg-green-50 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -63,9 +63,9 @@ const classes = computed(() =>
 			</span>
 			<ChevronUpIcon
 				v-if="hasSlots.default"
-				@click="isOpen = !isOpen"
 				:class="isOpen === true ? 'rotate-90' : 'rotate-180'"
 				class="w-6 p-1 text-white group-hover:bg-green-50 rounded-full group-hover:text-green-800 transition-all"
+				@click="isOpen = !isOpen"
 			/>
 			<!-- <div
                 class="inline-block absolute invisible group-hover:visible z-10 py-2 px-3 text-sm font-medium text-green-800 bg-green-50 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"

@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
@@ -12,13 +12,13 @@ import TableHeader from "./partials/TableHeader.vue";
 import StaffList from "./partials/StaffList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 
 const navigation = computed(() => useNavigation(props.staff));
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let props = defineProps({
 	staff: { type: Object, required: true },
@@ -34,7 +34,7 @@ const searchStaff = (value) => {
 };
 
 let openStaff = (staff) => {
-	Inertia.visit(route("staff.show", { staff: staff }));
+	router.visit(route("staff.show", { staff: staff }));
 };
 
 let BreadCrumpLinks = [
@@ -56,15 +56,15 @@ let BreadCrumpLinks = [
 					:total="staff.total"
 					:search="filters.search"
 					action-text="Onboard Staff"
-					:action-permission="permissions.includes('create staff')"
+					:action-permission="permissions?.includes('create staff')"
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchStaff(value)"
 				/>
 
 				<div
 					v-if="
-						permissions.includes('download active staff data') ||
-						permissions.includes('download separated staff data')
+						permissions?.includes('download active staff data') ||
+						permissions?.includes('download separated staff data')
 					"
 					class="flex gap-x-5"
 				>

@@ -1,12 +1,12 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, computed, defineEmits } from "vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
 import { FormKitMessages } from "@formkit/vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const errors = computed(() => page.props.value.errors);
+const errors = computed(() => page.props.value?.errors);
 const emit = defineEmits(["imageUpdated", "uploadFailed"]);
 const props = defineProps({
 	staff: {
@@ -20,7 +20,7 @@ let formData = ref(null);
 const submitImage = async (image) => {
 	formData.value = new FormData();
 	formData.value.append("image", image?.image[0]?.file);
-	const avatar = await Inertia.post(
+	const avatar = await router.post(
 		route("person.avatar.update", { person: props.staff.person_id }),
 		formData.value,
 		{

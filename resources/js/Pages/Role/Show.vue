@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 
@@ -211,9 +211,9 @@ const editContactModal = () => {
 		</main>
 		<NewModal
 			:show="showAddPermissionForm"
-			@close="toggleAddPermissionForm()"
 			title="Edit Role"
 			subtitle="Edit role details"
+			@close="toggleAddPermissionForm()"
 		>
 			<AddPermissionForm
 				:role="role.id"

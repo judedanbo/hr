@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import Summary from "@/Pages/Person/Summary.vue";
 import UserRoles from "./partials/UserRoles.vue";
 import UserPermissions from "./partials/UserPermissions.vue";
@@ -37,7 +37,7 @@ let breadcrumbLinks = [
 ];
 const page = usePage();
 const permissions = computed(() => {
-	return page.props.value.auth.permissions;
+	return page.props.value?.auth.permissions;
 });
 const openEditContact = ref(false);
 const toggleEditContactModal = useToggle(openEditContact);
@@ -51,7 +51,7 @@ const editContactModal = () => {
 	<Head :title="user.name" />
 
 	<MainLayout>
-		<main v-if="permissions.includes('view user')">
+		<main v-if="permissions?.includes('view user')">
 			<BreadCrump :links="breadcrumbLinks" />
 			<header
 				class="relative isolate pt-4 border dark:border-gray-600 rounded-lg"
@@ -132,7 +132,7 @@ const editContactModal = () => {
 							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
 						>
 							<button
-								v-if="permissions.includes('assign roles to user')"
+								v-if="permissions?.includes('assign roles to user')"
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="togglePermissionsForm()"
@@ -140,7 +140,7 @@ const editContactModal = () => {
 								Add Roles
 							</button>
 							<button
-								v-if="permissions.includes('assign permissions to user')"
+								v-if="permissions?.includes('assign permissions to user')"
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 								@click="toggleTransferForm()"
@@ -167,7 +167,7 @@ const editContactModal = () => {
 						<UserPermissions
 							:user="user.id"
 							:permissions="user.permissions"
-							:can-add="permissions.includes('assign permissions to user')"
+							:can-add="permissions?.includes('assign permissions to user')"
 							class="w-full md:w-3/5"
 							@close-form="togglePermissionsForm()"
 						/>
@@ -176,7 +176,7 @@ const editContactModal = () => {
 							:roles="user.roles"
 							:user="user.id"
 							class="flex-1"
-							:canAdd="permissions.includes('assign roles to user')"
+							:can-add="permissions?.includes('assign roles to user')"
 							@close-form="toggleRolesForm()"
 						/>
 					</div>

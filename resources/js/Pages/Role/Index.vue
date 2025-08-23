@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
@@ -12,7 +12,7 @@ import TableHeader from "@/Components/TableHeader.vue";
 import RoleList from "./partials/RoleList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import AddRoleForm from "./partials/AddRoleForm.vue";
 
@@ -32,7 +32,7 @@ const searchRole = (value) => {
 };
 
 let openRole = (role) => {
-	Inertia.visit(route("role.show", { role: role }));
+	router.visit(route("role.show", { role: role }));
 };
 
 let BreadCrumpLinks = [

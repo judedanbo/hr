@@ -9,42 +9,42 @@ onMounted(async () => {
 </script>
 <template>
 	<FormKit
+		id="address_line_1"
 		type="text"
 		name="address_line_1"
-		id="address_line_1"
 		label="Address line 1"
 		validation="required|string|length:2,100"
 		validation-visibility="submit"
 	/>
 	<FormKit
+		id="address_line_2"
 		type="text"
 		name="address_line_2"
-		id="address_line_2"
 		label="Address line 2"
 		validation="string|length:2,100"
 		validation-visibility="submit"
 	/>
 	<div class="md:flex md:gap-x-2">
 		<FormKit
+			id="post_code"
 			type="text"
 			name="post_code"
-			id="post_code"
 			label="Post Code"
 			validation="string|length:2,100"
 			validation-visibility="submit"
 		/>
 		<FormKit
+			id="city"
 			type="text"
 			name="city"
-			id="city"
 			label="City"
 			validation="string|length:2,100"
 			validation-visibility="submit"
 		/>
 		<FormKit
+			id="region"
 			type="text"
 			name="region"
-			id="region"
 			label="Region"
 			validation="string|length:2,100"
 			validation-visibility="submit"
@@ -52,8 +52,8 @@ onMounted(async () => {
 		/>
 	</div>
 	<FormKit
-		name="country"
 		id="country"
+		name="country"
 		type="select"
 		label="Country"
 		validation="required"

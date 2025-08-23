@@ -1,5 +1,5 @@
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { computed } from "vue";
@@ -30,8 +30,8 @@ const getMonth = (month) => {
 		<div>
 			<h2 class="leading-6 font-bold tracking-wider text-xl">{{ rank }}</h2>
 			<h2
-				@click="getMonth()"
 				class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 dark: dark:text-gray-50 lg:mx-0 lg:max-w-none capitalize"
+				@click="getMonth()"
 			>
 				{{ filters.month }} {{ filters.year }} Promotions
 			</h2>

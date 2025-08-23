@@ -144,8 +144,8 @@ const genderData = computed(() => {
 		<div class="flex mt-4 gap-x-4 items-start">
 			<div class="w-1/3">
 				<Pie
-					class="bg-white dark:bg-gray-700 rounded-lg shadow-md"
 					v-if="unitsStats != {}"
+					class="bg-white dark:bg-gray-700 rounded-lg shadow-md"
 					:data="genderData"
 					:options="{
 						responsive: true,

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 const emit = defineEmits(["formSubmitted"]);
 let unitTypes = ref([]);
 onMounted(async () => {
@@ -19,7 +19,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("unit.store"), data, {
+	router.post(route("unit.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -35,19 +35,19 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Unit</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				label="Unit name"
 				validation="required|string|length:2,150"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution_id"
 				type="hidden"
 				name="institution_id"
-				id="institution_id"
 				label="institution_id"
 				:value="institution.id"
 				validation="required|integer|min:1|max:150"
@@ -55,9 +55,9 @@ const submitHandler = (data, node) => {
 				disabled
 			/>
 			<FormKit
+				id="institution"
 				type="hidden"
 				name="institution"
-				id="institution"
 				label="Institution"
 				:value="institution.name"
 				validation="required|string|length:1,150"
@@ -65,9 +65,9 @@ const submitHandler = (data, node) => {
 				disabled
 			/>
 			<FormKit
+				id="type"
 				type="select"
 				name="type"
-				id="type"
 				validation="required|string|length:1,5"
 				placeholder="Select Unit type"
 				label="Unit Type"
@@ -75,9 +75,9 @@ const submitHandler = (data, node) => {
 				error-visibility="submit"
 			/>
 			<FormKit
+				id="unit_id"
 				type="select"
 				name="unit_id"
-				id="unit_id"
 				validation="integer|min:1|max:30"
 				label="Parent Unit"
 				:options="units"
@@ -85,9 +85,9 @@ const submitHandler = (data, node) => {
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:min="end_date"
 					:max="start_date"
 					label="Start date"

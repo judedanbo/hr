@@ -1,5 +1,5 @@
 <script setup>
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import {
 	CalendarDaysIcon,
 	UserPlusIcon,
@@ -9,7 +9,7 @@ import {
 import { computed } from "vue";
 const emit = defineEmits(["openEditPerson"]);
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 defineProps({
 	person: {
 		type: Object,
@@ -42,7 +42,7 @@ defineProps({
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<Link
-						v-if="permissions.includes('view staff')"
+						v-if="permissions?.includes('view staff')"
 						:href="route('person.show', { person: person.id })"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 					>

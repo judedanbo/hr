@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import { Link, Inertia } from "@inertiajs/inertia-vue3";
+import { Link, Inertia } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import PromotionList from "../Staff/partials/PromotionList.vue";
 import { useToggle } from "@vueuse/core";
@@ -39,7 +39,7 @@ const indeterminate = computed(
 		selectedStaff.value.length < props.promotions.data.length,
 );
 const promoteSelectedStaff = () => {
-	Inertia.post(route("staff.promote"), { staff: selectedStaff.value });
+	router.post(route("staff.promote"), { staff: selectedStaff.value });
 };
 </script>
 <template>
@@ -219,8 +219,8 @@ const promoteSelectedStaff = () => {
 										class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3"
 									>
 										<p
-											@click="showPromotionList(promotion.staff_id)"
 											class="text-green-600 dark:text-gray-100 hover:text-green-900 dark:hover:text-gray-50 cursor-pointer"
+											@click="showPromotionList(promotion.staff_id)"
 										>
 											Show history<span class="sr-only"
 												>, {{ promotion.name }}</span
@@ -236,8 +236,8 @@ const promoteSelectedStaff = () => {
 				</div>
 			</div>
 			<Modal
-				@close="toggleStaffPromotionsModal()"
 				:show="showStaffPromotionsModal"
+				@close="toggleStaffPromotionsModal()"
 			>
 				<div class="px-4 pt-4">
 					<h3

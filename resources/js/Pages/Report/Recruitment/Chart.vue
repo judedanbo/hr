@@ -17,7 +17,7 @@
 import { computed, defineComponent, ref } from "vue";
 // import { BarChart, useBarChart } from "vue-chart-3";
 // import { Chart, ChartData, ChartOptions, registerables } from "chart.js";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 // Chart.register(...registerables);
 export default defineComponent({
@@ -87,21 +87,21 @@ export default defineComponent({
 	// 	});
 
 	// 	function getAll() {
-	// 		Inertia.get(
+	// 		router.get(
 	// 			route("report.recruitment.chart"),
 	// 			{},
 	// 			{ preserveState: true, replace: true },
 	// 		);
 	// 	}
 	// 	function getActive() {
-	// 		Inertia.get(
+	// 		router.get(
 	// 			route("report.recruitment.chart"),
 	// 			{ active: true },
 	// 			{ preserveState: true, replace: true },
 	// 		);
 	// 	}
 	// 	function getSeparated() {
-	// 		Inertia.get(
+	// 		router.get(
 	// 			route("report.recruitment.chart"),
 	// 			{ retired: true },
 	// 			{ preserveState: true, replace: true },

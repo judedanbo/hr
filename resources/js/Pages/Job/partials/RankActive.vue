@@ -112,8 +112,8 @@
 		<Modal :show="showPromoteAll" @close="togglePromoteAll()">
 			<PromoteAllForm
 				:rank="props.rank"
+				:form-errors="formErrors"
 				@unit-selected="(data) => submitForm(data)"
-				:formErrors="formErrors"
 			/>
 		</Modal>
 	</div>
@@ -121,7 +121,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";
@@ -175,7 +175,7 @@ const promoteAll = () => {
 };
 const submitForm = (promoteAll) => {
 	const staff = selectedStaff.value;
-	Inertia.post(
+	router.post(
 		route("rank-staff.promote"),
 		{ staff, ...promoteAll },
 		{
@@ -198,6 +198,6 @@ const refreshData = (page) => {
 	getRankStaff(page);
 };
 const showStaff = (staff) => {
-	Inertia.visit(route("staff.show", { staff: staff }));
+	router.visit(route("staff.show", { staff: staff }));
 };
 </script>

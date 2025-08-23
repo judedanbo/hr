@@ -3,7 +3,7 @@ import { ref, onMounted, onUpdated, computed } from "vue";
 import MainNav from "../Components/MainNav.vue";
 import NewNav from "../Components/NewNav.vue";
 import TopMenu from "@/Components/TopMenu.vue";
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import Alert from "@/Components/Alert.vue";
 import { useToggle } from "@vueuse/core";
 import {
@@ -26,8 +26,8 @@ import {
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
-const alert = computed(() => page.props.value.flash);
+const permissions = computed(() => page.props.value?.auth?.permissions);
+const alert = computed(() => page.props.value?.flash);
 const navigation = [
 	{
 		name: "Dashboard",
@@ -41,29 +41,29 @@ const navigation = [
 		icon: UsersIcon,
 		current: route().current("staff.*"),
 		visible:
-			permissions.value.includes("view all staff") ||
-			permissions.value.includes("view staff"),
+			permissions.value?.includes("view all staff") ||
+			permissions.value?.includes("view staff"),
 	},
 	{
 		name: "Separations",
 		href: route("separation.index"),
 		icon: UsersIcon,
 		current: route().current("separation.*"),
-		visible: permissions.value.includes("view all separations"),
+		visible: permissions.value?.includes("view all separations"),
 	},
 	{
 		name: "Departments",
 		href: route("unit.index"),
 		icon: FolderIcon,
 		current: route().current("unit.*"),
-		visible: permissions.value.includes("view all units"),
+		visible: permissions.value?.includes("view all units"),
 	},
 	{
 		name: "Ranks",
 		href: route("job.index"),
 		icon: CalendarIcon,
 		current: route().current("job.*") || route().current("job.*"),
-		visible: permissions.value.includes("view all jobs"),
+		visible: permissions.value?.includes("view all jobs"),
 	},
 	{
 		name: "Harmonized Grades",
@@ -71,21 +71,21 @@ const navigation = [
 		icon: CalendarIcon,
 		current:
 			route().current("job-category.*") || route().current("job-category.*"),
-		visible: permissions.value.includes("view job category"),
+		visible: permissions.value?.includes("view job category"),
 	},
 	{
 		name: "Next Promotions",
 		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,
 		current: route().current("promotion.batch.show"),
-		visible: permissions.value.includes("view all staff promotions"),
+		visible: permissions.value?.includes("view all staff promotions"),
 	},
 	{
 		name: "Past Promotions",
 		href: route("promotion.index"),
 		icon: DocumentDuplicateIcon,
 		current: route().current("promotion.index"),
-		visible: permissions.value.includes("view all past promotions"),
+		visible: permissions.value?.includes("view all past promotions"),
 	},
 	{
 		name: "Reports",
@@ -119,28 +119,28 @@ const navigation = [
 				current: route().current("report.unit"),
 			},
 		],
-		visible: permissions.value.includes("view all reports"),
+		visible: permissions.value?.includes("view all reports"),
 	},
 	{
 		name: "Users",
 		href: route("user.index"),
 		icon: UsersIcon,
 		current: route().current("user.*"),
-		visible: permissions.value.includes("view all users"),
+		visible: permissions.value?.includes("view all users"),
 	},
 	{
 		name: "Roles",
 		href: route("role.index"),
 		icon: UserGroupIcon,
 		current: route().current("role.*"),
-		visible: permissions.value.includes("view all roles"),
+		visible: permissions.value?.includes("view all roles"),
 	},
 	{
 		name: "Audit Logs",
 		href: route("audit-log.index"),
 		icon: UsersIcon,
 		current: route().current("logs.*"),
-		visible: permissions.value.includes("view all audit logs"),
+		visible: permissions.value?.includes("view all audit logs"),
 	},
 ];
 const userNavigation = [
@@ -266,7 +266,7 @@ const closeAlert = (index) => {
 				<!-- Separator -->
 				<div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
 
-				<TopMenu :userNavigation="userNavigation" />
+				<TopMenu :user-navigation="userNavigation" />
 			</div>
 
 			<main class="pb-6 bg-gray-100 dark:bg-gray-600 min-h-screen">
@@ -280,11 +280,11 @@ const closeAlert = (index) => {
 	<div class="fixed bottom-10 right-5 flex flex-col space-y-3">
 		<template v-for="(alertItem, key, index) in alert" :key="index">
 			<Alert
-				@close="closeAlert(index)"
 				v-if="alertItem"
 				:alert="alertItem"
 				:type="key"
 				:index="index"
+				@close="closeAlert(index)"
 			/>
 		</template>
 	</div>

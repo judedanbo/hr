@@ -1,6 +1,6 @@
 <script setup>
 import { differenceInYears } from "date-fns";
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import Modal from "@/Components/NewModal.vue";
 import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
@@ -8,7 +8,7 @@ import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 defineProps({
 	address: Object,
 	contacts: Array,
@@ -52,11 +52,11 @@ let getAge = (dateString) => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							permissions.includes('update staff') ||
-							permissions.includes('delete staff')
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
 						"
-						@click="toggleAddressModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+						@click="toggleAddressModal()"
 					>
 						Change address
 					</button>
@@ -102,11 +102,11 @@ let getAge = (dateString) => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							permissions.includes('update staff') ||
-							permissions.includes('delete staff')
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
 						"
-						@click="toggleContactModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-200"
+						@click="toggleContactModal()"
 					>
 						Add Contact
 					</button>
@@ -162,11 +162,11 @@ let getAge = (dateString) => {
 				</div>
 			</dl>
 		</div>
-		<Modal @close="toggleAddressModal()" :show="openAddressModal">
-			<AddAddress @formSubmitted="toggleAddressModal()" :person="person" />
+		<Modal :show="openAddressModal" @close="toggleAddressModal()">
+			<AddAddress :person="person" @formSubmitted="toggleAddressModal()" />
 		</Modal>
-		<Modal @close="toggleContactModal()" :show="openContactModal">
-			<AddContact @formSubmitted="toggleContactModal()" :person="person" />
+		<Modal :show="openContactModal" @close="toggleContactModal()">
+			<AddContact :person="person" @formSubmitted="toggleContactModal()" />
 		</Modal>
 	</main>
 </template>

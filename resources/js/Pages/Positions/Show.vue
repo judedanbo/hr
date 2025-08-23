@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head, Link } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import PositionOverview from "./partials/PositionOverview.vue";
 // import RankStaff from "./partials/RankStaff.vue";
 // import RankPromote from "./partials/RankPromote.vue";
@@ -22,7 +22,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("position.show", {
 				position: props.position.id,
 			}),
@@ -84,7 +84,7 @@ const openConfirmDeleteDialog = ref(false);
 const toggleDeleteModal = useToggle(openConfirmDeleteDialog);
 
 const deletePosition = () => {
-	Inertia.delete(route("position.delete", { position: props.position.id }));
+	router.delete(route("position.delete", { position: props.position.id }));
 };
 </script>
 <template>
@@ -93,8 +93,8 @@ const deletePosition = () => {
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8">
 			<PageHeading
 				:name="position.name"
-				@searchStaff="(searchValue) => startSearch(searchValue)"
 				:search="search"
+				@searchStaff="(searchValue) => startSearch(searchValue)"
 			/>
 			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<button
@@ -115,17 +115,17 @@ const deletePosition = () => {
 			</div>
 			<PageTitle
 				:tabs="tabs"
-				@tab-clicked="(tab) => changeTab(tab)"
 				:current="components[currentTab.component]"
+				@tab-clicked="(tab) => changeTab(tab)"
 			/>
 			<component
 				:is="components[currentTab.component]"
 				v-bind="{ staff: position.staff, search, staffList: selectedStaff }"
-				@updateStaffList="(staffList) => updateStaffList(staffList)"
 				class="mt-4"
+				@updateStaffList="(staffList) => updateStaffList(staffList)"
 			/>
 		</main>
-		<Modal @close="toggleEditModal()" :show="openEditDialog">
+		<Modal :show="openEditDialog" @close="toggleEditModal()">
 			<EditRank :position="position" @formSubmitted="toggleEditModal()" />
 		</Modal>
 		<Modal :show="openConfirmDeleteDialog" @close="toggleDeleteModal()">

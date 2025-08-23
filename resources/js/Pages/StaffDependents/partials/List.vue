@@ -1,11 +1,11 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
 import Avatar from "@/Pages/Person/partials/Avatar.vue";
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const emit = defineEmits(["editDependent", "deleteDependent"]);
 
@@ -99,11 +99,11 @@ const subMenuClicked = (action, model) => {
 					<td class="flex justify-end">
 						<SubMenu
 							v-if="
-								permissions.includes('update staff') ||
-								permissions.includes('delete staff')
+								permissions?.includes('update staff') ||
+								permissions?.includes('delete staff')
 							"
-							:can-edit="permissions.includes('update staff')"
-							:can-delete="permissions.includes('delete staff')"
+							:can-edit="permissions?.includes('update staff')"
+							:can-delete="permissions?.includes('delete staff')"
 							:items="['Edit', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, dependent)"
 						/>

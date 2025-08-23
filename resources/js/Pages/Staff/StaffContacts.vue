@@ -1,12 +1,12 @@
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import DeleteContactsModal from "./DeleteContactsModal.vue";
 import AddContactsModal from "./AddContactsModal.vue";
 import { format, differenceInYears } from "date-fns";
 
 import { MagnifyingGlassIcon, MegaphoneIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 defineProps({
 	staff: Object,
 });
@@ -34,7 +34,7 @@ let getAge = (dateString) => {
 };
 
 let showPerson = (id) => {
-	Inertia.get(route("person.show", { person: id }));
+	router.get(route("person.show", { person: id }));
 };
 </script>
 <template>
@@ -46,9 +46,9 @@ let showPerson = (id) => {
 		<div class="overflow-x-auto relative shadow-md sm:rounded-lg">
 			<div class="flex justify-end items-center px-4 bg-white dark:bg-gray-800">
 				<button
-					@click.stop.prevent="addContact"
 					type="button"
 					class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center"
+					@click.stop.prevent="addContact"
 				>
 					<MegaphoneIcon class="w-5 h-5 mr-2" />
 					Add Contact
@@ -77,13 +77,15 @@ let showPerson = (id) => {
 						<td class="py-4 px-6 text-right space-x-3">
 							<!-- Modal toggle -->
 							<button
-								@click.prevent="addContact"
 								type="button"
 								class="font-medium text-green-600 dark:text-green-500 hover:underline"
+								@click.prevent="addContact"
 							>
 								Edit
 							</button>
 							<button
+								type="button"
+								class="font-medium text-red-600 dark:text-red-500 hover:underline"
 								@click.prevent="
 									deleteDependents({
 										id: person.id,
@@ -91,8 +93,6 @@ let showPerson = (id) => {
 										staff: staff.name,
 									})
 								"
-								type="button"
-								class="font-medium text-red-600 dark:text-red-500 hover:underline"
 							>
 								Delete
 							</button>
@@ -107,8 +107,8 @@ let showPerson = (id) => {
             /> -->
 			<AddContactsModal
 				:staff="staff"
+				:is-visible="showAddContactModal"
 				@closeModal="showAddContactModal = false"
-				:isVisible="showAddContactModal"
 			/>
 		</div>
 	</div>

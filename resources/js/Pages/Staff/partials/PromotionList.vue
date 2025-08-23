@@ -1,6 +1,6 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 
 defineProps({
@@ -11,7 +11,7 @@ defineProps({
 const emit = defineEmits(["editPromotion", "deletePromotion"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const clicked = (action, model) => {
 	if (action === "Edit") {

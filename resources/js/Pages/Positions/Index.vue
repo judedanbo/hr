@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
@@ -51,7 +51,7 @@ const searchPosition = (value) => {
 };
 
 let openPosition = (position) => {
-	Inertia.visit(route("position.show", { position: position }));
+	router.visit(route("position.show", { position: position }));
 };
 
 let BreadCrumpLinks = [
@@ -61,7 +61,7 @@ let BreadCrumpLinks = [
 	},
 ];
 const deletePositionConfirmed = (position) => {
-	Inertia.delete(route("position.delete", { position: position }), {
+	router.delete(route("position.delete", { position: position }), {
 		PreserveScroll: true,
 		onSuccess: () => {
 			toggleDeleteModal();

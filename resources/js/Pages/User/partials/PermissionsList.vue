@@ -1,13 +1,13 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-// import { usePage } from "@inertiajs/inertia-vue3";
+// import { usePage } from "@inertiajs/vue3";
 // import { computed } from "vue";
 defineProps({
 	permissions: { type: Array, default: () => null },
 });
 
 // const page = usePage();
-// const permissions = computed(() => page.props.value.auth.permissions);
+// const permissions = computed(() => page.props.value?.auth.permissions);
 
 const emit = defineEmits(["deletePermission"]);
 
@@ -69,10 +69,10 @@ const clicked = (action, model) => {
 					<td class="w-8 flex justify-end">
 						<SubMenu
 							v-if="
-								permissions.includes('update permission') ||
-								permissions.includes('delete permission')
+								permissions?.includes('update permission') ||
+								permissions?.includes('delete permission')
 							"
-							:can-revoke="permissions.includes('update permission')"
+							:can-revoke="permissions?.includes('update permission')"
 							:items="['Revoke']"
 							@item-clicked="(value) => clicked(value, permission)"
 						/>

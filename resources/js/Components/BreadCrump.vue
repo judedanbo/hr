@@ -1,5 +1,5 @@
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import { ChevronRightIcon, HomeIcon } from "@heroicons/vue/20/solid";
 
 defineProps({

@@ -1,7 +1,7 @@
 <script setup>
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 
 const emit = defineEmits(["editItem", "deleteItem"]);
 
@@ -40,14 +40,14 @@ let props = defineProps({
 						>View
 					</Link>
 					<p
-						@click="emit('editItem', $event, route_id)"
 						class="block p-2 hover:text-green-600 text-left px-4 hover:bg-gray-300 cursor-pointer"
+						@click="emit('editItem', $event, route_id)"
 					>
 						Edit
 					</p>
 					<p
-						@click="emit('deleteItem', $event, route_id)"
 						class="block p-2 hover:text-green-600 text-left px-4 hover:bg-gray-300 cursor-pointer"
+						@click="emit('deleteItem', $event, route_id)"
 					>
 						Delete
 					</p>

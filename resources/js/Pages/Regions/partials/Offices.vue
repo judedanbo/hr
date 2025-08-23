@@ -1,11 +1,11 @@
 <script setup>
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import { useNavigation } from "@/Composables/navigation";
 import { computed } from "vue";
 import Pagination from "@/Components/Pagination.vue";
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 const props = defineProps({
 	offices: { type: Array, default: () => {} },
 });
@@ -34,7 +34,7 @@ const emit = defineEmits([
 			</div>
 			<div class="flex ju gap-4 mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<button
-					v-if="permissions.includes('create job')"
+					v-if="permissions?.includes('create job')"
 					type="button"
 					class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					@click="emit('addRank')"
@@ -42,7 +42,7 @@ const emit = defineEmits([
 					Add office
 				</button>
 				<button
-					v-if="permissions.includes('edit job')"
+					v-if="permissions?.includes('edit job')"
 					type="button"
 					class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					@click="emit('editRank')"
@@ -51,7 +51,7 @@ const emit = defineEmits([
 				</button>
 
 				<button
-					v-if="permissions.includes('delete job')"
+					v-if="permissions?.includes('delete job')"
 					type="button"
 					class="block rounded-md bg-rose-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900"
 					@click="emit('deleteRank')"
@@ -59,7 +59,7 @@ const emit = defineEmits([
 					Delete office
 				</button>
 				<!-- <button
-					v-if="permissions.includes('restore job')"
+					v-if="permissions?.includes('restore job')"
 					type="button"
 					class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900"
 					@click="emit('restoreRank')"
@@ -67,7 +67,7 @@ const emit = defineEmits([
 					Restore rank
 				</button> -->
 				<!-- <button
-					v-if="permissions.includes('destroy job')"
+					v-if="permissions?.includes('destroy job')"
 					type="button"
 					class="block rounded-md bg-red-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900"
 					@click="emit('destroyRank')"

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { format, addDays, subYears } from "date-fns";
 
 const emit = defineEmits(["formSubmitted"]);
@@ -21,7 +21,7 @@ onMounted(async () => {
 const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.patch(route("unit.update", { unit: data.id }), data, {
+	router.patch(route("unit.update", { unit: data.id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -38,40 +38,40 @@ const submitHandler = (data, node) => {
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Unit</h1>
 		<FormKit
-			@submit="submitHandler"
+			v-model="selectedUnit"
 			type="form"
 			submit-label="Save"
-			v-model="selectedUnit"
+			@submit="submitHandler"
 		>
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				label="Unit name"
 				validation="required|string|length:2,150"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution_id"
 				type="hidden"
 				name="institution_id"
-				id="institution_id"
 				validation="required|integer|min:1|max:150"
 				validation-visibility="submit"
 				disabled
 			/>
 			<FormKit
+				id="id"
 				type="hidden"
 				name="id"
-				id="id"
 				validation="required|integer|min:1|max:1000"
 				validation-visibility="submit"
 				disabled
 			/>
 			<div class="lg:flex gap-x-4">
 				<FormKit
+					id="type"
 					type="select"
 					name="type"
-					id="type"
 					validation="string|length:1,5"
 					placeholder="Select Unit type"
 					label="Unit Type"
@@ -79,9 +79,9 @@ const submitHandler = (data, node) => {
 					error-visibility="submit"
 				/>
 				<FormKit
+					id="unit_id"
 					type="select"
 					name="unit_id"
-					id="unit_id"
 					:options="unitList"
 					validation="integer|min:1|max:300"
 					label="Parent Unit"
@@ -90,9 +90,9 @@ const submitHandler = (data, node) => {
 			</div>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:max="start_date"
 					label="Start date"
 					:validation="'date_before:' + start_date"

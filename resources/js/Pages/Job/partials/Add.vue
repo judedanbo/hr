@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onBeforeMount, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -27,7 +27,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("job.store"), data, {
+	router.post(route("job.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -43,19 +43,19 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Rank</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				label="Rank name"
 				validation="required|string|length:2,150"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution_id"
 				type="hidden"
 				name="institution_id"
-				id="institution_id"
 				label="institution_id"
 				:value="1"
 				validation="required|integer|min:1|max:150"
@@ -73,9 +73,9 @@ const submitHandler = (data, node) => {
         disabled /> -->
 
 			<FormKit
+				id="job_category_id"
 				type="select"
 				name="job_category_id"
-				id="job_category_id"
 				validation="number|min:1|max:30"
 				label="Harmonized grade"
 				placeholder="Select harmonized grade"

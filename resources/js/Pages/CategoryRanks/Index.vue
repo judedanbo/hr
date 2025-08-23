@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import RankList from "./patials/RankList.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/vue3";
 import TableHeader from "@/Components/TableHeader.vue";
 import { useSearch } from "@/Composables/search";
 import Pagination from "../../Components/Pagination.vue";

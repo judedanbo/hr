@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
@@ -12,7 +12,7 @@ import TableHeader from "@/Components/TableHeader.vue";
 import UserList from "./partials/UserList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import EditUserForm from "./partials/EditUserForm.vue";
 import Delete from "./partials/Delete.vue";
@@ -25,7 +25,7 @@ let props = defineProps({
 });
 
 const resetPassword = (user) => {
-	Inertia.post(route("user.reset-password", { user: user }));
+	router.post(route("user.reset-password", { user: user }));
 };
 
 const openDeleteModal = ref(false);
@@ -52,7 +52,7 @@ const editUser = (user) => {
 };
 
 const deleteConfirmed = () => {
-	Inertia.delete(route("user.delete", { user: selectedUser.value.id }), {
+	router.delete(route("user.delete", { user: selectedUser.value.id }), {
 		onSuccess: () => {
 			toggleDeleteModal();
 		},
@@ -63,7 +63,7 @@ const searchUser = (value) => {
 };
 
 let openUser = (user) => {
-	Inertia.visit(route("user.show", { user: user }));
+	router.visit(route("user.show", { user: user }));
 };
 
 let BreadCrumpLinks = [

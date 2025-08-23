@@ -1,6 +1,6 @@
 <template>
 	<TransitionRoot as="template" :show="isVisible">
-		<Dialog @close="$emit('closeModal')" as="div" class="relative z-10">
+		<Dialog as="div" class="relative z-10" @close="$emit('closeModal')">
 			<TransitionChild
 				as="template"
 				enter="ease-out duration-300"
@@ -52,9 +52,9 @@
 									</div>
 
 									<XMarkIcon
-										@click="$emit('closeModal')"
 										title="close"
 										class="w-7 h-7 p-1 text-red-400 hover:bg-gray-100 hover:font-bold rounded-full"
+										@click="$emit('closeModal')"
 									/>
 								</div>
 							</div>
@@ -66,8 +66,8 @@
 								>
 									<!-- Modal content -->
 									<form
-										@submit.prevent="submit"
 										class="relative bg-white rounded-lg shadow dark:bg-gray-700"
+										@submit.prevent="submit"
 									>
 										<!-- Modal body -->
 										<div class="p-6 space-y-6">
@@ -79,18 +79,18 @@
 														>Address Line 1</label
 													>
 													<input
+														id="address_line_1"
 														v-model="form.address_line_1"
 														type="text"
 														name="address_line_1"
-														id="address_line_1"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="address line 1"
 														required=""
 													/>
 													<p
 														v-if="form.errors.address_line_1"
-														v-text="form.errors.address_line_1"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.address_line_1"
 													></p>
 												</div>
 												<div class="col-span-6">
@@ -100,18 +100,18 @@
 														>Address Line 2</label
 													>
 													<input
+														id="address_line_2"
 														v-model="form.address_line_2"
 														type="text"
 														name="address_line_2"
-														id="address_line_2"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="address line 2"
 														required=""
 													/>
 													<p
 														v-if="form.errors.address_line_2"
-														v-text="form.errors.address_line_2"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.address_line_2"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -121,18 +121,18 @@
 														>City</label
 													>
 													<input
+														id="city"
 														v-model="form.city"
 														type="text"
 														name="city"
-														id="city"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="city"
 														required="false"
 													/>
 													<p
 														v-if="form.errors.city"
-														v-text="form.errors.city"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.city"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -142,18 +142,18 @@
 														>Region</label
 													>
 													<input
+														id="region"
 														v-model="form.region"
 														type="text"
 														name="region"
-														id="region"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="region"
 														required=""
 													/>
 													<p
 														v-if="form.errors.region"
-														v-text="form.errors.region"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.region"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -163,18 +163,18 @@
 														>Country</label
 													>
 													<input
+														id="country"
 														v-model="form.country"
 														type="text"
 														name="country"
-														id="country"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="country"
 														required=""
 													/>
 													<p
 														v-if="form.errors.country"
-														v-text="form.errors.country"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.country"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -184,18 +184,18 @@
 														>Post Code</label
 													>
 													<input
+														id="post_code"
 														v-model="form.post_code"
 														type="text"
 														name="post_code"
-														id="post_code"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="post code"
 														required=""
 													/>
 													<p
 														v-if="form.errors.post_code"
-														v-text="form.errors.post_code"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.post_code"
 													></p>
 												</div>
 											</div>
@@ -240,7 +240,7 @@ import {
 	XMarkIcon,
 	ArrowPathIcon,
 } from "@heroicons/vue/24/outline";
-import { useForm } from "@inertiajs/inertia-vue3";
+import { useForm } from "@inertiajs/vue3";
 
 let props = defineProps({
 	isVisible: {

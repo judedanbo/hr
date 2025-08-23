@@ -2,7 +2,7 @@
 import ChangeStatus from "./partials/ChangeStatus.vue";
 import Modal from "@/Components/NewModal.vue";
 import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 
@@ -14,7 +14,7 @@ let props = defineProps({
 	institution: Number,
 });
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let openStatusModal = ref(false);
 const toggleStatusModal = useToggle(openStatusModal);
@@ -35,7 +35,7 @@ let openDeleteStaffHistoryModal = ref(false);
 const toggleDeleteStaffHistoryModal = useToggle(openDeleteStaffHistoryModal);
 
 const deleteStaffHistory = () => {
-	Inertia.delete(
+	router.delete(
 		route("staff-history.delete", {
 			staff: props.staff.id,
 			staffHistory: staffHistory.value.id,
@@ -67,8 +67,8 @@ const deleteStaffHistory = () => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleStatusModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleStatusModal()"
 					>
 						{{ "Change" }}
 					</button>
@@ -126,13 +126,13 @@ const deleteStaffHistory = () => {
 								<td class="flex justify-end">
 									<SubMenu
 										v-if="
-											permissions.includes('update staff') ||
-											permissions.includes('delete staff')
+											permissions?.includes('update staff') ||
+											permissions?.includes('delete staff')
 										"
-										:can-edit="permissions.includes('update staff')"
-										:can-delete="permissions.includes('delete staff')"
-										@itemClicked="(action) => subMenuClicked(action, status)"
+										:can-edit="permissions?.includes('update staff')"
+										:can-delete="permissions?.includes('delete staff')"
 										:items="['Edit', 'Delete']"
+										@itemClicked="(action) => subMenuClicked(action, status)"
 									/>
 								</td>
 							</tr>
@@ -147,31 +147,31 @@ const deleteStaffHistory = () => {
 				</div>
 			</dl>
 		</div>
-		<Modal @close="toggleStatusModal()" :show="openStatusModal">
+		<Modal :show="openStatusModal" @close="toggleStatusModal()">
 			<ChangeStatus
-				@formSubmitted="toggleStatusModal()"
 				:staff="staff"
 				:institution="institution"
 				:statuses="statuses"
+				@formSubmitted="toggleStatusModal()"
 			/>
 		</Modal>
 		<!-- Edit staff History Modal -->
 		<Modal
-			@close="toggleEditStaffHistoryModal()"
 			:show="openEditStaffHistoryModal"
+			@close="toggleEditStaffHistoryModal()"
 		>
 			<EditStaffHistory
-				@formSubmitted="toggleEditStaffHistoryModal()"
 				:staff="staff"
 				:institution="institution"
-				:staffHistory="staffHistory"
+				:staff-history="staffHistory"
+				@formSubmitted="toggleEditStaffHistoryModal()"
 			/>
 		</Modal>
 
 		<!-- Delete staff History Modal -->
 		<Modal
-			@close="toggleDeleteStaffHistoryModal()"
 			:show="openDeleteStaffHistoryModal"
+			@close="toggleDeleteStaffHistoryModal()"
 		>
 			<DeleteStaffHistory
 				@close="toggleDeleteStaffHistoryModal()"

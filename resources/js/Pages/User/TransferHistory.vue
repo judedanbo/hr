@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import TransferStaff from "./partials/TransferStaff.vue";
 import Modal from "@/Components/NewModal.vue";
 import NewModal from "@/Components/NewModal.vue";
@@ -36,7 +36,7 @@ const confirmDeleteTransfer = (model) => {
 	toggleDeleteTransferModal();
 };
 const deleteTransfer = (staff_id, unit_id) => {
-	Inertia.delete(
+	router.delete(
 		route("staff.transfer.delete", {
 			staff: staff_id,
 			unit: unit_id,

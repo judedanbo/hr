@@ -9,13 +9,13 @@ defineProps({
 	<div class="flex border-b border-gray-200 dark:border-gray-700">
 		<template v-for="(tab, index) in tabs" :key="index">
 			<button
-				@click="buttonClicked(tab)"
 				class="flex items-center h-10 px-2 py-2 -mb-px text-center bg-transparent sm:px-4 -px-1 border-b-2 whitespace-nowrap focus:outline-none"
 				:class="
 					tab.active
 						? 'text-green-600  border-green-500 dark:border-green-400 dark:text-green-300'
 						: 'text-gray-700 dark:text-white cursor-base  hover:border-gray-400'
 				"
+				@click="buttonClicked(tab)"
 			>
 				<!-- <svg
                     xmlns="http://www.w3.org/2000/svg"

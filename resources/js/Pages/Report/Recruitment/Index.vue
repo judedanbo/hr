@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import RecruitmentChart from "./Chart.vue";
 
@@ -23,7 +23,7 @@ let download = () => {
 };
 
 let getRetired = () => {
-	Inertia.get(
+	router.get(
 		route("report.recruitment"),
 		{ retired: true },
 		{ preserveState: true, replace: true, preserveScroll: true },
@@ -31,14 +31,14 @@ let getRetired = () => {
 };
 
 let getActive = () => {
-	Inertia.get(
+	router.get(
 		route("report.recruitment"),
 		{ active: true },
 		{ preserveState: true, replace: true, preserveScroll: true },
 	);
 };
 let getAll = () => {
-	Inertia.get(
+	router.get(
 		route("report.recruitment"),
 		{},
 		{
@@ -50,7 +50,7 @@ let getAll = () => {
 };
 
 let showDetails = (year) => {
-	Inertia.get(
+	router.get(
 		route("report.recruitment.details"),
 		{},
 		{ preserveState: true, replace: true },
@@ -143,8 +143,8 @@ let BreadCrumpLinks = [
 												>
 													<div class="flex items-center">
 														<div
-															@click="getAll"
 															class="rounded-full focus:outline-none focus:ring-2 focus:bg-green-50 focus:ring-green-800 cursor-pointer"
+															@click="getAll"
 														>
 															<div
 																:class="{
@@ -160,8 +160,8 @@ let BreadCrumpLinks = [
 															</div>
 														</div>
 														<div
-															@click="getActive"
 															class="rounded-full focus:outline-none focus:ring-2 focus:bg-green-50 focus:ring-green-800 ml-4 sm:ml-8 cursor-pointer"
+															@click="getActive"
 														>
 															<div
 																:class="{
@@ -176,7 +176,6 @@ let BreadCrumpLinks = [
 															</div>
 														</div>
 														<div
-															@click="getRetired"
 															:class="{
 																'bg-green-100 dark:bg-gray-900 text-green-700 dark:text-gray-50 font-bold':
 																	route().current('report.recruitment', {
@@ -184,6 +183,7 @@ let BreadCrumpLinks = [
 																	}),
 															}"
 															class="rounded-full focus:outline-none focus:ring-2 focus:bg-green-50 focus:ring-green-800 ml-4 sm:ml-8 cursor-pointer"
+															@click="getRetired"
 														>
 															<div
 																class="py-2 px-8 rounded-full dark:text-gray-50 dark:bg-gray-600 dark:hover:bg-gray-900"
@@ -281,8 +281,8 @@ let BreadCrumpLinks = [
 														Full Chart
 													</Link>
 													<div
-														@click="download"
 														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
+														@click="download"
 													>
 														Download Chart
 													</div>

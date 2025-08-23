@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import { getNode, setErrors } from "@formkit/core";
 import QualificationForm from "./partials/QualificationForm.vue";
@@ -34,7 +34,7 @@ const submitDocuments = async (document) => {
 	formData.append("file_type", document.file_name[0].file.type);
 	// formData.append("document_file", document.document_file);
 	// // });
-	Inertia.post(
+	router.post(
 		route("qualification-document.update", {
 			qualification: props.qualification.id,
 		}),
@@ -61,7 +61,7 @@ const submitDocuments = async (document) => {
 };
 
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("qualification.update", {
 			qualification: props.qualification.id,
 		}),
@@ -88,9 +88,9 @@ const submitHandler = (data, node) => {
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Qualification</h1>
 		<FormKit
 			type="form"
-			@submit="submitHandler"
 			submit-label="Save"
 			:value="qualification"
+			@submit="submitHandler"
 		>
 			<QualificationForm />
 

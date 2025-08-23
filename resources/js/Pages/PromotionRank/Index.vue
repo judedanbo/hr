@@ -3,8 +3,8 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Pagination from "@/Components/Pagination.vue";
 import CurrentPromotions from "./partials/CurrentPromotions.vue";
 import { ref, computed } from "vue";
-import { Head } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import PageHeader from "@/Components/PageHeader.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
@@ -34,7 +34,7 @@ const openPromotion = (
 	batch = null,
 	year = new Date().getFullYear(),
 ) => {
-	Inertia.get(route("promotion.batch.show", { rank: jobId, year: year }), {
+	router.get(route("promotion.batch.show", { rank: jobId, year: year }), {
 		batch: batch,
 	});
 };
@@ -57,11 +57,11 @@ const openPromotion = (
 				/>
 			</div>
 			<CurrentPromotions
+				:promotions="promotions"
 				@update:model-value="searchStaff"
 				@openPromotion="
 					(jobId, batch, year) => openPromotion(jobId, batch, year)
 				"
-				:promotions="promotions"
 			>
 				<template #pagination>
 					<Pagination :navigation="navigation" />

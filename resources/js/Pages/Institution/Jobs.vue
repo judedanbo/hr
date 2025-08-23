@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/HrAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head, Link } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import BreezeInput from "@/Components/Input.vue";
@@ -25,7 +25,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("institution.jobs", {
 				institution: props.institution.id,
 			}),

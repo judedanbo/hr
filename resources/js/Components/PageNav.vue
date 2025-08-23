@@ -13,9 +13,9 @@ defineProps({
 
 <template>
 	<Disclosure
+		v-slot="{ open }"
 		as="nav"
 		class="bg-gray-100 dark:bg-gray-600 shadow shadow-gray-50 dark:shadow-gray-700"
-		v-slot="{ open }"
 	>
 		<div class="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
 			<div class="flex h-16 justify-between">

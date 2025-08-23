@@ -1,5 +1,5 @@
 <script setup>
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import Avatar from "../Person/partials/Avatar.vue";
 import NoItem from "@/Components/NoItem.vue";
 import { ArrowDownTrayIcon } from "@heroicons/vue/20/solid";

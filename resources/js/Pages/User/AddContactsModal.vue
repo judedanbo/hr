@@ -157,7 +157,7 @@ import {
 	XMarkIcon,
 	ArrowPathIcon,
 } from "@heroicons/vue/24/outline";
-import { useForm } from "@inertiajs/inertia-vue3";
+import { useForm } from "@inertiajs/vue3";
 
 let props = defineProps({
 	isVisible: {

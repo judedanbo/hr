@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { useToggle } from "@vueuse/core";
 import RegionTable from "./partials/RegionTable.vue";
@@ -18,7 +18,7 @@ const navigation = computed(() => useNavigation(props.regions));
 let openAddDialog = ref(false);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let toggle = useToggle(openAddDialog);
 
@@ -39,7 +39,7 @@ const searchRegions = (value) => {
 };
 
 let openRegion = (region) => {
-	Inertia.visit(route("region.show", { region: region }));
+	router.visit(route("region.show", { region: region }));
 };
 </script>
 
@@ -61,7 +61,7 @@ let openRegion = (region) => {
 					@search-entered="(value) => searchRegions(value)"
 				/>
 				<div
-					v-if="permissions.includes('download regions')"
+					v-if="permissions?.includes('download regions')"
 					class="flex gap-x-5"
 				>
 					<a

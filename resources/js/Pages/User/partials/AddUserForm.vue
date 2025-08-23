@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import UserRoleForm from "./UserRoleForm.vue";
@@ -8,7 +8,7 @@ import { FormKit } from "@formkit/vue";
 const emit = defineEmits(["formSubmitted"]);
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("user.store"), data, {
+	router.post(route("user.store"), data, {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();

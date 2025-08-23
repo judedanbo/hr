@@ -1,16 +1,16 @@
 <script setup>
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import DeleteDependentModal from "@/Components/DeleteDependentModal.vue";
 import AddDependentModal from "@/Pages/Staff/AddDependentModal.vue";
 import { MagnifyingGlassIcon, UserPlusIcon } from "@heroicons/vue/24/outline";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 defineProps({
 	staff: Object,
 });
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let addDependent = () => {
 	showAddDepModal.value = true;
@@ -25,7 +25,7 @@ let deleteDependents = (id) => {
 let editDependent = (id) => {};
 
 let showPerson = (id) => {
-	Inertia.get(route("person.show", { person: id }));
+	router.get(route("person.show", { person: id }));
 };
 </script>
 <template>
@@ -105,12 +105,12 @@ let showPerson = (id) => {
 
 				<button
 					v-if="
-						permissions.includes('update staff') ||
-						permissions.includes('delete staff')
+						permissions?.includes('update staff') ||
+						permissions?.includes('delete staff')
 					"
-					@click.stop.prevent="addDependent"
 					type="button"
 					class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center"
+					@click.stop.prevent="addDependent"
 				>
 					<UserPlusIcon class="w-5 h-5 mr-2" />
 					Add Dependent
@@ -159,9 +159,9 @@ let showPerson = (id) => {
                                 </div>
                             </td> -->
 						<th
-							@click="showPerson(person.person_id)"
 							scope="row"
 							class="flex items-center py-4 px-6 text-gray-900 whitespace-nowrap dark:text-white hover:cursor-pointer"
+							@click="showPerson(person.person_id)"
 						>
 							<!-- <img
                                     class="w-10 h-10 rounded-full"
@@ -169,25 +169,27 @@ let showPerson = (id) => {
                                     :alt="person.name"
                                 /> -->
 							<div class="pl-3">
-								<div v-text="person.name" class="text-base font-semibold"></div>
+								<div class="text-base font-semibold" v-text="person.name"></div>
 								<div class="font-normal text-gray-500">
 									{{ person.gender }} |
 									{{ person.dob }}
 								</div>
 							</div>
 						</th>
-						<td v-text="person.relation" class="py-4 px-6"></td>
+						<td class="py-4 px-6" v-text="person.relation"></td>
 
 						<td class="py-4 px-6">
 							<!-- Modal toggle -->
 							<button
-								@click.prevent="addDependent"
 								type="button"
 								class="font-medium text-green-600 dark:text-green-500 hover:underline"
+								@click.prevent="addDependent"
 							>
 								Edit
 							</button>
 							<button
+								type="button"
+								class="font-medium text-red-600 dark:text-red-500 hover:underline ml-2"
 								@click.prevent="
 									deleteDependents({
 										id: person.id,
@@ -195,8 +197,6 @@ let showPerson = (id) => {
 										staff: staff.name,
 									})
 								"
-								type="button"
-								class="font-medium text-red-600 dark:text-red-500 hover:underline ml-2"
 							>
 								Delete
 							</button>
@@ -206,13 +206,13 @@ let showPerson = (id) => {
 			</table>
 			<DeleteDependentModal
 				:dependent="dependentToDelete"
+				:is-visible="showDeleteDepModal"
 				@closeModal="showDeleteDepModal = false"
-				:isVisible="showDeleteDepModal"
 			/>
 			<AddDependentModal
 				:staff="staff"
+				:is-visible="showAddDepModal"
 				@closeModal="showAddDepModal = false"
-				:isVisible="showAddDepModal"
 			/>
 		</div>
 	</div>

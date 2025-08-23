@@ -1,6 +1,6 @@
 <script setup>
 import { format, differenceInYears } from "date-fns";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 // import AddQualification  from "./partials/AddQualification.vue";
 import Modal from "@/Components/NewModal.vue";
 import { ref } from "vue";
@@ -45,8 +45,8 @@ let getAge = (dateString) => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleQualificationModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleQualificationModal()"
 					>
 						{{ "Add Qualification" }}
 					</button>
@@ -140,7 +140,7 @@ let getAge = (dateString) => {
 				</div>
 			</dl>
 		</div>
-		<Modal @close="toggleQualificationModal()" :show="openQualificationModal">
+		<Modal :show="openQualificationModal" @close="toggleQualificationModal()">
 			<!-- <AddQualification @formSubmitted="toggleQualificationModal()"  :person="person" /> -->
 		</Modal>
 	</main>

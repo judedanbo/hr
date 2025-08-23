@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import StaffDates from "./StaffDates.vue";
 import Summary from "@/Pages/Person/Summary.vue";
 import PromotionHistory from "./PromotionHistory.vue";
@@ -25,14 +25,14 @@ import EditStaffForm from "./EditStaffForm.vue";
 import EditContactForm from "./EditContactForm.vue";
 import EditAvatarForm from "./EditAvatarForm.vue";
 import DeleteAvatar from "./DeleteAvatar.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
 let openEditModal = ref(false);
 
 const deleteAvatar = () => {
-	Inertia.delete(
+	router.delete(
 		route("person.avatar.delete", {
 			person: props.person.id,
 		}),
@@ -51,7 +51,7 @@ const showAvatarModel = ref(false);
 const toggleAvatarModal = useToggle(showAvatarModel);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const openDeleteAvatarModel = ref(false);
 const toggleDeleteAvatarModal = useToggle(openDeleteAvatarModel);
@@ -135,10 +135,10 @@ const editContactModal = () => {
 						>
 							<!-- {{ person.image }} -->
 							<Avatar
-								@change-avatar="toggleAvatarModal()"
 								:initials="person.initials"
 								:image="person.image"
 								size="lg"
+								@change-avatar="toggleAvatarModal()"
 							/>
 							<div class="flex flex-col">
 								<div>
@@ -171,9 +171,9 @@ const editContactModal = () => {
 										</div>
 									</div>
 									<div
-										@click="toggleDeleteAvatarModal()"
 										v-if="person.image"
 										class="mt-2 cursor-pointer text=sm leading-6 text-red-500 dark:text-red-400"
+										@click="toggleDeleteAvatarModal()"
 									>
 										Delete Image
 									</div>
@@ -183,7 +183,7 @@ const editContactModal = () => {
 									class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit mt-0 md:mt-4 lg:mt-0"
 								>
 									<button
-										v-if="permissions.includes('create staff promotion')"
+										v-if="permissions?.includes('create staff promotion')"
 										type="button"
 										class="text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 										@click="togglePromotionForm()"
@@ -191,7 +191,7 @@ const editContactModal = () => {
 										Promote
 									</button>
 									<button
-										v-if="permissions.includes('create staff transfers')"
+										v-if="permissions?.includes('create staff transfers')"
 										type="button"
 										class="text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
 										@click="toggleTransferForm()"
@@ -199,7 +199,7 @@ const editContactModal = () => {
 										Transfer
 									</button>
 									<a
-										v-if="permissions.includes('update staff')"
+										v-if="permissions?.includes('update staff')"
 										href="#"
 										class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 										@click.prevent="toggle()"
@@ -275,7 +275,7 @@ const editContactModal = () => {
 									@close-form="toggleTransferForm()"
 								/>
 								<StaffPosition
-									v-if="permissions.includes('update staff positions')"
+									v-if="permissions?.includes('update staff positions')"
 									:positions="staff.positions"
 									:staff="{
 										id: staff.staff_id,
@@ -299,7 +299,7 @@ const editContactModal = () => {
 						/>
 						<!-- Qualifications -->
 						<Notes
-							v-if="permissions.includes('view staff notes')"
+							v-if="permissions?.includes('view staff notes')"
 							class="w-full"
 							:notes="staff.notes"
 							notable_type="App\Models\InstitutionPerson"

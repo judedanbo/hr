@@ -1,10 +1,10 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import format from "date-fns/format";
 import differenceInYears from "date-fns/differenceInYears";

@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { useToggle } from "@vueuse/core";
 import OfficeTable from "./partials/OfficeTable.vue";
@@ -16,7 +16,7 @@ import NoPermission from "@/Components/NoPermission.vue";
 let openAddDialog = ref(false);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let toggle = useToggle(openAddDialog);
 
@@ -37,7 +37,7 @@ const searchOffices = (value) => {
 };
 
 let openOffice = (office) => {
-	Inertia.visit(route("office.show", { office: office }));
+	router.visit(route("office.show", { office: office }));
 };
 const navigation = computed(() => useNavigation(props.offices));
 </script>
@@ -60,7 +60,7 @@ const navigation = computed(() => useNavigation(props.offices));
 					@search-entered="(value) => searchOffices(value)"
 				/>
 				<div
-					v-if="permissions.includes('download office summary')"
+					v-if="permissions?.includes('download office summary')"
 					class="flex gap-x-5"
 				>
 					<a

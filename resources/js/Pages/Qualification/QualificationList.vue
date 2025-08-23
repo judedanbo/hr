@@ -5,14 +5,14 @@ import ToolTip from "@/Components/ToolTip.vue";
 import Modal from "@/Components/NewModal.vue";
 import { useToggle } from "@vueuse/core";
 import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { usePage } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import DocumentPreview from "./partials/DocumentPreview.vue";
 
 const emit = defineEmits(["editQualification", "deleteQualification"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 defineProps({
 	qualifications: {
 		type: Array,
@@ -40,7 +40,7 @@ const previewDocument = (document) => {
 };
 
 const deleteDocument = (qualification) => {
-	Inertia.delete(
+	router.delete(
 		route("qualification-document.delete", {
 			qualification: qualification.id,
 		}),

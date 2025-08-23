@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -25,7 +25,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("position.update", { position: props.position.id }),
 		data,
 		{

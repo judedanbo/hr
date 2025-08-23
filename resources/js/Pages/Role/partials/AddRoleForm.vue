@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 const emit = defineEmits(["submit", "close"]);
@@ -8,7 +8,7 @@ const form = ref({
 });
 
 const submit = () => {
-	Inertia.post(route("role.store"), form.value, {
+	router.post(route("role.store"), form.value, {
 		preserveScroll: true,
 		onSuccess: () => {
 			emit("submit");
@@ -36,9 +36,9 @@ const submit = () => {
 					Role Name
 				</label>
 				<input
-					type="text"
 					id="name"
 					v-model="form.name"
+					type="text"
 					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200"
 					required
 				/>
@@ -52,8 +52,8 @@ const submit = () => {
 				</button>
 				<button
 					type="button"
-					@click="$emit('close')"
 					class="ml-2 inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+					@click="$emit('close')"
 				>
 					Cancel
 				</button>

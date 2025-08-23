@@ -1,17 +1,17 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
 import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
 import EditContact from "../Person/partials/EditContact.vue";
 import SubMenu from "@/Components/SubMenu.vue";
 import DeleteContact from "./DeleteContact.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const props = defineProps({
 	address: { type: Object, required: true },
@@ -47,7 +47,7 @@ let openDeleteContactModal = ref(false);
 let toggleDeleteContactModal = useToggle(openDeleteContactModal);
 const deleteContact = (model) => {
 	// console.log(model);
-	Inertia.delete(
+	router.delete(
 		route("person.contact.delete", { person: props.person, contact: model.id }),
 	);
 	toggleDeleteContactModal();
@@ -72,8 +72,8 @@ const deleteContact = (model) => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							permissions.includes('update staff') ||
-							permissions.includes('delete staff')
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleAddressModal()"
@@ -125,8 +125,8 @@ const deleteContact = (model) => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							permissions.includes('update staff') ||
-							permissions.includes('delete staff')
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleContactModal()"
@@ -177,14 +177,14 @@ const deleteContact = (model) => {
 												class="md:text-right text-lg text-gray-500 dark:text-gray-100"
 											>
 												<a
-													:href="'tel:' + contact.contact"
 													v-if="contact.contact_type == 2"
+													:href="'tel:' + contact.contact"
 												>
 													{{ contact.contact }}
 												</a>
 												<a
-													href="mailto:{{ contact.contact }}"
 													v-else-if="contact.contact_type == 1"
+													href="mailto:{{ contact.contact }}"
 												>
 													{{ contact.contact }}
 												</a>
@@ -195,11 +195,11 @@ const deleteContact = (model) => {
 										</div>
 										<SubMenu
 											v-if="
-												permissions.includes('update staff') ||
-												permissions.includes('delete staff')
+												permissions?.includes('update staff') ||
+												permissions?.includes('delete staff')
 											"
-											:can-edit="permissions.includes('update staff')"
-											:can-delete="permissions.includes('delete staff')"
+											:can-edit="permissions?.includes('update staff')"
+											:can-delete="permissions?.includes('delete staff')"
 											:items="['Edit', 'Delete']"
 											@item-clicked="
 												(action) => subMenuClicked(action, contact)

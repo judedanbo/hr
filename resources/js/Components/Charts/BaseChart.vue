@@ -82,7 +82,7 @@ onMounted(() => {
 </script>
 <template>
 	<canvas
-		class="dark:bg-gray-700 bg-gray-50 w-full sm:rounded-2xl px-4 py-2"
 		id="hrChart"
+		class="dark:bg-gray-700 bg-gray-50 w-full sm:rounded-2xl px-4 py-2"
 	></canvas>
 </template>

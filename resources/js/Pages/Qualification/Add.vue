@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 const emit = defineEmits(["formSubmitted"]);
 
 import { format, addDays, subYears } from "date-fns";
@@ -9,7 +9,7 @@ defineProps({
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("qualification.store"), data, {
+	router.post(route("qualification.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -25,30 +25,30 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Qualification</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Create">
-			<FormKit type="hidden" name="person_id" id="person_id" :value="person" />
+		<FormKit type="form" submit-label="Create" @submit="submitHandler">
+			<FormKit id="person_id" type="hidden" name="person_id" :value="person" />
 			<FormKit
+				id="institution"
 				type="text"
 				name="institution"
-				id="institution"
 				label="Institution"
 				validation="string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="course"
 					type="text"
 					name="course"
-					id="course"
 					label="Course"
 					validation="required|string|length:2,100"
 					validation-visibility="submit"
 				/>
 				<div>
 					<FormKit
+						id="level"
 						type="text"
 						name="level"
-						id="level"
 						label="Level"
 						validation="string|length:2,100"
 						validation-visibility="submit"
@@ -57,18 +57,18 @@ const submitHandler = (data, node) => {
 			</div>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="qualification"
 					type="text"
 					name="qualification"
-					id="qualification"
 					label="Qualification"
 					validation="string|length:2,100"
 					validation-visibility="submit"
 				/>
 				<div>
 					<FormKit
+						id="qualification_number"
 						type="text"
 						name="qualification_number"
-						id="qualification_number"
 						label="Qualification Number"
 						validation="string|length:2,100"
 						validation-visibility="submit"
@@ -77,9 +77,9 @@ const submitHandler = (data, node) => {
 			</div>
 			<div class="w-1/2 sm:w-1/3 xl:w-1/4">
 				<FormKit
+					id="year"
 					type="text"
 					name="year"
-					id="year"
 					label="Year of Graduation"
 					validation="string|length:2,100"
 					validation-visibility="submit"

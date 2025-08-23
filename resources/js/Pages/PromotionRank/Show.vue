@@ -3,8 +3,8 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Pagination from "@/Components/Pagination.vue";
 import PromotionList from "./PromotionList.vue";
 import { ref, computed } from "vue";
-import { Head } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import PageHeader from "@/Components/PageHeader.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
@@ -34,7 +34,7 @@ const searchStaff = (value) => {
 const navigation = computed(() => useNavigation(props.promotions));
 
 // const searchStaff = (value) => {
-// 	Inertia.get(
+// 	router.get(
 // 		route("promotion.batch.show", { year: year.value, month: month.value }),
 // 		{ search: value },
 // 		{ preserveState: true, replace: true, preserveScroll: true },
@@ -42,7 +42,7 @@ const navigation = computed(() => useNavigation(props.promotions));
 // };
 
 // watch(search, (value) => {
-// 	Inertia.get(
+// 	router.get(
 // 		route("promotion.batch.show", { year: 2023 }),
 // 		{ search: value },
 // 		{ preserveState: true, replace: true, preserveScroll: true },
@@ -70,7 +70,7 @@ const exportToExcel = () => {
 					@search-entered="(value) => searchStaff(value)"
 				/>
 			</div>
-			<PromotionList @update:model-value="searchStaff" :promotions="promotions">
+			<PromotionList :promotions="promotions" @update:model-value="searchStaff">
 				<template #pagination>
 					<Pagination :navigation="navigation" />
 				</template>

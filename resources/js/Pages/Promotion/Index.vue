@@ -1,10 +1,10 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import { watch, ref, computed } from "vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { useNavigation } from "@/Composables/navigation";
 
 let props = defineProps({
@@ -15,7 +15,7 @@ let props = defineProps({
 let search = ref(props.filters.search);
 const navigation = computed(() => useNavigation(props.promotions));
 watch(search, (value) => {
-	Inertia.get(
+	router.get(
 		route("promotion.index"),
 		{ search: value },
 		{ preserveState: true, replace: true, preserveScroll: true },

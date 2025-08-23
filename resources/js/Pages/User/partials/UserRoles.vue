@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
@@ -44,7 +44,7 @@ const confirmDeleteRole = (model) => {
 };
 
 const deleteRole = (user, role) => {
-	Inertia.patch(route("user.revoke.roles", { user: user }), {
+	router.patch(route("user.revoke.roles", { user: user }), {
 		role,
 		preserveScroll: true,
 	});

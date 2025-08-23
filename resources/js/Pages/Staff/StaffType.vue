@@ -2,7 +2,7 @@
 import ChangeStaffType from "./partials/ChangeStaffType.vue";
 import Modal from "@/Components/NewModal.vue";
 import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 import EditStaffType from "@/Pages/StaffType/Edit.vue";
@@ -10,7 +10,7 @@ import EditStaffType from "@/Pages/StaffType/Edit.vue";
 const emit = defineEmits(["closeForm", "editType", "deleteType"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let props = defineProps({
 	types: Array,
@@ -54,8 +54,8 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						@click="toggleStaffTypeModal()"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
+						@click="toggleStaffTypeModal()"
 					>
 						{{ "Change" }}
 					</button>
@@ -115,13 +115,13 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 								<td class="flex justify-end">
 									<SubMenu
 										v-if="
-											permissions.includes('update staff') ||
-											permissions.includes('delete staff')
+											permissions?.includes('update staff') ||
+											permissions?.includes('delete staff')
 										"
-										:can-edit="permissions.includes('update staff')"
-										:can-delete="permissions.includes('delete staff')"
-										@itemClicked="(action) => subMenuClicked(action, type)"
+										:can-edit="permissions?.includes('update staff')"
+										:can-delete="permissions?.includes('delete staff')"
 										:items="['Edit', 'Delete']"
+										@itemClicked="(action) => subMenuClicked(action, type)"
 									/>
 								</td>
 							</tr>
@@ -136,27 +136,27 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 				</div>
 			</dl>
 		</div>
-		<Modal @close="toggleStaffTypeModal()" :show="openStaffTypeModal">
+		<Modal :show="openStaffTypeModal" @close="toggleStaffTypeModal()">
 			<ChangeStaffType
-				@formSubmitted="toggleStaffTypeModal()"
 				:staff="staff"
-				:staffType="staffType"
+				:staff-type="staffType"
 				:institution="institution"
+				@formSubmitted="toggleStaffTypeModal()"
 			/>
 		</Modal>
-		<Modal @close="toggleEditStaffTypeModal()" :show="openEditStaffTypeModal">
+		<Modal :show="openEditStaffTypeModal" @close="toggleEditStaffTypeModal()">
 			<EditStaffType
-				@formSubmitted="toggleEditStaffTypeModal()"
 				:staff="staff"
 				:institution="institution"
-				:staffType="staffType"
+				:staff-type="staffType"
+				@formSubmitted="toggleEditStaffTypeModal()"
 			/>
 		</Modal>
 
 		<!-- Delete Modal -->
 		<Modal
-			@close="toggleDeleteStaffTypeModal()"
 			:show="openDeleteStaffTypeModal"
+			@close="toggleDeleteStaffTypeModal()"
 		>
 			delete
 			<!-- <DeleteQualification

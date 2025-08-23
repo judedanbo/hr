@@ -5,7 +5,7 @@ import BreezeInput from "@/Components/Input.vue";
 import BreezeInput2 from "@/Components/Input.vue";
 import BreezeInputError from "@/Components/InputError.vue";
 import BreezeLabel from "@/Components/Label.vue";
-import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 import { useDark, useToggle } from "@vueuse/core";
 import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
@@ -31,14 +31,14 @@ const toggle = useToggle(dark);
 	<BreezeGuestLayout>
 		<Head title="Register" />
 
-		<form @submit.prevent="submit" class="space-y-4">
+		<form class="space-y-4" @submit.prevent="submit">
 			<div class="w-full md:w-1/2 lg:w-2/3">
 				<BreezeLabel for="staff_number" value="Staff Number" />
 				<BreezeInput
 					id="staff_number"
+					v-model="form.staff_number"
 					type="text"
 					class="mt-1 block w-full"
-					v-model="form.staff_number"
 					required
 					autofocus
 					autocomplete="staff_number"
@@ -49,9 +49,9 @@ const toggle = useToggle(dark);
 				<BreezeLabel for="first_name" value="First Name" />
 				<BreezeInput
 					id="first_name"
+					v-model="form.first_name"
 					type="text"
 					class="mt-1 block w-full"
-					v-model="form.first_name"
 					required
 					autofocus
 					autocomplete="first_name"
@@ -62,9 +62,9 @@ const toggle = useToggle(dark);
 				<BreezeLabel for="surname" value="Surname" />
 				<BreezeInput
 					id="surname"
+					v-model="form.surname"
 					type="text"
 					class="mt-1 block w-full"
-					v-model="form.surname"
 					required
 					autocomplete="surname"
 				/>
@@ -86,11 +86,11 @@ const toggle = useToggle(dark);
 				<BreezeLabel for="email" value="Official Email" />
 				<BreezeInput2
 					id="email"
+					v-model="form.email"
 					type="text"
 					postfix="@audit.gov.gh"
 					align-text="right"
 					class="mt-1 block w-full"
-					v-model="form.email"
 					required
 					autocomplete="username"
 				/>
@@ -101,11 +101,11 @@ const toggle = useToggle(dark);
 			<div class="flex items-center justify-between mt-4">
 				<div>
 					<SunIcon
-						@click="toggle()"
 						v-if="dark"
 						class="w-5 h-5 rounded-full bg-white"
+						@click="toggle()"
 					/>
-					<MoonIcon @click="toggle()" v-else class="w-5 h-5 rounded-full" />
+					<MoonIcon v-else class="w-5 h-5 rounded-full" @click="toggle()" />
 				</div>
 				<div>
 					<Link

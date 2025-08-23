@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
@@ -69,7 +69,7 @@ const submitHandler = (data, node) => {
 
 	// axios.post(route("dependent.store"), data.dependentForm)
 
-	Inertia.post(route("dependent.store"), fd, {
+	router.post(route("dependent.store"), fd, {
 		preserveState: true,
 		preserveScroll: true,
 		onSuccess: (message) => {
@@ -87,35 +87,35 @@ const submitHandler = (data, node) => {
 	<main class="bg-gray-100 dark:bg-gray-700 px-8 py-8">
 		<h1 class="text-2xl dark:text-gray-200">Add new Dependent</h1>
 		<FormKit
-			type="form"
 			id="addDependentForm"
+			type="form"
 			name="addDependentForm"
-			@submit="submitHandler"
 			:actions="false"
 			wrapper-class="mx-auto"
+			@submit="submitHandler"
 		>
 			<!-- <Staff :steps="staff" /> -->
 
 			<FormKit
-				type="multi-step"
 				id="dependentForm"
+				type="multi-step"
 				name="dependentForm"
 				:allow-incomplete="true"
 				tab-style="progress"
 			>
 				<FormKit
-					type="step"
 					id="personalInformation"
+					type="step"
 					name="personalInformation"
 				>
 					<PersonalInformationForm />
 				</FormKit>
 
-				<FormKit type="step" id="image" name="image">
+				<FormKit id="image" type="step" name="image">
 					<ImageUpload />
 				</FormKit>
-				<FormKit type="step" id="relation" name="relation">
-					<AddDependentForm :staffId="staffId" />
+				<FormKit id="relation" type="step" name="relation">
+					<AddDependentForm :staff-id="staffId" />
 					<template #stepNext>
 						<FormKit type="submit" label="Add Dependent" />
 					</template>

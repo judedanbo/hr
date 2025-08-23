@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 let props = defineProps({
 	title: String,
@@ -8,7 +8,7 @@ let props = defineProps({
 });
 
 let details = (url = props.link) => {
-	Inertia.get(props.link);
+	router.get(props.link);
 };
 </script>
 <template>

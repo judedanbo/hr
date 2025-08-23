@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NoSymbolIcon } from "@heroicons/vue/20/solid";
-import { Inertia } from "@inertiajs/inertia";
-import { Link } from "@inertiajs/inertia-vue3";
+import { router } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 </script>
 
 <template>
@@ -17,7 +17,7 @@ import { Link } from "@inertiajs/inertia-vue3";
 			<Link
 				href="#"
 				class="text-green-600 hover:text-green-500 dark:text-green-500"
-				@click.prevent="Inertia.reload()"
+				@click.prevent="router.reload()"
 			>
 				Reload
 			</Link>

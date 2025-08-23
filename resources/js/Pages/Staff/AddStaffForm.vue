@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import AddressForm from "@/Pages/Person/partials/AddressForm.vue";
@@ -29,7 +29,7 @@ onMounted(async () => {
 // })
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.store"), data, {
+	router.post(route("staff.store"), data, {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import { useDark, useToggle } from "@vueuse/core";
 import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
@@ -12,7 +12,7 @@ defineProps({
 });
 
 const page = usePage();
-const user = computed(() => page.props.value.auth?.user);
+const user = computed(() => page.props.value?.auth?.user);
 
 const dark = useDark();
 const toggle = useToggle(dark);
@@ -73,11 +73,11 @@ const toggle = useToggle(dark);
 				</div>
 				<div class="mt-2 cursor-pointer">
 					<SunIcon
-						@click="toggle()"
 						v-if="dark"
 						class="w-5 h-5 rounded-full bg-white"
+						@click="toggle()"
 					/>
-					<MoonIcon @click="toggle()" v-else class="w-5 h-5 rounded-full" />
+					<MoonIcon v-else class="w-5 h-5 rounded-full" @click="toggle()" />
 				</div>
 			</div>
 			<div class="text-right pr-8 mt-3 lg:w-full dark:text-gray-100">

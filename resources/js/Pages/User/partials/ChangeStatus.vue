@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -24,7 +24,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff-status.store", { staff: data.staff_id }), data, {
+	router.post(route("staff-status.store", { staff: data.staff_id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -40,13 +40,13 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Change Status</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Save">
+		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit type="hidden" name="staff_id" :value="staff" />
 			<FormKit type="hidden" name="institution_id" :value="institution" />
 			<FormKit
+				id="status"
 				type="select"
 				name="status"
-				id="status"
 				validation="required|string"
 				label="Status"
 				placeholder="Select Status"
@@ -55,9 +55,9 @@ const submitHandler = (data, node) => {
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:value="today"
 					:min="end_date"
 					:max="start_date"
@@ -72,9 +72,9 @@ const submitHandler = (data, node) => {
 					inner-class="w-1/2"
 				/>
 				<FormKit
+					id="end_date"
 					type="date"
 					name="end_date"
-					id="end_date"
 					:min="today"
 					label="End date"
 					:validation="'date|date_after:' + today"
@@ -83,9 +83,9 @@ const submitHandler = (data, node) => {
 				/>
 			</div>
 			<FormKit
+				id="description"
 				type="text"
 				name="description"
-				id="description"
 				label="Description"
 				validation="string|length:2,120"
 				validation-visibility="submit"

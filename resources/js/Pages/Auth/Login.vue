@@ -5,7 +5,7 @@ import BreezeGuestLayout from "@/Layouts/Guest.vue";
 import BreezeInput from "@/Components/Input.vue";
 import BreezeInputError from "@/Components/InputError.vue";
 import BreezeLabel from "@/Components/Label.vue";
-import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 import { useDark, useToggle } from "@vueuse/core";
 import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 defineProps({
@@ -38,14 +38,14 @@ const submit = () => {
 			{{ status }}
 		</div>
 
-		<form @submit.prevent="submit" id="loginForm" name="loginForm">
+		<form id="loginForm" name="loginForm" @submit.prevent="submit">
 			<div>
 				<BreezeLabel for="email" value="Email" />
 				<BreezeInput
 					id="email"
+					v-model="form.email"
 					type="email"
 					class="mt-1 block w-full"
-					v-model="form.email"
 					required
 					autofocus
 					autocomplete="username"
@@ -57,9 +57,9 @@ const submit = () => {
 				<BreezeLabel for="password" value="Password" />
 				<BreezeInput
 					id="password"
+					v-model="form.password"
 					type="password"
 					class="mt-1 block w-full"
-					v-model="form.password"
 					required
 					autocomplete="current-password"
 				/>
@@ -68,7 +68,7 @@ const submit = () => {
 
 			<div class="block mt-4">
 				<label class="flex items-center">
-					<BreezeCheckbox name="remember" v-model:checked="form.remember" />
+					<BreezeCheckbox v-model:checked="form.remember" name="remember" />
 					<span class="ml-2 text-sm text-gray-600 dark:text-gray-50"
 						>Remember me</span
 					>
@@ -78,11 +78,11 @@ const submit = () => {
 			<div class="flex items-center justify-between mt-4">
 				<div>
 					<SunIcon
-						@click="toggle()"
 						v-if="dark"
 						class="w-5 h-5 rounded-full bg-white"
+						@click="toggle()"
 					/>
-					<MoonIcon @click="toggle()" v-else class="w-5 h-5 rounded-full" />
+					<MoonIcon v-else class="w-5 h-5 rounded-full" @click="toggle()" />
 				</div>
 				<div>
 					<Link

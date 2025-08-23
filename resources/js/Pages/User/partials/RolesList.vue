@@ -1,6 +1,6 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 defineProps({
 	roles: { type: Array, default: () => null },
@@ -9,7 +9,7 @@ defineProps({
 const emit = defineEmits(["deleteRole"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const clicked = (action, model) => {
 	if (action === "Revoke") {
@@ -66,10 +66,10 @@ const clicked = (action, model) => {
 
 					<td class="w-8 flex justify-end">
 						<SubMenu
-							v-if="permissions.includes('assign roles to user')"
+							v-if="permissions?.includes('assign roles to user')"
 							:items="['Revoke']"
-							:can-revoke="permissions.includes('update permission')"
-							:can-edit="permissions.includes('assign roles to user')"
+							:can-revoke="permissions?.includes('update permission')"
+							:can-edit="permissions?.includes('assign roles to user')"
 							@item-clicked="(value) => clicked(value, role)"
 						/>
 					</td>

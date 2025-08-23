@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NewAuthenticated from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { computed } from "vue";
 import { UsersIcon } from "@heroicons/vue/20/solid";
@@ -25,7 +25,7 @@ const props = defineProps({
 });
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 </script>
 
 <template>

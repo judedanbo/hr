@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 import StaffPositionForm from "@/Pages/StaffPosition/partials/StaffPositionForm.vue";
@@ -17,7 +17,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.position.store", { staff: props.staff.id }), data, {
+	router.post(route("staff.position.store", { staff: props.staff.id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();

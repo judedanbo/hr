@@ -1,6 +1,6 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { router } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 import { onMounted, ref, computed } from "vue";
 import { CheckIcon } from "@heroicons/vue/24/solid";
 const emit = defineEmits(["formSubmitted"]);
@@ -31,7 +31,7 @@ onMounted(async () => {
 // 		return {
 // 			...permission,
 // 			attrs: {
-// 				disabled: userRolesPermission.value?.permissions.includes(
+// 				disabled: userRolesPermission.value?.permissions?.includes(
 // 					permission.value,
 // 				),
 // 			},
@@ -41,7 +41,7 @@ onMounted(async () => {
 
 const submitHandler = (data, node) => {
 	console.log(props.user);
-	Inertia.post(route("user.add.permissions", { user: data.user }), data, {
+	router.post(route("user.add.permissions", { user: data.user }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -59,13 +59,13 @@ const submitHandler = (data, node) => {
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Permissions</h1>
 		<div class="max-h-96">
 			<FormKit type="form" submit-label="Save" @submit="submitHandler">
-				<FormKit type="hidden" id="user" name="user" :value="user" />
+				<FormKit id="user" type="hidden" name="user" :value="user" />
 				<div class="h-64 overflow-scroll">
 					<FormKit
+						id="permissions"
 						v-model="userPermissions"
 						type="checkbox"
 						name="permissions"
-						id="permissions"
 						validation="required|integer|min:1|max:2000"
 						label="Permissions"
 						placeholder="Select new Rank"
@@ -73,7 +73,7 @@ const submitHandler = (data, node) => {
 						error-visibility="submit"
 					>
 						<template #decoratorIcon="context">
-							<CheckIcon class="w-5 h-5 text-white" v-if="context.value" />
+							<CheckIcon v-if="context.value" class="w-5 h-5 text-white" />
 						</template>
 					</FormKit>
 				</div>

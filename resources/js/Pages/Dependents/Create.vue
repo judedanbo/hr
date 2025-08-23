@@ -1,7 +1,7 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
 	<TransitionRoot as="template" :show="isVisible">
-		<Dialog @close="$emit('closeModal')" as="div" class="relative z-10">
+		<Dialog as="div" class="relative z-10" @close="$emit('closeModal')">
 			<TransitionChild
 				as="template"
 				enter="ease-out duration-300"
@@ -53,8 +53,8 @@
 									</div>
 
 									<XMarkIcon
-										@click="$emit('closeModal')"
 										class="w-7 h-7 p-1 text-red-400 hover:bg-gray-100 rounded-full"
+										@click="$emit('closeModal')"
 									/>
 								</div>
 							</div>
@@ -66,8 +66,8 @@
 								>
 									<!-- Modal content -->
 									<form
-										@submit.prevent="submit"
 										class="relative bg-white rounded-lg shadow dark:bg-gray-700"
+										@submit.prevent="submit"
 									>
 										<!-- Modal body -->
 										<div class="p-6 space-y-6">
@@ -79,18 +79,18 @@
 														>Surname</label
 													>
 													<input
+														id="surname"
 														v-model="form.surname"
 														type="text"
 														name="surname"
-														id="surname"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="Surname"
 														required=""
 													/>
 													<p
 														v-if="form.errors.surname"
-														v-text="form.errors.surname"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.surname"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -100,18 +100,18 @@
 														>Other names</label
 													>
 													<input
+														id="other_names"
 														v-model="form.other_names"
 														type="text"
 														name="other_names"
-														id="other_names"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="other names"
 														required=""
 													/>
 													<p
 														v-if="form.errors.other_names"
-														v-text="form.errors.other_names"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.other_names"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -121,10 +121,10 @@
 														>Date of Birth</label
 													>
 													<input
+														id="date_of_birth"
 														v-model="form.date_of_birth"
 														type="date"
 														name="date_of_birth"
-														id="date_of_birth"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="date of birth"
 														required="true"
@@ -133,8 +133,8 @@
 													/>
 													<p
 														v-if="form.errors.date_of_birth"
-														v-text="form.errors.date_of_birth"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.date_of_birth"
 													></p>
 												</div>
 
@@ -145,18 +145,18 @@
 														>Gender</label
 													>
 													<input
+														id="gender"
 														v-model="form.gender"
 														type="text"
 														name="gender"
-														id="gender"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="Female"
 														required=""
 													/>
 													<p
 														v-if="form.errors.gender"
-														v-text="form.errors.gender"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.gender"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -166,18 +166,18 @@
 														>Nationality</label
 													>
 													<input
+														id="nationality"
 														v-model="form.nationality"
 														type="text"
 														name="nationality"
-														id="nationality"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="Ghanaian"
 														required=""
 													/>
 													<p
 														v-if="form.errors.nationality"
-														v-text="form.errors.nationality"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.nationality"
 													></p>
 												</div>
 												<div class="col-span-6 sm:col-span-3">
@@ -187,18 +187,18 @@
 														>Relation</label
 													>
 													<input
+														id="relation"
 														v-model="form.relation"
 														type="text"
 														name="relation"
-														id="relation"
 														class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
 														placeholder="Child"
 														required=""
 													/>
 													<p
 														v-if="form.errors.relation"
-														v-text="form.errors.relation"
 														class="text-red-500 text-xs pl-2 mt-1"
+														v-text="form.errors.relation"
 													></p>
 												</div>
 											</div>
@@ -244,7 +244,7 @@ import {
 	XMarkIcon,
 	ArrowPathIcon,
 } from "@heroicons/vue/24/outline";
-import { useForm } from "@inertiajs/inertia-vue3";
+import { useForm } from "@inertiajs/vue3";
 
 const open = ref(true);
 

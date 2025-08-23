@@ -1,11 +1,11 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import PageHeader from "@/Components/PageHeader.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { ref, watch, computed } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import SubUnits from "./SubUnits.vue";
 import UnitStaff from "./UnitStaff.vue";
 import InfoCard from "@/Components/InfoCard.vue";
@@ -22,7 +22,7 @@ let props = defineProps({
 });
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 let search = ref(props.filters.search);
 
@@ -32,7 +32,7 @@ let staff = ref(props.filters.staff);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("unit.show", {
 				unit: props.unit.id,
 			}),
@@ -45,7 +45,7 @@ debouncedWatch(
 debouncedWatch(
 	staff,
 	() => {
-		Inertia.get(
+		router.get(
 			route("unit.show", {
 				unit: props.unit.id,
 			}),
@@ -112,7 +112,7 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 					/>
 					<div class="flex gap-x-2">
 						<a
-							v-if="permissions.includes('edit unit')"
+							v-if="permissions?.includes('edit unit')"
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
 							href="#"
 							@click.prevent="toggleEditForm()"
@@ -121,7 +121,7 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 							Edit Unit
 						</a>
 						<a
-							v-if="permissions.includes('create unit')"
+							v-if="permissions?.includes('create unit')"
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
 							href="#"
 							@click.prevent="toggleAddUnitForm()"
@@ -136,12 +136,12 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 					<SubUnits
 						v-if="unit.subs.length > 0"
 						v-model="dept"
-						:download="permissions.includes('download unit staff')"
+						:download="permissions?.includes('download unit staff')"
 						:type="unit.name"
 						:subs="props.unit"
 					/>
 					<UnitStaff
-						:download="permissions.includes('download unit staff')"
+						:download="permissions?.includes('download unit staff')"
 						:unit="props.unit"
 					/>
 				</div>

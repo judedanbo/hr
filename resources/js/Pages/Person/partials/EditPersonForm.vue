@@ -1,7 +1,7 @@
 <script setup>
 import { getNode } from "@formkit/core";
-import { useForm } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { useForm } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted, defineEmits } from "vue";
 import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
 import ContactForm from "@/Pages/Person/partials/ContactForm.vue";
@@ -39,7 +39,7 @@ let formData = ref(null);
 const submitImage = async (image) => {
 	formData.value = new FormData();
 	formData.value.append("image", image);
-	const avatar = await Inertia.post(
+	const avatar = await router.post(
 		route("person.avatar.update", { person: person.value.id }),
 		formData.value,
 		{
@@ -61,7 +61,7 @@ const submitImage = async (image) => {
 };
 
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("person.update", { person: props.personId }),
 		data.personData.personalInformation,
 		{

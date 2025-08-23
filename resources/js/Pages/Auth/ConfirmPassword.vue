@@ -4,7 +4,7 @@ import BreezeGuestLayout from "@/Layouts/Guest.vue";
 import BreezeInput from "@/Components/Input.vue";
 import BreezeInputError from "@/Components/InputError.vue";
 import BreezeLabel from "@/Components/Label.vue";
-import { Head, useForm } from "@inertiajs/inertia-vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import { useDark, useToggle } from "@vueuse/core";
 import { SunIcon, MoonIcon } from "@heroicons/vue/24/outline";
 
@@ -36,9 +36,9 @@ const toggle = useToggle(dark);
 				<BreezeLabel for="password" value="Password" />
 				<BreezeInput
 					id="password"
+					v-model="form.password"
 					type="password"
 					class="mt-1 block w-full"
-					v-model="form.password"
 					required
 					autocomplete="current-password"
 					autofocus
@@ -49,11 +49,11 @@ const toggle = useToggle(dark);
 			<div class="flex justify-between mt-4">
 				<div>
 					<SunIcon
-						@click="toggle()"
 						v-if="dark"
 						class="w-5 h-5 rounded-full bg-white"
+						@click="toggle()"
 					/>
-					<MoonIcon @click="toggle()" v-else class="w-5 h-5 rounded-full" />
+					<MoonIcon v-else class="w-5 h-5 rounded-full" @click="toggle()" />
 				</div>
 				<BreezeButton
 					class="ml-4"

@@ -1,6 +1,6 @@
 <script setup>
 import UserRoleForm from "./UserRoleForm.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import axios from "axios";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
@@ -21,7 +21,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("user.add.roles", { user: props.user }), data, {
+	router.post(route("user.add.roles", { user: props.user }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -38,7 +38,7 @@ const submitHandler = (data, node) => {
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Roles</h1>
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
-			<UserRoleForm :userRoles="userRoles.roles" />
+			<UserRoleForm :user-roles="userRoles.roles" />
 		</FormKit>
 	</main>
 </template>

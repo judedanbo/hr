@@ -9,8 +9,8 @@
 				<dt>
 					<div class="absolute rounded-md bg-green-800 dark:bg-green-900 p-3">
 						<component
-							v-if="item.icon"
 							:is="item.icon"
+							v-if="item.icon"
 							class="h-6 w-6 text-white"
 							aria-hidden="true"
 						/>

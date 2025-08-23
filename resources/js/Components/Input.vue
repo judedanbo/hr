@@ -61,17 +61,17 @@ const input = ref(null);
 					{{ prefix }}
 				</div>
 				<input
-					@input="$emit('update:modelValue', $event.target.value)"
 					:value="modelValue"
 					:type="type"
 					:autofocus="autofocus"
 					:required="required"
 					:autocomplete="autocomplete"
+					ref="input"
 					:aria-describedby="ariaDescribedby ?? name"
 					:aria-label="ariaLabel ?? name"
-					ref="input"
 					class="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 dark:text-gray-50 shadow-sm placeholder:text-gray-400 sm:text-sm/6 border-none ring-0 focus:ring-0 dark:bg-gray-700"
 					:class="'text-' + alignText"
+					@input="$emit('update:modelValue', $event.target.value)"
 					:placeholder="placeholder ?? name"
 				/>
 				<div

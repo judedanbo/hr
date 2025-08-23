@@ -14,14 +14,14 @@ import {
 	RectangleStackIcon,
 } from "@heroicons/vue/24/outline";
 import { computed, ref } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import MainMenu from "@/Components/MainMenu.vue";
 import VMenu from "@/Components/VMenu.vue";
 
 const isOpen = ref(false);
 
 const page = usePage();
-const user = computed(() => page.props.value.auth.user);
+const user = computed(() => page.props.value?.auth.user);
 </script>
 <template>
 	<div

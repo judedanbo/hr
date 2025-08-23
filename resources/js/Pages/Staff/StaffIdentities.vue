@@ -1,13 +1,13 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
 import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import AddIdentity from "../Person/partials/AddIdentity.vue";
 import EditIdentity from "../Person/partials/EditIdentity.vue";
 import SubMenu from "@/Components/SubMenu.vue";
 import DeleteIdentity from "./DeleteIdentity.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
 	identities: { type: Array, default: () => [] },
@@ -15,7 +15,7 @@ const props = defineProps({
 });
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const emit = defineEmits(["editContact", "deleteIdentity"]);
 const identityModel = ref(null);
@@ -41,7 +41,7 @@ let openEditIdentityModal = ref(false);
 let toggleEditIdentityModal = useToggle(openEditIdentityModal);
 
 const deleteModalIdentity = () => {
-	Inertia.delete(
+	router.delete(
 		route("person.identity.delete", {
 			person: props.person,
 			identity: identityModel.value.id,
@@ -74,8 +74,8 @@ const deleteModalIdentity = () => {
 				</div>
 				<button
 					v-if="
-						permissions.includes('update staff') ||
-						permissions.includes('delete staff')
+						permissions?.includes('update staff') ||
+						permissions?.includes('delete staff')
 					"
 					class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 					@click="toggleIdentityModal()"
@@ -120,11 +120,11 @@ const deleteModalIdentity = () => {
 								<td class="flex justify-center">
 									<SubMenu
 										v-if="
-											permissions.includes('update staff') ||
-											permissions.includes('delete staff')
+											permissions?.includes('update staff') ||
+											permissions?.includes('delete staff')
 										"
-										:can-edit="permissions.includes('update staff')"
-										:can-delete="permissions.includes('delete staff')"
+										:can-edit="permissions?.includes('update staff')"
+										:can-delete="permissions?.includes('delete staff')"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, identity)"
 									/>

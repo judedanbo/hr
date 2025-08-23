@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import StaffPositionForm from "./partials/StaffPositionForm.vue";
 
 const emit = defineEmits(["formSubmitted"]);
@@ -11,7 +11,7 @@ const props = defineProps({
 });
 
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("staff.position.update", {
 			staff: data.staff_id,
 			staffPosition: props.staffPosition.id,

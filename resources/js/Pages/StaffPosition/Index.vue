@@ -6,11 +6,11 @@ import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 import EditStaffPosition from "./Edit.vue";
 import DeleteStaffPosition from "./Delete.vue";
-import { Inertia } from "@inertiajs/inertia";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { router } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const emit = defineEmits(["closeForm", "editPosition", "deletePosition"]);
 let props = defineProps({
@@ -40,7 +40,7 @@ const openDeleteStaffPositionModal = ref(false);
 const toggleDeleteStaffPositionModal = useToggle(openDeleteStaffPositionModal);
 
 const deleteStaffPosition = () => {
-	Inertia.delete(
+	router.delete(
 		route("staff.position.delete", {
 			staff: props.staff.id,
 			staffPosition: staffPosition.value.id,
@@ -73,8 +73,8 @@ const deleteStaffPosition = () => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							permissions.includes('update staff') ||
-							permissions.includes('delete staff')
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleStaffPositionModal()"
@@ -125,8 +125,8 @@ const deleteStaffPosition = () => {
 								<td class="flex justify-end">
 									<SubMenu
 										v-if="
-											permissions.includes('update staff') ||
-											permissions.includes('delete staff')
+											permissions?.includes('update staff') ||
+											permissions?.includes('delete staff')
 										"
 										:items="['Edit', 'Delete']"
 										@item-clicked="(action) => subMenuClicked(action, position)"

@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 const emit = defineEmits(["formSubmitted"]);
 import { format, addDays, subYears } from "date-fns";
 
@@ -12,7 +12,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 5), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("institution.update"),
 		data,
 		{
@@ -34,16 +34,16 @@ const submitHandler = (data, node) => {
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Institution</h1>
 		<FormKit
-			@submit="submitHandler"
 			type="form"
 			submit-label="Save Institution"
+			@submit="submitHandler"
 		>
 			<div class="sm:flex gap-4 flex-row">
 				<div>
 					<FormKit
+						id="id"
 						type="text"
 						name="id"
-						id="id"
 						:value="selectedModel.id"
 						validation="required|number|between:2,120"
 						label="Institution id"
@@ -53,9 +53,9 @@ const submitHandler = (data, node) => {
 					/>
 				</div>
 				<FormKit
+					id="name"
 					type="text"
 					name="name"
-					id="name"
 					:value="selectedModel.name"
 					validation="required|length:2,120"
 					label="Institution name"
@@ -65,9 +65,9 @@ const submitHandler = (data, node) => {
 			</div>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="abbreviation"
 					type="text"
 					name="abbreviation"
-					id="abbreviation"
 					:value="selectedModel.abbreviation"
 					validation="length:2,6"
 					label="Institution abbreviation"
@@ -75,9 +75,9 @@ const submitHandler = (data, node) => {
 					error-visibility="submit"
 				/>
 				<FormKit
+					id="status"
 					type="text"
 					name="status"
-					id="status"
 					:value="selectedModel.status"
 					validation="length:2,6"
 					label="Status"
@@ -87,9 +87,9 @@ const submitHandler = (data, node) => {
 			</div>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:value="selectedModel.start_date"
 					:min="end_date"
 					:max="start_date"
@@ -100,9 +100,9 @@ const submitHandler = (data, node) => {
 					validation-visibility="submit"
 				/>
 				<FormKit
+					id="end_date"
 					type="date"
 					name="end_date"
-					id="end_date"
 					:value="selectedModel.end_date"
 					:min="start_date"
 					label="End date"

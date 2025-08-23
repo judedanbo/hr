@@ -1,6 +1,6 @@
 <script setup>
 import { getNode } from "@formkit/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { ref, onMounted, defineEmits } from "vue";
 
 import UserRoleForm from "./UserRoleForm.vue";
@@ -18,7 +18,7 @@ let formData = ref(null);
 const submitImage = async (image) => {
 	formData.value = new FormData();
 	formData.value.append("image", image);
-	// const avatar = await Inertia.post(
+	// const avatar = await router.post(
 	// 	route("person.avatar.update", { person: staff.value.person.id }),
 	// 	formData.value,
 	// 	{
@@ -40,7 +40,7 @@ const submitImage = async (image) => {
 };
 
 const submitHandler = (data, node) => {
-	Inertia.patch(route("user.update", { user: props.user.id }), data, {
+	router.patch(route("user.update", { user: props.user.id }), data, {
 		preserveState: true,
 		onSuccess: () => {
 			node.reset();
@@ -62,8 +62,8 @@ const submitHandler = (data, node) => {
 			name="editStaffForm"
 			submit-label="Save User"
 			wrapper-class="mx-auto"
-			@submit="submitHandler"
 			:value="user"
+			@submit="submitHandler"
 		>
 			<FormKit id="user_id" type="hidden" name="user_id" :value="user.id" />
 

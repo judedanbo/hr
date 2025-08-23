@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { format, addDays, subYears } from "date-fns";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const values = ref([]);
 
@@ -26,7 +26,7 @@ onMounted(async () => {
 
 const emit = defineEmits(["formSubmitted"]);
 const submitHandler = (data, node) => {
-	Inertia.patch(
+	router.patch(
 		route("job-category.update", { jobCategory: props.category.id }),
 		data,
 		{
@@ -49,37 +49,37 @@ const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Harmonized Grade</h1>
 		<FormKit
-			@submit="submitHandler"
 			type="form"
 			:value="category"
 			submit-label="Save"
+			@submit="submitHandler"
 		>
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				label="Category name"
 				validation="required|string|length:2,100"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="institution_id"
 				type="hidden"
 				name="institution_id"
-				id="institution_id"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="short_name"
 				type="text"
 				name="short_name"
-				id="short_name"
 				label="Abbreviation"
 				validation="required|string|length:2,10"
 				validation-visibility="submit"
 			/>
 			<FormKit
+				id="level"
 				type="number"
 				name="level"
-				id="level"
 				label="Level"
 				min="1"
 				max="50"
@@ -88,9 +88,9 @@ const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 			/>
 
 			<FormKit
+				id="job_category_id"
 				type="select"
 				name="job_category_id"
-				id="job_category_id"
 				placeholder="Select parent category"
 				validation="number|min:1|max:100"
 				label="Next Level"
@@ -100,9 +100,9 @@ const end_date = format(subYears(new Date(), 1), "yyyy-MM-dd");
 
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:min="end_date"
 					:max="start_date"
 					label="Start date"

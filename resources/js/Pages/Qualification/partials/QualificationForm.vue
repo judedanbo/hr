@@ -1,26 +1,26 @@
 <template>
 	<FormKit
+		id="institution"
 		type="text"
 		name="institution"
-		id="institution"
 		label="Institution"
 		validation="string|length:2,100"
 		validation-visibility="submit"
 	/>
 	<div class="sm:flex gap-4">
 		<FormKit
+			id="course"
 			type="text"
 			name="course"
-			id="course"
 			label="Course"
 			validation="required|string|length:2,100"
 			validation-visibility="submit"
 		/>
 		<div>
 			<FormKit
+				id="level"
 				type="text"
 				name="level"
-				id="level"
 				label="Level"
 				validation="string|length:1,10"
 				validation-visibility="submit"
@@ -29,18 +29,18 @@
 	</div>
 	<div class="sm:flex gap-4">
 		<FormKit
+			id="qualification"
 			type="text"
 			name="qualification"
-			id="qualification"
 			label="Qualification"
 			validation="length:0,100"
 			validation-visibility="submit"
 		/>
 		<div>
 			<FormKit
+				id="qualification_number"
 				type="text"
 				name="qualification_number"
-				id="qualification_number"
 				label="Qualification Number"
 				validation="string|length:0,100"
 				validation-visibility="submit"
@@ -49,9 +49,9 @@
 	</div>
 	<div class="w-1/2 sm:w-1/3">
 		<FormKit
+			id="year"
 			type="text"
 			name="year"
-			id="year"
 			label="Year of Graduation"
 			validation="number|length:4,4"
 			validation-visibility="submit"

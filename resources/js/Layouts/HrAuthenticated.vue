@@ -5,10 +5,10 @@ import BreezeDropdown from "@/Components/Dropdown.vue";
 import BreezeDropdownLink from "@/Components/DropdownLink.vue";
 import BreezeNavLink from "@/Components/NavLink.vue";
 import BreezeResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const user = computed(() => page.props.value.auth.user);
+const user = computed(() => page.props.value?.auth.user);
 
 import AppMenu from "@/Components/Menu.vue";
 
@@ -107,8 +107,8 @@ const showingNavigationDropdown = ref(false);
 					<!-- Hamburger -->
 					<div class="-mr-2 flex items-center sm:hidden">
 						<button
-							@click="showingNavigationDropdown = !showingNavigationDropdown"
 							class="inline-flex items-center justify-center p-2 rounded-md text-green-800 hover:text-white bg-green-100 hover:bg-green-700 focus:outline-none focus:bg-green-800 focus:text-white transition duration-150 ease-in-out"
+							@click="showingNavigationDropdown = !showingNavigationDropdown"
 						>
 							<svg
 								class="h-6 w-6"

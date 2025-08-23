@@ -1,16 +1,16 @@
 <script setup>
 import Modal from "@/Components/NewModal.vue";
 import { ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import AddDependant from "./Add.vue";
 import EditDependant from "./Edit.vue";
 import DeleteDependant from "./Delete.vue";
 import List from "./partials/List.vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 defineProps({
 	dependents: { type: Array, default: () => [] },
 	staffId: { type: Number, required: true },
@@ -39,7 +39,7 @@ const confirmDelete = (model) => {
 };
 
 const deleteDependent = () => {
-	Inertia.delete(
+	router.delete(
 		route("dependent.delete", {
 			dependent: selectedDependent.value.id,
 		}),
@@ -70,8 +70,8 @@ const deleteDependent = () => {
 				<div class="flex-none self-end px-6 pt-4">
 					<button
 						v-if="
-							permissions.includes('update staff') ||
-							permissions.includes('delete staff')
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click.prevent="toggleAddDependantFrom()"

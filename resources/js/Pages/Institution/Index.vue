@@ -1,10 +1,10 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch, computed } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import { useToggle } from "@vueuse/core";
@@ -67,7 +67,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("institution.index"),
 			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },
@@ -102,9 +102,9 @@ let BreadCrumpLinks = [
 							autofocus
 						/>
 						<a
-							@click.prevent="toggleCreateModal()"
 							href="#"
 							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+							@click.prevent="toggleCreateModal()"
 						>
 							<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 							New Institutions
@@ -218,15 +218,15 @@ let BreadCrumpLinks = [
 													class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap"
 												>
 													<FlyoutMenu
+														name="edit"
+														path="institution"
+														:route_id="institution.id"
 														@editItem="
 															($event, id) => displayEditModal($event, id)
 														"
 														@deleteItem="
 															($event, id) => displayDeleteModal($event, id)
 														"
-														name="edit"
-														path="institution"
-														:route_id="institution.id"
 													/>
 												</td>
 											</tr>
@@ -240,20 +240,20 @@ let BreadCrumpLinks = [
 					</div>
 				</div>
 			</div>
-			<Modal @close="toggleCreateModal()" :show="openCreateModal">
+			<Modal :show="openCreateModal" @close="toggleCreateModal()">
 				<Create @formSubmitted="toggleCreateModal()" />
 			</Modal>
-			<Modal @close="toggleEditModal()" :show="openEditModal">
+			<Modal :show="openEditModal" @close="toggleEditModal()">
 				<Edit
+					:selected-model="selectedModel[0]"
 					@formSubmitted="toggleEditModal()"
-					:selectedModel="selectedModel[0]"
 				/>
 			</Modal>
-			<Modal @close="toggleDeleteModal()" :show="openDeleteModal">
+			<Modal :show="openDeleteModal" @close="toggleDeleteModal()">
 				<Delete
+					:selected-model="selectedModel[0]"
 					@institutionDeleted="toggleDeleteModal()"
 					@cancelDelete="toggleDeleteModal()"
-					:selectedModel="selectedModel[0]"
 				/>
 			</Modal>
 		</div>

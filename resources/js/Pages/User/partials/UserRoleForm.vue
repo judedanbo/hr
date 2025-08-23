@@ -18,10 +18,10 @@ onMounted(async () => {
 	<!-- {{ userRoles }} -->
 	<div>
 		<FormKit
+			id="roles"
 			v-model="userRoles"
 			type="checkbox"
 			name="roles"
-			id="roles"
 			validation="required|integer|min:1|max:2000"
 			label="New role"
 			placeholder="Select new Rank"
@@ -29,7 +29,7 @@ onMounted(async () => {
 			error-visibility="submit"
 		>
 			<template #decoratorIcon="context">
-				<CheckIcon class="w-5 h-5 text-white" v-if="context.value" />
+				<CheckIcon v-if="context.value" class="w-5 h-5 text-white" />
 			</template>
 		</FormKit>
 		<!-- <fieldset id="roles" name="roles">

@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 const emit = defineEmits(["formSubmitted"]);
 import { format, addDays, subYears } from "date-fns";
 
@@ -8,7 +8,7 @@ const start_date = format(addDays(new Date(), 1), "yyyy-MM-dd");
 const end_date = format(subYears(new Date(), 5), "yyyy-MM-dd");
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("institution.store"), data, {
+	router.post(route("institution.store"), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -24,11 +24,11 @@ const submitHandler = (data, node) => {
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Add Institution</h1>
-		<FormKit @submit="submitHandler" type="form" submit-label="Add Institution">
+		<FormKit type="form" submit-label="Add Institution" @submit="submitHandler">
 			<FormKit
+				id="name"
 				type="text"
 				name="name"
-				id="name"
 				validation="required|length:2,120"
 				label="Institution name"
 				placeholder="institution name"
@@ -36,18 +36,18 @@ const submitHandler = (data, node) => {
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="abbreviation"
 					type="text"
 					name="abbreviation"
-					id="abbreviation"
 					validation="length:2,6"
 					label="Institution abbreviation"
 					placeholder="institution's abbreviation"
 					error-visibility="submit"
 				/>
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:value="today"
 					:min="end_date"
 					:max="start_date"

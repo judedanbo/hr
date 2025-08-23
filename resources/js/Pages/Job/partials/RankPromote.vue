@@ -13,15 +13,15 @@
 				<div class="flex gap-x-5">
 					<button
 						class="flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 hover:cursor-pointer disabled:bg-gray-200 disabled:text-gray-500 disabled:hover:cursor-not-allowed"
-						@click="aprilData()"
 						:disabled="batch == 'april'"
+						@click="aprilData()"
 					>
 						April
 					</button>
 					<button
 						class="flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 hover:cursor-pointer disabled:text-gray-500 disabled:hover:cursor-not-allowed"
-						@click="octoberData()"
 						:disabled="batch == 'october'"
+						@click="octoberData()"
 					>
 						October
 					</button>
@@ -114,10 +114,10 @@
 											class="absolute inset-y-0 left-0 w-0.5 bg-green-600"
 										></div>
 										<input
+											v-model="selectedStaff"
 											type="checkbox"
 											class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
 											:value="staff.id"
-											v-model="selectedStaff"
 										/>
 									</td>
 									<td
@@ -205,8 +205,8 @@
 		<Modal :show="showPromoteAll" @close="togglePromoteAll()">
 			<PromoteAllForm
 				:rank="props.rank"
+				:form-errors="formErrors"
 				@unit-selected="(data) => submitForm(data)"
-				:formErrors="formErrors"
 			/>
 		</Modal>
 	</div>
@@ -214,7 +214,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUpdated, watch } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";
@@ -289,7 +289,7 @@ const promoteAll = () => {
 };
 const submitForm = (promoteAll) => {
 	const staff = selectedStaff.value;
-	Inertia.post(
+	router.post(
 		route("rank-staff.promote-all"),
 		{ staff, ...promoteAll },
 		{

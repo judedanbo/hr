@@ -1,11 +1,11 @@
 <script setup>
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 const emit = defineEmits(["change-avatar"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 const props = defineProps({
 	initials: {
 		type: String,
@@ -46,12 +46,12 @@ const props = defineProps({
 		<a
 			v-if="
 				size !== 'sm' &&
-				(permissions.includes('upload avatar') ||
-					permissions.includes('update avatar'))
+				(permissions?.includes('upload avatar') ||
+					permissions?.includes('update avatar'))
 			"
 			href="#"
-			@click.prevent="emit('change-avatar')"
 			class="absolute w-full h-full top-0 left-0 bg-white opacity-0 z-10 transition-opacity duration-300 hover:opacity-80 rounded-full flex justify-center items-center text-xl text-gray-900 text-bold"
+			@click.prevent="emit('change-avatar')"
 			>Change Image</a
 		>
 	</figure>

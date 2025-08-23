@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const errors = computed(() => page.props.value.errors);
+const errors = computed(() => page.props.value?.errors);
 const props = defineProps({
 	imageUrl: String,
 });

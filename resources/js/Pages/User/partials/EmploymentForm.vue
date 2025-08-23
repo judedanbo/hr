@@ -4,9 +4,9 @@ const today = new Date();
 </script>
 <template>
 	<FormKit
+		id="hire_date"
 		type="date"
 		name="hire_date"
-		id="hire_date"
 		:min="format(subYears(today, 80), 'yyyy-MM-dd')"
 		:max="format(addYears(today, 2), 'yyyy-MM-dd')"
 		:value="format(new Date(), 'yyyy-MM-dd')"
@@ -21,18 +21,18 @@ const today = new Date();
 	/>
 
 	<FormKit
+		id="file_number"
 		type="text"
 		name="file_number"
-		id="file_number"
 		label="File number"
 		placeholder="File number"
 		validation="required|length:2,10"
 	/>
 
 	<FormKit
+		id="staff_number"
 		type="text"
 		name="staff_number"
-		id="staff_number"
 		label="Staff number"
 		placeholder="Staff number"
 		validation="required|length:2,10"

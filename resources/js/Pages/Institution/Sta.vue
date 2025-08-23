@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/HrAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import Tab from "@/Components/Tab.vue";
 import { format, differenceInYears } from "date-fns";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";

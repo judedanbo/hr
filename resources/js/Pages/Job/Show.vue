@@ -1,7 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head, Link, usePage } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import RankOverview from "./partials/RankOverview.vue";
 import RankStaff from "./partials/RankStaff.vue";
 import RankPromote from "./partials/RankPromote.vue";
@@ -20,7 +20,7 @@ import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import NoPermission from "@/Components/NoPermission.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 let props = defineProps({
 	job: Object,
 	filters: Object,
@@ -29,7 +29,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("job.show", {
 				job: props.job.id,
 			}),
@@ -83,7 +83,7 @@ const openConfirmDeleteDialog = ref(false);
 const toggleDeleteModal = useToggle(openConfirmDeleteDialog);
 
 const deleteJob = () => {
-	Inertia.delete(route("job.delete", { job: props.job.id }));
+	router.delete(route("job.delete", { job: props.job.id }));
 	toggleDeleteModal();
 };
 </script>
@@ -91,17 +91,17 @@ const deleteJob = () => {
 	<Head :title="job.name" />
 	<MainLayout>
 		<main
-			v-if="permissions.includes('view job')"
+			v-if="permissions?.includes('view job')"
 			class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-8"
 		>
 			<PageHeading
 				:name="job.name"
-				@searchStaff="(searchValue) => startSearch(searchValue)"
 				:search="search"
+				@searchStaff="(searchValue) => startSearch(searchValue)"
 			/>
 			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<a
-					v-if="permissions.includes('view job')"
+					v-if="permissions?.includes('view job')"
 					class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					:href="
 						route('rank-staff.export-rank-promote', { rank: props.job.id })
@@ -111,7 +111,7 @@ const deleteJob = () => {
 					Download promotion list
 				</a>
 				<button
-					v-if="permissions.includes('edit job')"
+					v-if="permissions?.includes('edit job')"
 					type="button"
 					class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					@click="toggleEditModal()"
@@ -120,7 +120,7 @@ const deleteJob = () => {
 				</button>
 
 				<button
-					v-if="permissions.includes('delete job')"
+					v-if="permissions?.includes('delete job')"
 					type="button"
 					class="block rounded-md bg-rose-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900"
 					@click="toggleDeleteModal()"
@@ -130,8 +130,8 @@ const deleteJob = () => {
 			</div>
 			<PageTitle
 				:tabs="tabs"
-				@tab-clicked="(tab) => changeTab(tab)"
 				:current="components[currentTab.component]"
+				@tab-clicked="(tab) => changeTab(tab)"
 			/>
 			<component
 				:is="components[currentTab.component]"
@@ -140,7 +140,7 @@ const deleteJob = () => {
 			/>
 		</main>
 		<!-- <NoPermission v-else /> -->
-		<Modal @close="toggleEditModal()" :show="openEditDialog">
+		<Modal :show="openEditDialog" @close="toggleEditModal()">
 			<EditRank :job="job" @formSubmitted="toggleEditModal()" />
 		</Modal>
 		<Modal :show="openConfirmDeleteDialog" @close="toggleDeleteModal()">

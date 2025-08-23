@@ -4,7 +4,7 @@ import {
 	PlusIcon,
 	QueueListIcon,
 } from "@heroicons/vue/20/solid";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import Offices from "./Units.vue";
 defineProps({
 	region: Object,
@@ -58,12 +58,12 @@ const emit = defineEmits(["addRank", "editRank", "deleteRank"]);
 			</div>
 		</div>
 		<Offices
+			class="mt-4"
 			@add-rank="emit('addRank')"
 			@edit-rank="emit('editRank')"
 			@delete-rank="emit('deleteRank')"
 			@restore-rank="emit('restoreRank')"
 			@destroy-rank="emit('destroyRank')"
-			class="mt-4"
 		/>
 	</div>
 </template>

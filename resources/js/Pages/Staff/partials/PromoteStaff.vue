@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -24,7 +24,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data, node) => {
-	Inertia.post(route("staff.promote.store", { staff: data.staff_id }), data, {
+	router.post(route("staff.promote.store", { staff: data.staff_id }), data, {
 		preserveScroll: true,
 		onSuccess: () => {
 			node.reset();
@@ -43,9 +43,9 @@ const submitHandler = (data, node) => {
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
 			<FormKit type="hidden" name="staff_id" :value="staff" />
 			<FormKit
+				id="rank_id"
 				type="select"
 				name="rank_id"
-				id="rank_id"
 				validation="required|integer|min:1|max:2000"
 				label="New Rank"
 				placeholder="Select new Rank"
@@ -54,9 +54,9 @@ const submitHandler = (data, node) => {
 			/>
 			<div class="sm:flex gap-4">
 				<FormKit
+					id="start_date"
 					type="date"
 					name="start_date"
-					id="start_date"
 					:value="today"
 					:min="end_date"
 					:max="start_date"
@@ -68,9 +68,9 @@ const submitHandler = (data, node) => {
 				/>
 			</div>
 			<FormKit
+				id="remarks"
 				type="text"
 				name="remarks"
-				id="remarks"
 				label="Remarks"
 				validation="string|length:2,120"
 				validation-visibility="submit"

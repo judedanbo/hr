@@ -1,10 +1,10 @@
 <script setup>
 import MainLayout from "@/Layouts/HrAuthenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import { useNavigation } from "@/Composables/navigation";
@@ -22,7 +22,7 @@ let search = ref(props.filters.search);
 debouncedWatch(
 	search,
 	() => {
-		Inertia.get(
+		router.get(
 			route("institution.index"),
 			{ search: search.value },
 			{ preserveState: true, replace: true, preserveScroll: true },

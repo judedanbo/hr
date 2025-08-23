@@ -1,5 +1,5 @@
 <script setup>
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 const emit = defineEmits(["formSubmitted"]);
 
@@ -18,7 +18,7 @@ onMounted(async () => {
 });
 
 const submitHandler = (data) => {
-	Inertia.patch(
+	router.patch(
 		route("staff.transfer.approve", {
 			staff: props.transfer.staff_id,
 			unit: props.transfer.unit_id,

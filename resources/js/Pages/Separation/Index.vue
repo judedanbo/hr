@@ -1,8 +1,8 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/inertia-vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
@@ -18,12 +18,12 @@ import {
 	PencilSquareIcon,
 } from "@heroicons/vue/20/solid";
 import PageHeading from "@/Components/PageHeading.vue";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link } from "@inertiajs/vue3";
 import PageActions from "@/Components/PageActions.vue";
 import PageStats from "@/Components/PageStats.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value.auth.permissions);
+const permissions = computed(() => page.props.value?.auth.permissions);
 
 const navigation = computed(() => useNavigation(props.separated));
 import {
@@ -36,7 +36,7 @@ import {
 let openAddDialog = ref(false);
 
 let openSeparation = (staff) => {
-	Inertia.visit(route("person.show", { person: staff }));
+	router.visit(route("person.show", { person: staff }));
 };
 let toggle = useToggle(openAddDialog);
 
@@ -88,7 +88,7 @@ const totalUnits = computed(() => {
 		.toLocaleString();
 });
 onMounted(() => {
-	// unitsStats.value = Inertia.get(route("units.stats"));
+	// unitsStats.value = router.get(route("units.stats"));
 	stats.value = [
 		{
 			id: 1,
@@ -125,8 +125,8 @@ onMounted(() => {
 			<!-- <BreadCrumpVue :links="BreadCrumpLinks" /> -->
 			<PageHeading
 				name="Separation"
-				@searchStaff="(search) => searchUnits(search)"
 				:search="search"
+				@searchStaff="(search) => searchUnits(search)"
 			>
 				<template #breadcrumb>
 					<NewBreadcrumb :links="breadCrumbLinks" />
@@ -140,7 +140,7 @@ onMounted(() => {
 				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
 			>
 				<div
-					v-if="permissions.includes('download separated staff data')"
+					v-if="permissions?.includes('download separated staff data')"
 					class="flex flex-wrap gap-5 mt-4 items-center justify-center"
 				>
 					<a
