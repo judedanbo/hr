@@ -16,7 +16,14 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SeparatedLeaveWithPayExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
+class SeparatedLeaveWithPayExport implements
+    FromQuery,
+    ShouldAutoSize,
+    ShouldQueue,
+    WithHeadings,
+    WithMapping,
+    WithStyles,
+    WithTitle
 {
     use Exportable;
 
@@ -43,7 +50,8 @@ class SeparatedLeaveWithPayExport implements FromQuery, ShouldAutoSize, ShouldQu
             'Rank',
             // 'Status',
             'Date',
-            'contact',
+            'Contact',
+            'Emergency Contact',
         ];
     }
 
