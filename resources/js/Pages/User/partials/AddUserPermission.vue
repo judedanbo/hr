@@ -14,6 +14,7 @@ const props = defineProps({
 });
 
 const List = ref([]);
+const localPermissions = ref([...props.userPermissions]);
 
 onMounted(async () => {
 	const response = await axios.get(route("permission.list"));
@@ -63,7 +64,7 @@ const submitHandler = (data, node) => {
 				<div class="h-64 overflow-scroll">
 					<FormKit
 						id="permissions"
-						v-model="userPermissions"
+						v-model="localPermissions"
 						type="checkbox"
 						name="permissions"
 						validation="required|integer|min:1|max:2000"

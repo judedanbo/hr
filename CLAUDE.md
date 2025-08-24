@@ -4,190 +4,206 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Laravel 10.x HR Management System with Vue.js 3 + Inertia.js frontend. The system manages staff, organizational units, geographic regions, and provides comprehensive reporting capabilities.
+HR Management System built with Laravel 11.x and Vue.js 3 + Inertia.js. Manages staff, organizational units, geographic regions, and provides comprehensive reporting capabilities.
 
-## Development Commands
+## Tech Stack
 
-```bash
-# Backend Development
-composer install              # Install PHP dependencies
-php artisan serve            # Start development server (http://127.0.0.1:8000)
-php artisan migrate          # Run database migrations
-php artisan migrate:fresh    # Reset and re-run all migrations (WARNING: destroys data)
-php artisan test             # Run PHPUnit tests
-./vendor/bin/pint            # Format PHP code (Laravel Pint)
-php artisan telescope        # Debug with Laravel Telescope
-
-# Frontend Development  
-npm install                  # Install Node dependencies
-npm run dev                  # Start Vite dev server with hot reload
-npm run build                # Production build
-npm run lint                 # Run ESLint
-npm run format               # Format with Prettier
-
-# Docker Environment
-docker-compose up -d         # Start containerized environment
-```
-
-## Architecture & Key Patterns
-
-### Tech Stack
 - **Backend**: Laravel 11.x, PHP 8.2+, MySQL
-- **Frontend**: Vue.js 3, Inertia.js 1.2, Tailwind CSS, FormKit
+- **Frontend**: Vue.js 3.5.x, Inertia.js 1.3, Tailwind CSS 3.4.x, FormKit 0.17.x
 - **Authorization**: Spatie Laravel Permission 6.x (role-based)
 - **Authentication**: Laravel Breeze 2.x with custom password change middleware
-- **Exports**: Maatwebsite Excel 3.1 for data exports
+- **Exports**: Maatwebsite Excel 3.1
 - **Activity Tracking**: Spatie Activity Log 4.x
+- **Debugging**: Laravel Telescope 5.x
 
 ### Required PHP Extensions
-- mbstring (required for string operations)
+- mbstring (currently using polyfill at `bootstrap/mbstring-polyfill.php`)
 - pdo_mysql (required for database connectivity)
 - xml, curl, fileinfo, openssl, json
 
-### Core Domain Model
+## Essential Commands
+
+```bash
+# Development
+php artisan serve                     # Start dev server (http://127.0.0.1:8000)
+npm run dev                           # Start Vite with hot reload
+composer run dev                      # Alternative to npm run dev
+
+# Database
+php artisan migrate                   # Run migrations
+php artisan migrate:fresh --seed     # Reset database with seeders (destroys data!)
+php artisan db:seed                  # Run seeders
+
+# Testing
+php artisan test                      # Run all tests
+php artisan test --filter TestName   # Run specific test
+php artisan test tests/Feature/      # Run feature tests only
+
+# Code Quality
+./vendor/bin/pint                     # Format PHP code (PSR-12)
+./vendor/bin/pint --dirty            # Format only changed files
+npm run lint                         # ESLint for JavaScript
+npm run format                       # Prettier formatting
+
+# Production
+npm run build                        # Build frontend assets
+php artisan optimize:clear           # Clear all caches
+php artisan telescope:prune          # Clean old Telescope entries
+```
+
+## Architecture
+
+### Laravel 11 Structure
+- **Bootstrap**: Unified configuration in `bootstrap/app.php`
+- **Middleware**: Configured in bootstrap file (no more Http/Kernel.php)
+- **Exception Handling**: Integrated in bootstrap file
+- **Console Commands**: Auto-discovered from `app/Console/Commands`
+
+### Domain Model
 
 ```
 Person (central entity)
-├── InstitutionPerson (Staff relationship)
-│   └── StaffUnit (Unit assignments)
+├── InstitutionPerson (Staff pivot with extra fields)
+│   ├── StaffUnit (Unit assignments with dates)
+│   ├── JobStaff (Rank/position history)
+│   └── PositionStaff (Position assignments)
 ├── Dependents
-├── Contacts  
-├── Identities (national ID, passport, etc.)
-└── Qualifications
+├── Contacts (phone, email, emergency)
+├── PersonIdentity (national ID, passport)
+└── Qualifications (with documents)
 
-Institution → Units (hierarchical departments/divisions)
-             └── Parent/Child relationships
+Institution
+├── Units (hierarchical: Department → Division → Unit)
+└── InstitutionPerson (staff relationships)
 
-Geographic Hierarchy:
+Geographic Structure:
 Region → District → Office → Units
 
-Job → JobCategory (rank/position hierarchy)
+Job Management:
+JobCategory → Job (rank hierarchy)
+Position (specific roles)
 ```
 
-### Key Architectural Decisions
+### Key Patterns
 
-1. **Inertia.js Pattern**: Server-side routing with client-side reactivity. Controllers return `Inertia::render()` with Vue components.
+1. **Inertia.js SPA Pattern**
+   - Controllers return `Inertia::render('Page/Component', ['data' => $data])`
+   - Vue pages in `resources/js/Pages/`
+   - Shared components in `resources/js/Components/`
 
-2. **Authorization**: Always use `Gate::allows()` instead of `auth()->user()->can()` for consistency.
+2. **Authorization**
+   - Always use `Gate::allows('permission-name')` in controllers
+   - Permissions follow pattern: `model.action` (e.g., `staff.create`)
+   - Three main roles: `super-administrator`, `admin`, `staff`
+   - Policies in `app/Policies/`
 
-3. **Soft Deletes**: Implemented across all models - use `withTrashed()` when needed.
+3. **Data Export System**
+   - Export classes in `app/Exports/`
+   - Implements Maatwebsite Excel interfaces
+   - Queued exports for large datasets
 
-4. **Activity Logging**: All model changes tracked via Spatie Activity Log.
+4. **Soft Deletes**
+   - Implemented on all major models
+   - Use `withTrashed()` to include deleted records
+   - Activity log tracks all changes
 
-5. **Export System**: Dedicated export classes in `app/Exports/` for each report type.
+5. **Custom Middleware**
+   - `PasswordChanged`: Forces password change on first login
+   - `HandleInertiaRequests`: Shares global data with Vue
 
-## Common Development Tasks
+## Form Request Validation
 
-### Creating New Features
+All validation uses dedicated Form Request classes in `app/Http/Requests/`:
+- `Store*Request` for creation
+- `Update*Request` for updates
+- Consistent validation rules and error messages
 
-1. **New Model/Migration**:
-```bash
-php artisan make:model ModelName -m
-php artisan make:policy ModelNamePolicy --model=ModelName
+## Important Business Rules
+
+1. **Staff Management**
+   - Person → InstitutionPerson creates staff record
+   - Staff can have multiple unit assignments (history tracked)
+   - Promotions tracked through JobStaff pivot
+   - Transfers managed via unit assignment dates
+
+2. **Unit Hierarchy**
+   - Units can have parent-child relationships
+   - Units belong to Institutions
+   - Geographic assignment through Office relationships
+
+3. **Status Tracking**
+   - Employee statuses: Active, Retired, Leave, Suspended, etc.
+   - Each status change is logged with dates
+   - Separation types tracked separately
+
+## Known Issues & Workarounds
+
+1. **Missing mbstring Extension**
+   - Temporary polyfill at `bootstrap/mbstring-polyfill.php`
+   - Install proper extension: `sudo apt-get install php8.3-mbstring`
+
+2. **PSR-4 Compliance Issues**
+   - `app/Traits/PersonTrait.php` - class name mismatch
+   - `app/Http/Requests/UpdateJobRequest.php` - wrong class name
+   - Run `composer dump-autoload` after fixing
+
+3. **Export Classes**
+   - Some have duplicate interface implementations (check before modifying)
+   - Logic issues in some queries (e.g., SeparatedLeaveWithoutPayExport)
+
+4. **Vue 3.5 Compatibility**
+   - Vue 3.5+ is stricter about v-model on props
+   - Fixed in: `AddUserPermission.vue`, `UserRoleForm.vue`
+   - Pattern: Create local ref copy of props for v-model: `const localProp = ref([...props.propName])`
+
+## Development Workflow
+
+1. **Feature Development**
+   ```bash
+   php artisan make:model ModelName -mfsc  # Model, migration, factory, seeder, controller
+   php artisan make:request StoreModelNameRequest
+   php artisan make:policy ModelNamePolicy --model=ModelName
+   ```
+
+2. **Vue Component Creation**
+   - Page components: `resources/js/Pages/ModelName/Index.vue`
+   - Shared components: `resources/js/Components/ComponentName.vue`
+   - Use FormKit for complex forms
+   - Follow existing Tailwind patterns
+
+3. **Testing**
+   ```bash
+   php artisan make:test ModelNameTest --unit
+   php artisan make:test ModelNameFeatureTest
+   ```
+
+4. **Before Committing**
+   ```bash
+   ./vendor/bin/pint && npm run lint
+   php artisan test
+   ```
+
+## Environment Variables
+
+Required in `.env`:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=audit
+DB_USERNAME=root
+DB_PASSWORD=
+
+APP_URL=http://localhost:8000
+SESSION_DOMAIN=localhost
 ```
 
-2. **New Controller with Views**:
-```bash
-php artisan make:controller ModelNameController --resource
-# Create corresponding Vue components in resources/js/Pages/
-```
+## Debugging Tools
 
-3. **Add Permissions**:
-- Define in database seeder or migration
-- Check with `Gate::allows('permission-name')` in controllers
-- Assign via Spatie methods
-
-### Working with Vue Components
-
-- Components located in `resources/js/Pages/` (page components) and `resources/js/Components/` (reusable)
-- Use FormKit for complex forms: `@formkit/vue`
-- Charts via Chart.js with Vue wrapper
-- Follow existing component patterns for consistency
-
-### Database Operations
-
-```bash
-# Create new migration
-php artisan make:migration create_table_name
-
-# Run specific migration
-php artisan migrate --path=database/migrations/2025_01_22_example.php
-
-# Rollback last migration
-php artisan migrate:rollback
-
-# Seed database
-php artisan db:seed
-```
-
-### Testing
-
-```bash
-# Run all tests
-php artisan test
-
-# Run specific test
-php artisan test --filter TestClassName
-
-# Run with coverage
-php artisan test --coverage
-```
-
-## Important Business Logic
-
-### Staff Management Flow
-1. Create Person → Create InstitutionPerson (links to Institution)
-2. Assign to Unit via StaffUnit
-3. Manage promotions through Job/JobCategory changes
-4. Track transfers via unit assignment history
-
-### Unit Hierarchy
-- Units can have parent-child relationships
-- Units belong to Institutions
-- Units can be assigned to geographic Offices
-- Department → Division → Unit hierarchy common
-
-### Permission System
-- Three main roles: `super-administrator`, `admin`, `staff`
-- Permissions follow pattern: `model.action` (e.g., `staff.create`, `unit.delete`)
-- Super-administrators bypass all permission checks
-
-## Code Style Guidelines
-
-### PHP/Laravel
-- Use Laravel Pint for formatting (configured for PSR-12)
-- Follow Laravel naming conventions
-- Use Eloquent relationships over raw queries
-- Implement policies for authorization
-
-### Vue/JavaScript  
-- Use Composition API for new components
-- Follow existing FormKit patterns for forms
-- Use Tailwind classes, avoid inline styles
-- Components should be self-contained with clear props
-
-### Git Workflow
-- Feature branches from `main`
-- Descriptive commit messages
-- Run linters before committing:
-```bash
-./vendor/bin/pint && npm run lint
-```
-
-## Debugging
-
-- Laravel Telescope available at `/telescope` (local only)
-- Check `storage/logs/laravel.log` for errors
-- Vue Devtools for frontend debugging
-- `dd()` and `dump()` for backend debugging
-
-## Environment Configuration
-
-Required `.env` variables:
-- Standard Laravel database config (DB_*)
-- Mail configuration for notifications
-- `APP_URL` must match your local domain
-- `SESSION_DOMAIN` for Inertia.js
+- **Laravel Telescope**: `/telescope` (local only)
+- **Laravel Debugbar**: Shown in development mode
+- **Logs**: `storage/logs/laravel.log`
+- **Vue Devtools**: For frontend debugging
 
 ===
 
@@ -203,7 +219,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.4.11
 - inertiajs/inertia-laravel (INERTIA) - v1
-- laravel/framework (LARAVEL) - v10
+- laravel/framework (LARAVEL) - v11
 - laravel/prompts (PROMPTS) - v0
 - tightenco/ziggy (ZIGGY) - v1
 - laravel/pint (PINT) - v1
@@ -378,18 +394,34 @@ Route::get('/users', function () {
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
 
 
-=== laravel/v10 rules ===
+=== laravel/v11 rules ===
 
-## Laravel 10
+## Laravel 11
 
 - Use the `search-docs` tool to get version specific documentation.
+- This project upgraded from Laravel 10 without migrating to the new streamlined Laravel 11 file structure.
+- This is **perfectly fine** and recommended by Laravel. Follow the existing structure from Laravel 10. We do not to need migrate to the Laravel 11 structure unless the user explicitly requests that.
+
+### Laravel 10 Structure
 - Middleware typically live in `app/Http/Middleware/` and service providers in `app/Providers/`.
-- There is no `bootstrap/app.php` application configuration in Laravel 10:
+- There is no `bootstrap/app.php` application configuration in a Laravel 10 structure:
     - Middleware registration is in `app/Http/Kernel.php`
     - Exception handling is in `app/Exceptions/Handler.php`
     - Console commands and schedule registration is in `app/Console/Kernel.php`
     - Rate limits likely exist in `RouteServiceProvider` or `app/Http/Kernel.php`
-- When using Eloquent model casts, you must use `protected $casts = [];` and not the `casts()` method. The `casts()` method isn't available on models in Laravel 10.
+
+### Database
+- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
+- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
+
+### Models
+- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
+
+### New Artisan Commands
+- List Artisan commands using Boost's MCP tool, if available. New commands available in Laravel 11:
+    - `php artisan make:enum`
+    - `php artisan make:class`
+    - `php artisan make:interface`
 
 
 === pint/core rules ===
