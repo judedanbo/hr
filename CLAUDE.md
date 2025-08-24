@@ -32,12 +32,17 @@ docker-compose up -d         # Start containerized environment
 ## Architecture & Key Patterns
 
 ### Tech Stack
-- **Backend**: Laravel 10.x, PHP 8.1+, MySQL
+- **Backend**: Laravel 11.x, PHP 8.2+, MySQL
 - **Frontend**: Vue.js 3, Inertia.js 1.2, Tailwind CSS, FormKit
 - **Authorization**: Spatie Laravel Permission 6.x (role-based)
-- **Authentication**: Laravel Breeze with custom password change middleware
+- **Authentication**: Laravel Breeze 2.x with custom password change middleware
 - **Exports**: Maatwebsite Excel 3.1 for data exports
 - **Activity Tracking**: Spatie Activity Log 4.x
+
+### Required PHP Extensions
+- mbstring (required for string operations)
+- pdo_mysql (required for database connectivity)
+- xml, curl, fileinfo, openssl, json
 
 ### Core Domain Model
 
