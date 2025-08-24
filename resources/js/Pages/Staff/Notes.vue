@@ -6,7 +6,7 @@ import { useToggle } from "@vueuse/core";
 import NewNote from "./NewNote.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 defineProps({
 	notes: Array,

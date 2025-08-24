@@ -14,7 +14,7 @@ defineProps({
 	person: { type: Number, required: true },
 });
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const emit = defineEmits(["editContact", "deleteDependent"]);
 const contactModel = ref(null);

@@ -9,7 +9,7 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const page = usePage();
-const user = computed(() => page.props.value?.auth.user);
+const user = computed(() => page.props?.auth.user);
 defineProps({
 	userNavigation: Array,
 });

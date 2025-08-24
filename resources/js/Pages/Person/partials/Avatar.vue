@@ -5,7 +5,7 @@ import { computed } from "vue";
 const emit = defineEmits(["change-avatar"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 const props = defineProps({
 	initials: {
 		type: String,

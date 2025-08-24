@@ -8,7 +8,7 @@ import BreezeResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const user = computed(() => page.props.value?.auth.user);
+const user = computed(() => page.props?.auth.user);
 
 import AppMenu from "@/Components/Menu.vue";
 

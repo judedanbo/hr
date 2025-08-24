@@ -10,7 +10,7 @@ import Delete from "./partials/Delete.vue";
 import PromotionList from "./partials/PromotionList.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const emit = defineEmits(["closeForm"]);
 

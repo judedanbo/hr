@@ -25,7 +25,7 @@ const props = defineProps({
 });
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 </script>
 
 <template>

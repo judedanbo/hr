@@ -37,7 +37,7 @@ let breadcrumbLinks = [
 ];
 const page = usePage();
 const permissions = computed(() => {
-	return page.props.value?.auth.permissions;
+	return page.props?.auth.permissions;
 });
 const openEditContact = ref(false);
 const toggleEditContactModal = useToggle(openEditContact);

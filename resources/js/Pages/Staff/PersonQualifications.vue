@@ -11,7 +11,7 @@ import NewModal from "@/Components/NewModal.vue";
 import QualificationList from "../Qualification/QualificationList.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 // Edit Qualification
 const openEditModal = ref(false);
 const toggleEditModal = useToggle(openEditModal);

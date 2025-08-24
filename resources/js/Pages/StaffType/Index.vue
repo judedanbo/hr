@@ -10,7 +10,7 @@ import DeleteStaffType from "./Delete.vue";
 import { router } from "@inertiajs/vue3";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const emit = defineEmits(["closeForm", "editType", "deleteType"]);
 let props = defineProps({

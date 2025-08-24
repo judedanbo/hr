@@ -10,7 +10,7 @@ import EditStaffType from "@/Pages/StaffType/Edit.vue";
 const emit = defineEmits(["closeForm", "editType", "deleteType"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 let props = defineProps({
 	types: Array,

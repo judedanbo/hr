@@ -5,7 +5,7 @@ import { computed } from "vue";
 const emit = defineEmits(["editTransfer", "deleteTransfer", "approveTransfer"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 const subMenuClicked = (action, model) => {
 	if (action == "Edit") {
 		emit("editTransfer", model);

@@ -6,7 +6,7 @@ import { FormKitMessages } from "@formkit/vue";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const errors = computed(() => page.props.value?.errors);
+const errors = computed(() => page.props?.errors);
 const emit = defineEmits(["imageUpdated", "uploadFailed"]);
 const props = defineProps({
 	staff: {

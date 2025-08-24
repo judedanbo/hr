@@ -23,7 +23,7 @@ const props = defineProps({
 	},
 });
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 const subMenuClicked = (action, model) => {
 	if (action == "Open") {
 		// @click="emit('openUser', user.id)"

@@ -8,7 +8,7 @@ import AddAddress from "../Person/partials/AddAddress.vue";
 import AddContact from "../Person/partials/AddContact.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 defineProps({
 	address: Object,
 	contacts: Array,

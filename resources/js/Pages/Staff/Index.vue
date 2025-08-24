@@ -18,7 +18,7 @@ import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 const navigation = computed(() => useNavigation(props.staff));
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 let props = defineProps({
 	staff: { type: Object, required: true },
