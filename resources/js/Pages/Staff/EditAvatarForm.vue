@@ -1,6 +1,6 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
-import { ref, computed, defineEmits } from "vue";
+import { ref, computed } from "vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
 import { FormKitMessages } from "@formkit/vue";
 import { usePage } from "@inertiajs/vue3";

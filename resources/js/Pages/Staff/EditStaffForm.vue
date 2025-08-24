@@ -2,7 +2,7 @@
 import { getNode } from "@formkit/core";
 import { useForm } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
-import { ref, onMounted, defineEmits } from "vue";
+import { ref, onMounted } from "vue";
 import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
 import ContactForm from "@/Pages/Person/partials/ContactForm.vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";

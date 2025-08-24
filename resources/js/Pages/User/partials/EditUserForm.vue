@@ -1,7 +1,7 @@
 <script setup>
 import { getNode } from "@formkit/core";
 import { router } from "@inertiajs/vue3";
-import { ref, onMounted, defineEmits } from "vue";
+import { ref, onMounted } from "vue";
 
 import UserRoleForm from "./UserRoleForm.vue";
 
