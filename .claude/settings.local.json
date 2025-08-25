@@ -13,9 +13,14 @@
       "Bash(npm:*)",
       "Bash(git checkout:*)",
       "Bash(timeout 10s npm run dev)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "mcp__laravel-boost__database-schema",
+      "mcp__laravel-boost__tinker"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ]
 }

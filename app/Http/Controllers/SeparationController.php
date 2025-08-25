@@ -4,37 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Enums\Identity;
 use App\Models\Separation;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class SeparationController extends Controller
 {
-    public function index()
+    public function index(): RedirectResponse| \Inertia\Response
     {
         if (Gate::denies('view all separations')) {
             activity()
                 ->causedBy(auth()->user())
-                ->event('view separated staff')
+                ->event('view all separations')
                 ->withProperties([
                     'result' => 'failed',
                     'user_ip' => request()->ip(),
                     'user_agent' => request()->userAgent(),
                 ])
-                ->log('attempted to view separated staff');
+                ->log('attempted to view all separations');
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view separated staff');
         }
         activity()
             ->causedBy(auth()->user())
-            ->event('view separated staff')
+            ->event('view all separations')
             ->withProperties([
                 'result' => 'success',
                 'user_ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ])
-            ->log('viewed separated staff');
+            ->log('viewed all separations');
         $separated = Separation::query()
-            // ->retired()
-            // ->where('current_status', '!=', 'A')
             ->with(['person' => function ($query) {
                 $query->with(['contacts', 'identities']);
             }, 'statuses', 'notes'])
@@ -81,11 +81,11 @@ class SeparationController extends Controller
                             'type' => $item->contact_type->label(),
                             'value' => $item->contact
                         ];
-                    }) : '',
+                    }) : [],
                     'current_rank' => $staff->currentRank ? [
                         'id' => $staff->currentRank?->id,
                         'name' => $staff->currentRank?->job?->name,
-                        'job_id' => $staff->currentRank->name,
+                        'job_id' => $staff->currentRank?->job?->id,
                         'start_date' => $staff->currentRank->start_date?->format('d M Y'),
                         'start_date_distance' => $staff->currentRank->start_date?->diffForHumans(),
                         'end_date' => $staff->currentRank->end_date?->format('d M Y'),
@@ -100,7 +100,7 @@ class SeparationController extends Controller
         ]);
     }
 
-    public function show()
+    public function show(Separation $staff): RedirectResponse| \Inertia\Response
     {
         if (Gate::denies('view separation')) {
             activity()
@@ -122,6 +122,7 @@ class SeparationController extends Controller
                 'user_ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ])
+            ->performedOn($staff)
             ->log('viewed separated staff');
         return Inertia::render('Separation/Show', []);
     }

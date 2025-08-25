@@ -100,7 +100,7 @@ let BreadCrumpLinks = [
 			>
 				<div class="p-4">
 					<BreadCrumpVue :links="BreadCrumpLinks" />
-					<div class="flex justify-center items-center">
+					<div class="flex justify-center items-center mt-4">
 						<FormKit
 							v-if="permissions?.includes('view all institutions')"
 							v-model="search"

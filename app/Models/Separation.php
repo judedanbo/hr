@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeStatusEnum;
 use App\Models\Scopes\SeparationScope;
 use App\Traits\LogAllTraits;
 use App\Traits\PersonNotesTrait;
@@ -29,6 +30,7 @@ class Separation extends Model
         'hire_date' => 'date',
         'end_date' => 'date',
     ];
+
 
     // public function scopeSearch(Builder $query, $search)
     // {

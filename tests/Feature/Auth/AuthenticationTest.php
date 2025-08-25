@@ -25,6 +25,7 @@ class AuthenticationTest extends TestCase
         $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'password',
+            'password_change_at' => null,
         ]);
 
         $this->assertAuthenticated();
@@ -33,11 +34,14 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_redirect_to_change_password_page()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(
+            ['password_change_at' => null]
+        );
 
         $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'password',
+
         ]);
 
         $this->assertAuthenticated();
@@ -52,11 +56,14 @@ class AuthenticationTest extends TestCase
 
     public function test_user_can_change_password()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(
+            ['password_change_at' => null]
+        );
 
         $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'password',
+
         ]);
 
         $this->assertAuthenticated();
