@@ -1,8 +1,7 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
@@ -12,7 +11,6 @@ import TableHeader from "@/Components/TableHeader.vue";
 import UserList from "./partials/UserList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { Link } from "@inertiajs/vue3";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import EditUserForm from "./partials/EditUserForm.vue";
 import Delete from "./partials/Delete.vue";
@@ -72,6 +70,10 @@ let BreadCrumpLinks = [
 		url: "",
 	},
 ];
+const page = usePage();
+const permissions = computed(() => {
+	return page.props?.auth.permissions;
+});
 </script>
 
 <template>
