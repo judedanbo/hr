@@ -120,7 +120,7 @@ Route::get('/dashboard', function () {
     // dd($error);
     if (auth()->user()->hasRole('super-administrator')) {
         if (Institution::count() < 1) {
-            session()->flash('error', 'Please create institution to proceed');
+            session()->flash('info', 'No institution found. Please create an institution to proceed');
             return redirect()->route('institution.index');
         }
         return redirect()->route('institution.show', [1]);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\LogAllTraits;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,18 +14,17 @@ use Illuminate\Support\Facades\Storage;
 
 class InstitutionPerson extends Pivot
 {
-    use LogAllTraits;
+    use HasFactory, LogAllTraits;
 
     protected $fillable = [
         'institution_id',
         'person_id',
         'file_number',
         'staff_number',
-        'email',
         'old_staff_number',
         'hire_date',
         'end_date',
-        'job_category_id',
+        // 'job_category_id',
     ];
     // protected $appends =  ['status'];
 
