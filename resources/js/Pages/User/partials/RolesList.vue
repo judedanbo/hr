@@ -9,7 +9,7 @@ defineProps({
 const emit = defineEmits(["deleteRole"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const clicked = (action, model) => {
 	if (action === "Revoke") {

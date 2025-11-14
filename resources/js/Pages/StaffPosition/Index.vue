@@ -10,7 +10,7 @@ import { router } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const emit = defineEmits(["closeForm", "editPosition", "deletePosition"]);
 let props = defineProps({

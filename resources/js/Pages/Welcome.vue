@@ -12,7 +12,7 @@ defineProps({
 });
 
 const page = usePage();
-const user = computed(() => page.props.value?.auth?.user);
+const user = computed(() => page.props?.auth?.user);
 
 const dark = useDark();
 const toggle = useToggle(dark);

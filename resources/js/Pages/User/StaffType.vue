@@ -16,7 +16,7 @@ let props = defineProps({
 });
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 let openStaffTypeModal = ref(false);
 const toggleStaffTypeModal = useToggle(openStaffTypeModal);

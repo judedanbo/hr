@@ -26,8 +26,8 @@ import {
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth?.permissions);
-const alert = computed(() => page.props.value?.flash);
+const permissions = computed(() => page.props?.auth?.permissions);
+const alert = computed(() => page.props?.flash);
 const navigation = [
 	{
 		name: "Dashboard",

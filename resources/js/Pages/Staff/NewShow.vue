@@ -51,7 +51,7 @@ const showAvatarModel = ref(false);
 const toggleAvatarModal = useToggle(showAvatarModel);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const openDeleteAvatarModel = ref(false);
 const toggleDeleteAvatarModal = useToggle(openDeleteAvatarModel);

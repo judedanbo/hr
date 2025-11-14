@@ -10,7 +10,7 @@ import List from "./partials/List.vue";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 defineProps({
 	dependents: { type: Array, default: () => [] },
 	staffId: { type: Number, required: true },

@@ -10,7 +10,7 @@ import { useToggle } from "@vueuse/core";
 import StaffStatusHistory from "./partials/StaffStatusHistory.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const emit = defineEmits(["closeForm", "editHistory", "deleteHistory"]);
 

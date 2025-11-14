@@ -9,6 +9,7 @@ const props = defineProps({
 	},
 });
 let roles = ref([]);
+const localUserRoles = ref([...props.userRoles]);
 onMounted(async () => {
 	const response = await axios.get(route("roles.list"));
 	roles.value = response.data;
@@ -19,7 +20,7 @@ onMounted(async () => {
 	<div>
 		<FormKit
 			id="roles"
-			v-model="userRoles"
+			v-model="localUserRoles"
 			type="checkbox"
 			name="roles"
 			validation="required|integer|min:1|max:2000"

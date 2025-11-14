@@ -15,9 +15,13 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RecruitmentSummary implements FromQuery,
-    // FromCollection,
-    ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithTitle, WithTitle
+class RecruitmentSummary implements
+    FromQuery,
+    ShouldAutoSize,
+    ShouldQueue,
+    WithHeadings,
+    WithMapping,
+    WithTitle
 {
     use Exportable;
 

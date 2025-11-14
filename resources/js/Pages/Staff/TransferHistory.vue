@@ -21,7 +21,7 @@ const editTransfer = (model) => {
 	toggleEditTransferModal();
 };
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 const openApproveTransferModal = ref(false);
 const toggleApproveTransferModal = useToggle(openApproveTransferModal);
 const approveModel = ref(null);

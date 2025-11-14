@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(test:*)",
+      "Bash(composer update:*)",
+      "Bash(php:*)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(composer show:*)",
+      "Bash(npm outdated)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(git checkout:*)",
+      "Bash(timeout 10s npm run dev)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

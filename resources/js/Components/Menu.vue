@@ -21,7 +21,7 @@ import VMenu from "@/Components/VMenu.vue";
 const isOpen = ref(false);
 
 const page = usePage();
-const user = computed(() => page.props.value?.auth.user);
+const user = computed(() => page.props?.auth.user);
 </script>
 <template>
 	<div

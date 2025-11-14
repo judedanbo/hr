@@ -20,6 +20,7 @@ import NoPermission from "@/Components/NoPermission.vue";
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
+// const permissions = computed(() => page.props?.auth.permissions);
 
 let props = defineProps({
 	institutions: Object,
@@ -89,7 +90,6 @@ let BreadCrumpLinks = [
 
 <template>
 	<Head title="Institutions" />
-
 	<MainLayout>
 		<div
 			v-if="permissions?.includes('view all institutions')"
