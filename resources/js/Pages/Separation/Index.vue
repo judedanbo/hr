@@ -23,7 +23,7 @@ import PageActions from "@/Components/PageActions.vue";
 import PageStats from "@/Components/PageStats.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 const navigation = computed(() => useNavigation(props.separated));
 import {

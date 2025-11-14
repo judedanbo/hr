@@ -9,7 +9,7 @@ import {
 import { computed } from "vue";
 const emit = defineEmits(["openEditPerson"]);
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 defineProps({
 	person: {
 		type: Object,

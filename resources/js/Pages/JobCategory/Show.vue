@@ -17,7 +17,7 @@ let openAddDialog = ref(false);
 let toggle = useToggle(openAddDialog);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 let openEditDialog = ref(false);
 const toggleEditCategory = useToggle(openEditDialog);

@@ -20,7 +20,7 @@ import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import NoPermission from "@/Components/NoPermission.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 let props = defineProps({
 	job: Object,
 	filters: Object,

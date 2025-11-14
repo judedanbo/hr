@@ -6,7 +6,7 @@ import StaffStatus from "../../StaffStatus/Index.vue";
 import { computed } from "vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 defineProps({
 	staff: {
 		type: Object,

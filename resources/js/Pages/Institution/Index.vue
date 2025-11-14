@@ -19,7 +19,7 @@ import { useNavigation } from "@/Composables/navigation";
 import NoPermission from "@/Components/NoPermission.vue";
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 
 let props = defineProps({
 	institutions: Object,

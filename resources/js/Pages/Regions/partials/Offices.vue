@@ -5,7 +5,7 @@ import { useNavigation } from "@/Composables/navigation";
 import { computed } from "vue";
 import Pagination from "@/Components/Pagination.vue";
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 const props = defineProps({
 	offices: { type: Array, default: () => {} },
 });

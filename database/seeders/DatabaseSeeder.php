@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ReportPermissionSeeder::class);
         $this->call(PromotionsPermissionSeeder::class);
         $this->call(QualificationPermissionSeeder::class);
+        $this->call(InstitutionPermissionSeeder::class);
         $this->call(SuperAdminSeeder::class);
 
         $user = \App\Models\User::where('email', 'admin@audit.gov.gh')->first();

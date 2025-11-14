@@ -12,7 +12,7 @@ import DocumentPreview from "./partials/DocumentPreview.vue";
 const emit = defineEmits(["editQualification", "deleteQualification"]);
 
 const page = usePage();
-const permissions = computed(() => page.props.value?.auth.permissions);
+const permissions = computed(() => page.props?.auth.permissions);
 defineProps({
 	qualifications: {
 		type: Array,
