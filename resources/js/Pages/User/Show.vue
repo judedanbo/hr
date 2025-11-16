@@ -15,6 +15,7 @@ import EditStaffForm from "./EditStaffForm.vue";
 import EditContactForm from "./EditContactForm.vue";
 import NoItem from "@/Components/NoItem.vue";
 import NoPermission from "@/Components/NoPermission.vue";
+import { url } from "@formkit/icons";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -30,9 +31,9 @@ let props = defineProps({
 });
 
 let breadcrumbLinks = [
-	{ name: "Dashboard", url: "" },
+	{ name: "Dashboard", url: "/dashboard" },
 	{ name: "Users", url: "/user" },
-	{ name: props.user.name },
+	{ name: props.user.name, url: null },
 	4, // { name: props.person.name, url: "/" },
 ];
 const page = usePage();

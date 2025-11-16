@@ -22,7 +22,7 @@ defineProps({
 	>
 		<div class="flex-1 flex justify-between sm:hidden">
 			<Link
-				:href="navigation.prev_page_url"
+				:href="navigation.prev_page_url ?? 'null'"
 				preserve-scroll
 				class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
 			>

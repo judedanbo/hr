@@ -32,6 +32,7 @@ class UserController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted access to view all users');
+
             return redirect()->back()->with('error', 'You are not authorized to view all users');
         }
         activity()
@@ -48,7 +49,7 @@ class UserController extends Controller
             ->withCount(['roles', 'permissions'])
             ->paginate(10)
             ->withQueryString()
-            ->through(fn($user) => [
+            ->through(fn ($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -98,11 +99,12 @@ class UserController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to create a new user');
+
             return redirect()->back()->with('error', 'You are not authorized to create a new user');
         }
         $password = Str::random(8);
         $bio = $request->all()['userData']['bio'];
-        $bio['password'] = Hash::make($password); //bcrypt('password');
+        $bio['password'] = Hash::make($password); // bcrypt('password');
         $newUser = User::create($bio);
         if ($request->all()['userData']['roles']) {
             $newUser->assignRole($request->all()['userData']['roles']);
@@ -133,6 +135,7 @@ class UserController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to view a user');
+
             return redirect()->back()->with('error', 'You are not authorized to view this user');
         }
         $user->load(['roles', 'permissions']);
@@ -147,6 +150,7 @@ class UserController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('viewed a user');
+
         return Inertia::render('User/Show', [
             'user' => [
                 'id' => $user->id,
@@ -199,6 +203,7 @@ class UserController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to update a user');
+
             return redirect()->back()->with('error', 'You are not authorized to update this user');
         }
         // return $request->validated();
@@ -224,6 +229,7 @@ class UserController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to delete a user');
+
             return redirect()->back()->with('error', 'You are not authorized to delete this user');
         }
         $user->delete();
@@ -241,6 +247,7 @@ class UserController extends Controller
             }),
         ];
     }
+
     public function permissions(User $user)
     {
         // return $user->getAllPermissions();
@@ -253,6 +260,7 @@ class UserController extends Controller
             }),
         ];
     }
+
     public function rolesPermissions(User $user)
     {
         // return $user->getAllPermissions();
@@ -279,6 +287,7 @@ class UserController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to reset a user password');
+
             return redirect()->back()->with('error', 'You are not authorized to reset this user password');
         }
         activity()
@@ -305,5 +314,19 @@ class UserController extends Controller
         });
 
         return redirect()->route('user.index')->with('success', 'Password reset successfully');
+    }
+
+    public function list()
+    {
+        return User::query()
+            ->withCount(['roles', 'permissions'])
+            ->paginate(20)
+            ->through(fn ($user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles_count' => $user->roles_count,
+                'permissions_count' => $user->permissions_count,
+            ]);
     }
 }

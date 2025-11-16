@@ -10,10 +10,14 @@ import { computed } from "vue";
 const emit = defineEmits(["openEditPerson"]);
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
-defineProps({
+const props = defineProps({
 	person: {
 		type: Object,
 		default: () => ({}),
+	},
+	status: {
+		type: String,
+		default: "A",
 	},
 });
 </script>
@@ -60,9 +64,14 @@ defineProps({
 							aria-hidden="true"
 						/>
 					</dt>
-					<dd class="text-sm leading-6 text-gray-500 dark:text-gray-50">
+					<dd
+						v-if="person.dob"
+						class="text-md leading-6 text-gray-500 dark:text-gray-50"
+					>
 						<time :datetime="person.dob_value"> {{ person.dob }}</time>
-						({{ person.dob_distance }})
+						<div v-if="status == 'A'" class="text-sm">
+							({{ person.dob_distance }})
+						</div>
 					</dd>
 				</div>
 				<div class="mt-4 flex w-full flex-none gap-x-4 px-6">

@@ -28,7 +28,7 @@ class PersonController extends Controller
                 ->with('institution', 'dependent', 'identities')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn($person) => [
+                ->through(fn ($person) => [
                     'id' => $person->id,
                     'name' => $person->full_name,
                     'gender' => $person->gender?->label(),
@@ -59,6 +59,7 @@ class PersonController extends Controller
         try {
             $avatar = Storage::disk('public')->put('/storage/', $request->image);
             dd($avatar);
+
             return Person::create($request->validated());
             if (! $avatar) {
                 return response()->json(['error', 'the file could not be saved', 500]);
@@ -93,6 +94,7 @@ class PersonController extends Controller
             'qualifications',
         ])
             ->whereId($person)->firstOrFail();
+
         // dd($selectedPerson);
         return Inertia::render('Person/NewShow', [
             'person' => [
@@ -100,7 +102,7 @@ class PersonController extends Controller
                 'name' => $selectedPerson->full_name,
                 'dob-value' => $selectedPerson->date_of_birth,
                 'dob' => $selectedPerson->date_of_birth?->format('d M Y'),
-                'dob_distance' => $selectedPerson->date_of_birth?->diffInYears() . ' years old',
+                'dob_distance' => $selectedPerson->date_of_birth ? number_format($selectedPerson->date_of_birth->diffInYears(), 0) . ' years old' : null,
                 'gender' => $selectedPerson->gender?->label(),
                 'ssn' => $selectedPerson->social_security_number,
                 'initials' => $selectedPerson->initials,
@@ -108,12 +110,12 @@ class PersonController extends Controller
                 'religion' => $selectedPerson->religion,
                 'marital_status' => $selectedPerson->marital_status?->label(),
                 'image' => $selectedPerson->image ? '/storage/' . $selectedPerson->image : null,
-                'identities' => $selectedPerson->identities->count() > 0 ? $selectedPerson->identities->map(fn($id) => [
+                'identities' => $selectedPerson->identities->count() > 0 ? $selectedPerson->identities->map(fn ($id) => [
                     'type' => str_replace('_', ' ', $id->id_type->name),
                     'number' => $id->id_number,
                 ]) : null,
             ],
-            'contacts' => $selectedPerson->contacts->count() > 0 ? $selectedPerson->contacts->map(fn($contact) => [
+            'contacts' => $selectedPerson->contacts->count() > 0 ? $selectedPerson->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 // 'contact_type_id' => $contact->contact_type_id,
@@ -132,7 +134,7 @@ class PersonController extends Controller
             ] : null,
             'staff' => $selectedPerson->institution->count() > 0 ? $selectedPerson->institution->map(function ($inst) use ($selectedPerson) {
                 return [
-                    'status' => $inst->staff->statuses?->map(fn($status) => [
+                    'status' => $inst->staff->statuses?->map(fn ($status) => [
                         'id' => $status->id,
                         'status' => $status->status,
                         'status_display' => $status->status?->name,
@@ -166,7 +168,7 @@ class PersonController extends Controller
                             'end_date' => $unit->pivot->end_date?->format('d M Y'),
                             'remarks' => $unit->pivot->remarks,
                         ];
-                    })  : null,
+                    }) : null,
                     'lastUnit' => $inst->staff->units->count() > 1 ? [
                         'unit_id' => $inst->staff->units?->first()->id,
                         'unit_name' => $inst->staff->units?->first()->name,
@@ -179,7 +181,7 @@ class PersonController extends Controller
                         'remarks' => $inst->staff->units?->first()->pivot->remarks,
                     ] : null,
 
-                    'lastRank' => $inst->staff->ranks->count() > 0 ? [ //$inst->staff->ranks->first(),
+                    'lastRank' => $inst->staff->ranks->count() > 0 ? [ // $inst->staff->ranks->first(),
                         'id' => $inst->staff->ranks?->first()->id,
                         'name' => $inst->staff->ranks?->first()->name,
                         'job_id' => $inst->staff->ranks?->first()->id,
@@ -211,7 +213,7 @@ class PersonController extends Controller
                 ];
             }) : null,
             'dependent' => $selectedPerson->dependent,
-            'dependents' => $selectedPerson->dependents ? $selectedPerson->dependents->map(fn($dep) => [
+            'dependents' => $selectedPerson->dependents ? $selectedPerson->dependents->map(fn ($dep) => [
                 'id' => $dep->id,
                 'person_id' => $dep->person_id,
                 'name' => $dep->person->full_name,
