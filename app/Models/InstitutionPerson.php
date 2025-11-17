@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class InstitutionPerson extends Pivot
@@ -348,29 +349,58 @@ class InstitutionPerson extends Pivot
     }
 
     /**
-     * Write a note for the staff
+     * Write a note for the staff with optional document attachments.
+     *
+     * @param  array  $note  The note data including optional documents
+     * @return Note The created note instance
+     *
+     * @throws \RuntimeException If file storage fails
      */
-    public function writeNote($note)
+    public function writeNote(array $note): Note
     {
-        // dd($note);
-        $files = [];
-        foreach ($note['document'] as $file) {
-            // dd($file['file']->getClientOriginalName());
-            $fileDetails = [
-                'document_type' => $note['note_type'],
-                'document_title' => $file['file']->getClientOriginalName(),
-                // 'document_number' => $file['document_number'],
-                // 'document_file' => $file['document_file'],
-                'file_type' => $file['file']->getMimeType(),
-                'file_name' => Storage::disk('documents')->put('notes', $file['file']),
-                // 'document_status' => $file['document_status'],
-                // 'document_remarks' => $file['document_remarks'],
-            ];
-            $files[] = $fileDetails; //Storage::disk('documents')->put('notes', $file['file']);
-        }
-        // dd($files);
-        $newNote = $this->notes()->create($note);
-        $newNote->documents()->createMany($files);
+        return DB::transaction(function () use ($note) {
+            // Create the note
+            $newNote = $this->notes()->create($note);
+
+            // Handle document uploads if present
+            if (isset($note['document']) && is_array($note['document'])) {
+                $files = []; // Initialize array
+
+                foreach ($note['document'] as $item) {
+                    // Defensive check for file structure
+                    if (! isset($item['file']) || ! ($item['file'] instanceof \Illuminate\Http\UploadedFile)) {
+                        continue; // Skip invalid items
+                    }
+
+                    $file = $item['file'];
+
+                    // Attempt to store file
+                    $storedPath = Storage::disk('documents')->put('notes', $file);
+
+                    if ($storedPath === false) {
+                        throw new \RuntimeException(
+                            'Failed to store document: ' . $file->getClientOriginalName()
+                        );
+                    }
+
+                    $fileDetails = [
+                        'document_type' => $note['note_type'] ?? null,
+                        'document_title' => $file->getClientOriginalName(),
+                        'file_type' => $file->getMimeType(),
+                        'file_name' => $storedPath,
+                    ];
+
+                    $files[] = $fileDetails;
+                }
+
+                // Create all documents at once
+                if (! empty($files)) {
+                    $newNote->documents()->createMany($files);
+                }
+            }
+
+            return $newNote;
+        });
     }
 
     /** Get staff's notes */
@@ -433,6 +463,7 @@ class InstitutionPerson extends Pivot
             $query->male();
         });
     }
+
     public function scopeFemaleStaff($query)
     {
         return $query->whereHas('person', function ($query) {

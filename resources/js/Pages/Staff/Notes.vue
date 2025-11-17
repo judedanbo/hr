@@ -1,3 +1,4 @@
+a
 <script setup>
 import { usePage } from "@inertiajs/vue3";
 import NotesDetails from "./NotesDetails.vue";
