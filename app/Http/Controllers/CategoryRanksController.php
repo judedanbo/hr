@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JobCategory;
 use Inertia\Inertia;
 
-class CategoryRanks extends Controller
+class CategoryRanksController extends Controller
 {
     public function show($category)
     {

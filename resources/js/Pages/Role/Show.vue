@@ -22,18 +22,21 @@ import RolePermissions from "./partials/RolePermissions.vue";
 import RoleUsers from "./partials/RoleUsers.vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import AddPermissionForm from "./partials/AddPermissionForm.vue";
+import AddRoleUsers from "./partials/AddRoleUsers.vue";
 import BreadCrump from "@/Components/BreadCrump.vue";
 
 const permissionNavigation = computed(() => useNavigation(props.permissions));
 const userNavigation = computed(() => useNavigation(props.users));
 let showPromotionForm = ref(false);
 let showAddPermissionForm = ref(false);
+let showAddUsersForm = ref(false);
 let openEditModal = ref(false);
 
 let toggle = useToggle(openEditModal);
 
 let togglePermissionsForm = useToggle(showPromotionForm);
 let toggleAddPermissionForm = useToggle(showAddPermissionForm);
+let toggleAddUsersForm = useToggle(showAddUsersForm);
 
 let props = defineProps({
 	role: { type: Object, default: () => null },
@@ -145,13 +148,13 @@ const editContactModal = () => {
 						<div
 							class="flex items-center gap-x-4 sm:gap-x-6 justify-between w-full md:w-fit"
 						>
-							<!-- <button
+							<button
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
-								@click="togglePermissionsForm()"
+								@click="toggleAddUsersForm()"
 							>
-								Add Roles
-							</button> -->
+								Add Users
+							</button>
 							<button
 								type="button"
 								class="hidden text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
@@ -189,7 +192,6 @@ const editContactModal = () => {
 							:users="users"
 							:role="role.id"
 							class="w-full xl:flex-1"
-							@close-form="toggleRolesForm()"
 						>
 							<template #pagination>
 								<Pagination :navigation="userNavigation" />
@@ -219,6 +221,18 @@ const editContactModal = () => {
 				:role="role.id"
 				role-permissions="permissions"
 				@form-submitted="toggleAddPermissionForm()"
+			/>
+		</NewModal>
+		<NewModal
+			:show="showAddUsersForm"
+			title="Assign Users to Role"
+			subtitle="Select users to assign to this role"
+			@close="toggleAddUsersForm()"
+		>
+			<AddRoleUsers
+				:role="role.id"
+				@form-submitted="toggleAddUsersForm()"
+				@close="toggleAddUsersForm()"
 			/>
 		</NewModal>
 	</MainLayout>

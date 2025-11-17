@@ -9,7 +9,7 @@ use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
-use App\Http\Controllers\CategoryRanks;
+use App\Http\Controllers\CategoryRanksController;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
@@ -45,6 +45,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StaffListController;
 use App\Http\Controllers\StaffReportController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
@@ -52,20 +53,16 @@ use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\StaffListController;
 use App\Models\Dependent;
-use App\Models\District;
 use App\Models\Institution;
 use App\Models\Job;
 use App\Models\JobCategory;
-use App\Models\Office;
 use App\Models\Person;
 use App\Models\Unit;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Spatie\Permission\Contracts\Role;
 
 require __DIR__ . '/auth.php';
 
@@ -86,6 +83,7 @@ Route::controller(ChangePasswordController::class)->middleware(['auth'])->group(
 
 Route::controller(UserController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/user', 'index')->name('user.index');
+    Route::get('/users-list', 'list')->name('users.list');
     Route::get('/user/{user}', 'show')->name('user.show');
     Route::post('/user/', 'store')->name('user.store');
     Route::patch('/user/{user}', 'update')->name('user.update');
@@ -103,13 +101,16 @@ Route::controller(RoleController::class)->middleware(['auth', 'password_changed'
     // Route::delete('/user', 'delete')->name('user.delete');
     Route::post('/user/{user}/add-role', 'addRole')->name('user.add.roles');
     Route::patch('/user/{user}/revoke-role', 'revokeRole')->name('user.revoke.roles');
+    Route::post('/role/{role}/add-users', 'addUsers')->name('role.add.users');
+    Route::patch('/role/{role}/remove-user', 'removeUser')->name('role.remove.user');
 });
 Route::controller(PermissionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/permission', 'index')->name('permission.index');
     Route::get('/permission-list', 'list')->name('permission.list');
-    // Route::get('/user/{user}', 'show')->name('user.show');
-    // Route::patch('/user/{user}', 'update')->name('user.update');
-    // Route::delete('/user', 'delete')->name('user.delete');
+    Route::get('/permission/{permission}', 'show')->name('permission.show');
+    Route::post('/permission', 'store')->name('permission.store');
+    Route::put('/permission/{permission}', 'update')->name('permission.update');
+    Route::delete('/permission/{permission}', 'destroy')->name('permission.destroy');
     Route::post('/user/{user}/add-permission', 'addPermission')->name('user.add.permissions');
     Route::patch('/user/{user}/revoke-permission', 'revokePermission')->name('user.revoke.permissions');
 });
@@ -121,8 +122,10 @@ Route::get('/dashboard', function () {
     if (auth()->user()->hasRole('super-administrator')) {
         if (Institution::count() < 1) {
             session()->flash('info', 'No institution found. Please create an institution to proceed');
+
             return redirect()->route('institution.index');
         }
+
         return redirect()->route('institution.show', [1]);
     }
     if (auth()->user()->hasRole('staff')) {
@@ -132,6 +135,7 @@ Route::get('/dashboard', function () {
                 ->route('staff.show', [auth()->user()->person->institution->first()->staff->id]);
         }
     }
+
     // TODO: design custom page for users without staff information
     return auth()->logout();
 })->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
@@ -179,7 +183,7 @@ Route::get('/institution/{institution}/ranks', [InstitutionRankController::class
 Route::get('/institution/{institution}/units', function (Institution $institution) {
     $institution->load('allUnits');
 
-    return $institution->allUnits->map(fn($unit) => [
+    return $institution->allUnits->map(fn ($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -226,7 +230,7 @@ Route::get('/unit-list', function () {
     // return 'all units';
     $units = Unit::all();
 
-    return $units->map(fn($unit) => [
+    return $units->map(fn ($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -305,7 +309,7 @@ Route::controller(JobCategoryController::class)->middleware(['auth', 'password_c
     Route::delete('/job-category/{jobCategory}', 'delete')->name('job-category.delete');
 });
 
-Route::controller(CategoryRanks::class)->middleware(['auth', 'password_changed'])->group(function () {
+Route::controller(CategoryRanksController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/category/{category}/ranks', 'show')->name('category-ranks.show');
 });
 
@@ -349,11 +353,11 @@ Route::get('rank/{rank}/next', function (Job $rank) {
 
     return Job::where('job_category_id', $nextCategoryId)
         ->get()
-        ->map(fn($rank) => [
+        ->map(fn ($rank) => [
             'value' => $rank->id,
             'label' => $rank->name,
         ]);
-    //->where('id', '>', $rank->id)->first();
+    // ->where('id', '>', $rank->id)->first();
 })->middleware(['auth', 'password_changed'])->name('rank.next');
 
 // Route::get('rank/{rank}/previous', function (JobCategory $rank) {

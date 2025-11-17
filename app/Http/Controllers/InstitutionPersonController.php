@@ -69,7 +69,7 @@ class InstitutionPersonController extends Controller
                 'gender' => $staff->person->gender?->label(),
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
                 'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
+                'dob_distance' => number_format($staff->person->date_of_birth?->diffInYears(), 0) . ' years old',
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                 'current_rank' => $staff->currentRank ? [
@@ -229,7 +229,7 @@ class InstitutionPersonController extends Controller
                 'maiden_name' => $staff->person->maiden_name,
                 'dob-value' => $staff->person->date_of_birth,
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
+                'dob_distance' => number_format($staff->person->date_of_birth?->diffInYears(), 0) . ' years old',
                 'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,

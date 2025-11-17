@@ -162,7 +162,7 @@ let BreadcrumbLinks = [
 
 			<div class="mx-auto max-w-7xl py-4 xl:px-8 flex gap-2 align-start">
 				<div class="flex flex-wrap gap-y-3 w-1/3">
-					<Summary :person="person" />
+					<Summary :person="person" :status="staff?.[0].status?.[0].status" />
 					<Address
 						:address="address"
 						:contacts="contacts"

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\GenderEnum;
 use App\Exports\GradeSummaryExport;
 use App\Http\Requests\StoreJobRequest;
+use App\Http\Requests\UpdateJobRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Unit;
@@ -26,8 +27,10 @@ class JobController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('View All Jobs');
+
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view all ranks.');
         }
+
         return Inertia::render('Job/Index', [
             'jobs' => Job::query()
                 ->searchRank(request()->search)
@@ -47,7 +50,7 @@ class JobController extends Controller
                         $query->where('job_staff.end_date', null);
                         $query->femaleStaff();
                     },
-                    'units'
+                    'units',
                 ])
                 ->whereHas('staff', function ($query) {
                     $query->active();
@@ -56,7 +59,7 @@ class JobController extends Controller
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn($job) => [
+                ->through(fn ($job) => [
                     'id' => $job->id,
                     'name' => $job->name,
                     'staff' => $job->staff_count,
@@ -96,6 +99,7 @@ class JobController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('View Job');
+
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view this job.');
         }
         $job = Job::query()
@@ -171,7 +175,7 @@ class JobController extends Controller
                 //     'staff_count' => $unit->staff_count,
                 // ]),
                 'units' => $job->units,
-                'staff' => $job->staff->map(fn($staff) => [
+                'staff' => $job->staff->map(fn ($staff) => [
                     'id' => $staff->id,
                     'name' => $staff->person->full_name,
                     'initials' => $staff->person->initials,
@@ -202,6 +206,7 @@ class JobController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('Created Job');
+
             return redirect()->back()->with('error', 'You do not have permission to create a job.');
         }
         Job::create($request->validated());
@@ -412,7 +417,7 @@ class JobController extends Controller
         return $job->loadCount('staff');
     }
 
-    public function update(StoreJobRequest $request, Job $job)
+    public function update(UpdateJobRequest $request, Job $job)
     {
         if (Gate::denies('edit job')) {
             activity()
@@ -445,6 +450,7 @@ class JobController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('Deleted Rank');
+
             return redirect()->back()->with('error', 'You do not have permission to delete this rank.');
         }
         $job->delete();
@@ -464,6 +470,7 @@ class JobController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('Rank Summary');
+
             return redirect()->back()->with('error', 'You do not have permission to download this data.');
         }
         activity()
@@ -475,6 +482,7 @@ class JobController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('Rank Summary');
+
         return $excel->download(new GradeSummaryExport, 'grades.xlsx');
     }
 }
