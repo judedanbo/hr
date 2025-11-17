@@ -1,6 +1,6 @@
 <script setup>
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 const emit = defineEmits(["refreshData"]);
 const pageClicked = (link = null) => {
 	if (link) {

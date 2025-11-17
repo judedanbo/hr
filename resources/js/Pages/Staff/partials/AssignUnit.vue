@@ -3,9 +3,9 @@ import { ref, onMounted } from "vue";
 import { format, addDays, subYears, addYears } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
-const min_date = format(subYears(new Date(), 2), "yyyy-MM-dd");
-const max_date = format(addYears(new Date(), 2), "yyyy-MM-dd");
-let input_start_date = ref(today)
+const min_date = format(subYears(new Date(), 10), "yyyy-MM-dd");
+const max_date = format(addYears(new Date(), 10), "yyyy-MM-dd");
+let input_start_date = ref(today);
 
 const props = defineProps({
 	institution: {
@@ -34,7 +34,6 @@ onMounted(async () => {
 		error-visibility="submit"
 	/>
 	<div class="flex gap-4">
-
 		<FormKit
 			id="start_date"
 			v-model="input_start_date"
@@ -42,9 +41,7 @@ onMounted(async () => {
 			type="date"
 			:max="max_date"
 			label="Start date"
-			:validation="
-				'required|date_after:' + min_date
-			"
+			:validation="'required|date_after:' + min_date"
 			validation-visibility="submit"
 			outer-class="flex-1"
 		/>
@@ -60,7 +57,7 @@ onMounted(async () => {
 			"
 			validation-visibility="submit"
 			outer-class="flex-1"
-			/>
+		/>
 	</div>
 	<FormKit
 		id="remarks"

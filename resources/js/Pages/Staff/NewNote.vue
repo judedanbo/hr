@@ -54,6 +54,7 @@ const saveNote = () => {
 					id="note"
 					v-model="form.note"
 					rows="2"
+					required
 					name="note"
 					class="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-200 focus:ring-0 sm:text-sm sm:leading-6"
 					placeholder="Add note..."
@@ -75,7 +76,10 @@ const saveNote = () => {
 							validation="document"
 							multiple="true"
 						></FormKit>
-						<InputError class="mt-1" :message="form.errors['document.0.file']" />
+						<InputError
+							class="mt-1"
+							:message="form.errors['document.0.file']"
+						/>
 						<!-- <button
 							type="button"
 							class="mx-1 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 dark:text-gray-50 hover:text-gray-500 dark:hover:text-gray-200"

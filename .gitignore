@@ -19,3 +19,4 @@ yarn-error.log
 /kube
 *.sql
 ray.php
+/.phpunit.cache
