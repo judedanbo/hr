@@ -9,7 +9,7 @@ use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
-use App\Http\Controllers\CategoryRanks;
+use App\Http\Controllers\CategoryRanksController;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
@@ -309,7 +309,7 @@ Route::controller(JobCategoryController::class)->middleware(['auth', 'password_c
     Route::delete('/job-category/{jobCategory}', 'delete')->name('job-category.delete');
 });
 
-Route::controller(CategoryRanks::class)->middleware(['auth', 'password_changed'])->group(function () {
+Route::controller(CategoryRanksController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/category/{category}/ranks', 'show')->name('category-ranks.show');
 });
 

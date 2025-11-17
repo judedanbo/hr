@@ -12,12 +12,19 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - inertiajs/inertia-laravel (INERTIA) - v1
 - laravel/framework (LARAVEL) - v11
 - laravel/prompts (PROMPTS) - v0
+- laravel/sanctum (SANCTUM) - v4
+- laravel/telescope (TELESCOPE) - v5
 - tightenco/ziggy (ZIGGY) - v1
+- laravel/breeze (BREEZE) - v2
+- laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
+- laravel/sail (SAIL) - v1
+- phpunit/phpunit (PHPUNIT) - v11
 - @inertiajs/vue3 (INERTIA) - v1
+- eslint (ESLINT) - v8
+- prettier (PRETTIER) - v3
 - tailwindcss (TAILWINDCSS) - v3
 - vue (VUE) - v3
-
 
 ## Conventions
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
@@ -116,6 +123,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - Inertia.js components should be placed in the `resources/js/Pages` directory unless specified differently in the JS bundler (vite.config.js).
 - Use `Inertia::render()` for server-side routing instead of traditional Blade views.
+- Use `search-docs` for accurate guidance on all things Inertia.
 
 <code-snippet lang="php" name="Inertia::render Example">
 // routes/web.php example
@@ -223,6 +231,24 @@ Route::get('/users', function () {
 - Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
 
 
+=== phpunit/core rules ===
+
+## PHPUnit Core
+
+- This application uses PHPUnit for testing. All tests must be written as PHPUnit classes. Use `php artisan make:test --phpunit <name>` to create a new test.
+- If you see a test using "Pest", convert it to PHPUnit.
+- Every time a test has been updated, run that singular test.
+- When the tests relating to your feature are passing, ask the user if they would like to also run the entire test suite to make sure everything is still passing.
+- Tests should test all of the happy paths, failure paths, and weird paths.
+- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files, these are core to the application.
+
+### Running Tests
+- Run the minimal number of tests, using an appropriate filter, before finalizing.
+- To run all tests: `php artisan test`.
+- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+
+
 === inertia-vue/core rules ===
 
 ## Inertia + Vue
@@ -230,17 +256,23 @@ Route::get('/users', function () {
 - Vue components must have a single root element.
 - Use `router.visit()` or `<Link>` for navigation instead of traditional links.
 
-<code-snippet lang="vue" name="Inertia Client Navigation">
-    import { Link } from '@inertiajs/vue3'
+<code-snippet name="Inertia Client Navigation" lang="vue">
 
+    import { Link } from '@inertiajs/vue3'
     <Link href="/">Home</Link>
+
 </code-snippet>
 
-- For form handling, use `router.post` and related methods. Do not use regular forms.
+
+=== inertia-vue/v1/forms rules ===
+
+## Inertia + Vue Forms
+
+- For form handling in Inertia pages, use `router.post` and related methods. Do not use regular forms.
 
 
 <code-snippet lang="vue" name="Inertia Vue Form Example">
-    <script setup>
+<script setup>
     import { reactive } from 'vue'
     import { router } from '@inertiajs/vue3'
     import { usePage } from '@inertiajs/vue3'
@@ -248,28 +280,28 @@ Route::get('/users', function () {
     const page = usePage()
 
     const form = reactive({
-      first_name: null,
-      last_name: null,
-      email: null,
+        first_name: null,
+        last_name: null,
+        email: null,
     })
 
     function submit() {
-      router.post('/users', form)
+        router.post('/users', form)
     }
-    </script>
+</script>
 
-    <template>
-        <h1>Create {{ page.modelName }}</h1>
-        <form @submit.prevent="submit">
-            <label for="first_name">First name:</label>
-            <input id="first_name" v-model="form.first_name" />
-            <label for="last_name">Last name:</label>
-            <input id="last_name" v-model="form.last_name" />
-            <label for="email">Email:</label>
-            <input id="email" v-model="form.email" />
-            <button type="submit">Submit</button>
-        </form>
-    </template>
+<template>
+    <h1>Create {{ page.modelName }}</h1>
+    <form @submit.prevent="submit">
+        <label for="first_name">First name:</label>
+        <input id="first_name" v-model="form.first_name" />
+        <label for="last_name">Last name:</label>
+        <input id="last_name" v-model="form.last_name" />
+        <label for="email">Email:</label>
+        <input id="email" v-model="form.email" />
+        <button type="submit">Submit</button>
+    </form>
+</template>
 </code-snippet>
 
 

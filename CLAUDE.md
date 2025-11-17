@@ -6,15 +6,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 HR Management System built with Laravel 11.x and Vue.js 3 + Inertia.js. Manages staff, organizational units, geographic regions, and provides comprehensive reporting capabilities.
 
+### Recent Features (v2024-2025)
+
+- **Permissions & Roles Management** (Jan 2025)
+  - Full CRUD for permissions and roles
+  - Assign/revoke permissions to roles
+  - Assign/revoke roles and direct permissions to users
+  - Vue components: Permission management UI with FormKit
+  - Controllers: `PermissionController`, `RoleController`, `RolePermissionController`, `PersonRolesController`
+
+- **Staff Separation Feature** (Nov 2024)
+  - Global scope for filtering separated staff
+  - Staff status tracking with separation dates
+  - Dedicated controllers and views for separated staff management
+
+- **Institution Permissions** (Dec 2024)
+  - Multi-tenant permission support
+  - Institution-level access control for staff
+
 ## Tech Stack
 
-- **Backend**: Laravel 11.x, PHP 8.2+, MySQL
-- **Frontend**: Vue.js 3.5.x, Inertia.js 1.3, Tailwind CSS 3.4.x, FormKit 0.17.x
-- **Authorization**: Spatie Laravel Permission 6.x (role-based)
+- **Backend**: Laravel 11.x, PHP 8.4, MySQL
+- **Frontend**: Vue.js 3.5.19, Inertia.js 1.2, Tailwind CSS 3.4.17, FormKit 0.17.x, HeadlessUI 1.7, Chart.js 4.5
+- **Authorization**: Spatie Laravel Permission 6.7 (role-based with permissions management)
 - **Authentication**: Laravel Breeze 2.x with custom password change middleware
 - **Exports**: Maatwebsite Excel 3.1
-- **Activity Tracking**: Spatie Activity Log 4.x
-- **Debugging**: Laravel Telescope 5.x
+- **Activity Tracking**: Spatie Activity Log 4.5
+- **Debugging**: Laravel Telescope 5.x, Laravel Debugbar 3.7
+- **PDF Generation**: DomPDF 2.0
+- **Additional Tools**: Laravel Boost 1.0 (MCP server), Laravel Pint 1.13, Ziggy 1.0
 
 ### Required PHP Extensions
 - mbstring (currently using polyfill at `bootstrap/mbstring-polyfill.php`)
@@ -53,11 +73,16 @@ php artisan telescope:prune          # Clean old Telescope entries
 
 ## Architecture
 
-### Laravel 11 Structure
-- **Bootstrap**: Unified configuration in `bootstrap/app.php`
-- **Middleware**: Configured in bootstrap file (no more Http/Kernel.php)
-- **Exception Handling**: Integrated in bootstrap file
+### Laravel 11 Hybrid Structure
+**IMPORTANT**: This project runs Laravel 11 but uses the legacy Laravel 10 structure (recommended by Laravel for upgraded projects).
+
+- **Middleware**: Registered in `app/Http/Kernel.php` (not bootstrap/app.php)
+- **Exception Handling**: In `app/Exceptions/Handler.php`
 - **Console Commands**: Auto-discovered from `app/Console/Commands`
+- **Service Providers**: Located in `app/Providers/`
+- **Rate Limiting**: Configured in `RouteServiceProvider` or `app/Http/Kernel.php`
+
+This structure is perfectly valid and recommended when upgrading from Laravel 10 to 11.
 
 ### Domain Model
 
@@ -91,11 +116,16 @@ Position (specific roles)
    - Vue pages in `resources/js/Pages/`
    - Shared components in `resources/js/Components/`
 
-2. **Authorization**
+2. **Authorization & Permissions System**
    - Always use `Gate::allows('permission-name')` in controllers
-   - Permissions follow pattern: `model.action` (e.g., `staff.create`)
+   - Permissions follow pattern: `model.action` (e.g., `staff.create`, `reports.view`)
    - Three main roles: `super-administrator`, `admin`, `staff`
    - Policies in `app/Policies/`
+   - **Permission Management**:
+     - Users can be assigned roles and direct permissions
+     - Controllers: `PermissionController`, `RoleController`, `RolePermissionController`, `PersonRolesController`
+     - Comprehensive permission seeders for all modules (Users, Units, Jobs, Reports, etc.)
+     - Permission assignment seeded via `AssignRolePermissionSeeder`
 
 3. **Data Export System**
    - Export classes in `app/Exports/`
@@ -136,52 +166,345 @@ All validation uses dedicated Form Request classes in `app/Http/Requests/`:
    - Each status change is logged with dates
    - Separation types tracked separately
 
-## Known Issues & Workarounds
+4. **Permissions & Access Control**
+   - Granular permission system using Spatie Laravel Permission
+   - Permissions organized by module: users, staff, units, jobs, reports, qualifications, etc.
+   - Users can have multiple roles and additional direct permissions
+   - Role-permission relationships managed through dedicated controllers
+   - All permissions seeded with descriptive names (e.g., `users.create`, `reports.promotions.view`)
+   - Institution-level permissions for multi-tenant scenarios
 
-1. **Missing mbstring Extension**
-   - Temporary polyfill at `bootstrap/mbstring-polyfill.php`
-   - Install proper extension: `sudo apt-get install php8.3-mbstring`
+## Known Issues & Best Practices
 
-2. **PSR-4 Compliance Issues**
-   - `app/Traits/PersonTrait.php` - class name mismatch
-   - `app/Http/Requests/UpdateJobRequest.php` - wrong class name
-   - Run `composer dump-autoload` after fixing
+1. **mbstring Extension**
+   - Currently using polyfill at `bootstrap/mbstring-polyfill.php`
+   - Consider installing proper extension for better performance: `sudo apt-get install php8.4-mbstring`
 
-3. **Export Classes**
-   - Some have duplicate interface implementations (check before modifying)
-   - Logic issues in some queries (e.g., SeparatedLeaveWithoutPayExport)
+2. **Export Classes**
+   - Some export classes may have complex query logic - verify before modifying
+   - Exports are queued for large datasets
 
-4. **Vue 3.5 Compatibility**
+3. **Vue 3.5 Compatibility**
    - Vue 3.5+ is stricter about v-model on props
-   - Fixed in: `AddUserPermission.vue`, `UserRoleForm.vue`
-   - Pattern: Create local ref copy of props for v-model: `const localProp = ref([...props.propName])`
+   - **Pattern**: Create local ref copy of props for v-model: `const localProp = ref([...props.propName])`
+   - See examples in: `AddUserPermission.vue`, `UserRoleForm.vue`
+
+4. **Git Staging**
+   - Uncommitted files in dev branch: boost.json, CategoryRanksController.php updates
+   - Run `git status` before committing to avoid including unrelated changes
 
 ## Development Workflow
 
-1. **Feature Development**
-   ```bash
-   php artisan make:model ModelName -mfsc  # Model, migration, factory, seeder, controller
-   php artisan make:request StoreModelNameRequest
-   php artisan make:policy ModelNamePolicy --model=ModelName
-   ```
+### 1. Starting Development
+```bash
+# Start backend server
+php artisan serve
 
-2. **Vue Component Creation**
-   - Page components: `resources/js/Pages/ModelName/Index.vue`
-   - Shared components: `resources/js/Components/ComponentName.vue`
-   - Use FormKit for complex forms
-   - Follow existing Tailwind patterns
+# Start frontend dev server (in another terminal)
+npm run dev
+# or
+composer run dev
 
-3. **Testing**
-   ```bash
-   php artisan make:test ModelNameTest --unit
-   php artisan make:test ModelNameFeatureTest
-   ```
+# Check application status
+php artisan about
+```
 
-4. **Before Committing**
-   ```bash
-   ./vendor/bin/pint && npm run lint
-   php artisan test
-   ```
+### 2. Feature Development Workflow
+
+#### A. Backend (Laravel)
+```bash
+# Create model with all supporting files
+php artisan make:model ModelName -mfsc  # Migration, Factory, Seeder, Controller
+
+# Create Form Request classes for validation
+php artisan make:request StoreModelNameRequest
+php artisan make:request UpdateModelNameRequest
+
+# Create policy for authorization
+php artisan make:policy ModelNamePolicy --model=ModelName
+
+# Create custom middleware (if needed)
+php artisan make:middleware CustomMiddlewareName
+
+# Create job for queued tasks (if needed)
+php artisan make:job ProcessModelNameJob
+```
+
+#### B. Database Workflow
+```bash
+# Run new migrations
+php artisan migrate
+
+# Rollback last migration
+php artisan migrate:rollback
+
+# Refresh database with seeders (DESTROYS DATA!)
+php artisan migrate:fresh --seed
+
+# Run specific seeder
+php artisan db:seed --class=ModelNameSeeder
+
+# Check database status
+php artisan migrate:status
+
+# Use tinker for testing queries
+php artisan tinker
+```
+
+#### C. Routes & Controllers
+- Add routes to `routes/web.php` with proper naming
+- Use resource routes when appropriate: `Route::resource('model', ModelController::class)`
+- Always check authorization with `Gate::allows('permission.name')`
+- Return Inertia responses: `Inertia::render('Page/Component', $data)`
+
+```php
+// Example route with authorization
+Route::middleware(['auth'])->group(function () {
+    Route::get('/model', [ModelController::class, 'index'])
+        ->name('model.index')
+        ->middleware('can:model.view');
+});
+```
+
+### 3. Frontend Development (Vue + Inertia)
+
+#### A. Vue Component Structure
+```
+resources/js/
+├── Pages/              # Inertia page components
+│   └── ModelName/
+│       ├── Index.vue   # List view
+│       ├── Create.vue  # Create form
+│       ├── Edit.vue    # Edit form
+│       └── Show.vue    # Detail view
+├── Components/         # Reusable components
+│   ├── Shared/        # Shared across features
+│   └── ModelName/     # Feature-specific
+└── Layouts/           # Page layouts
+```
+
+#### B. Vue Component Best Practices
+- **Always** use `<script setup>` syntax
+- Import Inertia components: `import { Link, Head } from '@inertiajs/vue3'`
+- Use FormKit for complex forms with validation
+- Follow existing Tailwind patterns for styling
+- Use HeadlessUI components for dropdowns, modals, etc.
+- Check existing components before creating new ones
+
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+import { router, Link, Head } from '@inertiajs/vue3'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+
+const props = defineProps({
+    items: Array,
+    can: Object
+})
+
+// For v-model on props, create local ref
+const localItems = ref([...props.items])
+</script>
+
+<template>
+    <Head title="Page Title" />
+    <AuthenticatedLayout>
+        <!-- Content -->
+    </AuthenticatedLayout>
+</template>
+```
+
+#### C. Form Handling with Inertia
+- Use `router.post()`, `router.put()`, etc. - NOT regular HTML forms
+- Handle errors from Form Request validation
+- Show loading states during submission
+
+```vue
+<script setup>
+import { reactive } from 'vue'
+import { router } from '@inertiajs/vue3'
+
+const form = reactive({
+    name: '',
+    description: ''
+})
+
+function submit() {
+    router.post(route('model.store'), form, {
+        onSuccess: () => {
+            // Handle success
+        },
+        onError: (errors) => {
+            // Handle validation errors
+        }
+    })
+}
+</script>
+```
+
+### 4. Permissions & Authorization
+
+#### A. Creating Permissions
+```bash
+# Create permission seeder
+php artisan make:seeder ModelNamePermissionSeeder
+
+# Add permissions following naming pattern:
+# model.view, model.create, model.edit, model.delete
+```
+
+#### B. Seeder Pattern
+```php
+Permission::create(['name' => 'model.view']);
+Permission::create(['name' => 'model.create']);
+Permission::create(['name' => 'model.edit']);
+Permission::create(['name' => 'model.delete']);
+
+// Assign to roles
+$adminRole = Role::findByName('admin');
+$adminRole->givePermissionTo(['model.view', 'model.create', 'model.edit']);
+```
+
+#### C. Using Permissions
+```php
+// In controllers
+if (!Gate::allows('model.create')) {
+    abort(403);
+}
+
+// In Blade/Vue (via shared data)
+v-if="$page.props.can.model.create"
+```
+
+### 5. Testing
+
+#### A. Create Tests
+```bash
+# Feature tests (most common)
+php artisan make:test ModelNameTest
+
+# Unit tests
+php artisan make:test ModelNameTest --unit
+
+# Test specific functionality
+php artisan make:test ModelName/CreateModelTest
+```
+
+#### B. Running Tests
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test file
+php artisan test tests/Feature/ModelNameTest.php
+
+# Run specific test method
+php artisan test --filter testCanCreateModel
+
+# Run with coverage (if configured)
+php artisan test --coverage
+```
+
+#### C. Test Best Practices
+- Use factories for creating test data: `ModelName::factory()->create()`
+- Check for custom factory states before manually setting up models
+- Test happy paths, failure paths, and edge cases
+- Test authorization (403 responses for unauthorized users)
+- Use `$this->actingAs($user)` for authenticated tests
+
+### 6. Code Quality & Formatting
+
+```bash
+# Format PHP code (Laravel Pint)
+./vendor/bin/pint
+
+# Format only changed files
+./vendor/bin/pint --dirty
+
+# Format JavaScript/Vue (ESLint + Prettier)
+npm run lint
+npm run format
+
+# Full pre-commit check
+./vendor/bin/pint --dirty && npm run lint && php artisan test
+```
+
+### 7. Debugging
+
+#### A. Laravel Telescope
+- Access at: `http://localhost:8000/telescope`
+- View queries, requests, exceptions, logs, jobs, etc.
+- Prune old entries: `php artisan telescope:prune`
+
+#### B. Laravel Debugbar
+- Appears at bottom of page in development
+- Shows queries, timeline, views, routes, etc.
+
+#### C. Logs & Tinker
+```bash
+# View logs
+tail -f storage/logs/laravel.log
+
+# Use Tinker for testing
+php artisan tinker
+>>> User::count()
+>>> ModelName::with('relation')->find(1)
+```
+
+#### D. Laravel Boost (MCP)
+- Use Boost tools for debugging: `tinker`, `database-query`, `last-error`
+- Read logs: Use `read-log-entries` tool
+- Check application info: `application-info`
+
+### 8. Database Management
+
+```bash
+# Dump current schema
+php artisan schema:dump
+
+# Check migration status
+php artisan migrate:status
+
+# Create migration for existing table
+php artisan make:migration add_column_to_table --table=table_name
+
+# Create pivot table migration
+php artisan make:migration create_model1_model2_table
+```
+
+### 9. Git Workflow
+
+```bash
+# Check status before committing
+git status
+
+# Stage changes
+git add .
+
+# Run pre-commit checks
+./vendor/bin/pint --dirty && npm run lint && php artisan test
+
+# Commit with descriptive message
+git commit -m "feat: Add model management feature"
+
+# Push to branch
+git push origin feature-branch
+
+# Create pull request
+gh pr create --title "Feature: Model Management" --body "Description"
+```
+
+### 10. Common Issues & Solutions
+
+| Issue | Solution |
+|-------|----------|
+| Vite manifest error | Run `npm run dev` or `npm run build` |
+| Class not found | Run `composer dump-autoload` |
+| Permission denied | Check file permissions: `chmod -R 775 storage bootstrap/cache` |
+| Migration fails | Check database connection in `.env` |
+| Routes not working | Clear cache: `php artisan optimize:clear` |
+| Vue component not updating | Check Vite is running, hard refresh browser |
+| 403 Forbidden | Check permissions and Gate policies |
 
 ## Environment Variables
 
@@ -217,16 +540,23 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.11
+- php - 8.4.1
 - inertiajs/inertia-laravel (INERTIA) - v1
 - laravel/framework (LARAVEL) - v11
 - laravel/prompts (PROMPTS) - v0
+- laravel/sanctum (SANCTUM) - v4
+- laravel/telescope (TELESCOPE) - v5
 - tightenco/ziggy (ZIGGY) - v1
+- laravel/breeze (BREEZE) - v2
+- laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
+- laravel/sail (SAIL) - v1
+- phpunit/phpunit (PHPUNIT) - v11
 - @inertiajs/vue3 (INERTIA) - v1
+- eslint (ESLINT) - v8
+- prettier (PRETTIER) - v3
 - tailwindcss (TAILWINDCSS) - v3
 - vue (VUE) - v3
-
 
 ## Conventions
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
@@ -325,6 +655,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - Inertia.js components should be placed in the `resources/js/Pages` directory unless specified differently in the JS bundler (vite.config.js).
 - Use `Inertia::render()` for server-side routing instead of traditional Blade views.
+- Use `search-docs` for accurate guidance on all things Inertia.
 
 <code-snippet lang="php" name="Inertia::render Example">
 // routes/web.php example
@@ -399,16 +730,15 @@ Route::get('/users', function () {
 ## Laravel 11
 
 - Use the `search-docs` tool to get version specific documentation.
-- This project upgraded from Laravel 10 without migrating to the new streamlined Laravel 11 file structure.
-- This is **perfectly fine** and recommended by Laravel. Follow the existing structure from Laravel 10. We do not to need migrate to the Laravel 11 structure unless the user explicitly requests that.
+- **IMPORTANT**: This project uses Laravel 11 with Laravel 10 legacy structure (see Architecture section above).
+- Follow the existing Laravel 10 structure patterns - do NOT migrate to new Laravel 11 structure unless explicitly requested.
 
-### Laravel 10 Structure
-- Middleware typically live in `app/Http/Middleware/` and service providers in `app/Providers/`.
-- There is no `bootstrap/app.php` application configuration in a Laravel 10 structure:
-    - Middleware registration is in `app/Http/Kernel.php`
-    - Exception handling is in `app/Exceptions/Handler.php`
-    - Console commands and schedule registration is in `app/Console/Kernel.php`
-    - Rate limits likely exist in `RouteServiceProvider` or `app/Http/Kernel.php`
+### Project Structure (Laravel 10 Style)
+- Middleware registration: `app/Http/Kernel.php`
+- Exception handling: `app/Exceptions/Handler.php`
+- Console commands/scheduling: `app/Console/Kernel.php`
+- Service providers: `app/Providers/`
+- Rate limits: `RouteServiceProvider` or `app/Http/Kernel.php`
 
 ### Database
 - When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
@@ -432,6 +762,24 @@ Route::get('/users', function () {
 - Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
 
 
+=== phpunit/core rules ===
+
+## PHPUnit Core
+
+- This application uses PHPUnit for testing. All tests must be written as PHPUnit classes. Use `php artisan make:test --phpunit <name>` to create a new test.
+- If you see a test using "Pest", convert it to PHPUnit.
+- Every time a test has been updated, run that singular test.
+- When the tests relating to your feature are passing, ask the user if they would like to also run the entire test suite to make sure everything is still passing.
+- Tests should test all of the happy paths, failure paths, and weird paths.
+- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files, these are core to the application.
+
+### Running Tests
+- Run the minimal number of tests, using an appropriate filter, before finalizing.
+- To run all tests: `php artisan test`.
+- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+
+
 === inertia-vue/core rules ===
 
 ## Inertia + Vue
@@ -439,17 +787,23 @@ Route::get('/users', function () {
 - Vue components must have a single root element.
 - Use `router.visit()` or `<Link>` for navigation instead of traditional links.
 
-<code-snippet lang="vue" name="Inertia Client Navigation">
-    import { Link } from '@inertiajs/vue3'
+<code-snippet name="Inertia Client Navigation" lang="vue">
 
+    import { Link } from '@inertiajs/vue3'
     <Link href="/">Home</Link>
+
 </code-snippet>
 
-- For form handling, use `router.post` and related methods. Do not use regular forms.
+
+=== inertia-vue/v1/forms rules ===
+
+## Inertia + Vue Forms
+
+- For form handling in Inertia pages, use `router.post` and related methods. Do not use regular forms.
 
 
 <code-snippet lang="vue" name="Inertia Vue Form Example">
-    <script setup>
+<script setup>
     import { reactive } from 'vue'
     import { router } from '@inertiajs/vue3'
     import { usePage } from '@inertiajs/vue3'
@@ -457,28 +811,28 @@ Route::get('/users', function () {
     const page = usePage()
 
     const form = reactive({
-      first_name: null,
-      last_name: null,
-      email: null,
+        first_name: null,
+        last_name: null,
+        email: null,
     })
 
     function submit() {
-      router.post('/users', form)
+        router.post('/users', form)
     }
-    </script>
+</script>
 
-    <template>
-        <h1>Create {{ page.modelName }}</h1>
-        <form @submit.prevent="submit">
-            <label for="first_name">First name:</label>
-            <input id="first_name" v-model="form.first_name" />
-            <label for="last_name">Last name:</label>
-            <input id="last_name" v-model="form.last_name" />
-            <label for="email">Email:</label>
-            <input id="email" v-model="form.email" />
-            <button type="submit">Submit</button>
-        </form>
-    </template>
+<template>
+    <h1>Create {{ page.modelName }}</h1>
+    <form @submit.prevent="submit">
+        <label for="first_name">First name:</label>
+        <input id="first_name" v-model="form.first_name" />
+        <label for="last_name">Last name:</label>
+        <input id="last_name" v-model="form.last_name" />
+        <label for="email">Email:</label>
+        <input id="email" v-model="form.email" />
+        <button type="submit">Submit</button>
+    </form>
+</template>
 </code-snippet>
 
 

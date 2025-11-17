@@ -18,7 +18,9 @@
       "mcp__laravel-boost__tinker",
       "mcp__laravel-boost__application-info",
       "mcp__laravel-boost__list-routes",
-      "Bash(./vendor/bin/pint:*)"
+      "Bash(./vendor/bin/pint:*)",
+      "Bash(done)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
