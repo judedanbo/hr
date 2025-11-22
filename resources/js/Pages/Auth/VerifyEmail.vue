@@ -10,7 +10,7 @@ const props = defineProps({
 	status: String,
 });
 
-const form = useForm();
+const form = useForm({});
 
 const submit = () => {
 	form.post(route("verification.send"));
@@ -52,7 +52,7 @@ const toggle = useToggle(dark);
 				</BreezeButton>
 
 				<Link
-					:href="route('logout')"
+					href="/logout"
 					method="post"
 					as="button"
 					class="underline text-sm text-gray-600 dark:text-gray-50 hover:text-gray-900"

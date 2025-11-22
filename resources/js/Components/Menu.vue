@@ -33,7 +33,7 @@ const user = computed(() => page.props?.auth.user);
 			<MainMenu
 				:active="route().current('institution.show', { institution: 1 })"
 				name="Dashboard"
-				:href="route('dashboard')"
+				href="/dashboard"
 			>
 				<template #icon>
 					<Squares2X2Icon class="w-6"></Squares2X2Icon>

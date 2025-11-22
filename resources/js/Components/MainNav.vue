@@ -38,7 +38,7 @@ defineProps({
 			</li>
 			<li class="mt-auto">
 				<Link
-					:href="route('user.index')"
+					href="/user"
 					class="group flex gap-x-3 rounded-md py-2 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
 				>
 					<Cog6ToothIcon

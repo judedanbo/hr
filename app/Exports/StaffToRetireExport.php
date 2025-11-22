@@ -67,7 +67,7 @@ class StaffToRetireExport implements FromQuery, ShouldAutoSize, ShouldQueue, Wit
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            $staff->person->date_of_birth?->diffInYears() . ' years',
+            (int)$staff->person->date_of_birth?->diffInYears() . ' years',
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             $staff->hire_date?->format('d F, Y'),
             $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {

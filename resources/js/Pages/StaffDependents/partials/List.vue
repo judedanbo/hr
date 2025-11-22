@@ -76,7 +76,7 @@ const subMenuClicked = (action, model) => {
 									<span v-if="dependent.date_of_birth !== null">
 										&bull;
 										{{ dependent.date_of_birth }}
-										({{ dependent.dob_distance }})
+										({{ dependent.age }})
 									</span>
 								</div>
 							</div>

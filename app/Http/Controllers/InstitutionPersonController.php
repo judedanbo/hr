@@ -69,7 +69,7 @@ class InstitutionPersonController extends Controller
                 'gender' => $staff->person->gender?->label(),
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
                 'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                'dob_distance' => number_format($staff->person->date_of_birth?->diffInYears(), 0) . ' years old',
+                'age' => $staff->person->age . ' years old',
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                 'current_rank' => $staff->currentRank ? [
@@ -229,7 +229,7 @@ class InstitutionPersonController extends Controller
                 'maiden_name' => $staff->person->maiden_name,
                 'dob-value' => $staff->person->date_of_birth,
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'dob_distance' => number_format($staff->person->date_of_birth?->diffInYears(), 0) . ' years old',
+                'age' => $staff->person->age . ' years old',
                 'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
@@ -383,7 +383,7 @@ class InstitutionPersonController extends Controller
                     'gender' => $dep->person->gender?->label(),
                     'gender_form' => $dep->person->gender,
                     'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
-                    'dob_distance' => $dep->person->date_of_birth?->diffInYears() . ' years old',
+                    'age' => $dep->person->age . ' years old',
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
                     // $staff->person->image ? '/' . $staff->person->image :  null,
@@ -442,7 +442,7 @@ class InstitutionPersonController extends Controller
                 'start_date' => $rank->pivot->start_date?->format('d M Y'),
                 'end_date' => $rank->pivot->end_date?->format('d M Y'),
                 'remarks' => $rank->pivot->remarks,
-                'distance' => $rank->pivot->start_date->diffInYears(),
+                'distance' => (int)$rank->pivot->start_date->diffInYears(),
             ])
                 : null,
         ];

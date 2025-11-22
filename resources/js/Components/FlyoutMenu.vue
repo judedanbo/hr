@@ -35,7 +35,7 @@ let props = defineProps({
 					class="w-40 shrink bg-white text-sm font-semibold leading-6 text-gray-900 shadow-lg ring-1 ring-gray-900/5"
 				>
 					<Link
-						:href="route('institution.show', { institution: route_id })"
+						:href="'institution.show/' + route_id"
 						class="block p-2 hover:text-green-600 text-left px-4 hover:bg-gray-300"
 						>View
 					</Link>

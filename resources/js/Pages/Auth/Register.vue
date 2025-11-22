@@ -109,7 +109,7 @@ const toggle = useToggle(dark);
 				</div>
 				<div>
 					<Link
-						:href="route('login')"
+						href="/login"
 						class="underline text-sm text-gray-600 dark:text-gray-50 hover:text-gray-900"
 					>
 						Already registered?

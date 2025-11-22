@@ -254,13 +254,13 @@ let BreadCrumpLinks = [
 												</div>
 												<div class="flex space-x-3 justify-center mt-4">
 													<Link
-														:href="route('report.recruitment.details')"
-														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white "
+														href="/report/recruitment/details"
+														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Details
 													</Link>
 													<a
-														:href="route('report.recruitment.export-summary')"
+														href="/report/recruitment/chart"
 														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Download Data
@@ -268,14 +268,16 @@ let BreadCrumpLinks = [
 												</div>
 											</div>
 
-											<div class="bg-gray-50 dark:bg-gray-700 w-1/2 rounded px-4 py-8">
+											<div
+												class="bg-gray-50 dark:bg-gray-700 w-1/2 rounded px-4 py-8"
+											>
 												<!-- <RecruitmentChart
 													:recruitment="recruitment"
 													title="Last Ten Recruitment"
 												/> -->
 												<div class="flex space-x-3 justify-center mt-4">
 													<Link
-														:href="route('report.recruitment.chart')"
+														href="/report/recruitment/chart"
 														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Full Chart

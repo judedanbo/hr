@@ -71,7 +71,7 @@ class SeparationController extends Controller
                     'gender' => $staff->person->gender?->label(),
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
                     'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                    'dob_distance' => $staff->person->date_of_birth?->diffInYears() . ' years old',
+                    'age' => $staff->person->age . ' years old',
                     'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                     'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                     'ghana_card' => $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,

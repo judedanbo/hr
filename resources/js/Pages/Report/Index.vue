@@ -53,7 +53,7 @@ const labels = ["January", "February", "March", "April", "May", "June", "July"];
 							>
 								<div class="flex gap-4 flex-wrap justify-center">
 									<ReportCard
-										:href="route('report.recruitment')"
+										href="/report/recruitment"
 										text="By Recruitment"
 									/>
 									<ReportCard href="#" text="By Department" />

@@ -79,7 +79,7 @@ class Person extends Model
 
     public function getAgeAttribute(): int
     {
-        return $this->date_of_birth->diffInYears(new Carbon());
+        return (int)$this->date_of_birth->diffInYears();
     }
 
     public function getNumberAttribute(): int

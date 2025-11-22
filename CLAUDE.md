@@ -540,7 +540,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.1
+- php - 8.4.13
 - inertiajs/inertia-laravel (INERTIA) - v1
 - laravel/framework (LARAVEL) - v11
 - laravel/prompts (PROMPTS) - v0
@@ -730,15 +730,16 @@ Route::get('/users', function () {
 ## Laravel 11
 
 - Use the `search-docs` tool to get version specific documentation.
-- **IMPORTANT**: This project uses Laravel 11 with Laravel 10 legacy structure (see Architecture section above).
-- Follow the existing Laravel 10 structure patterns - do NOT migrate to new Laravel 11 structure unless explicitly requested.
+- This project upgraded from Laravel 10 without migrating to the new streamlined Laravel 11 file structure.
+- This is **perfectly fine** and recommended by Laravel. Follow the existing structure from Laravel 10. We do not to need migrate to the Laravel 11 structure unless the user explicitly requests that.
 
-### Project Structure (Laravel 10 Style)
-- Middleware registration: `app/Http/Kernel.php`
-- Exception handling: `app/Exceptions/Handler.php`
-- Console commands/scheduling: `app/Console/Kernel.php`
-- Service providers: `app/Providers/`
-- Rate limits: `RouteServiceProvider` or `app/Http/Kernel.php`
+### Laravel 10 Structure
+- Middleware typically live in `app/Http/Middleware/` and service providers in `app/Providers/`.
+- There is no `bootstrap/app.php` application configuration in a Laravel 10 structure:
+    - Middleware registration is in `app/Http/Kernel.php`
+    - Exception handling is in `app/Exceptions/Handler.php`
+    - Console commands and schedule registration is in `app/Console/Kernel.php`
+    - Rate limits likely exist in `RouteServiceProvider` or `app/Http/Kernel.php`
 
 ### Database
 - When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.

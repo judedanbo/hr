@@ -18,7 +18,7 @@ defineProps({
 				{{ staff.gender }}
 				&bull;
 				{{ staff.dob }}
-				({{ staff.dob_distance }})
+				({{ staff.age }})
 			</div>
 		</div>
 	</section>

@@ -77,10 +77,7 @@ const exportToExcel = () => {
 						class="hover:bg-green-50 dark:hover:bg-gray-600"
 					>
 						<td class="p-4 sm:pl-6 lg:pl-8">
-							<Link
-								:href="route('staff.show', { staff: sta.id })"
-								class="flex gap-x-4"
-							>
+							<Link :href="'/staff/' + sta.id" class="flex gap-x-4">
 								<Avatar :initials="sta.initials" :image="sta.image" />
 								<div
 									class="truncate text-xl font-medium leading-6 text-gray-700 dark:text-white space-y-2"

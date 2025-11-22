@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import { Link, Inertia } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import PromotionList from "../Staff/partials/PromotionList.vue";
 import { useToggle } from "@vueuse/core";

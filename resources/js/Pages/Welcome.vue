@@ -47,7 +47,7 @@ const toggle = useToggle(dark);
 				<h1 class="text-white text-4xl md:hidden">HRMIS</h1>
 				<Link
 					v-if="user"
-					:href="route('dashboard')"
+					href="dashboard"
 					as="button"
 					class="mt-12 text-gray-700 lg:text-white text-2xl lg:text-3xl bg-white lg:bg-green-800 hover:bg-green-900 hover:text-white focus:outline-none hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
 				>
@@ -56,7 +56,7 @@ const toggle = useToggle(dark);
 				<div v-else class="space-x-4">
 					<Link
 						v-if="canLogin"
-						:href="route('login')"
+						href="/login"
 						as="button"
 						class="mt-12 text-gray-700 lg:text-white text-2xl lg:text-3xl bg-white lg:bg-green-800 hover:bg-green-900 hover:text-white focus:outline-none focus:ring-1 focus:ring-green-300 hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
 					>
@@ -64,7 +64,7 @@ const toggle = useToggle(dark);
 					</Link>
 					<Link
 						v-if="canRegister"
-						:href="route('register')"
+						href="/register"
 						as="button"
 						class="mt-12 text-gray-700 lg:text-green-800 text-2xl lg:text-3xl bg-white lg:bg-transparent hover:bg-green-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-green-700 hover:underline hover:ring-green-600 rounded-lg px-8 py-3.5 text-center tracking-widest"
 					>

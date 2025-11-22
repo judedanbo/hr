@@ -70,42 +70,42 @@ let BreadCrumpLinks = [
 				>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						:href="route('report.staff')"
+						href="/report-staff"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Staff position
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						:href="route('report.staff-details')"
+						href="/report-staff-details"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Staff details
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						:href="route('report.staff-retirement')"
+						href="/report-staff-retirement"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Staff to retire
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						:href="route('report.staff-pending-transfer')"
+						href="report-staff-pending-transfer"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Pending Transfer
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						:href="route('report.staff-positions')"
+						href="/report-staff-positions"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Positions
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						:href="route('staff-list')"
+						href="/staff-list"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Staff Email

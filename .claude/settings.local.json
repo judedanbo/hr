@@ -20,11 +20,21 @@
       "mcp__laravel-boost__list-routes",
       "Bash(./vendor/bin/pint:*)",
       "Bash(done)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__laravel-boost__read-log-entries",
+      "mcp__laravel-boost__browser-logs",
+      "Bash(docker --version:*)",
+      "Bash(docker-compose --version:*)",
+      "Bash(./vendor/bin/sail up:*)",
+      "Bash(./vendor/bin/sail logs:*)",
+      "Bash(./vendor/bin/sail artisan:*)",
+      "mcp__laravel-boost__last-error",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "laravel-boost"
   ]

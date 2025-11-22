@@ -53,14 +53,14 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            $staff->person->date_of_birth?->diffInYears() . ' years',
+            (int)$staff->person->date_of_birth?->diffInYears() . ' years',
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             // $staff->person->identities->where('id_type', Identity::Social_Security_Number)->first()?->id_number,
             $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
             })->implode(', ') : '',
             $staff->hire_date?->format('d F, Y'),
-            $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
+            $staff->hire_date === null ? '' : (int)Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->person->date_of_birth?->addYears(60)->format('d F Y'),

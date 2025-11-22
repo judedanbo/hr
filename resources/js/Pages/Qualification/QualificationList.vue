@@ -73,9 +73,9 @@ const subMenuClicked = (action, model) => {
 			<thead
 				class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50"
 			>
-			<tr class="sm:hidden">
-				<tr>Details</tr>
-			</tr>
+				<tr class="sm:hidden">
+					<th>Details</th>
+				</tr>
 				<tr class="hidden sm:table-row">
 					<th
 						scope="col"
@@ -186,13 +186,14 @@ const subMenuClicked = (action, model) => {
 					<td
 						v-for="qualification in qualifications"
 						class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
-					><div>
-						{{ qualification.institution }}
-						{{ qualification.level }}
-						{{ qualification.course }}
-						{{ qualification.qualification }}
-						{{ qualification.year }}
-					</div>
+					>
+						<div>
+							{{ qualification.institution }}
+							{{ qualification.level }}
+							{{ qualification.course }}
+							{{ qualification.qualification }}
+							{{ qualification.year }}
+						</div>
 					</td>
 					<!-- <td
 						v-if="qualifications.length > 0"
