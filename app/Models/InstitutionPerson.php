@@ -577,6 +577,30 @@ class InstitutionPerson extends Pivot
     }
 
     /**
+     * Filter staff by hire date from (minimum date)
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $date
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByHireDateFrom($query, $date)
+    {
+        return $query->where('hire_date', '>=', $date);
+    }
+
+    /**
+     * Filter staff by hire date to (maximum date)
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $date
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByHireDateTo($query, $date)
+    {
+        return $query->where('hire_date', '<=', $date);
+    }
+
+    /**
      * Filter staff by age range
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
@@ -588,6 +612,34 @@ class InstitutionPerson extends Pivot
     {
         return $query->whereHas('person', function ($personQuery) use ($minAge, $maxAge) {
             $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) >= ?', [$minAge]);
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) <= ?', [$maxAge]);
+        });
+    }
+
+    /**
+     * Filter staff by minimum age
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $minAge
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByAgeFrom($query, $minAge)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($minAge) {
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) >= ?', [$minAge]);
+        });
+    }
+
+    /**
+     * Filter staff by maximum age
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $maxAge
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByAgeTo($query, $maxAge)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($maxAge) {
             $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) <= ?', [$maxAge]);
         });
     }

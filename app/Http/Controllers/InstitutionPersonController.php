@@ -65,8 +65,16 @@ class InstitutionPersonController extends Controller
             ->when($request->status, fn ($q, $status) => $q->filterByStatus($status))
             ->when($request->hire_date_from && $request->hire_date_to,
                 fn ($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to))
+            ->when($request->hire_date_from && ! $request->hire_date_to,
+                fn ($q) => $q->filterByHireDateFrom($request->hire_date_from))
+            ->when($request->hire_date_to && ! $request->hire_date_from,
+                fn ($q) => $q->filterByHireDateTo($request->hire_date_to))
             ->when($request->age_from && $request->age_to,
                 fn ($q) => $q->filterByAgeRange($request->age_from, $request->age_to))
+            ->when($request->age_from && ! $request->age_to,
+                fn ($q) => $q->filterByAgeFrom($request->age_from))
+            ->when($request->age_to && ! $request->age_from,
+                fn ($q) => $q->filterByAgeTo($request->age_to))
             ->search($request->search)
             ->paginate(10)
             ->withQueryString()

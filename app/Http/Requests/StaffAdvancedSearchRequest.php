@@ -32,7 +32,7 @@ class StaffAdvancedSearchRequest extends FormRequest
             'hire_date_from' => ['nullable', 'date'],
             'hire_date_to' => ['nullable', 'date', 'after_or_equal:hire_date_from'],
             'age_from' => ['nullable', 'integer', 'min:18', 'max:100'],
-            'age_to' => ['nullable', 'integer', 'gte:age_from', 'max:100'],
+            'age_to' => ['nullable', 'integer', 'min:18', 'max:100'],
         ];
     }
 
@@ -50,7 +50,6 @@ class StaffAdvancedSearchRequest extends FormRequest
             'department_id.exists' => 'The selected department does not exist.',
             'gender.in' => 'Gender must be either Male or Female.',
             'hire_date_to.after_or_equal' => 'End date must be equal to or after the start date.',
-            'age_to.gte' => 'Maximum age must be greater than or equal to minimum age.',
         ];
     }
 }
