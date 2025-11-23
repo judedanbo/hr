@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, computed } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import {
 	ChevronDownIcon,
@@ -57,6 +57,26 @@ const searchForm = reactive({
 
 const hasActiveFilters = ref(false);
 
+// Filter jobs based on selected category
+const filteredJobs = computed(() => {
+	if (!searchForm.job_category_id) {
+		return props.filterOptions.jobs;
+	}
+	return props.filterOptions.jobs.filter(
+		(job) => job.category_id === searchForm.job_category_id,
+	);
+});
+
+// Filter units based on selected department
+const filteredUnits = computed(() => {
+	if (!searchForm.department_id) {
+		return props.filterOptions.units;
+	}
+	return props.filterOptions.units.filter(
+		(unit) => unit.department_id === searchForm.department_id,
+	);
+});
+
 const checkActiveFilters = () => {
 	hasActiveFilters.value = Object.values(searchForm).some(
 		(value) => value !== null && value !== "",
@@ -65,6 +85,38 @@ const checkActiveFilters = () => {
 
 // Watch for changes in searchForm
 watch(searchForm, checkActiveFilters, { deep: true });
+
+// Watch for category changes to clear rank selection if needed
+watch(
+	() => searchForm.job_category_id,
+	(newCategoryId) => {
+		// Clear rank_id if the selected rank doesn't belong to the new category
+		if (searchForm.rank_id && newCategoryId) {
+			const selectedRank = props.filterOptions.jobs.find(
+				(job) => job.value === searchForm.rank_id,
+			);
+			if (selectedRank && selectedRank.category_id !== newCategoryId) {
+				searchForm.rank_id = null;
+			}
+		}
+	},
+);
+
+// Watch for department changes to clear unit selection if needed
+watch(
+	() => searchForm.department_id,
+	(newDepartmentId) => {
+		// Clear unit_id if the selected unit doesn't belong to the new department
+		if (searchForm.unit_id && newDepartmentId) {
+			const selectedUnit = props.filterOptions.units.find(
+				(unit) => unit.value === searchForm.unit_id,
+			);
+			if (selectedUnit && selectedUnit.department_id !== newDepartmentId) {
+				searchForm.unit_id = null;
+			}
+		}
+	},
+);
 
 // Watch for changes in props.filters to update searchForm
 watch(
@@ -159,7 +211,15 @@ const resetFilters = () => {
 								v-model="searchForm.rank_id"
 								label="Rank / Job"
 								placeholder="All Ranks"
-								:options="filterOptions.jobs"
+								:options="filteredJobs"
+								searchable
+							/>
+							<!-- Department Filter -->
+							<SearchSelect
+								v-model="searchForm.department_id"
+								label="Department"
+								placeholder="All Departments"
+								:options="filterOptions.departments"
 							/>
 
 							<!-- Unit Filter -->
@@ -167,15 +227,8 @@ const resetFilters = () => {
 								v-model="searchForm.unit_id"
 								label="Unit"
 								placeholder="All Units"
-								:options="filterOptions.units"
-							/>
-
-							<!-- Department Filter -->
-							<SearchSelect
-								v-model="searchForm.department_id"
-								label="Department"
-								placeholder="All Departments"
-								:options="filterOptions.departments"
+								:options="filteredUnits"
+								searchable
 							/>
 
 							<!-- Gender Filter -->

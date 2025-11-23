@@ -71,7 +71,7 @@ class StaffSearchOptionsController extends Controller
             ->select('id', 'name', 'short_name')
             ->orderBy('name')
             ->get()
-            ->map(fn($category) => [
+            ->map(fn ($category) => [
                 'value' => $category->id,
                 'label' => $category->name,
                 'short_name' => $category->short_name,
@@ -92,10 +92,11 @@ class StaffSearchOptionsController extends Controller
             ->select('id', 'name', 'job_category_id')
             ->orderBy('name')
             ->get()
-            ->map(fn($job) => [
+            ->map(fn ($job) => [
                 'value' => $job->id,
                 'label' => $job->name,
                 'category' => $job->category?->name,
+                'category_id' => $job->job_category_id,
             ])
             ->toArray();
     }
@@ -113,11 +114,12 @@ class StaffSearchOptionsController extends Controller
             ->select('id', 'name', 'short_name', 'unit_id')
             ->orderBy('name')
             ->get()
-            ->map(fn($unit) => [
+            ->map(fn ($unit) => [
                 'value' => $unit->id,
                 'label' => $unit->name,
                 'short_name' => $unit->short_name,
                 'department' => $unit->parent?->name,
+                'department_id' => $unit->unit_id,
             ])
             ->toArray();
     }
@@ -135,7 +137,7 @@ class StaffSearchOptionsController extends Controller
             ->select('id', 'name', 'short_name')
             ->orderBy('name')
             ->get()
-            ->map(fn($dept) => [
+            ->map(fn ($dept) => [
                 'value' => $dept->id,
                 'label' => $dept->name,
                 'short_name' => $dept->short_name,
