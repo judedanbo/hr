@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Identity;
+use App\Http\Requests\StaffAdvancedSearchRequest;
 use App\Http\Requests\StoreInstitutionPersonRequest;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\StoreStaffPositionRequest;
@@ -26,7 +27,7 @@ class InstitutionPersonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(StaffAdvancedSearchRequest $request)
     {
         if (Gate::denies('view all staff')) {
             activity()
@@ -38,6 +39,7 @@ class InstitutionPersonController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to view all staff');
+
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view all staff');
         }
         activity()
@@ -49,15 +51,26 @@ class InstitutionPersonController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('viewed all staff');
+
         $staff = InstitutionPerson::query()
             ->active()
             ->with('person')
             ->currentUnit()
             ->currentRank()
-            ->search(request()->search)
+            ->when($request->rank_id, fn ($q, $rankId) => $q->filterByRank($rankId))
+            ->when($request->job_category_id, fn ($q, $categoryId) => $q->filterByJobCategory($categoryId))
+            ->when($request->unit_id, fn ($q, $unitId) => $q->filterByUnit($unitId))
+            ->when($request->department_id, fn ($q, $deptId) => $q->filterByDepartment($deptId))
+            ->when($request->gender, fn ($q, $gender) => $q->filterByGender($gender))
+            ->when($request->status, fn ($q, $status) => $q->filterByStatus($status))
+            ->when($request->hire_date_from && $request->hire_date_to,
+                fn ($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to))
+            ->when($request->age_from && $request->age_to,
+                fn ($q) => $q->filterByAgeRange($request->age_from, $request->age_to))
+            ->search($request->search)
             ->paginate(10)
             ->withQueryString()
-            ->through(fn($staff) => [
+            ->through(fn ($staff) => [
                 'id' => $staff->id,
                 'file_number' => $staff->file_number,
                 'staff_number' => $staff->staff_number,
@@ -93,7 +106,19 @@ class InstitutionPersonController extends Controller
 
         return Inertia::render('Staff/Index', [
             'staff' => $staff,
-            'filters' => ['search' => request()->search],
+            'filters' => $request->only([
+                'search',
+                'rank_id',
+                'job_category_id',
+                'unit_id',
+                'department_id',
+                'gender',
+                'status',
+                'hire_date_from',
+                'hire_date_to',
+                'age_from',
+                'age_to',
+            ]),
         ]);
     }
 
@@ -107,6 +132,7 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('create staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
+
         return Inertia::render('Staff/Create');
     }
 
@@ -214,6 +240,7 @@ class InstitutionPersonController extends Controller
         if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
+
         // dd($request->session()->all());
         // request()->session()->reflash();
         return Inertia::render('Staff/NewShow', [
@@ -236,15 +263,15 @@ class InstitutionPersonController extends Controller
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' =>  $staff->person->image ? '/storage/' . $staff->person->image :  null,
-                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn($id) => [
+                'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
+                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'id' => $id->id,
                     'id_type' => $id->id_type,
                     'id_type_display' => $id->id_type->label(),
                     'id_number' => $id->id_number,
                 ]) : null,
             ],
-            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn($qualification) => [
+            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn ($qualification) => [
                 'id' => $qualification->id,
                 'person_id' => $qualification->person_id,
                 'course' => $qualification->course,
@@ -253,7 +280,7 @@ class InstitutionPersonController extends Controller
                 'qualification_number' => $qualification->qualification_number,
                 'level' => $qualification->level,
                 'year' => $qualification->year,
-                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn($document) => [
+                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
                     'document_type' => $document->document_type,
                     'document_title' => $document->document_title,
                     'document_status' => $document->document_status,
@@ -262,7 +289,7 @@ class InstitutionPersonController extends Controller
                     'file_type' => $document->file_type,
                 ]) : null,
             ]) : [],
-            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn($contact) => [
+            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type' => $contact->contact_type,
@@ -291,7 +318,7 @@ class InstitutionPersonController extends Controller
                 'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
                 'retirement_date_display' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
                 'start_date' => $staff->start_date?->format('d M Y'),
-                'statuses' => $staff->statuses?->map(fn($status) => [
+                'statuses' => $staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
                     'status' => $status->status,
                     'status_display' => $status->status?->name,
@@ -301,7 +328,7 @@ class InstitutionPersonController extends Controller
                     'end_date' => $status->end_date?->format('Y-m-d'),
                     'end_date_display' => $status->end_date?->format('d M Y'),
                 ]),
-                'staff_type' => $staff->type?->map(fn($type) => [
+                'staff_type' => $staff->type?->map(fn ($type) => [
                     'id' => $type->id,
                     'type' => $type->staff_type,
                     'type_label' => $type->staff_type->label(),
@@ -310,7 +337,7 @@ class InstitutionPersonController extends Controller
                     'end_date' => $type->end_date?->format('Y-m-d'),
                     'end_date_display' => $type->end_date?->format('d M Y'),
                 ]),
-                'positions' => $staff->positions?->map(fn($position) => [
+                'positions' => $staff->positions?->map(fn ($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
                     'start_date' => $position->pivot->start_date,
@@ -318,7 +345,7 @@ class InstitutionPersonController extends Controller
                     'start_date_display' => $position->pivot->start_date ? Carbon::parse($position->pivot->start_date)->format('d M Y') : null,
                     'end_date_display' => $position->pivot->end_date ? Carbon::parse($position->pivot->end_date)->format('d M Y') : null,
                 ]),
-                'ranks' => $staff->ranks->map(fn($rank) => [
+                'ranks' => $staff->ranks->map(fn ($rank) => [
                     'id' => $rank->id,
                     'name' => $rank->name,
                     'staff_name' => $staff->person->full_name,
@@ -331,14 +358,14 @@ class InstitutionPersonController extends Controller
                     'remarks' => $rank->pivot->remarks,
                     'distance' => $rank->pivot->start_date?->diffForHumans(),
                 ]),
-                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn($note) => [
+                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn ($note) => [
                     'id' => $note->id,
                     'note' => $note->note,
                     'note_date' => $note->note_date->diffForHumans(),
                     'note_date_time' => $note->note_date,
                     'note_type' => $note->note_type,
                     'created_by' => $note->created_by,
-                    'url' => $note->documents->count() > 0 ? $note->documents->map(fn($doc) => [
+                    'url' => $note->documents->count() > 0 ? $note->documents->map(fn ($doc) => [
                         'document_type' => $doc->document_type,
                         'document_title' => $doc->document_title,
                         // 'document_status' => $doc->document_status,
@@ -348,7 +375,7 @@ class InstitutionPersonController extends Controller
                     ]) : null,
 
                 ]) : null,
-                'units' => $staff->units->map(fn($unit) => [
+                'units' => $staff->units->map(fn ($unit) => [
                     // 'unit' => $unit,
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
@@ -365,7 +392,7 @@ class InstitutionPersonController extends Controller
                     'remarks' => $unit->pivot->remarks,
                     'old_data' => $unit->pivot->old_data,
                 ]),
-                'dependents' => $staff->dependents ? $staff->dependents->map(fn($dep) => [
+                'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'initials' => $dep->person->initials,
@@ -423,7 +450,7 @@ class InstitutionPersonController extends Controller
     public function promotions(InstitutionPerson $staff)
     {
         if (request()->user()->cannot('view staff promotion')) {
-            return (['error', 'You do not have permission to view promotions']);
+            return ['error', 'You do not have permission to view promotions'];
         }
         $staff->load('ranks', 'person');
 
@@ -436,13 +463,13 @@ class InstitutionPersonController extends Controller
             'hire_date' => $staff->hire_date?->format('d M Y'),
             'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
             'start_date' => $staff->start_date,
-            'promotions' => $staff->ranks ? $staff->ranks->map(fn($rank) => [
+            'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
                 'id' => $rank->id,
                 'name' => $rank->name,
                 'start_date' => $rank->pivot->start_date?->format('d M Y'),
                 'end_date' => $rank->pivot->end_date?->format('d M Y'),
                 'remarks' => $rank->pivot->remarks,
-                'distance' => (int)$rank->pivot->start_date->diffInYears(),
+                'distance' => (int) $rank->pivot->start_date->diffInYears(),
             ])
                 : null,
         ];
@@ -589,7 +616,6 @@ class InstitutionPersonController extends Controller
                 'end_date' => $validated['end_date'] ?? null,
             ]);
         });
-
 
         return redirect()->back()->with('success', 'Position assigned successfully.');
     }

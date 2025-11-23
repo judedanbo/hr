@@ -470,4 +470,125 @@ class InstitutionPerson extends Pivot
             $query->female();
         });
     }
+
+    /**
+     * Filter staff by specific rank/job
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $rankId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByRank($query, $rankId)
+    {
+        return $query->whereHas('ranks', function ($rankQuery) use ($rankId) {
+            $rankQuery->where('jobs.id', $rankId);
+            $rankQuery->whereNull('job_staff.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by job category
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $categoryId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByJobCategory($query, $categoryId)
+    {
+        return $query->whereHas('ranks', function ($rankQuery) use ($categoryId) {
+            $rankQuery->where('jobs.job_category_id', $categoryId);
+            $rankQuery->whereNull('job_staff.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by specific unit
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $unitId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByUnit($query, $unitId)
+    {
+        return $query->whereHas('units', function ($unitQuery) use ($unitId) {
+            $unitQuery->where('units.id', $unitId);
+            $unitQuery->whereNull('staff_unit.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by department (parent unit)
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $departmentId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByDepartment($query, $departmentId)
+    {
+        return $query->whereHas('units', function ($unitQuery) use ($departmentId) {
+            $unitQuery->where('units.unit_id', $departmentId);
+            $unitQuery->whereNull('staff_unit.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by gender
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $gender
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByGender($query, $gender)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($gender) {
+            $personQuery->where('gender', $gender);
+        });
+    }
+
+    /**
+     * Filter staff by employment status
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $status
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->whereHas('statuses', function ($statusQuery) use ($status) {
+            $statusQuery->where('status', $status);
+            $statusQuery->where(function ($dateQuery) {
+                $dateQuery->whereNull('end_date');
+                $dateQuery->orWhere('end_date', '>', now());
+            });
+        });
+    }
+
+    /**
+     * Filter staff by hire date range
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $startDate
+     * @param  string  $endDate
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByHireDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('hire_date', [$startDate, $endDate]);
+    }
+
+    /**
+     * Filter staff by age range
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $minAge
+     * @param  int  $maxAge
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByAgeRange($query, $minAge, $maxAge)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($minAge, $maxAge) {
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) >= ?', [$minAge]);
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) <= ?', [$maxAge]);
+        });
+    }
 }

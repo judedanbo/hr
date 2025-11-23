@@ -8,6 +8,16 @@ HR Management System built with Laravel 11.x and Vue.js 3 + Inertia.js. Manages 
 
 ### Recent Features (v2024-2025)
 
+- **Advanced Staff Search** (Nov 2025)
+  - Multi-criteria search with 10 filter types (rank, category, unit, department, gender, status, hire date, age)
+  - Real-time filter badge display with individual removal
+  - Responsive UI with HeadlessUI components
+  - Database indexes for optimized query performance
+  - Cached filter options API (1-hour TTL)
+  - Components: `AdvancedSearchPanel.vue`, `ActiveFilters.vue`, `SearchSelect.vue`
+  - Controllers: `StaffSearchOptionsController`
+  - See `ADVANCED_SEARCH_ROADMAP.md` for detailed implementation
+
 - **Permissions & Roles Management** (Jan 2025)
   - Full CRUD for permissions and roles
   - Assign/revoke permissions to roles

@@ -47,6 +47,7 @@ use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffListController;
 use App\Http\Controllers\StaffReportController;
+use App\Http\Controllers\StaffSearchOptionsController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
@@ -183,7 +184,7 @@ Route::get('/institution/{institution}/ranks', [InstitutionRankController::class
 Route::get('/institution/{institution}/units', function (Institution $institution) {
     $institution->load('allUnits');
 
-    return $institution->allUnits->map(fn ($unit) => [
+    return $institution->allUnits->map(fn($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -230,7 +231,7 @@ Route::get('/unit-list', function () {
     // return 'all units';
     $units = Unit::all();
 
-    return $units->map(fn ($unit) => [
+    return $units->map(fn($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -353,7 +354,7 @@ Route::get('rank/{rank}/next', function (Job $rank) {
 
     return Job::where('job_category_id', $nextCategoryId)
         ->get()
-        ->map(fn ($rank) => [
+        ->map(fn($rank) => [
             'value' => $rank->id,
             'label' => $rank->name,
         ]);
@@ -567,4 +568,12 @@ Route::controller(OfficeController::class)->middleware(['auth', 'password_change
     Route::get('/office/{office}', 'show')->name('office.show');
     Route::patch('/office/{office}', 'update')->name('office.update');
     Route::delete('/office/{office}', 'delete')->name('office.delete');
+});
+
+Route::middleware('auth')->prefix('staff-search')->group(function () {
+    Route::get('/options', [StaffSearchOptionsController::class, 'index'])->name('staff-search.options');
+    Route::get('/job-categories', [StaffSearchOptionsController::class, 'jobCategories'])->name('staff-search.job-categories');
+    Route::get('/jobs', [StaffSearchOptionsController::class, 'jobs'])->name('staff-search.jobs');
+    Route::get('/units', [StaffSearchOptionsController::class, 'units'])->name('staff-search.units');
+    Route::get('/departments', [StaffSearchOptionsController::class, 'departments'])->name('staff-search.departments');
 });
