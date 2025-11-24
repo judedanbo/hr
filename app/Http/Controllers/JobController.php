@@ -31,6 +31,33 @@ class JobController extends Controller
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view all ranks.');
         }
 
+        // Calculate aggregate statistics
+        $activeStaffCount = InstitutionPerson::query()
+            ->active()
+            ->whereHas('ranks', function ($query) {
+                $query->whereNull('job_staff.end_date');
+            })
+            ->count();
+
+        $dueForPromotionCount = InstitutionPerson::query()
+            ->active()
+            ->whereHas('ranks', function ($query) {
+                $query->whereNull('job_staff.end_date');
+                $query->whereYear('job_staff.start_date', '<=', now()->subYears(3)->year);
+            })
+            ->count();
+
+        $allTimeCount = InstitutionPerson::query()
+            ->whereHas('ranks')
+            ->count();
+
+        $totalHarmonizedGrades = Job::query()
+            ->whereHas('staff', function ($query) {
+                $query->active();
+                $query->where('job_staff.end_date', null);
+            })
+            ->count();
+
         return Inertia::render('Job/Index', [
             'jobs' => Job::query()
                 ->searchRank(request()->search)
@@ -76,6 +103,12 @@ class JobController extends Controller
                         'name' => $job->institution->name,
                     ],
                 ]),
+            'stats' => [
+                'total_harmonized_grades' => $totalHarmonizedGrades,
+                'active_staff' => $activeStaffCount,
+                'due_for_promotion' => $dueForPromotionCount,
+                'all_time' => $allTimeCount,
+            ],
             'filters' => ['search' => request()->search],
         ]);
     }

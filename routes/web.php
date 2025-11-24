@@ -11,6 +11,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanksController;
 use App\Http\Controllers\ContactTypeController;
+use App\Http\Controllers\DataIntegrityController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\GenderController;
@@ -184,7 +185,7 @@ Route::get('/institution/{institution}/ranks', [InstitutionRankController::class
 Route::get('/institution/{institution}/units', function (Institution $institution) {
     $institution->load('allUnits');
 
-    return $institution->allUnits->map(fn($unit) => [
+    return $institution->allUnits->map(fn ($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -231,7 +232,7 @@ Route::get('/unit-list', function () {
     // return 'all units';
     $units = Unit::all();
 
-    return $units->map(fn($unit) => [
+    return $units->map(fn ($unit) => [
         'value' => $unit->id,
         'label' => $unit->name,
     ]);
@@ -354,7 +355,7 @@ Route::get('rank/{rank}/next', function (Job $rank) {
 
     return Job::where('job_category_id', $nextCategoryId)
         ->get()
-        ->map(fn($rank) => [
+        ->map(fn ($rank) => [
             'value' => $rank->id,
             'label' => $rank->name,
         ]);
@@ -576,4 +577,11 @@ Route::middleware('auth')->prefix('staff-search')->group(function () {
     Route::get('/jobs', [StaffSearchOptionsController::class, 'jobs'])->name('staff-search.jobs');
     Route::get('/units', [StaffSearchOptionsController::class, 'units'])->name('staff-search.units');
     Route::get('/departments', [StaffSearchOptionsController::class, 'departments'])->name('staff-search.departments');
+});
+
+Route::middleware('auth')->prefix('data-integrity')->group(function () {
+    Route::get('/', [DataIntegrityController::class, 'index'])->name('data-integrity.index');
+    Route::get('/multiple-ranks', [DataIntegrityController::class, 'multipleRanks'])->name('data-integrity.multiple-ranks');
+    Route::post('/multiple-ranks/{staff}/fix', [DataIntegrityController::class, 'fixMultipleRanks'])->name('data-integrity.multiple-ranks.fix');
+    Route::post('/multiple-ranks/bulk-fix', [DataIntegrityController::class, 'bulkFixMultipleRanks'])->name('data-integrity.multiple-ranks.bulk-fix');
 });

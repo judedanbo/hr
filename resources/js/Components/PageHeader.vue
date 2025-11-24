@@ -1,7 +1,7 @@
 <script setup>
 import { debouncedWatch } from "@vueuse/core";
 
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import InfoCard from "@/Components/InfoCard.vue";
 
@@ -16,6 +16,10 @@ const props = defineProps({
 		type: Number,
 		default: 0,
 	},
+	stats: {
+		type: Array,
+		default: null,
+	},
 	actionText: {
 		type: String,
 		default: "Add",
@@ -29,6 +33,9 @@ const props = defineProps({
 		default: true, // TODO: Change this to false
 	},
 });
+
+const hasStats = computed(() => props.stats && props.stats.length > 0);
+
 const search = ref(props.search);
 debouncedWatch(
 	search,
@@ -39,24 +46,40 @@ debouncedWatch(
 );
 </script>
 <template>
-	<section class="sm:flex items-center justify-between my-2">
-		<FormKit
-			v-model="search"
-			prefix-icon="search"
-			type="search"
-			:placeholder="`Search ${title}...`"
-			autofocus
-		/>
-		<InfoCard :title="title" :value="total" link="#" />
+	<section class="my-2">
+		<div class="sm:flex items-center justify-between mb-4">
+			<FormKit
+				v-model="search"
+				prefix-icon="search"
+				type="search"
+				:placeholder="`Search ${title}...`"
+				autofocus
+			/>
 
-		<a
-			v-if="addPermission"
-			class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-			href="#"
-			@click.prevent="emit('actionClicked')"
+			<a
+				v-if="addPermission"
+				class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+				href="#"
+				@click.prevent="emit('actionClicked')"
+			>
+				<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
+				{{ actionText }}
+			</a>
+		</div>
+
+		<!-- Statistics Grid -->
+		<div
+			v-if="hasStats"
+			class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
 		>
-			<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-			{{ actionText }}
-		</a>
+			<InfoCard
+				v-for="(stat, index) in stats"
+				:key="index"
+				:title="stat.title"
+				:value="stat.value"
+				link="#"
+			/>
+		</div>
+		<InfoCard v-else :title="title" :value="total" link="#" />
 	</section>
 </template>

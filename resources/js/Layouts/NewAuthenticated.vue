@@ -22,6 +22,7 @@ import {
 	UsersIcon,
 	XMarkIcon,
 	UserGroupIcon,
+	ShieldCheckIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -141,6 +142,13 @@ const navigation = [
 		icon: UsersIcon,
 		current: route().current("logs.*"),
 		visible: permissions.value?.includes("view all audit logs"),
+	},
+	{
+		name: "Data Integrity",
+		href: route("data-integrity.index"),
+		icon: ShieldCheckIcon,
+		current: route().current("data-integrity.*"),
+		visible: page.props?.auth?.roles?.includes("super-administrator"),
 	},
 ];
 const userNavigation = [

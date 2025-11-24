@@ -25,8 +25,16 @@ let toggle = useToggle(openAddDialog);
 let props = defineProps({
 	jobs: { type: Object, required: true },
 	filters: { type: Object, default: () => {} },
+	stats: { type: Object, required: true },
 });
 const navigation = computed(() => useNavigation(props.jobs));
+
+const statsArray = computed(() => [
+	{ title: "Total Harmonized Grades", value: props.stats.total_harmonized_grades },
+	{ title: "Active Staff", value: props.stats.active_staff },
+	{ title: "Due for Promotion", value: props.stats.due_for_promotion },
+	{ title: "All Time", value: props.stats.all_time },
+]);
 
 let BreadCrumpLinks = [
 	{
@@ -55,6 +63,7 @@ const searchJobs = (value) => {
 				<PageHeader
 					title="Ranks"
 					:total="jobs.total"
+					:stats="statsArray"
 					:search="search"
 					:add-permission="permissions?.includes('create job')"
 					action-text="Add Rank"
@@ -71,7 +80,7 @@ const searchJobs = (value) => {
 					<a
 						v-if="permissions?.includes('download job summary')"
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/job-summary"
+						href="/rank-summary"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						Download summary
