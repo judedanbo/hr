@@ -780,9 +780,29 @@ class DataIntegrityController extends Controller
                 $query->whereNull('image')
                     ->orWhere('image', '');
             })
-            ->with('person')
+            ->with([
+                'person',
+                'currentUnit.unit.parent',
+            ])
+            ->currentUnit()
             ->get()
             ->map(function ($staff) {
+                $unit = $staff->currentUnit?->unit;
+                $parent = $unit?->parent;
+
+                // Determine department (top-level unit with no parent or type = DEP)
+                $department = null;
+                if ($parent) {
+                    // If unit has a parent, check if parent is a department
+                    if ($parent->type === \App\Enums\UnitType::DEPARTMENT->value || ! $parent->unit_id) {
+                        $department = $parent;
+                    }
+                } elseif ($unit && ($unit->type === \App\Enums\UnitType::DEPARTMENT->value || ! $unit->unit_id)) {
+                    // Staff is directly in a department
+                    $department = $unit;
+                    $unit = null; // Clear unit since they're assigned to department directly
+                }
+
                 return [
                     'id' => $staff->id,
                     'staff_number' => $staff->staff_number,
@@ -790,15 +810,40 @@ class DataIntegrityController extends Controller
                     'name' => $staff->person->full_name,
                     'hire_date' => $staff->hire_date?->format('Y-m-d'),
                     'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'unit' => $unit ? [
+                        'id' => $unit->id,
+                        'name' => $unit->name,
+                        'type' => $unit->type,
+                    ] : null,
+                    'department' => $department ? [
+                        'id' => $department->id,
+                        'name' => $department->name,
+                        'type' => $department->type,
+                    ] : null,
                 ];
+            })
+            ->groupBy(function ($staff) {
+                return $staff['department']['name'] ?? 'No Department';
+            })
+            ->map(function ($departmentStaff) {
+                return $departmentStaff->groupBy(function ($staff) {
+                    return $staff['unit']['name'] ?? 'No Unit';
+                });
             });
+
+        // Calculate total count from grouped data
+        $totalCount = $staffWithoutPictures->reduce(function ($carry, $departmentGroup) {
+            return $carry + $departmentGroup->reduce(function ($unitCarry, $unitGroup) {
+                return $unitCarry + $unitGroup->count();
+            }, 0);
+        }, 0);
 
         activity()
             ->causedBy(auth()->user())
             ->event('view')
             ->withProperties([
                 'result' => 'success',
-                'count' => $staffWithoutPictures->count(),
+                'count' => $totalCount,
                 'user_ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ])
