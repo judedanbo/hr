@@ -90,6 +90,15 @@ class DataIntegrityController extends Controller
             })
             ->count();
 
+        // Count staff without profile pictures
+        $staffWithoutPicturesCount = InstitutionPerson::query()
+            ->active()
+            ->whereHas('person', function ($query) {
+                $query->whereNull('image')
+                    ->orWhere('image', '');
+            })
+            ->count();
+
         activity()
             ->causedBy(auth()->user())
             ->event('view')
@@ -141,6 +150,14 @@ class DataIntegrityController extends Controller
                     'count' => $separatedButActiveCount,
                     'severity' => $separatedButActiveCount > 0 ? 'warning' : 'success',
                     'route' => route('data-integrity.separated-but-active'),
+                ],
+                [
+                    'id' => 'staff-without-pictures',
+                    'title' => 'Staff without Profile Pictures',
+                    'description' => 'Active staff members who do not have a profile picture uploaded',
+                    'count' => $staffWithoutPicturesCount,
+                    'severity' => $staffWithoutPicturesCount > 0 ? 'warning' : 'success',
+                    'route' => route('data-integrity.staff-without-pictures'),
                 ],
             ],
         ]);
@@ -738,6 +755,57 @@ class DataIntegrityController extends Controller
 
         return Inertia::render('DataIntegrity/SeparatedButActive', [
             'staff' => $separatedButActive,
+        ]);
+    }
+
+    public function staffWithoutPictures()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view staff without pictures');
+
+            return redirect()->route('data-integrity.index')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $staffWithoutPictures = InstitutionPerson::query()
+            ->active()
+            ->whereHas('person', function ($query) {
+                $query->whereNull('image')
+                    ->orWhere('image', '');
+            })
+            ->with('person')
+            ->get()
+            ->map(function ($staff) {
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'hire_date' => $staff->hire_date?->format('Y-m-d'),
+                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                ];
+            });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $staffWithoutPictures->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed staff without pictures');
+
+        return Inertia::render('DataIntegrity/StaffWithoutPictures', [
+            'staff' => $staffWithoutPictures,
         ]);
     }
 }

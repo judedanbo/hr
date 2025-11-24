@@ -591,4 +591,5 @@ Route::middleware('auth')->prefix('data-integrity')->group(function () {
     Route::post('/invalid-date-ranges/{staff}/fix', [DataIntegrityController::class, 'fixInvalidDateRanges'])->name('data-integrity.invalid-date-ranges.fix');
     Route::post('/invalid-date-ranges/bulk-fix', [DataIntegrityController::class, 'bulkFixInvalidDateRanges'])->name('data-integrity.invalid-date-ranges.bulk-fix');
     Route::get('/separated-but-active', [DataIntegrityController::class, 'separatedButActive'])->name('data-integrity.separated-but-active');
+    Route::get('/staff-without-pictures', [DataIntegrityController::class, 'staffWithoutPictures'])->name('data-integrity.staff-without-pictures');
 });
