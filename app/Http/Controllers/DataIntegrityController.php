@@ -35,7 +35,59 @@ class DataIntegrityController extends Controller
                 $query->whereNull('job_staff.end_date');
             }])
             ->get()
-            ->filter(fn($staff) => $staff->ranks->count() > 1)
+            ->filter(fn ($staff) => $staff->ranks->count() > 1)
+            ->count();
+
+        // Count staff without units
+        $staffWithoutUnitsCount = InstitutionPerson::query()
+            ->active()
+            ->whereDoesntHave('units', function ($query) {
+                $query->whereNull('staff_unit.end_date');
+            })
+            ->count();
+
+        // Count staff without ranks
+        $staffWithoutRanksCount = InstitutionPerson::query()
+            ->active()
+            ->whereDoesntHave('ranks', function ($query) {
+                $query->whereNull('job_staff.end_date');
+            })
+            ->count();
+
+        // Count staff with invalid date ranges (end_date before start_date)
+        $invalidDateRangesCount = InstitutionPerson::query()
+            ->active()
+            ->where(function ($query) {
+                // Check ranks with invalid dates
+                $query->whereHas('ranks', function ($query) {
+                    $query->whereNotNull('job_staff.end_date')
+                        ->whereRaw('job_staff.end_date < job_staff.start_date');
+                });
+                // Check units with invalid dates
+                $query->orWhereHas('units', function ($query) {
+                    $query->whereNotNull('staff_unit.end_date')
+                        ->whereRaw('staff_unit.end_date < staff_unit.start_date');
+                });
+            })
+            ->count();
+
+        // Count separated staff still marked as active
+        $separatedButActiveCount = InstitutionPerson::query()
+            ->active()
+            ->whereHas('statuses', function ($query) {
+                $query->whereIn('status', [
+                    \App\Enums\EmployeeStatusEnum::Left->value,
+                    \App\Enums\EmployeeStatusEnum::Termination->value,
+                    \App\Enums\EmployeeStatusEnum::Resignation->value,
+                    \App\Enums\EmployeeStatusEnum::Retired->value,
+                    \App\Enums\EmployeeStatusEnum::Dismissed->value,
+                    \App\Enums\EmployeeStatusEnum::Deceased->value,
+                    \App\Enums\EmployeeStatusEnum::Voluntary->value,
+                ])->where(function ($query) {
+                    $query->whereNull('end_date')
+                        ->orWhere('end_date', '>', now());
+                });
+            })
             ->count();
 
         activity()
@@ -57,6 +109,38 @@ class DataIntegrityController extends Controller
                     'count' => $multipleRanksCount,
                     'severity' => $multipleRanksCount > 0 ? 'warning' : 'success',
                     'route' => route('data-integrity.multiple-ranks'),
+                ],
+                [
+                    'id' => 'staff-without-units',
+                    'title' => 'Staff without Units',
+                    'description' => 'Active staff members who have no current unit assignment',
+                    'count' => $staffWithoutUnitsCount,
+                    'severity' => $staffWithoutUnitsCount > 0 ? 'error' : 'success',
+                    'route' => route('data-integrity.staff-without-units'),
+                ],
+                [
+                    'id' => 'staff-without-ranks',
+                    'title' => 'Staff without Ranks',
+                    'description' => 'Active staff members who have no current rank assignment',
+                    'count' => $staffWithoutRanksCount,
+                    'severity' => $staffWithoutRanksCount > 0 ? 'error' : 'success',
+                    'route' => route('data-integrity.staff-without-ranks'),
+                ],
+                [
+                    'id' => 'invalid-date-ranges',
+                    'title' => 'Invalid Date Ranges',
+                    'description' => 'Staff with end dates that come before start dates in rank or unit assignments',
+                    'count' => $invalidDateRangesCount,
+                    'severity' => $invalidDateRangesCount > 0 ? 'error' : 'success',
+                    'route' => route('data-integrity.invalid-date-ranges'),
+                ],
+                [
+                    'id' => 'separated-but-active',
+                    'title' => 'Separated Staff Still Active',
+                    'description' => 'Staff marked as active but have a separation date in the past',
+                    'count' => $separatedButActiveCount,
+                    'severity' => $separatedButActiveCount > 0 ? 'warning' : 'success',
+                    'route' => route('data-integrity.separated-but-active'),
                 ],
             ],
         ]);
@@ -87,7 +171,7 @@ class DataIntegrityController extends Controller
                 $query->whereNull('job_staff.end_date')->orderBy('job_staff.start_date', 'desc');
             }, 'person'])
             ->get()
-            ->filter(fn($staff) => $staff->ranks->count() > 1)
+            ->filter(fn ($staff) => $staff->ranks->count() > 1)
             ->map(function ($staff) {
                 return [
                     'id' => $staff->id,
@@ -232,7 +316,7 @@ class DataIntegrityController extends Controller
                     $query->whereNull('job_staff.end_date')->orderBy('job_staff.start_date', 'desc');
                 }])
                 ->get()
-                ->filter(fn($staff) => $staff->ranks->count() > 1);
+                ->filter(fn ($staff) => $staff->ranks->count() > 1);
 
             $fixedCount = 0;
             $totalRanksFixed = 0;
