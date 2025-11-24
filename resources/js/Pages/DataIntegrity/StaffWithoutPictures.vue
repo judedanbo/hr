@@ -43,6 +43,39 @@ const totalCount = computed(() => {
 
 const isEmpty = computed(() => totalCount.value === 0);
 
+// Summary statistics
+const summaryStats = computed(() => {
+	const departments = Object.keys(props.staff).length;
+	let totalUnits = 0;
+
+	const departmentBreakdown = Object.entries(props.staff).map(
+		([deptName, deptUnits]) => {
+			const units = Object.keys(deptUnits).length;
+			totalUnits += units;
+
+			const staffCount = Object.values(deptUnits).reduce(
+				(sum, unitGroup) => sum + unitGroup.length,
+				0,
+			);
+
+			return {
+				name: deptName,
+				units,
+				staff: staffCount,
+			};
+		},
+	);
+
+	// Sort by staff count descending
+	departmentBreakdown.sort((a, b) => b.staff - a.staff);
+
+	return {
+		departments,
+		units: totalUnits,
+		departmentBreakdown,
+	};
+});
+
 // Collapsible state management
 const collapsedDepartments = ref({});
 const collapsedUnits = ref({});
@@ -86,6 +119,163 @@ const isUnitCollapsed = (departmentName, unitName) => {
 							{{ totalCount === 1 ? "member has" : "members have" }}
 							no profile picture uploaded
 						</p>
+					</div>
+
+					<!-- Summary Statistics -->
+					<div
+						v-if="!isEmpty"
+						class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4"
+					>
+						<!-- Total Staff Card -->
+						<div
+							class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-800"
+						>
+							<div class="flex items-center justify-between">
+								<div>
+									<p
+										class="text-sm font-medium text-yellow-700 dark:text-yellow-300"
+									>
+										Total Staff
+									</p>
+									<p
+										class="mt-1 text-3xl font-bold text-yellow-900 dark:text-yellow-100"
+									>
+										{{ totalCount }}
+									</p>
+								</div>
+								<UserCircleIcon
+									class="h-12 w-12 text-yellow-400 dark:text-yellow-600"
+								/>
+							</div>
+						</div>
+
+						<!-- Departments Card -->
+						<div
+							class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800"
+						>
+							<div class="flex items-center justify-between">
+								<div>
+									<p
+										class="text-sm font-medium text-blue-700 dark:text-blue-300"
+									>
+										Departments
+									</p>
+									<p
+										class="mt-1 text-3xl font-bold text-blue-900 dark:text-blue-100"
+									>
+										{{ summaryStats.departments }}
+									</p>
+								</div>
+								<BuildingOfficeIcon
+									class="h-12 w-12 text-blue-400 dark:text-blue-600"
+								/>
+							</div>
+						</div>
+
+						<!-- Units Card -->
+						<div
+							class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-800"
+						>
+							<div class="flex items-center justify-between">
+								<div>
+									<p
+										class="text-sm font-medium text-purple-700 dark:text-purple-300"
+									>
+										Units
+									</p>
+									<p
+										class="mt-1 text-3xl font-bold text-purple-900 dark:text-purple-100"
+									>
+										{{ summaryStats.units }}
+									</p>
+								</div>
+								<UserGroupIcon
+									class="h-12 w-12 text-purple-400 dark:text-purple-600"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<!-- Department Breakdown Table -->
+					<div
+						v-if="!isEmpty"
+						class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
+					>
+						<div
+							class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600"
+						>
+							<h3
+								class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+							>
+								Department Summary
+							</h3>
+						</div>
+						<div class="overflow-x-auto">
+							<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+								<thead class="bg-gray-50 dark:bg-gray-700">
+									<tr>
+										<th
+											scope="col"
+											class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+										>
+											Department
+										</th>
+										<th
+											scope="col"
+											class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+										>
+											Units
+										</th>
+										<th
+											scope="col"
+											class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+										>
+											Staff without Pictures
+										</th>
+										<th
+											scope="col"
+											class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+										>
+											Percentage
+										</th>
+									</tr>
+								</thead>
+								<tbody
+									class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600"
+								>
+									<tr
+										v-for="dept in summaryStats.departmentBreakdown"
+										:key="dept.name"
+										class="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+									>
+										<td
+											class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100"
+										>
+											{{ dept.name }}
+										</td>
+										<td
+											class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400"
+										>
+											{{ dept.units }}
+										</td>
+										<td
+											class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+										>
+											<span
+												class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200"
+											>
+												{{ dept.staff }}
+											</span>
+										</td>
+										<td
+											class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400 text-right"
+										>
+											{{ ((dept.staff / totalCount) * 100).toFixed(1) }}%
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 
 					<!-- No Issues State -->
