@@ -584,4 +584,11 @@ Route::middleware('auth')->prefix('data-integrity')->group(function () {
     Route::get('/multiple-ranks', [DataIntegrityController::class, 'multipleRanks'])->name('data-integrity.multiple-ranks');
     Route::post('/multiple-ranks/{staff}/fix', [DataIntegrityController::class, 'fixMultipleRanks'])->name('data-integrity.multiple-ranks.fix');
     Route::post('/multiple-ranks/bulk-fix', [DataIntegrityController::class, 'bulkFixMultipleRanks'])->name('data-integrity.multiple-ranks.bulk-fix');
+
+    Route::get('/staff-without-units', [DataIntegrityController::class, 'staffWithoutUnits'])->name('data-integrity.staff-without-units');
+    Route::get('/staff-without-ranks', [DataIntegrityController::class, 'staffWithoutRanks'])->name('data-integrity.staff-without-ranks');
+    Route::get('/invalid-date-ranges', [DataIntegrityController::class, 'invalidDateRanges'])->name('data-integrity.invalid-date-ranges');
+    Route::post('/invalid-date-ranges/{staff}/fix', [DataIntegrityController::class, 'fixInvalidDateRanges'])->name('data-integrity.invalid-date-ranges.fix');
+    Route::post('/invalid-date-ranges/bulk-fix', [DataIntegrityController::class, 'bulkFixInvalidDateRanges'])->name('data-integrity.invalid-date-ranges.bulk-fix');
+    Route::get('/separated-but-active', [DataIntegrityController::class, 'separatedButActive'])->name('data-integrity.separated-but-active');
 });

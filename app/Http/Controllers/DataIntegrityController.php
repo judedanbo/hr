@@ -377,4 +377,367 @@ class DataIntegrityController extends Controller
             return redirect()->back()->with('error', 'An error occurred while fixing the rank assignments.');
         }
     }
+
+    public function staffWithoutUnits()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view staff without units');
+
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $staffWithoutUnits = InstitutionPerson::query()
+            ->active()
+            ->whereDoesntHave('units', function ($query) {
+                $query->whereNull('staff_unit.end_date');
+            })
+            ->with('person')
+            ->get()
+            ->map(function ($staff) {
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'hire_date' => $staff->hire_date?->format('Y-m-d'),
+                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                ];
+            });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $staffWithoutUnits->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed staff without units');
+
+        return Inertia::render('DataIntegrity/StaffWithoutUnits', [
+            'staff' => $staffWithoutUnits,
+        ]);
+    }
+
+    public function staffWithoutRanks()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view staff without ranks');
+
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $staffWithoutRanks = InstitutionPerson::query()
+            ->active()
+            ->whereDoesntHave('ranks', function ($query) {
+                $query->whereNull('job_staff.end_date');
+            })
+            ->with('person')
+            ->get()
+            ->map(function ($staff) {
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'hire_date' => $staff->hire_date?->format('Y-m-d'),
+                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                ];
+            });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $staffWithoutRanks->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed staff without ranks');
+
+        return Inertia::render('DataIntegrity/StaffWithoutRanks', [
+            'staff' => $staffWithoutRanks,
+        ]);
+    }
+
+    public function invalidDateRanges()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view invalid date ranges');
+
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $staffWithInvalidDates = InstitutionPerson::query()
+            ->active()
+            ->with(['person', 'ranks' => function ($query) {
+                $query->whereNotNull('job_staff.end_date')
+                    ->whereRaw('job_staff.end_date < job_staff.start_date');
+            }, 'units' => function ($query) {
+                $query->whereNotNull('staff_unit.end_date')
+                    ->whereRaw('staff_unit.end_date < staff_unit.start_date');
+            }])
+            ->where(function ($query) {
+                $query->whereHas('ranks', function ($query) {
+                    $query->whereNotNull('job_staff.end_date')
+                        ->whereRaw('job_staff.end_date < job_staff.start_date');
+                });
+                $query->orWhereHas('units', function ($query) {
+                    $query->whereNotNull('staff_unit.end_date')
+                        ->whereRaw('staff_unit.end_date < staff_unit.start_date');
+                });
+            })
+            ->get()
+            ->map(function ($staff) {
+                $invalidRanks = $staff->ranks->filter(function ($rank) {
+                    return $rank->pivot->end_date && $rank->pivot->end_date < $rank->pivot->start_date;
+                })->map(function ($rank) {
+                    return [
+                        'type' => 'rank',
+                        'pivot_id' => $rank->pivot->id,
+                        'name' => $rank->name,
+                        'start_date' => $rank->pivot->start_date->format('Y-m-d'),
+                        'end_date' => $rank->pivot->end_date->format('Y-m-d'),
+                        'start_date_formatted' => $rank->pivot->start_date->format('d M Y'),
+                        'end_date_formatted' => $rank->pivot->end_date->format('d M Y'),
+                    ];
+                });
+
+                $invalidUnits = $staff->units->filter(function ($unit) {
+                    return $unit->pivot->end_date && $unit->pivot->end_date < $unit->pivot->start_date;
+                })->map(function ($unit) {
+                    return [
+                        'type' => 'unit',
+                        'pivot_id' => $unit->pivot->id,
+                        'name' => $unit->name,
+                        'start_date' => $unit->pivot->start_date->format('Y-m-d'),
+                        'end_date' => $unit->pivot->end_date->format('Y-m-d'),
+                        'start_date_formatted' => $unit->pivot->start_date->format('d M Y'),
+                        'end_date_formatted' => $unit->pivot->end_date->format('d M Y'),
+                    ];
+                });
+
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'invalid_count' => $invalidRanks->count() + $invalidUnits->count(),
+                    'invalid_assignments' => $invalidRanks->concat($invalidUnits)->values(),
+                ];
+            })
+            ->filter(fn ($staff) => $staff['invalid_count'] > 0)
+            ->values();
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $staffWithInvalidDates->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed invalid date ranges');
+
+        return Inertia::render('DataIntegrity/InvalidDateRanges', [
+            'staff' => $staffWithInvalidDates,
+        ]);
+    }
+
+    public function fixInvalidDateRanges(InstitutionPerson $staff)
+    {
+        if (Gate::denies('data-integrity.fix')) {
+            return redirect()->back()->with('error', 'You do not have permission to fix data integrity issues.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $fixed = 0;
+
+            // Fix invalid rank dates - set end_date to null
+            $invalidRanks = DB::table('job_staff')
+                ->where('staff_id', $staff->id)
+                ->whereNotNull('end_date')
+                ->whereRaw('end_date < start_date')
+                ->update(['end_date' => null]);
+
+            $fixed += $invalidRanks;
+
+            // Fix invalid unit dates - set end_date to null
+            $invalidUnits = DB::table('staff_unit')
+                ->where('staff_id', $staff->id)
+                ->whereNotNull('end_date')
+                ->whereRaw('end_date < start_date')
+                ->update(['end_date' => null]);
+
+            $fixed += $invalidUnits;
+
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($staff)
+                ->event('fix')
+                ->withProperties([
+                    'result' => 'success',
+                    'fixed_count' => $fixed,
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Fixed invalid date ranges for staff');
+
+            DB::commit();
+
+            return redirect()->back()->with('success', "Fixed {$fixed} invalid date range(s) for {$staff->person->full_name} by setting end dates to null.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->with('error', 'An error occurred while fixing the date ranges.');
+        }
+    }
+
+    public function bulkFixInvalidDateRanges()
+    {
+        if (Gate::denies('data-integrity.fix')) {
+            return redirect()->back()->with('error', 'You do not have permission to fix data integrity issues.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Fix all invalid rank dates
+            $fixedRanks = DB::table('job_staff')
+                ->whereNotNull('end_date')
+                ->whereRaw('end_date < start_date')
+                ->update(['end_date' => null]);
+
+            // Fix all invalid unit dates
+            $fixedUnits = DB::table('staff_unit')
+                ->whereNotNull('end_date')
+                ->whereRaw('end_date < start_date')
+                ->update(['end_date' => null]);
+
+            $totalFixed = $fixedRanks + $fixedUnits;
+
+            activity()
+                ->causedBy(auth()->user())
+                ->event('bulk-fix')
+                ->withProperties([
+                    'result' => 'success',
+                    'ranks_fixed' => $fixedRanks,
+                    'units_fixed' => $fixedUnits,
+                    'total_fixed' => $totalFixed,
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Bulk fixed invalid date ranges');
+
+            DB::commit();
+
+            return redirect()->back()->with('success', "Successfully fixed {$totalFixed} invalid date range(s) ({$fixedRanks} ranks, {$fixedUnits} units) by setting end dates to null.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->with('error', 'An error occurred while fixing the date ranges.');
+        }
+    }
+
+    public function separatedButActive()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view separated but active staff');
+
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $separatedButActive = InstitutionPerson::query()
+            ->active()
+            ->whereHas('statuses', function ($query) {
+                $query->whereIn('status', [
+                    \App\Enums\EmployeeStatusEnum::Left->value,
+                    \App\Enums\EmployeeStatusEnum::Termination->value,
+                    \App\Enums\EmployeeStatusEnum::Resignation->value,
+                    \App\Enums\EmployeeStatusEnum::Retired->value,
+                    \App\Enums\EmployeeStatusEnum::Dismissed->value,
+                    \App\Enums\EmployeeStatusEnum::Deceased->value,
+                    \App\Enums\EmployeeStatusEnum::Voluntary->value,
+                ])->where(function ($query) {
+                    $query->whereNull('end_date')
+                        ->orWhere('end_date', '>', now());
+                });
+            })
+            ->with(['person', 'statuses' => function ($query) {
+                $query->whereIn('status', [
+                    \App\Enums\EmployeeStatusEnum::Left->value,
+                    \App\Enums\EmployeeStatusEnum::Termination->value,
+                    \App\Enums\EmployeeStatusEnum::Resignation->value,
+                    \App\Enums\EmployeeStatusEnum::Retired->value,
+                    \App\Enums\EmployeeStatusEnum::Dismissed->value,
+                    \App\Enums\EmployeeStatusEnum::Deceased->value,
+                    \App\Enums\EmployeeStatusEnum::Voluntary->value,
+                ])->where(function ($query) {
+                    $query->whereNull('end_date')
+                        ->orWhere('end_date', '>', now());
+                });
+            }])
+            ->get()
+            ->map(function ($staff) {
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'separation_status' => $staff->statuses->first()?->status,
+                    'separation_date' => $staff->statuses->first()?->start_date?->format('Y-m-d'),
+                    'separation_date_formatted' => $staff->statuses->first()?->start_date?->format('d M Y'),
+                ];
+            });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $separatedButActive->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed separated but active staff');
+
+        return Inertia::render('DataIntegrity/SeparatedButActive', [
+            'staff' => $separatedButActive,
+        ]);
+    }
 }
