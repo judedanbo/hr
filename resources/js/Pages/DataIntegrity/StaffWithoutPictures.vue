@@ -1,6 +1,6 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import {
@@ -9,6 +9,8 @@ import {
 	UserCircleIcon,
 	BuildingOfficeIcon,
 	UserGroupIcon,
+	ChevronDownIcon,
+	ChevronRightIcon,
 } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
@@ -40,6 +42,29 @@ const totalCount = computed(() => {
 });
 
 const isEmpty = computed(() => totalCount.value === 0);
+
+// Collapsible state management
+const collapsedDepartments = ref({});
+const collapsedUnits = ref({});
+
+const toggleDepartment = (departmentName) => {
+	collapsedDepartments.value[departmentName] =
+		!collapsedDepartments.value[departmentName];
+};
+
+const toggleUnit = (departmentName, unitName) => {
+	const key = `${departmentName}::${unitName}`;
+	collapsedUnits.value[key] = !collapsedUnits.value[key];
+};
+
+const isDepartmentCollapsed = (departmentName) => {
+	return collapsedDepartments.value[departmentName] || false;
+};
+
+const isUnitCollapsed = (departmentName, unitName) => {
+	const key = `${departmentName}::${unitName}`;
+	return collapsedUnits.value[key] || false;
+};
 </script>
 
 <template>
@@ -89,15 +114,25 @@ const isEmpty = computed(() => totalCount.value === 0);
 							:key="departmentName"
 							class="space-y-4"
 						>
-							<!-- Department Header -->
-							<div
-								class="flex items-center gap-3 pb-2 border-b-2 border-yellow-300 dark:border-yellow-700"
+							<!-- Department Header (Clickable) -->
+							<button
+								type="button"
+								class="w-full flex items-center gap-3 pb-2 border-b-2 border-yellow-300 dark:border-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors cursor-pointer"
+								@click="toggleDepartment(departmentName)"
 							>
+								<component
+									:is="
+										isDepartmentCollapsed(departmentName)
+											? ChevronRightIcon
+											: ChevronDownIcon
+									"
+									class="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0"
+								/>
 								<BuildingOfficeIcon
-									class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
+									class="h-6 w-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0"
 								/>
 								<h2
-									class="text-xl font-bold text-yellow-900 dark:text-yellow-100"
+									class="text-xl font-bold text-yellow-900 dark:text-yellow-100 text-left"
 								>
 									{{ departmentName }}
 								</h2>
@@ -119,24 +154,37 @@ const isEmpty = computed(() => totalCount.value === 0);
 											: "staff"
 									}}
 								</span>
-							</div>
+							</button>
 
 							<!-- Unit Groups within Department -->
-							<div class="ml-6 space-y-6">
+							<div
+								v-if="!isDepartmentCollapsed(departmentName)"
+								class="ml-6 space-y-6"
+							>
 								<div
 									v-for="(unitGroup, unitName) in departmentGroup"
 									:key="unitName"
 									class="space-y-3"
 								>
-									<!-- Unit Header -->
-									<div
-										class="flex items-center gap-2 pb-1 border-b border-gray-300 dark:border-gray-600"
+									<!-- Unit Header (Clickable) -->
+									<button
+										type="button"
+										class="w-full flex items-center gap-2 pb-1 border-b border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors cursor-pointer"
+										@click="toggleUnit(departmentName, unitName)"
 									>
+										<component
+											:is="
+												isUnitCollapsed(departmentName, unitName)
+													? ChevronRightIcon
+													: ChevronDownIcon
+											"
+											class="h-4 w-4 text-gray-600 dark:text-gray-400 flex-shrink-0"
+										/>
 										<UserGroupIcon
-											class="h-5 w-5 text-gray-600 dark:text-gray-400"
+											class="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0"
 										/>
 										<h3
-											class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+											class="text-lg font-semibold text-gray-900 dark:text-gray-100 text-left"
 										>
 											{{ unitName }}
 										</h3>
@@ -146,10 +194,13 @@ const isEmpty = computed(() => totalCount.value === 0);
 											{{ unitGroup.length }}
 											{{ unitGroup.length === 1 ? "staff" : "staff" }}
 										</span>
-									</div>
+									</button>
 
 									<!-- Staff Members in Unit -->
-									<div class="ml-6 space-y-2">
+									<div
+										v-if="!isUnitCollapsed(departmentName, unitName)"
+										class="ml-6 space-y-2"
+									>
 										<div
 											v-for="member in unitGroup"
 											:key="member.id"
