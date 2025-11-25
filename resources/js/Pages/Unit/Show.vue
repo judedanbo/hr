@@ -136,12 +136,12 @@ const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 					<SubUnits
 						v-if="unit.subs.length > 0"
 						v-model="dept"
-						:download="permissions?.includes('download unit staff')"
+						:download="permissions?.includes('download active staff data')"
 						:type="unit.name"
 						:subs="props.unit"
 					/>
 					<UnitStaff
-						:download="permissions?.includes('download unit staff')"
+						:download="permissions?.includes('download active staff data')"
 						:unit="props.unit"
 					/>
 				</div>

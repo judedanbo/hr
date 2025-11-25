@@ -109,9 +109,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6">
-						<h1
-							class="text-3xl font-bold text-gray-900 dark:text-gray-100"
-						>
+						<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
 							Staff without Profile Pictures
 						</h1>
 						<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -124,7 +122,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 					<!-- Summary Statistics -->
 					<div
 						v-if="!isEmpty"
-						class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4"
+						class="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-4"
 					>
 						<!-- Total Staff Card -->
 						<div
@@ -199,7 +197,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 					<!-- Department Breakdown Table -->
 					<div
 						v-if="!isEmpty"
-						class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
+						class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mt-5"
 					>
 						<div
 							class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600"
@@ -211,7 +209,9 @@ const isUnitCollapsed = (departmentName, unitName) => {
 							</h3>
 						</div>
 						<div class="overflow-x-auto">
-							<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+							<table
+								class="min-w-full divide-y divide-gray-200 dark:divide-gray-600"
+							>
 								<thead class="bg-gray-50 dark:bg-gray-700">
 									<tr>
 										<th
@@ -418,9 +418,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 													<div
 														class="mt-1 flex flex-wrap gap-x-4 text-sm text-gray-500 dark:text-gray-400"
 													>
-														<span
-															>Staff #{{ member.staff_number }}</span
-														>
+														<span>Staff #{{ member.staff_number }}</span>
 														<span v-if="member.file_number">
 															File #{{ member.file_number }}
 														</span>
@@ -442,9 +440,9 @@ const isUnitCollapsed = (departmentName, unitName) => {
 						class="mt-6 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4"
 					>
 						<p class="text-sm text-blue-700 dark:text-blue-300">
-							<strong>Note:</strong> Profile pictures need to be
-							uploaded manually through the staff profile management
-							interface. This cannot be automatically fixed.
+							<strong>Note:</strong> Profile pictures need to be uploaded
+							manually through the staff profile management interface. This
+							cannot be automatically fixed.
 						</p>
 					</div>
 				</div>

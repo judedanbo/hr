@@ -41,9 +41,9 @@ return new class extends Migration
             $table->index('hire_date', 'idx_institution_person_hire_date');
         });
 
-        // Add indexes to statuses table for status filtering
-        Schema::table('statuses', function (Blueprint $table) {
-            $table->index(['staff_id', 'status', 'end_date'], 'idx_statuses_staff_status_end');
+        // Add indexes to status table for status filtering
+        Schema::table('status', function (Blueprint $table) {
+            $table->index(['staff_id', 'status', 'end_date'], 'idx_status_staff_status_end');
         });
     }
 
@@ -56,7 +56,7 @@ return new class extends Migration
         Schema::table('job_staff', function (Blueprint $table) {
             $table->dropIndex('idx_job_staff_job_id');
             $table->dropIndex('idx_job_staff_end_date');
-            $table->dropIndex('idx_job_staff_staff_end');
+            // $table->dropIndex('idx_job_staff_staff_end');
         });
 
         // Drop indexes from staff_unit table
@@ -82,9 +82,9 @@ return new class extends Migration
             $table->dropIndex('idx_institution_person_hire_date');
         });
 
-        // Drop indexes from statuses table
-        Schema::table('statuses', function (Blueprint $table) {
-            $table->dropIndex('idx_statuses_staff_status_end');
+        // Drop indexes from status table
+        Schema::table('status', function (Blueprint $table) {
+            $table->dropIndex('idx_status_staff_status_end');
         });
     }
 };

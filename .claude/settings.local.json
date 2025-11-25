@@ -29,7 +29,8 @@
       "Bash(./vendor/bin/sail logs:*)",
       "Bash(./vendor/bin/sail artisan:*)",
       "mcp__laravel-boost__last-error",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

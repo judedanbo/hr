@@ -111,11 +111,11 @@ const submitHandler = (data, node) => {
 					<PersonalInformationForm />
 				</FormKit>
 
-				<FormKit id="image" type="step" name="image">
-					<ImageUpload />
-				</FormKit>
 				<FormKit id="relation" type="step" name="relation">
 					<AddDependentForm :staff-id="staffId" />
+				</FormKit>
+				<FormKit id="image" type="step" name="image">
+					<ImageUpload />
 					<template #stepNext>
 						<FormKit type="submit" label="Add Dependent" />
 					</template>
