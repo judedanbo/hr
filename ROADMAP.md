@@ -198,28 +198,53 @@ public function __invoke(Job $job): JsonResponse
 **Priority:** Medium
 **Risk:** Medium (refactoring)
 
-### 4.1 Create Service Layer
+### 4.1 Create Service Layer ✅ COMPLETED
 
-**Services to Create:**
+**Completed:** 2025-12-03
 
-| Service | Responsibility |
-|---------|----------------|
-| `StaffManagementService` | Create, update staff records |
-| `PromotionService` | Handle rank changes |
-| `TransferService` | Handle unit transfers |
-| `SeparationService` | Handle staff separations |
+**Services Created:**
 
-**Benefits:**
-- Testable business logic
+| Service | Responsibility | Location |
+|---------|----------------|----------|
+| `StaffManagementService` | Create, update staff records | `app/Services/Staff/` |
+| `PromotionService` | Handle rank changes | `app/Services/Staff/` |
+| `TransferService` | Handle unit transfers | `app/Services/Staff/` |
+| `SeparationService` | Handle staff separations | `app/Services/Staff/` |
+
+**Additional Components:**
+
+| Component | Purpose | Location |
+|-----------|---------|----------|
+| Service Interfaces | Contracts for DI/testing | `app/Contracts/Services/` |
+| `StaffDetailTransformer` | Transform staff for detail view | `app/Transformers/Staff/` |
+| `StaffListTransformer` | Transform staff for list/index | `app/Transformers/Staff/` |
+
+**Controllers Refactored:**
+- `InstitutionPersonController` - Now uses StaffManagementService, PromotionService, transformers
+- `PromoteStaffController` - Now uses PromotionService
+- `TransferController` - Now uses TransferService
+- `StaffStatusController` - Now uses SeparationService
+
+**Benefits Achieved:**
+- Testable business logic in services
 - Reusable across controllers, commands, jobs
 - Single Responsibility Principle
-- Reduced controller size (624 lines -> ~50 lines)
+- Reduced controller complexity (business logic extracted)
+- Interface-based DI for easier testing/mocking
+
+**Tests Created:**
+- `tests/Unit/Services/StaffManagementServiceTest.php`
+- `tests/Unit/Services/PromotionServiceTest.php`
+- `tests/Unit/Services/TransferServiceTest.php`
+- `tests/Unit/Services/SeparationServiceTest.php`
+
+**Note:** Tests require database connection - run with `./vendor/bin/sail test`
 
 **Acceptance Criteria:**
-- [ ] Services created with proper interfaces
-- [ ] Controllers refactored to use services
-- [ ] Unit tests for each service
-- [ ] No business logic in controllers
+- [x] Services created with proper interfaces
+- [x] Controllers refactored to use services
+- [x] Unit tests for each service
+- [x] No business logic in controllers (extracted to services)
 
 ---
 
@@ -409,7 +434,8 @@ php artisan optimize
 | Phase 1 Complete | Critical bugs fixed | ✅ Done |
 | Phase 2 Complete | Performance optimized | ✅ Done |
 | Phase 3 Complete | 40% test coverage | ✅ Done |
-| Phase 4 Complete | Clean architecture | 🔲 Pending |
+| Phase 4.1 Complete | Service layer implemented | ✅ Done |
+| Phase 4 Complete | Clean architecture | 🔄 In Progress |
 | Phase 5 Complete | Code quality improved | 🔲 Pending |
 | Phase 6 Complete | Secure & documented | 🔲 Pending |
 
@@ -442,5 +468,5 @@ php artisan optimize
 
 ---
 
-**Document Version:** 1.2
-**Last Updated:** 2025-12-03 (Phase 3 Complete)
+**Document Version:** 1.3
+**Last Updated:** 2025-12-03 (Phase 4.1 Complete - Service Layer)

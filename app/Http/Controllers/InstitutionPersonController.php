@@ -2,26 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Identity;
+use App\Contracts\Services\PromotionServiceInterface;
+use App\Contracts\Services\StaffManagementServiceInterface;
 use App\Http\Requests\StaffAdvancedSearchRequest;
 use App\Http\Requests\StoreInstitutionPersonRequest;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\StoreStaffPositionRequest;
 use App\Http\Requests\UpdateStaffPositionRequest;
 use App\Http\Requests\UpdateStaffRequest;
-use App\Models\Institution;
 use App\Models\InstitutionPerson;
-use App\Models\Person;
 use App\Models\Position;
+use App\Transformers\Staff\StaffDetailTransformer;
+use App\Transformers\Staff\StaffListTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class InstitutionPersonController extends Controller
 {
+    public function __construct(
+        protected StaffManagementServiceInterface $staffManagementService,
+        protected PromotionServiceInterface $promotionService,
+        protected StaffDetailTransformer $detailTransformer,
+        protected StaffListTransformer $listTransformer
+    ) {}
+
     /**
      * Display a listing of the resource.
      *
@@ -78,39 +85,7 @@ class InstitutionPersonController extends Controller
             ->search($request->search)
             ->paginate(10)
             ->withQueryString()
-            ->through(fn ($staff) => [
-                'id' => $staff->id,
-                'file_number' => $staff->file_number,
-                'staff_number' => $staff->staff_number,
-                'old_staff_number' => $staff->old_staff_number,
-                'hire_date' => $staff->hire_date?->format('d M Y'),
-                'hire_date_distance' => $staff->hire_date?->diffForHumans(),
-                'initials' => $staff->person->initials,
-                'name' => $staff->person->full_name,
-                'gender' => $staff->person->gender?->label(),
-                'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                'age' => $staff->person->age . ' years old',
-                'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-                'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
-                'current_rank' => $staff->currentRank ? [
-                    'id' => $staff->currentRank?->id,
-                    'name' => $staff->currentRank?->job?->name,
-                    'job_id' => $staff->currentRank->name,
-                    'start_date' => $staff->currentRank->start_date?->format('d M Y'),
-                    'start_date_distance' => $staff->currentRank->start_date?->diffForHumans(),
-                    'end_date' => $staff->currentRank->end_date?->format('d M Y'),
-                    'remarks' => $staff->currentRank->remarks,
-                ] : null,
-                'current_unit' => $staff->currentUnit ? [
-                    'id' => $staff->currentUnit->unit_id,
-                    'rank' => $staff->currentUnit,
-                    'name' => $staff->currentUnit->unit?->name,
-                    'start_date' => $staff->currentUnit->start_date?->format('d M Y'),
-                    'start_date_distance' => $staff->currentUnit->start_date?->diffForHumans(),
-                    'end_date' => $staff->currentUnit->end_date?->format('d M Y'),
-                ] : null,
-            ]);
+            ->through($this->listTransformer->transformForPagination());
 
         return Inertia::render('Staff/Index', [
             'staff' => $staff,
@@ -150,60 +125,22 @@ class InstitutionPersonController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(StorePersonRequest $request)
     public function store(StoreInstitutionPersonRequest $request)
     {
-        // return $request->staffData;
         if (request()->user()->cannot('create staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
 
-        // Get institution from authenticated user's person record
-        $institution = auth()->user()->person?->institution()->first();
+        try {
+            $staff = $this->staffManagementService->create($request->staffData);
 
-        if (! $institution) {
+            return redirect()->route('staff.show', ['staff' => $staff->id])
+                ->with('success', 'Staff created successfully');
+        } catch (\RuntimeException $e) {
             return redirect()->back()->withErrors([
-                'institution' => 'Your user account is not associated with any institution. Please contact an administrator.',
+                'institution' => $e->getMessage(),
             ])->withInput();
         }
-
-        $staff = null;
-        $transaction = DB::transaction(function () use ($request, $staff, $institution) {
-            $person = Person::create($request->staffData['bio']);
-            $person->identities()->create([
-                'id_type' => Identity::GhanaCard,
-                'id_number' => $request->staffData['bio']['ghana_card'],
-            ]);
-
-            $person->institution()->attach($institution->id, $request->staffData['employment']);
-            $staff = InstitutionPerson::where('person_id', $person->id)->first();
-            $person->address()->create($request->staffData['address']);
-            $person->contacts()->create($request->staffData['contact']);
-            $person->qualifications()->create($request->staffData['qualifications']);
-
-            $staff->statuses()->create([
-                'status' => 'A',
-                'description' => 'Active',
-                'institution_id' => $institution->id,
-                'start_date' => Carbon::now(),
-            ]);
-            $rank = $request->staffData['rank'];
-            $rank['job_id'] = $request->staffData['rank']['rank_id'];
-            unset($rank['rank_id']);
-            $staff->ranks()->attach($rank['job_id'], $rank);
-            if (array_key_exists('unit_id', $request->staffData['unit'])) {
-                $staff->units()->attach($request->staffData['unit']['unit_id'], $request->staffData['unit']);
-            }
-
-            return $staff;
-        });
-
-        if ($transaction === null || $transaction['id'] === null) {
-            return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
-        }
-
-        // return $transaction;
-        return redirect()->route('staff.show', ['staff' => $transaction['id']])->with('success', 'Staff created successfully');
     }
 
     /**
@@ -447,6 +384,7 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('create staff promotion')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new promotion');
         }
+
         $request->validate([
             'rank_id' => ['required', 'exists:jobs,id'],
             'start_date' => ['required', 'date'],
@@ -454,15 +392,9 @@ class InstitutionPersonController extends Controller
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $staff->load('ranks');
-
-        $staff->ranks()->wherePivot('end_date', null)->update([
-            'end_date' => Carbon::parse($request->start_date)->subDay(),
-        ]);
-
-        $staff->ranks()->attach($request->rank_id, [
+        $this->promotionService->promote($staff, $request->rank_id, [
             'start_date' => $request->start_date,
-            // 'end_date' => $request->end_date,
+            'end_date' => $request->end_date,
             'remarks' => $request->remarks,
         ]);
 
@@ -570,13 +502,9 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('update staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to edit this staff\'s details');
         }
-        // return $request->validated();
+
         $validated = $request->validated();
-        $personalInformation = $validated['staffData']['personalInformation'];
-        $employmentInformation = $validated['staffData']['employmentInformation'];
-        // dd($personalInformation);
-        $staff->person->update($personalInformation);
-        $staff->update($employmentInformation);
+        $this->staffManagementService->update($staff, $validated['staffData']);
 
         return back()->with('success', 'Staff updated successfully');
     }
