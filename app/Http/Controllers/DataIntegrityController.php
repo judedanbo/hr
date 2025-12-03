@@ -35,7 +35,7 @@ class DataIntegrityController extends Controller
                 $query->whereNull('job_staff.end_date');
             }])
             ->get()
-            ->filter(fn ($staff) => $staff->ranks->count() > 1)
+            ->filter(fn($staff) => $staff->ranks->count() > 1)
             ->count();
 
         // Count staff without units
@@ -99,6 +99,16 @@ class DataIntegrityController extends Controller
             })
             ->count();
 
+        // Count active staff with expired status end_date (only checks latest status)
+        $expiredActiveStatusCount = InstitutionPerson::query()
+            ->whereHas('statuses', function ($query) {
+                $query->where('status', \App\Enums\EmployeeStatusEnum::Active->value)
+                    ->whereNotNull('end_date')
+                    ->where('end_date', '<=', now())
+                    ->whereRaw('status.id = (SELECT s.id FROM status s WHERE s.staff_id = status.staff_id AND s.deleted_at IS NULL ORDER BY s.start_date DESC LIMIT 1)');
+            })
+            ->count();
+
         activity()
             ->causedBy(auth()->user())
             ->event('view')
@@ -159,6 +169,14 @@ class DataIntegrityController extends Controller
                     'severity' => $staffWithoutPicturesCount > 0 ? 'warning' : 'success',
                     'route' => route('data-integrity.staff-without-pictures'),
                 ],
+                [
+                    'id' => 'expired-active-status',
+                    'title' => 'Active Staff with Expired Status',
+                    'description' => 'Staff with active status but the status end date is today or in the past',
+                    'count' => $expiredActiveStatusCount,
+                    'severity' => $expiredActiveStatusCount > 0 ? 'warning' : 'success',
+                    'route' => route('data-integrity.expired-active-status'),
+                ],
             ],
         ]);
     }
@@ -188,7 +206,7 @@ class DataIntegrityController extends Controller
                 $query->whereNull('job_staff.end_date')->orderBy('job_staff.start_date', 'desc');
             }, 'person'])
             ->get()
-            ->filter(fn ($staff) => $staff->ranks->count() > 1)
+            ->filter(fn($staff) => $staff->ranks->count() > 1)
             ->map(function ($staff) {
                 return [
                     'id' => $staff->id,
@@ -333,7 +351,7 @@ class DataIntegrityController extends Controller
                     $query->whereNull('job_staff.end_date')->orderBy('job_staff.start_date', 'desc');
                 }])
                 ->get()
-                ->filter(fn ($staff) => $staff->ranks->count() > 1);
+                ->filter(fn($staff) => $staff->ranks->count() > 1);
 
             $fixedCount = 0;
             $totalRanksFixed = 0;
@@ -569,7 +587,7 @@ class DataIntegrityController extends Controller
                     'invalid_assignments' => $invalidRanks->concat($invalidUnits)->values(),
                 ];
             })
-            ->filter(fn ($staff) => $staff['invalid_count'] > 0)
+            ->filter(fn($staff) => $staff['invalid_count'] > 0)
             ->values();
 
         activity()
@@ -851,6 +869,108 @@ class DataIntegrityController extends Controller
 
         return Inertia::render('DataIntegrity/StaffWithoutPictures', [
             'staff' => $staffWithoutPictures,
+        ]);
+    }
+
+    public function expiredActiveStatus()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view expired active status');
+
+            return redirect()->route('data-integrity.index')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $expiredActiveStatus = InstitutionPerson::query()
+            ->whereHas('statuses', function ($query) {
+                $query->where('status', \App\Enums\EmployeeStatusEnum::Active->value)
+                    ->whereNotNull('end_date')
+                    ->where('end_date', '<=', now())
+                    ->whereRaw('status.id = (SELECT s.id FROM status s WHERE s.staff_id = status.staff_id AND s.deleted_at IS NULL ORDER BY s.start_date DESC LIMIT 1)');
+            })
+            ->with([
+                'person',
+                'currentUnit.unit.parent',
+                'statuses' => function ($query) {
+                    $query->latest('start_date')->limit(1);
+                },
+            ])
+            ->currentUnit()
+            ->currentRank()
+            ->get()
+            ->map(function ($staff) {
+                $unit = $staff->currentUnit?->unit;
+                $parent = $unit?->parent;
+
+                // Determine department (top-level unit with no parent or type = DEP)
+                $department = null;
+                if ($parent) {
+                    if ($parent->type === \App\Enums\UnitType::DEPARTMENT->value || ! $parent->unit_id) {
+                        $department = $parent;
+                    }
+                } elseif ($unit && ($unit->type === \App\Enums\UnitType::DEPARTMENT->value || ! $unit->unit_id)) {
+                    $department = $unit;
+                    $unit = null;
+                }
+
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'hire_date' => $staff->hire_date?->format('Y-m-d'),
+                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'status_end_date' => $staff->statuses->first()?->end_date?->format('Y-m-d'),
+                    'status_end_date_formatted' => $staff->statuses->first()?->end_date?->format('d M Y'),
+                    'current_rank' => $staff->currentRank?->job?->name,
+                    'unit' => $unit ? [
+                        'id' => $unit->id,
+                        'name' => $unit->name,
+                        'type' => $unit->type,
+                    ] : null,
+                    'department' => $department ? [
+                        'id' => $department->id,
+                        'name' => $department->name,
+                        'type' => $department->type,
+                    ] : null,
+                ];
+            })
+            ->groupBy(function ($staff) {
+                return $staff['department']['name'] ?? 'No Department';
+            })
+            ->map(function ($departmentStaff) {
+                return $departmentStaff->groupBy(function ($staff) {
+                    return $staff['unit']['name'] ?? 'No Unit';
+                });
+            });
+
+        // Calculate total count from grouped data
+        $totalCount = $expiredActiveStatus->reduce(function ($carry, $departmentGroup) {
+            return $carry + $departmentGroup->reduce(function ($unitCarry, $unitGroup) {
+                return $unitCarry + $unitGroup->count();
+            }, 0);
+        }, 0);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $totalCount,
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed expired active status');
+
+        return Inertia::render('DataIntegrity/ExpiredActiveStatus', [
+            'staff' => $expiredActiveStatus,
         ]);
     }
 }

@@ -19,12 +19,18 @@ class SeparationScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $builder->whereHas('statuses', function ($query) {
-            $query->whereNot(
-                'status',
-                EmployeeStatusEnum::Active->value,
-            )->where(function ($query) {
-                $query->whereNull('status.end_date')
-                    ->orWhere('status.end_date', '>', now());
+            $query->where(function ($query) {
+                $query->whereNot(
+                    'status',
+                    EmployeeStatusEnum::Active->value,
+                )->where(function ($query) {
+                    $query->whereNull('status.end_date')
+                        ->orWhere('status.end_date', '>', now());
+                });
+            })->orWhere(function ($query) {
+                $query->where('status', EmployeeStatusEnum::Active->value)
+                    ->whereNotNull('end_date')
+                    ->where('end_date', '<=', now());
             });
         });
     }
