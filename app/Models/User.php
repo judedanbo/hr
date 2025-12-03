@@ -3,11 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Traits\LogAllTraits;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -15,8 +15,8 @@ class User extends Authenticatable
     use HasApiTokens,
         HasFactory,
         HasRoles,
-        Notifiable,
-        LogAllTraits;
+        LogAllTraits,
+        Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -58,14 +58,24 @@ class User extends Authenticatable
         return $this->belongsTo(Person::class);
     }
 
+    /**
+     * Get the user's primary institution (via Person relationship)
+     */
+    public function institution(): ?Institution
+    {
+        return $this->person?->institution()->first();
+    }
+
     public function isStaff(): bool
     {
         return $this->person?->isStaff() ?? false;
     }
+
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
     }
+
     public function isSuperAdmin(): bool
     {
         return $this->hasRole('super-administrator');

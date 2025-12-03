@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -15,7 +14,14 @@ class PromotionsPermissionSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view past all promotions']);
-        Permission::create(['name' => 'view past promotion']);
+        Permission::firstOrCreate(['name' => 'promote staff']);
+        Permission::firstOrCreate(['name' => 'view past all promotions']);
+        Permission::firstOrCreate(['name' => 'view past promotion']);
+
+        // Assign to super-administrator role
+        $superAdmin = \Spatie\Permission\Models\Role::where('name', 'super-administrator')->first();
+        if ($superAdmin) {
+            $superAdmin->givePermissionTo(['promote staff', 'view past all promotions', 'view past promotion']);
+        }
     }
 }

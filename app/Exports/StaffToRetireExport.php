@@ -5,8 +5,6 @@ namespace App\Exports;
 use App\Enums\ContactTypeEnum;
 use App\Enums\Identity;
 use App\Models\InstitutionPerson;
-use App\Models\JobCategory;
-use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -67,12 +65,10 @@ class StaffToRetireExport implements FromQuery, ShouldAutoSize, ShouldQueue, Wit
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            (int)$staff->person->date_of_birth?->diffInYears() . ' years',
-            $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
+            (int) $staff->person->date_of_birth?->diffInYears() . ' years',
+            $staff->person->identities->first()?->id_number, // Pre-filtered to Ghana Card only
             $staff->hire_date?->format('d F, Y'),
-            $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
-                return $item->contact;
-            })->implode(', ') : '',
+            $staff->person->contacts->pluck('contact')->implode(', '), // Pre-filtered to phone only
             $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
@@ -87,23 +83,21 @@ class StaffToRetireExport implements FromQuery, ShouldAutoSize, ShouldQueue, Wit
     {
         return InstitutionPerson::query()
             ->active()
-            ->with(['person' => function ($query) {
-                $query->with('identities', 'contacts');
-            }])
-            ->active()
+            ->with([
+                'person' => function ($query) {
+                    $query->select(['id', 'first_name', 'surname', 'other_names', 'date_of_birth', 'gender']);
+                },
+                'person.identities' => function ($query) {
+                    $query->where('id_type', Identity::GhanaCard)
+                        ->select(['id', 'person_id', 'id_type', 'id_number']);
+                },
+                'person.contacts' => function ($query) {
+                    $query->where('contact_type', ContactTypeEnum::PHONE)
+                        ->select(['id', 'person_id', 'contact', 'contact_type']);
+                },
+            ])
             ->currentRank()
             ->currentUnit()
             ->toRetire();
-        // ->orderBy(
-        //     Person::select('date_of_birth')
-        //         ->whereColumn('people.id', 'institution_person.person_id')
-        // )
-        // ->orderBy(
-        //     JobCategory::select('level')
-        //         ->join('job_staff', 'job_categories.id', '=', 'job_staff.job_id')
-        //         ->whereColumn('job_staff.staff_id', 'institution_person.id')
-        //         ->whereNull('job_staff.end_date')
-        //         ->take(1)
-        // );
     }
 }

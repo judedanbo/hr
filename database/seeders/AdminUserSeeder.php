@@ -14,27 +14,33 @@ class AdminUserSeeder extends Seeder
      */
     public function run()
     {
-        User::create(
+        User::firstOrCreate(
+            ['email' => 'admin@audit.gov.gh'],
             [
                 'name' => 'System Administrator',
-                'email' => 'admin@audit.gov.gh',
                 'password' => bcrypt('gbqdF4b6zxF7G87ihvA'),
-            ],
+            ]
+        );
+        User::firstOrCreate(
+            ['email' => 'richard.brobbey@audit.gov.gh'],
             [
                 'name' => 'Richard Opoku Brobbey',
-                'email' => 'richard.brobbey@audit.gov.gh',
                 'password' => bcrypt('password123'),
-            ],
+            ]
+        );
+        User::firstOrCreate(
+            ['email' => 'yvette.barnor@audit.gov.gh'],
             [
                 'name' => 'Yvette Akuorkor Barnor',
-                'email' => 'yvette.barnor@audit.gov.gh',
                 'password' => bcrypt('password123'),
-            ],
+            ]
+        );
+        User::firstOrCreate(
+            ['email' => 'naadensua.prentice@audit.gov.gh'],
             [
                 'name' => 'Naa Densua Prentice',
-                'email' => 'naadensua.prentice@audit.gov.gh',
                 'password' => bcrypt('password123'),
-            ],
+            ]
         );
     }
 }

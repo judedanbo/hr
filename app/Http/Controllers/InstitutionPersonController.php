@@ -157,14 +157,23 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('create staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
+
+        // Get institution from authenticated user's person record
+        $institution = auth()->user()->person?->institution()->first();
+
+        if (! $institution) {
+            return redirect()->back()->withErrors([
+                'institution' => 'Your user account is not associated with any institution. Please contact an administrator.',
+            ])->withInput();
+        }
+
         $staff = null;
-        $transaction = DB::transaction(function () use ($request, $staff) {
+        $transaction = DB::transaction(function () use ($request, $staff, $institution) {
             $person = Person::create($request->staffData['bio']);
             $person->identities()->create([
                 'id_type' => Identity::GhanaCard,
                 'id_number' => $request->staffData['bio']['ghana_card'],
             ]);
-            $institution = Institution::find(1);
 
             $person->institution()->attach($institution->id, $request->staffData['employment']);
             $staff = InstitutionPerson::where('person_id', $person->id)->first();

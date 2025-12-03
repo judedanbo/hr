@@ -14,12 +14,22 @@ class UnitsPermissionSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view all units']);
-        Permission::create(['name' => 'view unit']);
-        Permission::create(['name' => 'create unit']);
-        Permission::create(['name' => 'edit unit']);
-        Permission::create(['name' => 'delete unit']);
-        Permission::create(['name' => 'restore unit']);
-        Permission::create(['name' => 'destroy unit']);
+        Permission::firstOrCreate(['name' => 'view all units']);
+        Permission::firstOrCreate(['name' => 'view unit']);
+        Permission::firstOrCreate(['name' => 'create unit']);
+        Permission::firstOrCreate(['name' => 'edit unit']);
+        Permission::firstOrCreate(['name' => 'delete unit']);
+        Permission::firstOrCreate(['name' => 'restore unit']);
+        Permission::firstOrCreate(['name' => 'destroy unit']);
+        Permission::firstOrCreate(['name' => 'transfer staff']);
+
+        // Assign to super-administrator role
+        $superAdmin = \Spatie\Permission\Models\Role::where('name', 'super-administrator')->first();
+        if ($superAdmin) {
+            $superAdmin->givePermissionTo([
+                'view all units', 'view unit', 'create unit', 'edit unit',
+                'delete unit', 'restore unit', 'destroy unit', 'transfer staff',
+            ]);
+        }
     }
 }

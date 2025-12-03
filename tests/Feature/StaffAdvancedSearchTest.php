@@ -127,7 +127,13 @@ class StaffAdvancedSearchTest extends TestCase
 
     public function test_can_filter_staff_by_status(): void
     {
-        $staff = InstitutionPerson::factory()->create(['status' => 'A']); // Active
+        $staff = InstitutionPerson::factory()->create();
+        // Create active status for the staff
+        $staff->statuses()->create([
+            'status' => 'A',
+            'start_date' => now()->subYear(),
+            'institution_id' => $staff->institution_id,
+        ]);
 
         $response = $this->actingAs($this->user)
             ->get(route('staff.index', ['status' => 'A']));
@@ -154,7 +160,7 @@ class StaffAdvancedSearchTest extends TestCase
     {
         // Create a person aged 35 (born 35 years ago)
         $person = Person::factory()->create([
-            'dob' => now()->subYears(35)->format('Y-m-d'),
+            'date_of_birth' => now()->subYears(35)->format('Y-m-d'),
         ]);
 
         $staff = InstitutionPerson::factory()->create(['person_id' => $person->id]);
@@ -177,8 +183,13 @@ class StaffAdvancedSearchTest extends TestCase
         $person = Person::factory()->create(['gender' => 'F']);
         $staff = InstitutionPerson::factory()->create([
             'person_id' => $person->id,
-            'status' => 'A',
             'hire_date' => '2018-03-01',
+        ]);
+        // Create active status for the staff
+        $staff->statuses()->create([
+            'status' => 'A',
+            'start_date' => now()->subYear(),
+            'institution_id' => $staff->institution_id,
         ]);
 
         $staff->ranks()->attach($rank->id, ['start_date' => now()->subYear()]);
@@ -276,8 +287,8 @@ class StaffAdvancedSearchTest extends TestCase
     public function test_basic_text_search_still_works(): void
     {
         $person = Person::factory()->create([
-            'fname' => 'John',
-            'sname' => 'Doe',
+            'other_names' => 'John',
+            'surname' => 'Doe',
         ]);
 
         $staff = InstitutionPerson::factory()->create(['person_id' => $person->id]);
@@ -292,8 +303,8 @@ class StaffAdvancedSearchTest extends TestCase
     {
         $rank = Job::factory()->create();
         $person = Person::factory()->create([
-            'fname' => 'Jane',
-            'sname' => 'Smith',
+            'other_names' => 'Jane',
+            'surname' => 'Smith',
         ]);
 
         $staff = InstitutionPerson::factory()->create(['person_id' => $person->id]);
@@ -328,6 +339,6 @@ class StaffAdvancedSearchTest extends TestCase
     {
         $response = $this->get('/api/staff-search/options');
 
-        $response->assertStatus(401); // Unauthorized
+        $response->assertRedirect('/login');
     }
 }

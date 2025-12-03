@@ -17,6 +17,21 @@ class InstitutionPerson extends Pivot
 {
     use HasFactory, LogAllTraits;
 
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'institution_person';
+
+    /**
+     * The primary key for the model.
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     */
+    public $incrementing = true;
+
     protected $fillable = [
         'institution_id',
         'person_id',

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class InstitutionPermissionSeeder extends Seeder
@@ -12,13 +11,13 @@ class InstitutionPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        \Spatie\Permission\Models\Permission::create(['name' => 'view all institutions']);
-        \Spatie\Permission\Models\Permission::create(['name' => 'create institution']);
-        \Spatie\Permission\Models\Permission::create(['name' => 'view institution']);
-        \Spatie\Permission\Models\Permission::create(['name' => 'edit institution']);
-        \Spatie\Permission\Models\Permission::create(['name' => 'delete institution']);
-        \Spatie\Permission\Models\Permission::create(['name' => 'restore institution']);
-        \Spatie\Permission\Models\Permission::create(['name' => 'destroy institution']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view all institutions']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'create institution']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view institution']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'edit institution']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'delete institution']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'restore institution']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'destroy institution']);
 
         $role = \Spatie\Permission\Models\Role::findByName('super-administrator');
         $role->givePermissionTo('view all institutions');

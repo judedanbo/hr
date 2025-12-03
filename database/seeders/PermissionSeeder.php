@@ -16,83 +16,81 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         // person Permission
-
-        Permission::create(['name' => 'view all people']);
-        Permission::create(['name' => 'view person']);
-        Permission::create(['name' => 'view create person']);
-        Permission::create(['name' => 'view update person']);
-        Permission::create(['name' => 'view delete person']);
-        Permission::create(['name' => 'view restore person']);
-        Permission::create(['name' => 'view destroy person']);
+        Permission::firstOrCreate(['name' => 'view all people']);
+        Permission::firstOrCreate(['name' => 'view person']);
+        Permission::firstOrCreate(['name' => 'view create person']);
+        Permission::firstOrCreate(['name' => 'view update person']);
+        Permission::firstOrCreate(['name' => 'view delete person']);
+        Permission::firstOrCreate(['name' => 'view restore person']);
+        Permission::firstOrCreate(['name' => 'view destroy person']);
 
         // staff
-        Permission::create(['name' => 'view all staff']);
-        Permission::create(['name' => 'view staff']);
-        Permission::create(['name' => 'create staff']);
-        Permission::create(['name' => 'update staff']);
-        Permission::create(['name' => 'delete staff']);
-        Permission::create(['name' => 'restore staff']);
-        Permission::create(['name' => 'destroy staff']);
+        Permission::firstOrCreate(['name' => 'view all staff']);
+        Permission::firstOrCreate(['name' => 'view staff']);
+        Permission::firstOrCreate(['name' => 'create staff']);
+        Permission::firstOrCreate(['name' => 'update staff']);
+        Permission::firstOrCreate(['name' => 'delete staff']);
+        Permission::firstOrCreate(['name' => 'restore staff']);
+        Permission::firstOrCreate(['name' => 'destroy staff']);
 
-        Permission::create(['name' => 'view staff qualification']);
-        Permission::create(['name' => 'create staff qualification']);
-        Permission::create(['name' => 'edit staff qualification']);
-        Permission::create(['name' => 'create staff notes']);
-        Permission::create(['name' => 'view staff notes']);
-        Permission::create(['name' => 'edit staff notes']);
+        Permission::firstOrCreate(['name' => 'view staff qualification']);
+        Permission::firstOrCreate(['name' => 'create staff qualification']);
+        Permission::firstOrCreate(['name' => 'edit staff qualification']);
+        Permission::firstOrCreate(['name' => 'create staff notes']);
+        Permission::firstOrCreate(['name' => 'view staff notes']);
+        Permission::firstOrCreate(['name' => 'edit staff notes']);
 
-        Permission::create(['name' => 'view separated staff']);
+        Permission::firstOrCreate(['name' => 'view separated staff']);
 
-        Permission::create(['name' => 'download active staff data']);
-        Permission::create(['name' => 'download separated staff data']);
+        Permission::firstOrCreate(['name' => 'download active staff data']);
+        Permission::firstOrCreate(['name' => 'download separated staff data']);
 
         // Transfer staff permissions
-        Permission::create(['name' => 'view all staff transfers']);
-        Permission::create(['name' => 'view staff transfers']);
-        Permission::create(['name' => 'create staff transfers']);
-        Permission::create(['name' => 'update staff transfers']);
-        Permission::create(['name' => 'delete staff transfers']);
-        Permission::create(['name' => 'restore staff transfers']);
-        Permission::create(['name' => 'destroy staff transfers']);
-        //staff promotions permissions
-        Permission::create(['name' => 'view all staff promotions']);
-        Permission::create(['name' => 'view staff promotion']);
-        Permission::create(['name' => 'create staff promotion']);
-        Permission::create(['name' => 'update staff promotion']);
-        Permission::create(['name' => 'delete staff promotion']);
-        Permission::create(['name' => 'restore staff promotion']);
-        Permission::create(['name' => 'destroy staff promotion']);
-        // personel-user@gmail.com
-        // hr-user@gmail.com
+        Permission::firstOrCreate(['name' => 'view all staff transfers']);
+        Permission::firstOrCreate(['name' => 'view staff transfers']);
+        Permission::firstOrCreate(['name' => 'create staff transfers']);
+        Permission::firstOrCreate(['name' => 'update staff transfers']);
+        Permission::firstOrCreate(['name' => 'delete staff transfers']);
+        Permission::firstOrCreate(['name' => 'restore staff transfers']);
+        Permission::firstOrCreate(['name' => 'destroy staff transfers']);
 
-        // posrion Permission
-        Permission::create(['name' => 'view all positions']);
-        Permission::create(['name' => 'view position']);
-        Permission::create(['name' => 'create position']);
-        Permission::create(['name' => 'update position']);
-        Permission::create(['name' => 'delete position']);
-        Permission::create(['name' => 'restore position']);
-        Permission::create(['name' => 'destroy position']);
+        // staff promotions permissions
+        Permission::firstOrCreate(['name' => 'view all staff promotions']);
+        Permission::firstOrCreate(['name' => 'view staff promotion']);
+        Permission::firstOrCreate(['name' => 'create staff promotion']);
+        Permission::firstOrCreate(['name' => 'update staff promotion']);
+        Permission::firstOrCreate(['name' => 'delete staff promotion']);
+        Permission::firstOrCreate(['name' => 'restore staff promotion']);
+        Permission::firstOrCreate(['name' => 'destroy staff promotion']);
+
+        // position Permission
+        Permission::firstOrCreate(['name' => 'view all positions']);
+        Permission::firstOrCreate(['name' => 'view position']);
+        Permission::firstOrCreate(['name' => 'create position']);
+        Permission::firstOrCreate(['name' => 'update position']);
+        Permission::firstOrCreate(['name' => 'delete position']);
+        Permission::firstOrCreate(['name' => 'restore position']);
+        Permission::firstOrCreate(['name' => 'destroy position']);
 
         // Staff Position Permission
-        Permission::create(['name' => 'view all staff positions']);
-        Permission::create(['name' => 'view staff position']);
-        Permission::create(['name' => 'create staff position']);
-        Permission::create(['name' => 'update staff position']);
-        Permission::create(['name' => 'delete staff position']);
-        Permission::create(['name' => 'restore staff position']);
-        Permission::create(['name' => 'destroy staff position']);
+        Permission::firstOrCreate(['name' => 'view all staff positions']);
+        Permission::firstOrCreate(['name' => 'view staff position']);
+        Permission::firstOrCreate(['name' => 'create staff position']);
+        Permission::firstOrCreate(['name' => 'update staff position']);
+        Permission::firstOrCreate(['name' => 'delete staff position']);
+        Permission::firstOrCreate(['name' => 'restore staff position']);
+        Permission::firstOrCreate(['name' => 'destroy staff position']);
 
-        Role::create(['name' => 'super-administrator'])
+        Role::firstOrCreate(['name' => 'super-administrator', 'guard_name' => 'web'])
             ->givePermissionTo(Permission::all());
-        Role::create(['name' => 'personel-user'])
+        Role::firstOrCreate(['name' => 'personel-user', 'guard_name' => 'web'])
             ->givePermissionTo([
                 'view all staff',
                 'view staff',
                 'update staff',
                 'view separated staff',
             ]);
-        Role::create(['name' => 'hr-user'])
+        Role::firstOrCreate(['name' => 'hr-user', 'guard_name' => 'web'])
             ->givePermissionTo([
                 'view all staff',
                 'view staff qualification',
@@ -103,11 +101,11 @@ class PermissionSeeder extends Seeder
                 'edit staff notes',
                 'create staff transfers',
             ]);
-        Role::create(['name' => 'general-admin-user'])
+        Role::firstOrCreate(['name' => 'general-admin-user', 'guard_name' => 'web'])
             ->givePermissionTo([
                 'view all staff',
             ]);
-        Role::create(['name' => 'admin-user'])
+        Role::firstOrCreate(['name' => 'admin-user', 'guard_name' => 'web'])
             ->givePermissionTo([
                 'view all staff',
                 'view staff',

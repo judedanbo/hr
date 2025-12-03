@@ -15,26 +15,26 @@ class RolePermissionsSeeder extends Seeder
     public function run()
     {
         // Permission permissions
-        Permission::create(['name' => 'view all permissions']);
-        Permission::create(['name' => 'view permission']);
-        Permission::create(['name' => 'create permission']);
-        Permission::create(['name' => 'update permission']);
-        Permission::create(['name' => 'delete permission']);
+        Permission::firstOrCreate(['name' => 'view all permissions']);
+        Permission::firstOrCreate(['name' => 'view permission']);
+        Permission::firstOrCreate(['name' => 'create permission']);
+        Permission::firstOrCreate(['name' => 'update permission']);
+        Permission::firstOrCreate(['name' => 'delete permission']);
 
         // Role permissions
-        Permission::create(['name' => 'view all roles']);
-        Permission::create(['name' => 'view role']);
-        Permission::create(['name' => 'create role']);
-        Permission::create(['name' => 'update role']);
-        Permission::create(['name' => 'delete role']);
-        Permission::create(['name' => 'restore role']);
-        Permission::create(['name' => 'destroy role']);
+        Permission::firstOrCreate(['name' => 'view all roles']);
+        Permission::firstOrCreate(['name' => 'view role']);
+        Permission::firstOrCreate(['name' => 'create role']);
+        Permission::firstOrCreate(['name' => 'update role']);
+        Permission::firstOrCreate(['name' => 'delete role']);
+        Permission::firstOrCreate(['name' => 'restore role']);
+        Permission::firstOrCreate(['name' => 'destroy role']);
 
         // User permission/role management
-        Permission::create(['name' => 'view user permissions']);
-        Permission::create(['name' => 'view user roles']);
-        Permission::create(['name' => 'assign roles to user']);
-        Permission::create(['name' => 'assign permissions to role']);
-        Permission::create(['name' => 'assign permissions to user']);
+        Permission::firstOrCreate(['name' => 'view user permissions']);
+        Permission::firstOrCreate(['name' => 'view user roles']);
+        Permission::firstOrCreate(['name' => 'assign roles to user']);
+        Permission::firstOrCreate(['name' => 'assign permissions to role']);
+        Permission::firstOrCreate(['name' => 'assign permissions to user']);
     }
 }

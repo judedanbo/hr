@@ -24,9 +24,9 @@ class UpdatePromotionRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|exists:job_staff,id',
+            'id' => 'nullable|exists:job_staff,id',
             'rank_id' => 'required|exists:jobs,id',
-            'staff_id' => 'exists:institution_person,id',
+            'staff_id' => 'required|exists:institution_person,id',
             'start_date' => 'required|date',
             'end_date' => 'date|after:start_date|nullable',
             'remarks' => 'string|max:100|nullable',

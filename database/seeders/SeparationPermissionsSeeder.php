@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -16,13 +15,13 @@ class SeparationPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view all separations']);
-        Permission::create(['name' => 'view separation']);
-        Permission::create(['name' => 'create separation']);
-        Permission::create(['name' => 'update separation']);
-        Permission::create(['name' => 'delete separation']);
-        Permission::create(['name' => 'restore separation']);
-        Permission::create(['name' => 'destroy separation']);
+        Permission::firstOrCreate(['name' => 'view all separations']);
+        Permission::firstOrCreate(['name' => 'view separation']);
+        Permission::firstOrCreate(['name' => 'create separation']);
+        Permission::firstOrCreate(['name' => 'update separation']);
+        Permission::firstOrCreate(['name' => 'delete separation']);
+        Permission::firstOrCreate(['name' => 'restore separation']);
+        Permission::firstOrCreate(['name' => 'destroy separation']);
 
         Role::findByName('super-administrator')
             ->givePermissionTo(Permission::all());
