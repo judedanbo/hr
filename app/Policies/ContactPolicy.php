@@ -12,71 +12,57 @@ class ContactPolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->can('view staff') || $user->can('view all staff');
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Contact $contact)
+    public function view(User $user, Contact $contact): bool
     {
-        //
+        return $user->can('view staff') || $user->person_id === $contact->person_id;
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        //
+        return $user->can('update staff') || $user->can('create staff');
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Contact $contact)
+    public function update(User $user, Contact $contact): bool
     {
-        //
+        return $user->can('update staff') || $user->person_id === $contact->person_id;
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Contact $contact)
+    public function delete(User $user, Contact $contact): bool
     {
-        //
+        return $user->can('update staff') || $user->person_id === $contact->person_id;
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Contact $contact)
+    public function restore(User $user, Contact $contact): bool
     {
-        //
+        return $user->can('restore staff');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Contact $contact)
+    public function forceDelete(User $user, Contact $contact): bool
     {
-        //
+        return $user->can('destroy staff');
     }
 }

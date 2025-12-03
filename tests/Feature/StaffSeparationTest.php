@@ -35,7 +35,13 @@ class StaffSeparationTest extends TestCase
         ]);
 
         // Create user with permissions and link to person
-        $this->user = User::factory()->create(['person_id' => $adminPerson->id]);
+        $this->user = User::factory()->create([
+            'person_id' => $adminPerson->id,
+            'password_change_at' => now(),
+        ]);
+        // Route middleware requires 'view separated staff'
+        // Controller Gate checks require 'view all separations' (index) and 'view separation' (show)
+        $this->user->givePermissionTo('view separated staff');
         $this->user->givePermissionTo('view all separations');
         $this->user->givePermissionTo('view separation');
     }
@@ -53,13 +59,14 @@ class StaffSeparationTest extends TestCase
 
     public function test_separation_index_requires_permission(): void
     {
-        $userWithoutPermission = User::factory()->create();
+        $userWithoutPermission = User::factory()->create([
+            'password_change_at' => now(),
+        ]);
 
         $response = $this->actingAs($userWithoutPermission)
             ->get(route('separation.index'));
 
-        $response->assertRedirect(route('dashboard'));
-        $response->assertSessionHas('error', 'You do not have permission to view separated staff');
+        $response->assertForbidden();
     }
 
     public function test_separation_show_requires_authentication(): void
@@ -73,14 +80,15 @@ class StaffSeparationTest extends TestCase
 
     public function test_separation_show_requires_permission(): void
     {
-        $userWithoutPermission = User::factory()->create();
+        $userWithoutPermission = User::factory()->create([
+            'password_change_at' => now(),
+        ]);
         $separatedStaff = $this->createSeparatedStaff(EmployeeStatusEnum::Retired);
 
         $response = $this->actingAs($userWithoutPermission)
             ->get(route('separation.show', $separatedStaff->id));
 
-        $response->assertRedirect(route('dashboard'));
-        $response->assertSessionHas('error', 'You do not have permission to view separated staff');
+        $response->assertForbidden();
     }
 
     // ===================
@@ -105,9 +113,10 @@ class StaffSeparationTest extends TestCase
             ->get(route('separation.index'));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->component('Separation/Index')
-            ->has('separated')
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('Separation/Index')
+                ->has('separated')
         );
     }
 
@@ -120,9 +129,10 @@ class StaffSeparationTest extends TestCase
             ->get(route('separation.index'));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->component('Separation/Index')
-            ->has('separated')
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('Separation/Index')
+                ->has('separated')
         );
     }
 
@@ -231,9 +241,10 @@ class StaffSeparationTest extends TestCase
             ->get(route('separation.index', ['search' => 'SEARCH123']));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->component('Separation/Index')
-            ->has('filters')
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('Separation/Index')
+                ->has('filters')
         );
     }
 
@@ -267,14 +278,20 @@ class StaffSeparationTest extends TestCase
         ]);
     }
 
-    public function test_unauthorized_index_access_logs_failed_activity(): void
+    public function test_unauthorized_index_access_is_blocked_by_middleware(): void
     {
-        $userWithoutPermission = User::factory()->create();
+        $userWithoutPermission = User::factory()->create([
+            'password_change_at' => now(),
+        ]);
 
         $response = $this->actingAs($userWithoutPermission)
             ->get(route('separation.index'));
 
-        $this->assertDatabaseHas('activity_log', [
+        // Route middleware blocks the request with 403 before controller runs
+        $response->assertForbidden();
+
+        // No controller-level activity log is created since middleware blocked the request
+        $this->assertDatabaseMissing('activity_log', [
             'event' => 'view all separations',
             'causer_id' => $userWithoutPermission->id,
             'causer_type' => User::class,
@@ -323,9 +340,10 @@ class StaffSeparationTest extends TestCase
             ->get(route('separation.index'));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->component('Separation/Index')
-            ->has('separated')
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('Separation/Index')
+                ->has('separated')
         );
     }
 

@@ -12,71 +12,57 @@ class OfficePolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->can('view all units') || $user->can('view unit');
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Office $office)
+    public function view(User $user, Office $office): bool
     {
-        //
+        return $user->can('view unit');
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        //
+        return $user->can('create units');
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Office $office)
+    public function update(User $user, Office $office): bool
     {
-        //
+        return $user->can('update units');
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Office $office)
+    public function delete(User $user, Office $office): bool
     {
-        //
+        return $user->can('delete units');
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Office $office)
+    public function restore(User $user, Office $office): bool
     {
-        //
+        return $user->can('restore units');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Office $office)
+    public function forceDelete(User $user, Office $office): bool
     {
-        //
+        return $user->can('destroy units');
     }
 }

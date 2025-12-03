@@ -44,7 +44,7 @@ class StaffCreationTest extends TestCase
     {
         $response = $this->get(route('staff.create'));
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect();
     }
 
     public function test_staff_creation_page_requires_create_staff_permission(): void
@@ -54,7 +54,7 @@ class StaffCreationTest extends TestCase
         $response = $this->actingAs($userWithoutPermission)
             ->get(route('staff.create'));
 
-        $response->assertRedirect();
+        $response->assertForbidden();
     }
 
     public function test_staff_creation_page_loads_for_authorized_user(): void

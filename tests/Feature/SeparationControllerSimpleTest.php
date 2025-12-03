@@ -24,8 +24,7 @@ class SeparationControllerSimpleTest extends TestCase
 
 
         // Should redirect to dashboard with error message
-        $response->assertRedirect(route('dashboard'))
-            ->assertSessionHas('error', 'You do not have permission to view separated staff');
+        $response->assertForbidden();
     }
 
     public function test_separation_index_requires_authentication(): void

@@ -12,71 +12,59 @@ class DependentPolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->can('view all dependents') || $user->can('view dependent');
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Dependent $dependent)
+    public function view(User $user, Dependent $dependent): bool
     {
-        //
+        return $user->can('view dependent')
+            || $user->person?->id === $dependent->staff?->person_id;
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        //
+        return $user->can('create dependent');
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Dependent $dependent)
+    public function update(User $user, Dependent $dependent): bool
     {
-        //
+        return $user->can('update dependent') || $user->can('edit dependent')
+            || $user->person?->id === $dependent->staff?->person_id;
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Dependent $dependent)
+    public function delete(User $user, Dependent $dependent): bool
     {
-        //
+        return $user->can('delete dependent');
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Dependent $dependent)
+    public function restore(User $user, Dependent $dependent): bool
     {
-        //
+        return $user->can('restore dependent');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Dependent $dependent)
+    public function forceDelete(User $user, Dependent $dependent): bool
     {
-        //
+        return $user->can('destroy dependent');
     }
 }

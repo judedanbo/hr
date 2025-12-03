@@ -65,8 +65,13 @@ class StaffPromotionTest extends TestCase
             'hire_date' => now()->subYears(5),
         ]);
 
-        $this->user = User::factory()->create(['person_id' => $adminPerson->id]);
-        $this->user->givePermissionTo('promote staff');
+        $this->user = User::factory()->create([
+            'person_id' => $adminPerson->id,
+            'password_change_at' => now(),
+        ]);
+        $this->user->givePermissionTo('create staff promotion');
+        $this->user->givePermissionTo('update staff promotion');
+        $this->user->givePermissionTo('delete staff promotion');
         $this->user->givePermissionTo('view all staff');
     }
 
@@ -96,7 +101,7 @@ class StaffPromotionTest extends TestCase
                 'start_date' => now()->format('Y-m-d'),
             ]);
 
-        $response->assertRedirect();
+        $response->assertForbidden();
     }
 
     // ===================

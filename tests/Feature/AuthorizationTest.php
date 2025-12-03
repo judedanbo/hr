@@ -62,8 +62,8 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($this->guestUser)
             ->get(route('staff.index'));
 
-        // Should redirect with error or return 403
-        $response->assertStatus(302);
+        // Route middleware returns 403 Forbidden for unauthorized access
+        $response->assertForbidden();
     }
 
     public function test_super_admin_can_create_staff(): void
@@ -87,7 +87,8 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($this->staffUser)
             ->get(route('staff.create'));
 
-        $response->assertRedirect();
+        // Route middleware returns 403 Forbidden for unauthorized access
+        $response->assertForbidden();
     }
 
     // ===================
@@ -107,8 +108,8 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($this->adminUser)
             ->get(route('user.index'));
 
-        // Admin user doesn't have 'view all users' by default
-        $response->assertRedirect();
+        // Admin user doesn't have 'view all users' by default - route middleware returns 403
+        $response->assertForbidden();
     }
 
     public function test_user_with_view_all_users_permission_can_access(): void
@@ -138,7 +139,8 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($this->guestUser)
             ->get(route('role.index'));
 
-        $response->assertRedirect();
+        // Route middleware returns 403 Forbidden for unauthorized access
+        $response->assertForbidden();
     }
 
     public function test_super_admin_can_create_role(): void
@@ -169,7 +171,8 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($this->guestUser)
             ->get(route('permission.index'));
 
-        $response->assertRedirect();
+        // Route middleware returns 403 Forbidden for unauthorized access
+        $response->assertForbidden();
     }
 
     // ===================

@@ -12,71 +12,57 @@ class DocumentPolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->can('view staff') || $user->can('view all staff');
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Document $document)
+    public function view(User $user, Document $document): bool
     {
-        //
+        return $user->can('view staff');
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        //
+        return $user->can('update staff') || $user->can('create staff');
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Document $document)
+    public function update(User $user, Document $document): bool
     {
-        //
+        return $user->can('update staff');
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Document $document)
+    public function delete(User $user, Document $document): bool
     {
-        //
+        return $user->can('update staff');
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Document $document)
+    public function restore(User $user, Document $document): bool
     {
-        //
+        return $user->can('restore staff');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Document $document)
+    public function forceDelete(User $user, Document $document): bool
     {
-        //
+        return $user->can('destroy staff');
     }
 }

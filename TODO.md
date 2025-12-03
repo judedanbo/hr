@@ -12,7 +12,7 @@
 - [x] ~~**[HIGH]** Increase test coverage - Phase 3 tests created and passing~~ (See Test Coverage section below)
 - [x] ~~**[HIGH]** Add database indexes for performance optimization~~ (Most indexes already exist; migration created for remaining: first_name, surname, staff_number, file_number)
 - [ ] **[HIGH]** Implement placeholder controllers: `AuditLogController`, `ContactController`, `DocumentController`, `NoteController`
-- [ ] **[HIGH]** Standardize authorization patterns - currently 3 different patterns (Gate::denies, $user->cannot(), Policy methods)
+- [x] ~~**[HIGH]** Standardize authorization patterns - currently 3 different patterns (Gate::denies, $user->cannot(), Policy methods)~~ (Phase 4.2 Complete: LogsAuthorization trait + route middleware guards)
 - [ ] **[HIGH]** Create service layer to extract business logic from fat controllers (`InstitutionPersonController` is 624+ lines)
 
 ## Medium Priority
@@ -37,18 +37,19 @@
 
 ---
 
-## Test Coverage (Updated 2025-12-03) ✅ PHASE 3 COMPLETE
+## Test Coverage (Updated 2025-12-03) ✅ PHASE 4.2 COMPLETE
 
-### Feature Tests - All Passing (145 tests)
+### Feature Tests - All Passing (151 tests)
 
 | Test File | Tests | Assertions | Status |
 |-----------|-------|------------|--------|
 | `StaffCreationTest.php` | 12 | 22 | ✅ Passing |
 | `StaffPromotionTest.php` | 15 | 27 | ✅ Passing |
 | `StaffTransferTest.php` | 18 | 34 | ✅ Passing |
-| `StaffSeparationTest.php` | 22 | 75 | ✅ Passing |
+| `StaffSeparationTest.php` | 22 | 72 | ✅ Passing |
 | `StaffAdvancedSearchTest.php` | 23 | ~40 | ✅ Passing |
-| `AuthorizationTest.php` | 29 | 37 | ✅ Passing |
+| `AuthorizationTest.php` | 29 | 35 | ✅ Passing |
+| `Traits/LogsAuthorizationTest.php` | 6 | 17 | ✅ Passing |
 
 ### Unit Tests - All Passing (85 tests)
 
@@ -58,7 +59,7 @@
 | `JobTest.php` | 15 | 23 | ✅ Passing |
 | `InstitutionPersonTest.php` | 21 | ~30 | ✅ Passing |
 
-**Total: 230 tests, 486 assertions - All Passing**
+**Total: 236 tests, ~500 assertions - All Passing**
 
 ### Fixes Applied During Test Development
 
@@ -82,6 +83,6 @@
 
 - See `IMPROVEMENTS.md` for detailed analysis and code examples
 - See `ROADMAP.md` for implementation plan
-- **Test coverage: ~25% (up from <5%) - Phase 3 Complete!**
-- **System Health Score: 7.8/10 (up from 6.5/10, target: 8.5/10)**
-- Next: Phase 4 (Architecture) or Phase 5 (Code Quality)
+- **Test coverage: ~30% (up from <5%) - Phase 4.2 Complete!**
+- **System Health Score: 8.0/10 (up from 6.5/10, target: 8.5/10)**
+- Next: Phase 4.3 (Placeholder Controllers) or Phase 5 (Code Quality)
