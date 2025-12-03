@@ -26,10 +26,9 @@ const subMenuClicked = (action, model) => {
 	<div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
 		<table v-if="dependents.length > 0" class="min-w-full">
 			<colgroup>
-				<col class="w-full" />
+				<col class="w-3/6" />
 				<col class="sm:w-1/6" />
-				<col class="sm:w-1/6" />
-				<col class="sm:w-1/6" />
+				<col class="sm:w-1/3" />
 			</colgroup>
 			<thead
 				class="border-b border-gray-300 dark:border-gray-200/80 text-gray-900 dark:text-gray-50"
@@ -46,6 +45,12 @@ const subMenuClicked = (action, model) => {
 						class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
 					>
 						Relation
+					</th>
+					<th
+						scope="col"
+						class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+					>
+						Contacts
 					</th>
 					<th><div class="sr-only">Action</div></th>
 				</tr>
@@ -95,6 +100,28 @@ const subMenuClicked = (action, model) => {
 						class="hidden px-3 py-2 text-right text-sm text-gray-500 dark:text-gray-50 sm:table-cell"
 					>
 						{{ dependent.relation }}
+					</td>
+					<td
+						class="hidden px-3 py-2 text-left text-sm text-gray-500 dark:text-gray-50 sm:table-cell"
+					>
+						<div
+							v-if="dependent.contacts && dependent.contacts.length > 0"
+							class="space-y-1"
+						>
+							<div
+								v-for="contact in dependent.contacts"
+								:key="contact.id"
+								class="text-xs"
+							>
+								<span class="font-medium text-gray-700 dark:text-gray-300">
+									{{ contact.type }}:
+								</span>
+								<span>{{ contact.contact }}</span>
+							</div>
+						</div>
+						<span v-else class="text-xs text-gray-400 dark:text-gray-500">
+							No contacts
+						</span>
 					</td>
 					<td class="flex justify-end">
 						<SubMenu

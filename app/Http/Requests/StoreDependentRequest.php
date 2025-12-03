@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ContactTypeEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
 use App\Enums\Nationality;
@@ -37,7 +38,7 @@ class StoreDependentRequest extends FormRequest
                 'date',
                 'before_or_equal:' . Carbon::now()->format('Y-m-d'),
                 'after:' . Carbon::now()->subYears(150)->format('Y-m-d'),
-                'nullable'
+                'nullable',
             ],
             'nationality' => [new Enum(Nationality::class), 'nullable'],
             'gender' => [new Enum(GenderEnum::class), 'nullable'],
@@ -46,6 +47,9 @@ class StoreDependentRequest extends FormRequest
             'image' => 'file|image|nullable',
             'staff_id' => 'required|integer',
             'relation' => 'required|string|max:40',
+            'contacts' => 'array|nullable',
+            'contacts.*.contact_type' => ['required', new Enum(ContactTypeEnum::class)],
+            'contacts.*.contact' => 'required|string|min:2|max:100',
         ];
     }
 }

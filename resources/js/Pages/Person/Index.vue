@@ -177,11 +177,7 @@ let BreadCrumpLinks = [
 													class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap"
 												>
 													<Link
-														:href="
-															route('person.show', {
-																person: person.id,
-															})
-														"
+														:href="'/person/' + person.id"
 														class="text-green-600 hover:text-green-900 dark:text-gray-50"
 														>Show
 													</Link>

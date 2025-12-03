@@ -423,6 +423,11 @@ class InstitutionPersonController extends Controller
                     'staff_id' => $staff->id,
                     // $staff->person->image ? '/' . $staff->person->image :  null,
                     'image' => $dep->person->image ? '/storage/' . $dep->person->image : null,
+                    'contacts' => $dep->person->contacts->map(fn ($contact) => [
+                        'id' => $contact->id,
+                        'type' => $contact->contact_type?->label(),
+                        'contact' => $contact->contact,
+                    ]),
                 ]) : null,
             ],
         ]);
