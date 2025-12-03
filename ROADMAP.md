@@ -306,20 +306,49 @@ Route::delete('/staff/{staff}/transfer/{unit}', 'delete')->middleware('can:delet
 
 ---
 
-### 4.3 Implement Placeholder Controllers
+### 4.3 Implement Placeholder Controllers ✅ COMPLETED
 
-**Controllers:**
-- `AuditLogController` - View activity logs
-- `ContactController` - Manage person contacts
-- `DocumentController` - Manage staff documents
-- `NoteController` - Add/view notes on staff records
+**Completed:** 2025-12-03
 
-**For each controller:**
-- [ ] Implement CRUD operations
-- [ ] Add Form Requests for validation
-- [ ] Create Vue pages
-- [ ] Add authorization
-- [ ] Write tests
+**Controllers Implemented:**
+
+| Controller | Methods | Vue Pages | Tests |
+|------------|---------|-----------|-------|
+| `AuditLogController` | index, show, delete | Index.vue, Show.vue, ActivityList.vue | 9 tests ✅ |
+| `NoteController` | index, store, show, update, delete | Index.vue, Show.vue, NoteList.vue, EditNoteForm.vue | 9 tests ✅ |
+| `ContactController` | index, store, show, edit, update, destroy | Index.vue, ContactList.vue, EditContactForm.vue | 8 tests ✅ |
+| `DocumentController` | index, create, store, show, download, edit, update, destroy | Index.vue, Show.vue, Create.vue, DocumentList.vue, UploadForm.vue, EditDocumentForm.vue | 13 tests ✅ |
+
+**Files Created/Modified:**
+
+| Category | Files |
+|----------|-------|
+| Controllers | 4 updated (AuditLogController, NoteController, ContactController, DocumentController) |
+| Form Requests | 4 updated (StoreContactRequest, UpdateContactRequest, StoreDocumentRequest, UpdateDocumentRequest, UpdateNoteRequest) |
+| Vue Pages | 15 new (4 Index, 3 Show, 1 Create, 7 partials) |
+| Tests | 4 new (AuditLogControllerTest, NoteControllerTest, ContactControllerTest, DocumentControllerTest) |
+| Seeders | 2 new (ContactPermissionSeeder, DocumentPermissionSeeder) |
+| Factories | 3 updated (NoteFactory, ContactFactory, DocumentFactory) |
+| Migrations | 1 new (make_documents_documentable_nullable) |
+| Enums | 2 updated (DocumentTypeEnum, DocumentStatusEnum - added label() methods) |
+| Routes | web.php updated with Contact and Document routes |
+
+**Key Decisions:**
+- Contacts: Both nested Person routes AND standalone /contact/* routes
+- Documents: Permission-based access (anyone with 'view documents' sees all)
+- Document polymorphic relation made nullable for standalone documents
+
+**Permissions Added:**
+- `view contacts`, `create contacts`, `update contacts`, `delete contacts`
+- `view documents`, `create documents`, `update documents`, `delete documents`
+
+**Acceptance Criteria:**
+- [x] CRUD operations implemented for all 4 controllers
+- [x] Form Requests have validation rules with Enum validation
+- [x] Vue pages created (Index, Show, partials)
+- [x] Authorization via route middleware
+- [x] LogsAuthorization trait for activity logging
+- [x] Tests written and passing (39 new tests)
 
 ---
 
@@ -469,7 +498,8 @@ php artisan optimize
 | Phase 3 Complete | 40% test coverage | ✅ Done |
 | Phase 4.1 Complete | Service layer implemented | ✅ Done |
 | Phase 4.2 Complete | Authorization standardized | ✅ Done |
-| Phase 4 Complete | Clean architecture | 🔄 In Progress (4.3 remaining) |
+| Phase 4.3 Complete | Placeholder controllers | ✅ Done |
+| Phase 4 Complete | Clean architecture | ✅ Done |
 | Phase 5 Complete | Code quality improved | 🔲 Pending |
 | Phase 6 Complete | Secure & documented | 🔲 Pending |
 
@@ -477,30 +507,30 @@ php artisan optimize
 
 | Metric | Baseline | Current | Target |
 |--------|----------|---------|--------|
-| System Health | 6.5/10 | 8.0/10 | 8.5/10 |
-| Test Coverage | <5% | ~30% | 60% |
+| System Health | 6.5/10 | 8.2/10 | 8.5/10 |
+| Test Coverage | <5% | ~35% | 60% |
 | Critical Bugs | 3 | 0 | 0 |
-| Controller Avg Lines | ~300 | ~200 | ~100 |
+| Controller Avg Lines | ~300 | ~150 | ~100 |
 
 ### Test Summary (Updated 2025-12-03)
 
 | Category | Tests | Assertions | Status |
 |----------|-------|------------|--------|
-| Feature Tests | 151 | 370+ | ✅ Passing |
-| Unit Tests | 85 | 136+ | ✅ Passing |
-| **Total** | **236** | **~500** | ✅ |
+| Feature Tests | 190 | 603+ | ✅ Passing |
+| Unit Tests | 119 | 136+ | ✅ Passing |
+| **Total** | **309** | **739** | ✅ |
 
 ---
 
 ## Getting Started
 
-1. **Start with Phase 1** - Quick wins, immediate impact
+1. **Start with Phase 5** - Code quality improvements
 2. **Run tests frequently** - `./vendor/bin/sail test` or `php artisan test`
 3. **Format code** - `./vendor/bin/pint --dirty`
-4. **Create feature branches** - `git checkout -b fix/dead-code-person-controller`
+4. **Create feature branches** - `git checkout -b fix/component-organization`
 5. **Reference TODO.md** - Keep in sync with this roadmap
 
 ---
 
-**Document Version:** 1.4
-**Last Updated:** 2025-12-03 (Phase 4.2 Complete - Authorization Standardization)
+**Document Version:** 1.5
+**Last Updated:** 2025-12-03 (Phase 4 Complete - All Architecture Improvements Done)

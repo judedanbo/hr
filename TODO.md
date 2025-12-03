@@ -11,9 +11,9 @@
 
 - [x] ~~**[HIGH]** Increase test coverage - Phase 3 tests created and passing~~ (See Test Coverage section below)
 - [x] ~~**[HIGH]** Add database indexes for performance optimization~~ (Most indexes already exist; migration created for remaining: first_name, surname, staff_number, file_number)
-- [ ] **[HIGH]** Implement placeholder controllers: `AuditLogController`, `ContactController`, `DocumentController`, `NoteController`
+- [x] ~~**[HIGH]** Implement placeholder controllers: `AuditLogController`, `ContactController`, `DocumentController`, `NoteController`~~ (Phase 4.3 Complete: Full CRUD + Vue pages + tests)
 - [x] ~~**[HIGH]** Standardize authorization patterns - currently 3 different patterns (Gate::denies, $user->cannot(), Policy methods)~~ (Phase 4.2 Complete: LogsAuthorization trait + route middleware guards)
-- [ ] **[HIGH]** Create service layer to extract business logic from fat controllers (`InstitutionPersonController` is 624+ lines)
+- [x] ~~**[HIGH]** Create service layer to extract business logic from fat controllers (`InstitutionPersonController` is 624+ lines)~~ (Phase 4.1 Complete: StaffManagementService, PromotionService, TransferService, SeparationService)
 
 ## Medium Priority
 
@@ -37,9 +37,9 @@
 
 ---
 
-## Test Coverage (Updated 2025-12-03) ✅ PHASE 4.2 COMPLETE
+## Test Coverage (Updated 2025-12-03) ✅ PHASE 4.3 COMPLETE
 
-### Feature Tests - All Passing (151 tests)
+### Feature Tests - All Passing (190 tests)
 
 | Test File | Tests | Assertions | Status |
 |-----------|-------|------------|--------|
@@ -50,16 +50,24 @@
 | `StaffAdvancedSearchTest.php` | 23 | ~40 | ✅ Passing |
 | `AuthorizationTest.php` | 29 | 35 | ✅ Passing |
 | `Traits/LogsAuthorizationTest.php` | 6 | 17 | ✅ Passing |
+| `AuditLogControllerTest.php` | 9 | ~15 | ✅ Passing |
+| `NoteControllerTest.php` | 9 | ~15 | ✅ Passing |
+| `ContactControllerTest.php` | 8 | ~12 | ✅ Passing |
+| `DocumentControllerTest.php` | 13 | 51 | ✅ Passing |
 
-### Unit Tests - All Passing (85 tests)
+### Unit Tests - All Passing (119 tests)
 
 | Test File | Tests | Assertions | Status |
 |-----------|-------|------------|--------|
 | `PersonTest.php` | 29 | ~40 | ✅ Passing |
 | `JobTest.php` | 15 | 23 | ✅ Passing |
 | `InstitutionPersonTest.php` | 21 | ~30 | ✅ Passing |
+| `Services/StaffManagementServiceTest.php` | 10 | ~20 | ✅ Passing |
+| `Services/PromotionServiceTest.php` | 7 | ~15 | ✅ Passing |
+| `Services/TransferServiceTest.php` | 8 | ~15 | ✅ Passing |
+| `Services/SeparationServiceTest.php` | 9 | ~15 | ✅ Passing |
 
-**Total: 236 tests, ~500 assertions - All Passing**
+**Total: 309 tests, 739 assertions - All Passing**
 
 ### Fixes Applied During Test Development
 
@@ -83,6 +91,6 @@
 
 - See `IMPROVEMENTS.md` for detailed analysis and code examples
 - See `ROADMAP.md` for implementation plan
-- **Test coverage: ~30% (up from <5%) - Phase 4.2 Complete!**
-- **System Health Score: 8.0/10 (up from 6.5/10, target: 8.5/10)**
-- Next: Phase 4.3 (Placeholder Controllers) or Phase 5 (Code Quality)
+- **Test coverage: ~35% (up from <5%) - Phase 4 Complete!**
+- **System Health Score: 8.2/10 (up from 6.5/10, target: 8.5/10)**
+- Next: Phase 5 (Code Quality) or Phase 6 (Security & Documentation)

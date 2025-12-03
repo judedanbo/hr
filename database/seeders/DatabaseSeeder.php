@@ -37,6 +37,8 @@ class DatabaseSeeder extends Seeder
         $this->call(InstitutionPermissionSeeder::class);
         $this->call(RolePermissionsSeeder::class);
         $this->call(DataIntegrityPermissionSeeder::class);
+        $this->call(ContactPermissionSeeder::class);
+        $this->call(DocumentPermissionSeeder::class);
         $this->call(PastPromotionSeeder::class);
         $this->call(SuperAdminSeeder::class);
 

@@ -10,10 +10,12 @@ use App\Http\Controllers\AgeController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanksController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DataIntegrityController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
@@ -533,6 +535,27 @@ Route::controller(AuditLogController::class)->middleware(['auth', 'password_chan
     Route::get('/audit-log', 'index')->middleware('can:view user activity')->name('audit-log.index');
     Route::get('/audit-log/{auditLog}', 'show')->middleware('can:view user activity')->name('audit-log.show');
     Route::delete('/audit-log/{auditLog}', 'delete')->middleware('can:view user activity')->name('audit-log.delete');
+});
+
+Route::controller(ContactController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/contact', 'index')->middleware('can:view contacts')->name('contact.index');
+    Route::get('/contact/create', 'create')->middleware('can:create contacts')->name('contact.create');
+    Route::post('/contact', 'store')->middleware('can:create contacts')->name('contact.store');
+    Route::get('/contact/{contact}', 'show')->middleware('can:view contacts')->name('contact.show');
+    Route::get('/contact/{contact}/edit', 'edit')->middleware('can:update contacts')->name('contact.edit');
+    Route::patch('/contact/{contact}', 'update')->middleware('can:update contacts')->name('contact.update');
+    Route::delete('/contact/{contact}', 'destroy')->middleware('can:delete contacts')->name('contact.destroy');
+});
+
+Route::controller(DocumentController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/document', 'index')->middleware('can:view documents')->name('document.index');
+    Route::get('/document/create', 'create')->middleware('can:create documents')->name('document.create');
+    Route::post('/document', 'store')->middleware('can:create documents')->name('document.store');
+    Route::get('/document/{document}', 'show')->middleware('can:view documents')->name('document.show');
+    Route::get('/document/{document}/download', 'download')->middleware('can:view documents')->name('document.download');
+    Route::get('/document/{document}/edit', 'edit')->middleware('can:update documents')->name('document.edit');
+    Route::patch('/document/{document}', 'update')->middleware('can:update documents')->name('document.update');
+    Route::delete('/document/{document}', 'destroy')->middleware('can:delete documents')->name('document.destroy');
 });
 
 Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->name('rank-staff-stats');
