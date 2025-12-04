@@ -172,6 +172,7 @@ Route::controller(InstitutionController::class)->middleware(['auth', 'password_c
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/create', 'create')->name('institution.create');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
+    Route::get('/institution/{institution}/staff-filter', 'staffFilter')->name('institution.staff-filter');
     Route::post('/institution', 'store')->name('institution.store');
     Route::patch('/institution/{institution}', 'update')->name('institution.update');
     Route::delete('/institution/{institution}', 'delete')->name('institution.delete');
@@ -609,4 +610,5 @@ Route::middleware('auth')->prefix('data-integrity')->group(function () {
     Route::get('/separated-but-active', [DataIntegrityController::class, 'separatedButActive'])->name('data-integrity.separated-but-active');
     Route::get('/staff-without-pictures', [DataIntegrityController::class, 'staffWithoutPictures'])->name('data-integrity.staff-without-pictures');
     Route::get('/expired-active-status', [DataIntegrityController::class, 'expiredActiveStatus'])->name('data-integrity.expired-active-status');
+    Route::get('/multiple-unit-assignments', [DataIntegrityController::class, 'multipleUnitAssignments'])->name('data-integrity.multiple-unit-assignments');
 });

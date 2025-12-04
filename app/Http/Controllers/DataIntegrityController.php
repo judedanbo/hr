@@ -35,7 +35,7 @@ class DataIntegrityController extends Controller
                 $query->whereNull('job_staff.end_date');
             }])
             ->get()
-            ->filter(fn($staff) => $staff->ranks->count() > 1)
+            ->filter(fn ($staff) => $staff->ranks->count() > 1)
             ->count();
 
         // Count staff without units
@@ -109,6 +109,19 @@ class DataIntegrityController extends Controller
             })
             ->count();
 
+        // Count staff with multiple active unit assignments
+        $multipleUnitsCount = InstitutionPerson::query()
+            ->active()
+            ->whereHas('units', function ($query) {
+                $query->whereNull('staff_unit.end_date');
+            })
+            ->with(['units' => function ($query) {
+                $query->whereNull('staff_unit.end_date');
+            }])
+            ->get()
+            ->filter(fn ($staff) => $staff->units->count() > 1)
+            ->count();
+
         activity()
             ->causedBy(auth()->user())
             ->event('view')
@@ -135,7 +148,7 @@ class DataIntegrityController extends Controller
                     'description' => 'Active staff members who have no current unit assignment',
                     'count' => $staffWithoutUnitsCount,
                     'severity' => $staffWithoutUnitsCount > 0 ? 'error' : 'success',
-                    'route' => route('data-integrity.staff-without-units'),
+                    // 'route' => route('data-integrity.staff-without-units'),
                 ],
                 [
                     'id' => 'staff-without-ranks',
@@ -177,6 +190,14 @@ class DataIntegrityController extends Controller
                     'severity' => $expiredActiveStatusCount > 0 ? 'warning' : 'success',
                     'route' => route('data-integrity.expired-active-status'),
                 ],
+                [
+                    'id' => 'multiple-unit-assignments',
+                    'title' => 'Staff with Multiple Unit Assignments',
+                    'description' => 'Active staff members assigned to more than one unit simultaneously',
+                    'count' => $multipleUnitsCount,
+                    'severity' => $multipleUnitsCount > 0 ? 'warning' : 'success',
+                    'route' => route('data-integrity.multiple-unit-assignments'),
+                ],
             ],
         ]);
     }
@@ -206,7 +227,7 @@ class DataIntegrityController extends Controller
                 $query->whereNull('job_staff.end_date')->orderBy('job_staff.start_date', 'desc');
             }, 'person'])
             ->get()
-            ->filter(fn($staff) => $staff->ranks->count() > 1)
+            ->filter(fn ($staff) => $staff->ranks->count() > 1)
             ->map(function ($staff) {
                 return [
                     'id' => $staff->id,
@@ -351,7 +372,7 @@ class DataIntegrityController extends Controller
                     $query->whereNull('job_staff.end_date')->orderBy('job_staff.start_date', 'desc');
                 }])
                 ->get()
-                ->filter(fn($staff) => $staff->ranks->count() > 1);
+                ->filter(fn ($staff) => $staff->ranks->count() > 1);
 
             $fixedCount = 0;
             $totalRanksFixed = 0;
@@ -587,7 +608,7 @@ class DataIntegrityController extends Controller
                     'invalid_assignments' => $invalidRanks->concat($invalidUnits)->values(),
                 ];
             })
-            ->filter(fn($staff) => $staff['invalid_count'] > 0)
+            ->filter(fn ($staff) => $staff['invalid_count'] > 0)
             ->values();
 
         activity()
@@ -971,6 +992,70 @@ class DataIntegrityController extends Controller
 
         return Inertia::render('DataIntegrity/ExpiredActiveStatus', [
             'staff' => $expiredActiveStatus,
+        ]);
+    }
+
+    public function multipleUnitAssignments()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view multiple unit assignments');
+
+            return redirect()->route('data-integrity.index')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $staffWithMultipleUnits = InstitutionPerson::query()
+            ->active()
+            ->whereHas('units', function ($query) {
+                $query->whereNull('staff_unit.end_date');
+            })
+            ->with(['units' => function ($query) {
+                $query->whereNull('staff_unit.end_date')->orderBy('staff_unit.start_date', 'desc');
+            }, 'person'])
+            ->get()
+            ->filter(fn ($staff) => $staff->units->count() > 1)
+            ->map(function ($staff) {
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'active_units_count' => $staff->units->count(),
+                    'units' => $staff->units->map(function ($unit) {
+                        return [
+                            'id' => $unit->id,
+                            'pivot_id' => $unit->pivot->id,
+                            'name' => $unit->name,
+                            'type' => $unit->type,
+                            'start_date' => $unit->pivot->start_date?->format('Y-m-d'),
+                            'start_date_formatted' => $unit->pivot->start_date?->format('d M Y'),
+                            'end_date' => $unit->pivot->end_date,
+                        ];
+                    }),
+                ];
+            })
+            ->values();
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $staffWithMultipleUnits->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed staff with multiple unit assignments');
+
+        return Inertia::render('DataIntegrity/MultipleUnitAssignments', [
+            'staff' => $staffWithMultipleUnits,
         ]);
     }
 }
