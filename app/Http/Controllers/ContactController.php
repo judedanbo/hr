@@ -24,7 +24,7 @@ class ContactController extends Controller
 
         $contacts = Contact::query()
             ->with('person')
-            ->when($request->contact_type, fn ($q, $type) => $q->where('contact_type', $type))
+            ->when($request->contact_type, fn($q, $type) => $q->where('contact_type', $type))
             ->when($request->search, function ($q, $search) {
                 $q->where('contact', 'like', "%{$search}%")
                     ->orWhereHas('person', function ($query) use ($search) {
@@ -35,7 +35,7 @@ class ContactController extends Controller
             ->latest()
             ->paginate(20)
             ->withQueryString()
-            ->through(fn (Contact $contact) => [
+            ->through(fn(Contact $contact) => [
                 'id' => $contact->id,
                 'contact_type' => $contact->contact_type?->value,
                 'contact_type_label' => $contact->contact_type?->label(),
@@ -44,11 +44,11 @@ class ContactController extends Controller
                 'person_id' => $contact->person_id,
                 'person_name' => $contact->person?->full_name,
                 'is_active' => $contact->valid_end === null || $contact->valid_end->isFuture(),
-                'created_at' => $contact->created_at->format('d M Y'),
+                'created_at' => $contact->created_at?->format('d M Y'),
             ]);
 
         // Get contact types for filters
-        $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
+        $contactTypes = collect(ContactTypeEnum::cases())->map(fn($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
@@ -65,7 +65,7 @@ class ContactController extends Controller
      */
     public function create(): Response
     {
-        $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
+        $contactTypes = collect(ContactTypeEnum::cases())->map(fn($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
@@ -106,8 +106,8 @@ class ContactController extends Controller
                 'person_id' => $contact->person_id,
                 'person_name' => $contact->person?->full_name,
                 'is_active' => $contact->valid_end === null || $contact->valid_end->isFuture(),
-                'created_at' => $contact->created_at->format('d M Y H:i'),
-                'updated_at' => $contact->updated_at->format('d M Y H:i'),
+                'created_at' => $contact->created_at?->format('d M Y H:i'),
+                'updated_at' => $contact->updated_at?->format('d M Y H:i'),
             ],
         ]);
     }
@@ -117,7 +117,7 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact)
     {
-        $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
+        $contactTypes = collect(ContactTypeEnum::cases())->map(fn($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);

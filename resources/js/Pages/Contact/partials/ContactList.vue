@@ -1,12 +1,12 @@
 <script setup>
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
-import MainTable from "@/Components/Table/MainTable.vue";
-import TableHead from "@/Components/Table/TableHead.vue";
-import TableBody from "@/Components/Table/TableBody.vue";
-import TableRow from "@/Components/Table/TableRow.vue";
-import TableData from "@/Components/Table/TableData.vue";
-import RowHeader from "@/Components/Table/RowHeader.vue";
+import MainTable from "@/Components/MainTable.vue";
+import TableHead from "@/Components/TableHead.vue";
+import TableBody from "@/Components/TableBody.vue";
+import TableRow from "@/Components/TableRow.vue";
+import TableData from "@/Components/TableData.vue";
+import RowHeader from "@/Components/RowHeader.vue";
 import NoItem from "@/Components/NoItem.vue";
 import SubMenu from "@/Components/SubMenu.vue";
 

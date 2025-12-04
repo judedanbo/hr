@@ -27,8 +27,8 @@ class DocumentController extends Controller
 
         $documents = Document::query()
             ->with('documentable')
-            ->when($request->document_type, fn ($q, $type) => $q->where('document_type', $type))
-            ->when($request->document_status, fn ($q, $status) => $q->where('document_status', $status))
+            ->when($request->document_type, fn($q, $type) => $q->where('document_type', $type))
+            ->when($request->document_status, fn($q, $status) => $q->where('document_status', $status))
             ->when($request->search, function ($q, $search) {
                 $q->where('document_title', 'like', "%{$search}%")
                     ->orWhere('document_number', 'like', "%{$search}%");
@@ -36,7 +36,7 @@ class DocumentController extends Controller
             ->latest()
             ->paginate(20)
             ->withQueryString()
-            ->through(fn (Document $document) => [
+            ->through(fn(Document $document) => [
                 'id' => $document->id,
                 'document_type' => $document->document_type,
                 'document_type_label' => $this->getDocumentTypeLabel($document->document_type),
@@ -47,15 +47,15 @@ class DocumentController extends Controller
                 'file_name' => $document->file_name,
                 'documentable_type' => $document->documentable_type ? class_basename($document->documentable_type) : null,
                 'documentable_id' => $document->documentable_id,
-                'created_at' => $document->created_at->format('d M Y'),
+                'created_at' => $document->created_at?->format('d M Y'),
             ]);
 
-        $documentTypes = collect(DocumentTypeEnum::cases())->map(fn ($type) => [
+        $documentTypes = collect(DocumentTypeEnum::cases())->map(fn($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
 
-        $documentStatuses = collect(DocumentStatusEnum::cases())->map(fn ($status) => [
+        $documentStatuses = collect(DocumentStatusEnum::cases())->map(fn($status) => [
             'value' => $status->value,
             'label' => $status->label(),
         ]);
@@ -73,12 +73,12 @@ class DocumentController extends Controller
      */
     public function create(): Response
     {
-        $documentTypes = collect(DocumentTypeEnum::cases())->map(fn ($type) => [
+        $documentTypes = collect(DocumentTypeEnum::cases())->map(fn($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
 
-        $documentStatuses = collect(DocumentStatusEnum::cases())->map(fn ($status) => [
+        $documentStatuses = collect(DocumentStatusEnum::cases())->map(fn($status) => [
             'value' => $status->value,
             'label' => $status->label(),
         ]);
@@ -136,8 +136,8 @@ class DocumentController extends Controller
                 'document_remarks' => $document->document_remarks,
                 'documentable_type' => $document->documentable_type,
                 'documentable_id' => $document->documentable_id,
-                'created_at' => $document->created_at->format('d M Y H:i'),
-                'updated_at' => $document->updated_at->format('d M Y H:i'),
+                'created_at' => $document->created_at?->format('d M Y H:i'),
+                'updated_at' => $document->updated_at?->format('d M Y H:i'),
             ],
         ]);
     }
@@ -164,12 +164,12 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        $documentTypes = collect(DocumentTypeEnum::cases())->map(fn ($type) => [
+        $documentTypes = collect(DocumentTypeEnum::cases())->map(fn($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
 
-        $documentStatuses = collect(DocumentStatusEnum::cases())->map(fn ($status) => [
+        $documentStatuses = collect(DocumentStatusEnum::cases())->map(fn($status) => [
             'value' => $status->value,
             'label' => $status->label(),
         ]);
