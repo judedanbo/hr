@@ -8,7 +8,7 @@ import { Link } from "@inertiajs/vue3";
 		class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100- dark:bg-gray-800"
 	>
 		<div>
-			<Link href="/">
+			<Link :href="route('dashboard')">
 				<BreezeApplicationLogo class="w-20 fill-current text-gray-500" />
 			</Link>
 		</div>

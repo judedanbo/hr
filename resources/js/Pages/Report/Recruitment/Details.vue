@@ -182,7 +182,7 @@ let BreadCrumpLinks = [
 											</div>
 											<div class="flex">
 												<a
-													href="/report/recruitment/export/all"
+													:href="route('report.recruitment.export-data')"
 													class="flex items-center justify-center gap-2 cursor-pointer px-4 border-b border-green-500 hover:text-white hover:bg-green-800 hover:border-white"
 												>
 													<ArrowDownTrayIcon class="w-4 h-4 hover:text-white" />

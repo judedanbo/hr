@@ -240,7 +240,7 @@ const closeAlert = (index) => {
 			<div
 				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-900 dark:bg-gray-800"
 			>
-				<Link href="/dashboard" class="flex h-16 shrink-0 items-center pl-2">
+				<Link :href="route('dashboard')" class="flex h-16 shrink-0 items-center pl-2">
 					<BreezeApplicationLogo class="block h-9 w-auto" />
 					<div class="mx-2">
 						<h2

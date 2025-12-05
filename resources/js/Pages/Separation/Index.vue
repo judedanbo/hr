@@ -145,77 +145,77 @@ onMounted(() => {
 				>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="report-all-retirements"
+						:href="route('report.retirements-all')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>All Separated</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-retirements"
+						:href="route('report.retirements')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Export retired Staff</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-deceased-retirements"
+						:href="route('report.retirements-deceased')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Export deceased</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-terminated-retirements"
+						:href="route('report.retirements-terminated')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Terminated</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-leave-with-pay"
+						:href="route('report.leave-pay')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Leave with pay</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-leave-without-pay"
+						:href="route('report.leave-without-pay')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Leave without pay</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="report-resignation"
+						:href="route('report.resignation')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Resignation</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-suspended"
+						:href="route('report.suspended')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Suspended</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-vol-retirement"
+						:href="route('report.vol-retirement')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Voluntary retirement</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-dismissed"
+						:href="route('report.dismissed')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Dismissed</span>
 					</a>
 					<a
 						class="rounded-md flex gap-x-3 bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-						href="/report-vacation-of-post"
+						:href="route('report.vacation-of-post')"
 					>
 						<arrow-down-tray-icon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
 						<span>Vacation of post</span>

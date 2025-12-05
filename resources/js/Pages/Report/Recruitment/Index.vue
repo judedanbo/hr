@@ -254,13 +254,13 @@ let BreadCrumpLinks = [
 												</div>
 												<div class="flex space-x-3 justify-center mt-4">
 													<Link
-														href="/report/recruitment/details"
+														:href="route('report.recruitment.details')"
 														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Details
 													</Link>
 													<a
-														href="/report/recruitment/chart"
+														:href="route('report.recruitment.chart')"
 														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Download Data
@@ -277,7 +277,7 @@ let BreadCrumpLinks = [
 												/> -->
 												<div class="flex space-x-3 justify-center mt-4">
 													<Link
-														href="/report/recruitment/chart"
+														:href="route('report.recruitment.chart')"
 														class="cursor-pointer px-4 py-1 rounded-full hover:border hover:border-green-400 dark:border-gray-400 dark:hover:text-white dark:text-white"
 													>
 														Full Chart

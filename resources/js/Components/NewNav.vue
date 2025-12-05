@@ -78,7 +78,7 @@
 			</li>
 			<li v-if="permissions?.includes('view admin settings')" class="mt-auto">
 				<Link
-					href="/settings"
+					:href="route('settings.index')"
 					class="group flex gap-x-3 rounded-md py-2 px-6 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
 				>
 					<Cog6ToothIcon
