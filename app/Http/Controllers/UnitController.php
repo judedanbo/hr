@@ -181,9 +181,6 @@ class UnitController extends Controller
 
     public function show($unit)
     {
-        if (request()->user()->cannot('view', Unit::class)) {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this unit');
-        }
         $unit = Unit::query()
             ->with([
                 'institution',
@@ -300,6 +297,11 @@ class UnitController extends Controller
             ])
             ->whereId($unit)
             ->firstOrFail();
+
+        if (request()->user()->cannot('view', $unit)) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this unit');
+        }
+
         // return $unit;
         // $filtered = $unit->staff->filter(function ($value) {
         //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;

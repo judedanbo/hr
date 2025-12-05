@@ -611,4 +611,5 @@ Route::middleware('auth')->prefix('data-integrity')->group(function () {
     Route::get('/staff-without-pictures', [DataIntegrityController::class, 'staffWithoutPictures'])->name('data-integrity.staff-without-pictures');
     Route::get('/expired-active-status', [DataIntegrityController::class, 'expiredActiveStatus'])->name('data-integrity.expired-active-status');
     Route::get('/multiple-unit-assignments', [DataIntegrityController::class, 'multipleUnitAssignments'])->name('data-integrity.multiple-unit-assignments');
+    Route::get('/staff-without-gender', [DataIntegrityController::class, 'staffWithoutGender'])->name('data-integrity.staff-without-gender');
 });

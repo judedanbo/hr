@@ -122,6 +122,15 @@ class DataIntegrityController extends Controller
             ->filter(fn ($staff) => $staff->units->count() > 1)
             ->count();
 
+        // Count staff without gender
+        $staffWithoutGenderCount = InstitutionPerson::query()
+            ->active()
+            ->whereHas('person', function ($query) {
+                $query->whereNull('gender')
+                    ->orWhere('gender', '');
+            })
+            ->count();
+
         activity()
             ->causedBy(auth()->user())
             ->event('view')
@@ -197,6 +206,14 @@ class DataIntegrityController extends Controller
                     'count' => $multipleUnitsCount,
                     'severity' => $multipleUnitsCount > 0 ? 'warning' : 'success',
                     'route' => route('data-integrity.multiple-unit-assignments'),
+                ],
+                [
+                    'id' => 'staff-without-gender',
+                    'title' => 'Staff without Gender',
+                    'description' => 'Active staff members with missing gender information',
+                    'count' => $staffWithoutGenderCount,
+                    'severity' => $staffWithoutGenderCount > 0 ? 'warning' : 'success',
+                    'route' => route('data-integrity.staff-without-gender'),
                 ],
             ],
         ]);
@@ -1056,6 +1073,59 @@ class DataIntegrityController extends Controller
 
         return Inertia::render('DataIntegrity/MultipleUnitAssignments', [
             'staff' => $staffWithMultipleUnits,
+        ]);
+    }
+
+    public function staffWithoutGender()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view staff without gender');
+
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $staffWithoutGender = InstitutionPerson::query()
+            ->active()
+            ->whereHas('person', function ($query) {
+                $query->whereNull('gender')
+                    ->orWhere('gender', '');
+            })
+            ->with(['person', 'currentRank.job', 'currentUnit.unit'])
+            ->get()
+            ->map(function ($staff) {
+                return [
+                    'id' => $staff->id,
+                    'staff_number' => $staff->staff_number,
+                    'file_number' => $staff->file_number,
+                    'name' => $staff->person->full_name,
+                    'rank' => $staff->currentRank?->job?->name,
+                    'unit' => $staff->currentUnit?->unit?->name,
+                    'hire_date' => $staff->hire_date?->format('Y-m-d'),
+                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                ];
+            });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $staffWithoutGender->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed staff without gender');
+
+        return Inertia::render('DataIntegrity/StaffWithoutGender', [
+            'staff' => $staffWithoutGender,
         ]);
     }
 }

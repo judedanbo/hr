@@ -1,8 +1,9 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
 import Avatar from "@/Pages/Person/partials/Avatar.vue";
+import ManageDependentContactsModal from "./ManageDependentContactsModal.vue";
 import { Link, usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
@@ -13,6 +14,10 @@ defineProps({
 	dependents: { type: Array, default: () => [] },
 });
 
+// Contacts modal state
+const showContactsModal = ref(false);
+const selectedDependent = ref(null);
+
 const subMenuClicked = (action, model) => {
 	if (action == "Edit") {
 		emit("editDependent", model);
@@ -20,6 +25,15 @@ const subMenuClicked = (action, model) => {
 	if (action == "Delete") {
 		emit("deleteDependent", model);
 	}
+	if (action == "Contacts") {
+		selectedDependent.value = model;
+		showContactsModal.value = true;
+	}
+};
+
+const closeContactsModal = () => {
+	showContactsModal.value = false;
+	selectedDependent.value = null;
 };
 </script>
 <template>
@@ -130,8 +144,9 @@ const subMenuClicked = (action, model) => {
 								permissions?.includes('delete staff')
 							"
 							:can-edit="permissions?.includes('update staff')"
+							:can-contacts="permissions?.includes('update staff')"
 							:can-delete="permissions?.includes('delete staff')"
-							:items="['Edit', 'Delete']"
+							:items="['Edit', 'Contacts', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, dependent)"
 						/>
 					</td>
@@ -144,5 +159,15 @@ const subMenuClicked = (action, model) => {
 		>
 			No dependents found.
 		</div>
+
+		<!-- Contacts Modal -->
+		<ManageDependentContactsModal
+			v-if="selectedDependent"
+			:is-visible="showContactsModal"
+			:person-id="selectedDependent.person_id"
+			:contacts="selectedDependent.contacts || []"
+			:dependent-name="selectedDependent.name"
+			@close-modal="closeContactsModal"
+		/>
 	</div>
 </template>

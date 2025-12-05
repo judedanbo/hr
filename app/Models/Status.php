@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EmployeeStatusEnum;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,7 @@ use Spatie\Activitylog\LogOptions;
 
 class Status extends Pivot
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.

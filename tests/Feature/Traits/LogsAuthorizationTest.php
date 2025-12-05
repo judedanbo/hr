@@ -39,6 +39,14 @@ class LogsAuthorizationTest extends TestCase
         };
     }
 
+    /**
+     * Get the last activity by ID (more reliable than created_at for same-second logs)
+     */
+    private function getLastActivityById(): ?Activity
+    {
+        return Activity::query()->orderByDesc('id')->first();
+    }
+
     public function test_authorize_with_log_allows_authorized_user(): void
     {
         $user = User::factory()->create();
@@ -50,7 +58,7 @@ class LogsAuthorizationTest extends TestCase
 
         $this->assertNull($result);
 
-        $activity = Activity::latest()->first();
+        $activity = $this->getLastActivityById();
         $this->assertEquals('authorization_success', $activity->event);
         $this->assertEquals('success', $activity->properties['result']);
         $this->assertEquals('did something', $activity->description);
@@ -68,7 +76,7 @@ class LogsAuthorizationTest extends TestCase
         $this->assertNotNull($result);
         $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $result);
 
-        $activity = Activity::latest()->first();
+        $activity = $this->getLastActivityById();
         $this->assertEquals('authorization_failed', $activity->event);
         $this->assertEquals('failed', $activity->properties['result']);
         $this->assertEquals('test-permission', $activity->properties['permission']);
@@ -81,7 +89,7 @@ class LogsAuthorizationTest extends TestCase
 
         $this->testClass->callLogSuccess('performed an action');
 
-        $activity = Activity::latest()->first();
+        $activity = $this->getLastActivityById();
         $this->assertEquals('success', $activity->event);
         $this->assertEquals('success', $activity->properties['result']);
         $this->assertEquals('performed an action', $activity->description);
@@ -96,7 +104,7 @@ class LogsAuthorizationTest extends TestCase
 
         $this->testClass->callLogSuccess('viewed user', $targetUser);
 
-        $activity = Activity::latest()->first();
+        $activity = $this->getLastActivityById();
         $this->assertEquals($targetUser->id, $activity->subject_id);
         $this->assertEquals(User::class, $activity->subject_type);
     }
@@ -108,7 +116,7 @@ class LogsAuthorizationTest extends TestCase
 
         $this->testClass->callLogFailedAuthorization('forbidden-permission');
 
-        $activity = Activity::latest()->first();
+        $activity = $this->getLastActivityById();
         $this->assertEquals('authorization_failed', $activity->event);
         $this->assertEquals('failed', $activity->properties['result']);
         $this->assertEquals('forbidden-permission', $activity->properties['permission']);
@@ -122,7 +130,7 @@ class LogsAuthorizationTest extends TestCase
 
         $this->testClass->callLogSuccess('test action');
 
-        $activity = Activity::latest()->first();
+        $activity = $this->getLastActivityById();
         $this->assertArrayHasKey('user_ip', $activity->properties->toArray());
         $this->assertArrayHasKey('user_agent', $activity->properties->toArray());
     }

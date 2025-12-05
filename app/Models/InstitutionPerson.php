@@ -658,4 +658,34 @@ class InstitutionPerson extends Pivot
             $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) <= ?', [$maxAge]);
         });
     }
+
+    /**
+     * Calculate the number of years the staff has served.
+     *
+     * @return int|null Number of years served, or null if hire_date is not set
+     */
+    public function getYearsServedAttribute(): ?int
+    {
+        if (! $this->hire_date) {
+            return null;
+        }
+
+        $endDate = $this->end_date ?? Carbon::now();
+
+        return $this->hire_date->diffInYears($endDate);
+    }
+
+    /**
+     * Calculate the staff's retirement date (date of birth + 60 years).
+     *
+     * @return \Carbon\Carbon|null Retirement date, or null if date_of_birth is not set
+     */
+    public function getRetirementDateAttribute(): ?Carbon
+    {
+        if (! $this->person?->date_of_birth) {
+            return null;
+        }
+
+        return $this->person->date_of_birth->copy()->addYears(60);
+    }
 }

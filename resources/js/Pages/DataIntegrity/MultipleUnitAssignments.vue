@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import {
@@ -81,11 +81,12 @@ const breadcrumbLinks = [
 											class="h-6 w-6 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
 										/>
 										<div class="flex-1">
-											<h3
-												class="text-lg font-semibold text-yellow-900 dark:text-yellow-100"
+											<Link
+												:href="route('staff.show', member.id)"
+												class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 hover:underline"
 											>
 												{{ member.name }}
-											</h3>
+											</Link>
 											<p
 												class="text-sm text-yellow-700 dark:text-yellow-300"
 											>

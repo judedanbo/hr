@@ -371,6 +371,15 @@ class InstitutionDashboardService
                     ->filter(fn ($staff) => $staff->units->count() > 1)
                     ->count();
 
+                // Staff without gender
+                $withoutGender = (clone $baseQuery)
+                    ->active()
+                    ->whereHas('person', function ($query) {
+                        $query->whereNull('gender')
+                            ->orWhere('gender', '');
+                    })
+                    ->count();
+
                 $activeStaff = (clone $baseQuery)->active()->count();
 
                 return [
@@ -427,6 +436,15 @@ class InstitutionDashboardService
                         'severity' => $multipleUnits > 0 ? 'warning' : 'success',
                         'route' => 'data-integrity.multiple-unit-assignments',
                         'filter' => 'multiple-units',
+                    ],
+                    [
+                        'id' => 'without-gender',
+                        'title' => 'Staff Without Gender',
+                        'description' => 'Active staff with missing gender information',
+                        'count' => $withoutGender,
+                        'severity' => $withoutGender > 0 ? 'warning' : 'success',
+                        'route' => 'data-integrity.staff-without-gender',
+                        'filter' => 'without-gender',
                     ],
                 ];
             }

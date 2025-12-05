@@ -43,6 +43,7 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             'Retirement Date',
             'current rank Start Date',
             'current Unit Start Date',
+            'Rank Level',
         ];
     }
 
@@ -53,14 +54,14 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            (int) $staff->person->date_of_birth?->diffInYears() . ' years',
+            $staff->person->age . ' years',
             $staff->person->identities->first()?->id_number, // Pre-filtered to Ghana Card only
             $staff->person->contacts->pluck('contact')->implode(', '), // Pre-filtered to phone only
             $staff->hire_date?->format('d F, Y'),
             $staff->hire_date === null ? '' : (int) Carbon::now()->diffInYears($staff->hire_date) . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
-            $staff->person->date_of_birth?->addYears(60)->format('d F Y'),
+            $staff->retirement_date->format('d F Y'),
             $staff->currentRank?->start_date?->format('d F, Y'),
             $staff->currentUnit?->start_date?->format('d F, Y'),
             $staff->currentRank?->job?->category->level ?? null,

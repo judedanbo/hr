@@ -352,6 +352,7 @@ class StaffDetailTransformer
             'contacts' => $dep->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'type' => $contact->contact_type?->label(),
+                'contact_type' => $contact->contact_type?->value,
                 'contact' => $contact->contact,
             ])->toArray(),
         ])->toArray();

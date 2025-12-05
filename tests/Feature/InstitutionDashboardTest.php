@@ -94,7 +94,7 @@ class InstitutionDashboardTest extends TestCase
             ->get(route('institution.show', $this->institution));
 
         $response->assertInertia(fn ($page) => $page
-            ->has('action_items', 5) // 5 action items: promotion, retirement, units, pictures, ranks
+            ->has('action_items', 7) // 7 action items: promotion, retirement, units, pictures, ranks, multiple-units, without-gender
             ->where('action_items.0.id', 'due-promotion')
             ->where('action_items.1.id', 'nearing-retirement')
         );
@@ -110,6 +110,7 @@ class InstitutionDashboardTest extends TestCase
         ]);
         Status::factory()->create([
             'staff_id' => $staff->id,
+            'institution_id' => $this->institution->id,
             'status' => 'A',
             'start_date' => now()->subYear(),
             'end_date' => null,
@@ -139,6 +140,7 @@ class InstitutionDashboardTest extends TestCase
         ]);
         Status::factory()->create([
             'staff_id' => $maleStaff->id,
+            'institution_id' => $this->institution->id,
             'status' => 'A',
             'end_date' => null,
         ]);
@@ -151,6 +153,7 @@ class InstitutionDashboardTest extends TestCase
         ]);
         Status::factory()->create([
             'staff_id' => $femaleStaff->id,
+            'institution_id' => $this->institution->id,
             'status' => 'A',
             'end_date' => null,
         ]);

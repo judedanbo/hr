@@ -19,14 +19,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UnitStaffExport implements
-    FromQuery,
-    ShouldAutoSize,
-    ShouldQueue,
-    WithHeadings,
-    WithMapping,
-    WithStyles,
-    WithTitle
+class UnitStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
 
@@ -80,7 +73,7 @@ class UnitStaffExport implements
             $staff->staff_number,
             $staff->person->full_name,
             $staff->person->date_of_birth?->format('d F, Y'),
-            $staff->person->date_of_birth?->diffInYears() . ' years',
+            $staff->person->age . ' years',
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;
