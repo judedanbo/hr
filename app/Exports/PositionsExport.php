@@ -53,7 +53,7 @@ class PositionsExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHea
             $staff->file_number,
             $staff->staff_number,
             $staff->person->full_name,
-            $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
+            $staff->years_served . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->positions->first()?->name,

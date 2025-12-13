@@ -18,6 +18,7 @@ use App\Exports\SeparatedVoluntaryExport;
 use App\Exports\StaffDetailsExport;
 use App\Exports\StaffPositionExport;
 use App\Exports\StaffToRetireExport;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Excel;
 
@@ -28,7 +29,7 @@ class StaffReportController extends Controller
         return $excel->download(new AllSeparatedExport, 'all-retired-staff.xlsx');
     }
 
-    public function export(Excel $excel)
+    public function export(Request $request, Excel $excel)
     {
         if (Gate::denies('view staff position')) {
             activity()
@@ -40,8 +41,24 @@ class StaffReportController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted download staff position');
+
             return redirect()->back()->with('error', 'You are not authorized to download this file');
         }
+
+        $filters = $request->only([
+            'search',
+            'rank_id',
+            'job_category_id',
+            'unit_id',
+            'department_id',
+            'gender',
+            'status',
+            'hire_date_from',
+            'hire_date_to',
+            'age_from',
+            'age_to',
+        ]);
+
         activity()
             ->causedBy(auth()->user())
             ->event('download')
@@ -49,14 +66,30 @@ class StaffReportController extends Controller
                 'result' => 'success',
                 'user_ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
+                'filters' => $filters,
             ])
             ->log('downloaded staff position');
-        return $excel->download(new StaffPositionExport, 'staff-position.xlsx');
+
+        return $excel->download(new StaffPositionExport($filters), 'staff-position.xlsx');
     }
 
-    public function details(Excel $excel)
+    public function details(Request $request, Excel $excel)
     {
-        return $excel->download(new StaffDetailsExport, 'staff-details.xlsx');
+        $filters = $request->only([
+            'search',
+            'rank_id',
+            'job_category_id',
+            'unit_id',
+            'department_id',
+            'gender',
+            'status',
+            'hire_date_from',
+            'hire_date_to',
+            'age_from',
+            'age_to',
+        ]);
+
+        return $excel->download(new StaffDetailsExport($filters), 'staff-details.xlsx');
     }
 
     public function retirement(Excel $excel)

@@ -8,6 +8,7 @@ use App\Models\InstitutionPerson;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -25,9 +26,12 @@ class UnitStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHea
 
     public $unit;
 
-    public function __construct(Unit $unit)
+    public $filters;
+
+    public function __construct(Unit $unit, array $filters = [])
     {
         $this->unit = $unit;
+        $this->filters = $filters;
     }
 
     public function styles(Worksheet $sheet): array
@@ -79,7 +83,7 @@ class UnitStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHea
                 return $item->contact;
             })->implode(', ') : '',
             $staff->hire_date?->format('d F, Y'),
-            $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
+            $staff->years_served . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->person->date_of_birth?->addYears(60)->format('d F Y'),
@@ -91,9 +95,21 @@ class UnitStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHea
 
     public function query()
     {
-        return InstitutionPerson::query()
-            ->join('job_staff', 'job_staff.staff_id', '=', 'institution_person.id')
-            ->join('jobs', 'jobs.id', '=', 'job_staff.job_id')
+        $query = InstitutionPerson::query()
+            ->joinSub(
+                DB::table('job_staff')
+                    ->select('job_staff.*')
+                    ->whereRaw('job_staff.start_date = (
+                        SELECT MAX(js2.start_date)
+                        FROM job_staff js2
+                        WHERE js2.staff_id = job_staff.staff_id
+                    )'),
+                'current_job_staff',
+                'current_job_staff.staff_id',
+                '=',
+                'institution_person.id'
+            )
+            ->join('jobs', 'jobs.id', '=', 'current_job_staff.job_id')
             ->join('job_categories', 'job_categories.id', '=', 'jobs.job_category_id')
             ->with(['person' => function ($query) {
                 $query->with(['identities', 'contacts']);
@@ -108,26 +124,26 @@ class UnitStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHea
                         $query->where('units.id', $this->unit->id);
                         $query->orWhere('units.unit_id', $this->unit->id);
                         $query->orWhereRaw(
-                            'units.unit_id 
-                            in 
+                            'units.unit_id
+                            in
                             (select id from units as tempUnit where tempUnit.unit_id = ?)',
                             [$this->unit->id]
                         );
                         $query->orWhereRaw(
-                            'units.unit_id 
-                            in 
-                            (select id from units as tempUnit where tempUnit.unit_id 
-                            in 
+                            'units.unit_id
+                            in
+                            (select id from units as tempUnit where tempUnit.unit_id
+                            in
                             (select id from units as tempUnit2 where tempUnit2.unit_id = ?))',
                             [$this->unit->id]
                         );
                         $query->orWhereRaw(
-                            'units.unit_id 
-                            in 
-                            (select id from units as tempUnit where tempUnit.unit_id 
-                            in 
-                            (select id from units as tempUnit2 where tempUnit2.unit_id 
-                            in 
+                            'units.unit_id
+                            in
+                            (select id from units as tempUnit where tempUnit.unit_id
+                            in
+                            (select id from units as tempUnit2 where tempUnit2.unit_id
+                            in
                             (select id from units as tempUnit3 where tempUnit3.unit_id = ?)))',
                             [$this->unit->id]
                         );
@@ -137,7 +153,81 @@ class UnitStaffExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHea
                         $query->orWhere('staff_unit.end_date', '>=', now());
                     });
                 });
-            })
-            ->orderBy('job_categories.level');
+            });
+
+        // Apply filters
+        $this->applyFilters($query);
+
+        return $query->orderBy('job_categories.level');
+    }
+
+    protected function applyFilters($query): void
+    {
+        // Search filter (name, staff_number, file_number)
+        if (! empty($this->filters['search'])) {
+            $search = $this->filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('institution_person.staff_number', 'like', "%{$search}%")
+                    ->orWhere('institution_person.file_number', 'like', "%{$search}%")
+                    ->orWhereHas('person', function ($q) use ($search) {
+                        $q->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('surname', 'like', "%{$search}%")
+                            ->orWhere('other_names', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Job category filter
+        if (! empty($this->filters['job_category_id'])) {
+            $query->where('job_categories.id', $this->filters['job_category_id']);
+        }
+
+        // Rank/Job filter
+        if (! empty($this->filters['rank_id'])) {
+            $query->where('jobs.id', $this->filters['rank_id']);
+        }
+
+        // Sub-unit filter
+        if (! empty($this->filters['sub_unit_id'])) {
+            $query->whereHas('units', function ($q) {
+                $q->where('units.id', $this->filters['sub_unit_id'])
+                    ->where(function ($q) {
+                        $q->whereNull('staff_unit.end_date')
+                            ->orWhere('staff_unit.end_date', '>=', now());
+                    });
+            });
+        }
+
+        // Gender filter
+        if (! empty($this->filters['gender'])) {
+            $query->whereHas('person', function ($q) {
+                $q->where('gender', $this->filters['gender']);
+            });
+        }
+
+        // Hire date from filter
+        if (! empty($this->filters['hire_date_from'])) {
+            $query->where('institution_person.hire_date', '>=', $this->filters['hire_date_from']);
+        }
+
+        // Hire date to filter
+        if (! empty($this->filters['hire_date_to'])) {
+            $query->where('institution_person.hire_date', '<=', $this->filters['hire_date_to']);
+        }
+
+        // Age range filters (calculated from date_of_birth)
+        if (! empty($this->filters['age_from'])) {
+            $maxBirthDate = Carbon::now()->subYears((int) $this->filters['age_from'])->format('Y-m-d');
+            $query->whereHas('person', function ($q) use ($maxBirthDate) {
+                $q->where('date_of_birth', '<=', $maxBirthDate);
+            });
+        }
+
+        if (! empty($this->filters['age_to'])) {
+            $minBirthDate = Carbon::now()->subYears((int) $this->filters['age_to'] + 1)->format('Y-m-d');
+            $query->whereHas('person', function ($q) use ($minBirthDate) {
+                $q->where('date_of_birth', '>', $minBirthDate);
+            });
+        }
     }
 }

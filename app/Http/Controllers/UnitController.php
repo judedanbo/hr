@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\UnitStaffExport;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
+use App\Models\Job;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -314,6 +315,26 @@ class UnitController extends Controller
             return $staff->ranks->first()?->category->level ?? 99;
         });
 
+        // Get rank distribution for staff in this unit (and sub-units)
+        $staffIds = $allStaff->pluck('id')->toArray();
+        $rankDistribution = Job::query()
+            ->select('jobs.id', 'jobs.name')
+            ->selectRaw('COUNT(job_staff.id) as staff_count')
+            ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
+            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+            ->whereIn('job_staff.staff_id', $staffIds)
+            ->whereNull('job_staff.end_date')
+            ->groupBy('jobs.id', 'jobs.name', 'job_categories.level')
+            ->orderBy('job_categories.level')
+            ->get()
+            ->map(fn ($job) => [
+                'id' => $job->id,
+                'name' => $job->name,
+                'full_name' => $job->name,
+                'count' => $job->staff_count,
+            ])
+            ->toArray();
+
         // return $sorted;
         return Inertia::render('Unit/Show', [
             'unit' => [
@@ -323,9 +344,9 @@ class UnitController extends Controller
                 'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum(function ($sub) {
                     return $sub->staff_count + $sub->subs->sum('staff_count');
                 }) : $unit?->staff_count,
-                'male_staff' => $unit?->subs ? $unit?->male_count + $unit?->subs->sum(function ($sub) {
-                    return $sub->male_count + $sub->subs->sum('male_count');
-                }) : $unit?->male_count,
+                'male_staff' => $unit?->subs ? $unit?->male_staff + $unit?->subs->sum(function ($sub) {
+                    return $sub->male_staff + $sub->subs->sum('male_staff');
+                }) : $unit?->male_staff,
                 // 'staff_number' => $unit->subs->sum('staff_count'),
                 'subs_number' => $unit?->subs_count,
                 'institution' => $unit?->institution ? [
@@ -353,9 +374,12 @@ class UnitController extends Controller
                 'staff' => $sorted->values()->map(fn ($staff) => [
                     'id' => $staff->person->id,
                     'name' => $staff->person->full_name,
+                    'gender' => $staff->person->gender?->value,
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
+                    'dob_raw' => $staff->person->date_of_birth?->format('Y-m-d'),
                     'initials' => $staff->person->initials,
                     'hire_date' => $staff->hire_date?->format('d M Y'),
+                    'hire_date_raw' => $staff->hire_date?->format('Y-m-d'),
                     'staff_number' => $staff->staff_number,
                     'file_number' => $staff->file_number,
                     'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
@@ -365,6 +389,7 @@ class UnitController extends Controller
                         'start_date' => $staff->ranks->first()->pivot->start_date->format('d M Y'),
                         'remarks' => $staff->ranks->first()->pivot->remarks,
                         'cat' => $staff->ranks->first()->category,
+                        'category_id' => $staff->ranks->first()->job_category_id,
                     ] : null,
                     'unit' => $staff->units->count() > 0 ? [
                         'id' => $staff->units->first()->id,
@@ -415,6 +440,7 @@ class UnitController extends Controller
                 'dept' => request()->dept,
                 'staff' => request()->staff,
             ],
+            'rank_distribution' => $rankDistribution,
         ]);
     }
 
@@ -440,12 +466,25 @@ class UnitController extends Controller
 
     public function delete(Unit $unit)
     {
-        if (request()->user()->cannot('delete', Unit::class)) {
+        if (request()->user()->cannot('delete', $unit)) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to delete this unit');
         }
+
+        // Check for active staff assignments in this unit
+        $activeStaffCount = $unit->staff()->count();
+        if ($activeStaffCount > 0) {
+            return redirect()->back()->with('error', "Cannot delete unit. There are {$activeStaffCount} staff member(s) currently assigned to this unit. Please reassign or remove them first.");
+        }
+
+        // Check for active staff in sub-units
+        $subUnitsWithStaff = $unit->subs()->whereHas('staff')->count();
+        if ($subUnitsWithStaff > 0) {
+            return redirect()->back()->with('error', "Cannot delete unit. There are {$subUnitsWithStaff} sub-unit(s) with active staff assignments. Please reassign or remove staff from sub-units first.");
+        }
+
         $unit->delete();
 
-        return redirect()->back()->with('success', 'Unit deleted successfully');
+        return redirect()->route('unit.index')->with('success', 'Unit deleted successfully');
     }
 
     public function details(Unit $unit)
@@ -488,14 +527,26 @@ class UnitController extends Controller
     //     // ]);
     // }
 
-    public function download(Unit $unit)
+    public function download(Unit $unit, Request $request)
     {
-        if (request()->user()->cannot('download active staff data', Unit::class)) {
+        if ($request->user()->cannot('download active staff data', Unit::class)) {
             return redirect()->back()->with('error', 'You do not have permission to download this unit\'s staff');
         }
 
+        $filters = $request->only([
+            'search',
+            'job_category_id',
+            'rank_id',
+            'sub_unit_id',
+            'gender',
+            'hire_date_from',
+            'hire_date_to',
+            'age_from',
+            'age_to',
+        ]);
+
         return Excel::download(
-            new UnitStaffExport($unit),
+            new UnitStaffExport($unit, $filters),
             Str::of($unit->name)
                 ->title()
                 ->replaceMatches('/[^A-Za-z0-9]++/', '-')

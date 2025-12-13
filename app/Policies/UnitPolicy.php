@@ -37,7 +37,7 @@ class UnitPolicy
      */
     public function create(User $user)
     {
-        return $user->can('create units');
+        return $user->can('create unit');
     }
 
     /**
@@ -47,7 +47,7 @@ class UnitPolicy
      */
     public function update(User $user, Unit $unit)
     {
-        return $user->can('update units');
+        return $user->can('update unit');
     }
 
     /**
@@ -57,7 +57,7 @@ class UnitPolicy
      */
     public function delete(User $user, Unit $unit)
     {
-        return $user->can('delete units');
+        return $user->can('delete unit');
     }
 
     /**
@@ -67,7 +67,7 @@ class UnitPolicy
      */
     public function restore(User $user, Unit $unit)
     {
-        return $user->can('restore units');
+        return $user->can('restore unit');
     }
 
     /**
@@ -77,6 +77,6 @@ class UnitPolicy
      */
     public function forceDelete(User $user, Unit $unit)
     {
-        return $user->can('destroy units');
+        return $user->can('destroy unit');
     }
 }

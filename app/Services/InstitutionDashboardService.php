@@ -368,7 +368,7 @@ class InstitutionDashboardService
                         $query->whereNull('staff_unit.end_date');
                     }])
                     ->get()
-                    ->filter(fn ($staff) => $staff->units->count() > 1)
+                    ->filter(fn($staff) => $staff->units->count() > 1)
                     ->count();
 
                 // Staff without gender

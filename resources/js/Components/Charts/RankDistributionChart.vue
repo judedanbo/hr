@@ -12,7 +12,14 @@ import {
 } from "chart.js";
 import { useDark } from "@vueuse/core";
 
-ChartJS.register(Title, Legend, Tooltip, BarElement, CategoryScale, LinearScale);
+ChartJS.register(
+	Title,
+	Legend,
+	Tooltip,
+	BarElement,
+	CategoryScale,
+	LinearScale,
+);
 
 const isDark = useDark();
 
@@ -105,9 +112,9 @@ const chartOptions = computed(() => ({
 
 <template>
 	<div
-		class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 p-4"
+		class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 p-4"
 	>
-		<div class="h-80">
+		<div class="h-full">
 			<Bar :data="chartData" :options="chartOptions" class="cursor-pointer" />
 		</div>
 	</div>
