@@ -76,7 +76,19 @@
 					</li>
 				</ul>
 			</li>
-			<li v-if="permissions?.includes('view admin settings')" class="mt-auto">
+			<li class="mt-auto">
+				<Link
+					:href="route('help.index')"
+					class="group flex gap-x-3 rounded-md py-2 px-6 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
+				>
+					<QuestionMarkCircleIcon
+						class="h-6 w-6 shrink-0 text-gray-400 dark:text-green-50 group-hover:text-green-600 dark:group-hover:text-gray-700"
+						aria-hidden="true"
+					/>
+					Help
+				</Link>
+			</li>
+			<li v-if="permissions?.includes('view admin settings')">
 				<Link
 					:href="route('settings.index')"
 					class="group flex gap-x-3 rounded-md py-2 px-6 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
@@ -97,7 +109,7 @@ import { Link, usePage } from "@inertiajs/vue3";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { computed } from "vue";
-import { Cog6ToothIcon } from "@heroicons/vue/24/outline";
+import { Cog6ToothIcon, QuestionMarkCircleIcon } from "@heroicons/vue/24/outline";
 
 defineProps({
 	navigation: {
