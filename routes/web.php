@@ -17,6 +17,7 @@ use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GenderController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
@@ -55,6 +56,7 @@ use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitOfficeController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
 use App\Models\Dependent;
@@ -227,6 +229,22 @@ Route::controller(UnitController::class)->middleware(['auth', 'password_changed'
     Route::get('/unit/{unit}/details', 'details')->middleware('can:view unit')->name('unit.details');
     Route::post('/unit/{unit}/details', 'addSub')->middleware('can:create unit')->name('unit.add-sub');
     Route::get('/unit/{unit}/download', 'download')->middleware('can:download unit staff')->name('export.unit.staff');
+});
+
+// Unit Office Management
+Route::controller(UnitOfficeController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::post('/unit/{unit}/office', 'store')->middleware('can:edit unit')->name('unit.office.store');
+    Route::post('/unit/{unit}/office/create', 'storeNew')->middleware('can:edit unit')->name('unit.office.create');
+    Route::delete('/unit/{unit}/office', 'destroy')->middleware('can:edit unit')->name('unit.office.destroy');
+    Route::get('/unit/{unit}/office/history', 'history')->middleware('can:view unit')->name('unit.office.history');
+});
+
+// Office dropdown data endpoints
+Route::middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/offices-list', [UnitOfficeController::class, 'availableOffices'])->name('offices.list');
+    Route::get('/districts-list', [UnitOfficeController::class, 'districtsList'])->name('districts.list');
+    Route::get('/regions-list', [UnitOfficeController::class, 'regionsList'])->name('regions.list');
+    Route::get('/office-types', [UnitOfficeController::class, 'officeTypes'])->name('office-types.list');
 });
 
 Route::get('/unit-list', function () {
@@ -528,6 +546,7 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
 Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');
+Route::get('/help', [HelpController::class, 'index'])->middleware(['auth', 'password_changed'])->name('help.index');
 
 Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed', 'can:create role'])->name('role.store');
 Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed', 'can:assign permissions to role'])->name('role.add.permissions');

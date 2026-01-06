@@ -10,6 +10,7 @@ import Modal from "@/Components/NewModal.vue";
 // New section components
 import UnitHeroSection from "./partials/UnitHeroSection.vue";
 import UnitStatsSection from "./partials/UnitStatsSection.vue";
+import UnitOfficeSection from "./partials/UnitOfficeSection.vue";
 import SubUnitsCardGrid from "./partials/SubUnitsCardGrid.vue";
 import RankDistributionSection from "./partials/RankDistributionSection.vue";
 import StaffDirectorySection from "./partials/StaffDirectorySection.vue";
@@ -18,6 +19,8 @@ import StaffDirectorySection from "./partials/StaffDirectorySection.vue";
 import EditUnit from "./partials/Edit.vue";
 import AddSubUnit from "./partials/AddSubUnit.vue";
 import DeleteUnit from "./Delete.vue";
+import ManageOfficeModal from "./partials/ManageOfficeModal.vue";
+import RemoveOfficeModal from "./partials/RemoveOfficeModal.vue";
 
 const props = defineProps({
 	unit: Object,
@@ -35,6 +38,19 @@ const openAddSubUnitModal = ref(false);
 const toggleAddUnitForm = useToggle(openAddSubUnitModal);
 const openDeleteModal = ref(false);
 const toggleDeleteModal = useToggle(openDeleteModal);
+const openManageOfficeModal = ref(false);
+const toggleManageOfficeModal = useToggle(openManageOfficeModal);
+const openRemoveOfficeModal = ref(false);
+const toggleRemoveOfficeModal = useToggle(openRemoveOfficeModal);
+
+// Check if user can edit unit
+const canEditUnit = computed(() => permissions.value?.includes("edit unit"));
+
+// Get current office (first item from the array since it's a BelongsToMany)
+const currentOffice = computed(() => {
+	const offices = props.unit?.current_office;
+	return Array.isArray(offices) ? offices[0] : offices;
+});
 
 // Handle unit deleted - redirect to parent or index
 const handleUnitDeleted = () => {
@@ -76,6 +92,14 @@ const handleSearch = (query) => {
 			<div class="space-y-8">
 				<!-- Overview Stats -->
 				<UnitStatsSection :unit="props.unit" />
+
+				<!-- Office Location -->
+				<UnitOfficeSection
+					:office="currentOffice"
+					:can-edit="canEditUnit"
+					@manage="toggleManageOfficeModal()"
+					@remove="toggleRemoveOfficeModal()"
+				/>
 
 				<!-- Sub-Units Card Grid -->
 				<SubUnitsCardGrid
@@ -122,6 +146,25 @@ const handleSearch = (query) => {
 				:selected-model="props.unit"
 				@cancel-delete="toggleDeleteModal()"
 				@unit-deleted="handleUnitDeleted"
+			/>
+		</Modal>
+
+		<!-- Manage Office Modal -->
+		<Modal :show="openManageOfficeModal" @close="toggleManageOfficeModal()">
+			<ManageOfficeModal
+				:unit-id="props.unit?.id"
+				:current-office="currentOffice"
+				@form-submitted="toggleManageOfficeModal()"
+			/>
+		</Modal>
+
+		<!-- Remove Office Modal -->
+		<Modal :show="openRemoveOfficeModal" @close="toggleRemoveOfficeModal()">
+			<RemoveOfficeModal
+				:unit-id="props.unit?.id"
+				:office-name="currentOffice?.name"
+				@cancel="toggleRemoveOfficeModal()"
+				@removed="toggleRemoveOfficeModal()"
 			/>
 		</Modal>
 	</MainLayout>

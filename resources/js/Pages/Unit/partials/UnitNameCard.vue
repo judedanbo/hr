@@ -16,15 +16,15 @@ defineProps({
 				{{ unit.name }}
 			</div>
 			<div class="text-sm text-gray-500 dark:text-gray-100">
-				{{ unit.office.name }}
-				<span v-if="unit.office.district?.region">
+				{{ unit.office?.name }}
+				<span v-if="unit.office?.district?.region">
 					-
-					{{ unit.office.district.region.name }}</span
+					{{ unit.office.district.region?.name }}</span
 				>
-				<span v-if="unit.office.district">
+				<span v-if="unit.office?.district">
 					- {{ unit.office.district?.name }}
 				</span>
-				<span v-if="unit.office.district?.capital">
+				<span v-if="unit.office?.district?.capital">
 					- {{ unit.office.district?.capital }}
 				</span>
 			</div>

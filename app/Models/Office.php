@@ -13,9 +13,15 @@ class Office extends Model
 {
     use HasFactory, LogAllTraits;
 
+    protected $fillable = [
+        'name',
+        'type',
+        'district_id',
+    ];
+
     protected $casts = [
         'name' => 'string',
-        'type' => OfficeTypeEnum::class
+        'type' => OfficeTypeEnum::class,
     ];
 
     public function district(): BelongsTo
@@ -27,6 +33,7 @@ class Office extends Model
     {
         return $this->belongsToMany(Unit::class);
     }
+
     public function getUnitsNumberAttribute(): int
     {
         return $this->units()->count();

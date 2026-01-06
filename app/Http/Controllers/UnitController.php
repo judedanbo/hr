@@ -24,6 +24,7 @@ class UnitController extends Controller
         return Inertia::render('Unit/Index', [
             'units' => Unit::query()
                 ->departments()
+                ->hasSubs()
                 ->with([
                     'institution:id,name,abbreviation',
                     'currentOffice.district.region',
@@ -137,17 +138,16 @@ class UnitController extends Controller
                         'name' => $unit->name,
                         'short_name' => $unit->short_name,
                         'type' => $unit->type->label(),
-                        'office' => $unit->currentOffice ? [
-                            'id' => $unit->currentOffice->id, // ->id,
-                            'name' => $unit->currentOffice->name,
-                            'district' => $unit->currentOffice->district ? [
-                                'id' => $unit->currentOffice->district->id,
-                                'name' => $unit->currentOffice->district->name,
-                                'region' => $unit->currentOffice->district->region ? [
-                                    'id' => $unit->currentOffice->district->region->id,
-                                    'name' => $unit->currentOffice->district->region->name,
+                        'office' => $unit->currentOffice->first() ? [
+                            'id' => $unit->currentOffice->first()->id,
+                            'name' => $unit->currentOffice->first()->name,
+                            'district' => $unit->currentOffice->first()->district ? [
+                                'id' => $unit->currentOffice->first()->district->id,
+                                'name' => $unit->currentOffice->first()->district->name,
+                                'region' => $unit->currentOffice->first()->district->region ? [
+                                    'id' => $unit->currentOffice->first()->district->region->id,
+                                    'name' => $unit->currentOffice->first()->district->region->name,
                                 ] : null,
-
                             ] : null,
                         ] : null,
                         // 'count' =>  $unit->subs->sum(function ($sub) {
@@ -371,6 +371,19 @@ class UnitController extends Controller
                 //     ]) : null,
                 // ]) : null,
                 'type' => $unit?->type->label(),
+                'current_office' => $unit?->currentOffice->first() ? [
+                    'id' => $unit->currentOffice->first()->id,
+                    'name' => $unit->currentOffice->first()->name,
+                    'type' => $unit->currentOffice->first()->type?->label(),
+                    'district' => $unit->currentOffice->first()->district ? [
+                        'id' => $unit->currentOffice->first()->district->id,
+                        'name' => $unit->currentOffice->first()->district->name,
+                        'region' => $unit->currentOffice->first()->district->region ? [
+                            'id' => $unit->currentOffice->first()->district->region->id,
+                            'name' => $unit->currentOffice->first()->district->region->name,
+                        ] : null,
+                    ] : null,
+                ] : null,
                 'staff' => $sorted->values()->map(fn ($staff) => [
                     'id' => $staff->person->id,
                     'name' => $staff->person->full_name,
@@ -413,17 +426,16 @@ class UnitController extends Controller
                     'female_staff' => $sub->female_staff + $sub->subs->sum(function ($sub) {
                         return $sub->female_staff + $sub->subs->sum('female_staff');
                     }),
-                    'office' => $unit->currentOffice ? [
-                        'id' => $unit->currentOffice->id, // ->id,
-                        'name' => $unit->currentOffice->name,
-                        'district' => $unit->currentOffice->district ? [
-                            'id' => $unit->currentOffice->district->id,
-                            'name' => $unit->currentOffice->district->name,
-                            'region' => $unit->currentOffice->district->region ? [
-                                'id' => $unit->currentOffice->district->region->id,
-                                'name' => $unit->currentOffice->district->region->name,
+                    'office' => $unit->currentOffice->first() ? [
+                        'id' => $unit->currentOffice->first()->id,
+                        'name' => $unit->currentOffice->first()->name,
+                        'district' => $unit->currentOffice->first()->district ? [
+                            'id' => $unit->currentOffice->first()->district->id,
+                            'name' => $unit->currentOffice->first()->district->name,
+                            'region' => $unit->currentOffice->first()->district->region ? [
+                                'id' => $unit->currentOffice->first()->district->region->id,
+                                'name' => $unit->currentOffice->first()->district->region->name,
                             ] : null,
-
                         ] : null,
                     ] : null,
                     // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
