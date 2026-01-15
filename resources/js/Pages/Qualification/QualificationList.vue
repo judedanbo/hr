@@ -9,7 +9,12 @@ import { usePage } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import DocumentPreview from "./partials/DocumentPreview.vue";
 
-const emit = defineEmits(["editQualification", "deleteQualification"]);
+const emit = defineEmits([
+	"editQualification",
+	"deleteQualification",
+	"approveQualification",
+	"attachDocument",
+]);
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
@@ -23,6 +28,18 @@ defineProps({
 		default: false,
 	},
 	canDelete: {
+		type: Boolean,
+		default: false,
+	},
+	canApprove: {
+		type: Boolean,
+		default: false,
+	},
+	canAddStaffQualification: {
+		type: Boolean,
+		default: false,
+	},
+	canAttach: {
 		type: Boolean,
 		default: false,
 	},
@@ -63,6 +80,12 @@ const subMenuClicked = (action, model) => {
 	}
 	if (action == "Delete") {
 		emit("deleteQualification", model);
+	}
+	if (action == "Approve") {
+		emit("approveQualification", model);
+	}
+	if (action == "Attach") {
+		emit("attachDocument", model);
 	}
 };
 </script>
@@ -111,6 +134,12 @@ const subMenuClicked = (action, model) => {
 					>
 						Year
 					</th>
+					<th
+						scope="col"
+						class="px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50"
+					>
+						Status
+					</th>
 					<!-- <th
 						scope="col"
 						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
@@ -157,6 +186,16 @@ const subMenuClicked = (action, model) => {
 					>
 						{{ qualification.year }}
 					</td>
+					<td class="px-1 py-5 text-sm" :class="qualification.status_color">
+						<div class="flex items-center gap-1">
+							{{ qualification.status }}
+							<PaperClipIcon
+								v-if="qualification.documents?.length > 0"
+								class="w-4 h-4 text-gray-400 dark:text-gray-200"
+								title="Document attached"
+							/>
+						</div>
+					</td>
 					<!-- <td class="w-8"> -->
 					<!-- {{ qualification.documents[0].document_title }} -->
 					<!-- <ToolTip
@@ -174,10 +213,19 @@ const subMenuClicked = (action, model) => {
 					<!-- </td> -->
 					<td class="flex justify-end">
 						<SubMenu
-							v-if="canEdit || canDelete"
-							:can-edit="canEdit"
+							v-if="
+								canEdit || canDelete || canApprove || canAddStaffQualification
+							"
+							:can-edit="canEdit && qualification.status === 'Pending'"
 							:can-delete="canDelete"
-							:items="['Edit', 'Delete']"
+							:can-approve="canApprove && qualification.status === 'Pending'"
+							:can-attach="canEdit"
+							:items="
+								(canApprove || canAddStaffQualification) &&
+								qualification.status === 'Pending'
+									? ['Approve', 'Edit', 'Attach', 'Delete']
+									: ['Edit', 'Attach', 'Delete']
+							"
 							@item-clicked="(action) => subMenuClicked(action, qualification)"
 						/>
 					</td>
@@ -193,6 +241,17 @@ const subMenuClicked = (action, model) => {
 							{{ qualification.course }}
 							{{ qualification.qualification }}
 							{{ qualification.year }}
+							<span
+								class="inline-flex items-center gap-1"
+								:class="qualification.status_color"
+							>
+								{{ qualification.status }}
+								<PaperClipIcon
+									v-if="qualification.documents?.length > 0"
+									class="w-4 h-4 text-gray-400 dark:text-gray-200"
+									title="Document attached"
+								/>
+							</span>
 						</div>
 					</td>
 					<!-- <td

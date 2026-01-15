@@ -15,6 +15,8 @@ defineProps({
 	canRevoke: { type: Boolean, default: false },
 	canChangeUserPassword: { type: Boolean, default: false },
 	canContacts: { type: Boolean, default: false },
+	canAttach: { type: Boolean, default: false },
+	canAddStaffQualification: { type: Boolean, default: false },
 });
 const emit = defineEmits(["itemClicked"]);
 </script>
@@ -51,7 +53,8 @@ const emit = defineEmits(["itemClicked"]);
 							(item === 'Approve' && canApprove) ||
 							(item === 'Revoke' && canRevoke) ||
 							(item === 'Reset Password' && canChangeUserPassword) ||
-							(item === 'Contacts' && canContacts)
+							(item === 'Contacts' && canContacts) ||
+							(item === 'Attach' && canAttach)
 						"
 						v-slot="{ active }"
 						@click="emit('itemClicked', item)"

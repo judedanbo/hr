@@ -84,7 +84,14 @@ class StaffDetailTransformer
      */
     protected function transformQualifications(InstitutionPerson $staff): array
     {
-        $qualifications = $staff->person->qualifications;
+        $user = auth()->user();
+
+        // Filter qualifications based on visibility rules
+        $qualifications = \App\Models\Qualification::query()
+            ->where('person_id', $staff->person->id)
+            ->visibleTo($user, $staff->person->id)
+            ->with('documents')
+            ->get();
 
         if ($qualifications->isEmpty()) {
             return [];
@@ -97,8 +104,12 @@ class StaffDetailTransformer
             'institution' => $qualification->institution,
             'qualification' => $qualification->qualification,
             'qualification_number' => $qualification->qualification_number,
-            'level' => $qualification->level,
+            'level' => $qualification->level ? \App\Enums\QualificationLevelEnum::tryFrom($qualification->level)?->label() ?? $qualification->level : null,
             'year' => $qualification->year,
+            'status' => $qualification->status?->label(),
+            'status_color' => $qualification->status?->color(),
+            'can_edit' => $qualification->canBeEditedBy($user),
+            'can_delete' => $qualification->canBeDeletedBy($user),
             'documents' => $qualification->documents->isNotEmpty()
                 ? $qualification->documents->map(fn ($document) => [
                     'document_type' => $document->document_type,
@@ -170,8 +181,8 @@ class StaffDetailTransformer
             'old_staff_number' => $staff->old_staff_number,
             'hire_date' => $staff->hire_date?->format('d M Y'),
             'hire_date_display' => $staff->hire_date?->diffForHumans(),
-            'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-            'retirement_date_display' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+            'retirement_date' => $staff->retirement_date_formatted,
+            'retirement_date_display' => $staff->retirement_date_diff,
             'start_date' => $staff->start_date?->format('d M Y'),
             'statuses' => $this->transformStatuses($staff->statuses),
             'staff_type' => $this->transformStaffTypes($staff->type),

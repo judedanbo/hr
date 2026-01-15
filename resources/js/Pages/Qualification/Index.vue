@@ -14,6 +14,10 @@ let props = defineProps({
 		type: Object,
 		default: null,
 	},
+	can: {
+		type: Object,
+		default: () => ({}),
+	},
 });
 const navigation = computed(() => useNavigation(props.qualifications));
 const searchQualification = (value) => {
@@ -23,6 +27,16 @@ const searchQualification = (value) => {
 		{ preserveState: true, replace: true, preserveScroll: true },
 	);
 };
+
+const approveQualification = (qualification) => {
+	router.patch(
+		route("qualification.approve", { qualification: qualification.id }),
+		{},
+		{
+			preserveScroll: true,
+		},
+	);
+};
 </script>
 
 <template>
@@ -30,7 +44,9 @@ const searchQualification = (value) => {
 		Qualifications
 		<QualificationList
 			:qualifications="qualifications.data"
+			:can-approve="can.approve"
 			@update:model-value="searchQualification"
+			@approve-qualification="approveQualification"
 		/>
 		<Pagination :navigation="navigation" />
 	</MainLayout>

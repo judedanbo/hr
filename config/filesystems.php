@@ -40,6 +40,13 @@ return [
             'root' => storage_path('app/documents'),
             'throw' => false,
         ],
+        'qualifications-documents' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/qualifications'),
+            'url' => env('APP_URL') . '/storage/qualifications',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
 
         'public' => [
             'driver' => 'local',

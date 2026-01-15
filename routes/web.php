@@ -41,6 +41,7 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
+use App\Http\Controllers\QualificationLevelController;
 use App\Http\Controllers\RankStaffController;
 use App\Http\Controllers\RankStaffStatsController;
 use App\Http\Controllers\RegionController;
@@ -462,6 +463,8 @@ Route::controller(QualificationController::class)->middleware(['auth', 'password
     Route::post('/qualification', 'store')->middleware('can:create staff qualification')->name('qualification.store');
     Route::patch('/qualification/{qualification}', 'update')->middleware('can:edit staff qualification')->name('qualification.update');
     Route::delete('/qualification/{qualification}', 'delete')->middleware('can:edit staff qualification')->name('qualification.delete');
+    Route::patch('/qualification/{qualification}/approve', 'approve')->middleware('can:approve staff qualification')->name('qualification.approve');
+    Route::patch('/qualification/{qualification}/reject', 'reject')->middleware('can:approve staff qualification')->name('qualification.reject');
 });
 
 Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth', 'password_changed'])->name('contact-type.index');
@@ -469,6 +472,7 @@ Route::get('/identities', [IdentityController::class, 'index'])->middleware(['au
 
 Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middleware(['auth', 'password_changed'])->name('marital-status.index');
 Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth', 'password_changed'])->name('gender.index');
+Route::get('/qualification-level', [QualificationLevelController::class, 'index'])->middleware(['auth', 'password_changed'])->name('qualification-level.index');
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth', 'password_changed'])->name('nationality.index');
 
