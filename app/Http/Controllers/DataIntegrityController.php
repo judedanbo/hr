@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\QualificationStatusEnum;
 use App\Models\InstitutionPerson;
+use App\Models\Qualification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -131,6 +133,9 @@ class DataIntegrityController extends Controller
             })
             ->count();
 
+        // Count pending qualifications
+        $pendingQualificationsCount = Qualification::where('status', QualificationStatusEnum::Pending)->count();
+
         activity()
             ->causedBy(auth()->user())
             ->event('view')
@@ -214,6 +219,14 @@ class DataIntegrityController extends Controller
                     'count' => $staffWithoutGenderCount,
                     'severity' => $staffWithoutGenderCount > 0 ? 'warning' : 'success',
                     'route' => route('data-integrity.staff-without-gender'),
+                ],
+                [
+                    'id' => 'pending-qualifications',
+                    'title' => 'Qualifications Pending Approval',
+                    'description' => 'Uploaded qualifications waiting for review and approval',
+                    'count' => $pendingQualificationsCount,
+                    'severity' => $pendingQualificationsCount > 0 ? 'warning' : 'success',
+                    'route' => route('data-integrity.pending-qualifications'),
                 ],
             ],
         ]);
@@ -1126,6 +1139,69 @@ class DataIntegrityController extends Controller
 
         return Inertia::render('DataIntegrity/StaffWithoutGender', [
             'staff' => $staffWithoutGender,
+        ]);
+    }
+
+    public function pendingQualifications()
+    {
+        if (Gate::denies('data-integrity.view')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->event('view')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ])
+                ->log('Attempted to view pending qualifications');
+
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view data integrity checks.');
+        }
+
+        $pendingQualifications = Qualification::query()
+            ->where('status', QualificationStatusEnum::Pending)
+            ->with(['person.institution', 'documents'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($qualification) {
+                $staff = $qualification->person->institution->first()?->staff;
+
+                return [
+                    'id' => $qualification->id,
+                    'person_id' => $qualification->person_id,
+                    'name' => $qualification->person->full_name,
+                    'staff_number' => $staff?->staff_number,
+                    'institution' => $qualification->institution,
+                    'course' => $qualification->course,
+                    'qualification' => $qualification->qualification,
+                    'level' => $qualification->level,
+                    'year' => $qualification->year,
+                    'created_at' => $qualification->created_at->format('d M Y'),
+                    'documents' => $qualification->documents->map(fn ($doc) => [
+                        'id' => $doc->id,
+                        'document_title' => $doc->document_title,
+                        'file_name' => $doc->file_name,
+                        'file_type' => $doc->file_type,
+                    ]),
+                ];
+            });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->event('view')
+            ->withProperties([
+                'result' => 'success',
+                'count' => $pendingQualifications->count(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('Viewed pending qualifications');
+
+        return Inertia::render('DataIntegrity/PendingQualifications', [
+            'qualifications' => $pendingQualifications,
+            'can' => [
+                'approve' => auth()->user()->can('approve staff qualification'),
+            ],
         ]);
     }
 }
