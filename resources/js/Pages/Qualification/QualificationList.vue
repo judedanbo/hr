@@ -48,12 +48,30 @@ defineProps({
 const showPreviewDocumentModal = ref(false);
 const togglePreviewDocumentModal = useToggle(showPreviewDocumentModal);
 
-const documentUrl = ref("");
-const documentFileType = ref("");
-const previewDocument = (document) => {
+// Document preview state
+const selectedDocuments = ref([]);
+const currentDocumentIndex = ref(0);
+
+const openDocumentPreview = (qualification) => {
+	selectedDocuments.value = qualification.documents || [];
+	currentDocumentIndex.value = 0;
 	togglePreviewDocumentModal();
-	documentUrl.value = document.file_name;
-	documentFileType.value = document.file_type;
+};
+
+const currentDocument = computed(() =>
+	selectedDocuments.value[currentDocumentIndex.value] || null,
+);
+
+const nextDocument = () => {
+	if (currentDocumentIndex.value < selectedDocuments.value.length - 1) {
+		currentDocumentIndex.value++;
+	}
+};
+
+const prevDocument = () => {
+	if (currentDocumentIndex.value > 0) {
+		currentDocumentIndex.value--;
+	}
 };
 
 const deleteDocument = (qualification) => {
@@ -191,8 +209,9 @@ const subMenuClicked = (action, model) => {
 							{{ qualification.status }}
 							<PaperClipIcon
 								v-if="qualification.documents?.length > 0"
-								class="w-4 h-4 text-gray-400 dark:text-gray-200"
-								title="Document attached"
+								class="w-4 h-4 text-gray-400 dark:text-gray-200 cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+								title="Click to preview documents"
+								@click="openDocumentPreview(qualification)"
 							/>
 						</div>
 					</td>
@@ -248,8 +267,9 @@ const subMenuClicked = (action, model) => {
 								{{ qualification.status }}
 								<PaperClipIcon
 									v-if="qualification.documents?.length > 0"
-									class="w-4 h-4 text-gray-400 dark:text-gray-200"
-									title="Document attached"
+									class="w-4 h-4 text-gray-400 dark:text-gray-200 cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+									title="Click to preview documents"
+									@click="openDocumentPreview(qualification)"
 								/>
 							</span>
 						</div>
@@ -271,6 +291,15 @@ const subMenuClicked = (action, model) => {
 		</div>
 	</div>
 	<Modal :show="showPreviewDocumentModal" @close="togglePreviewDocumentModal">
-		<DocumentPreview :url="documentUrl" :type="documentFileType" />
+		<DocumentPreview
+			v-if="currentDocument"
+			:url="'/storage/qualifications/' + currentDocument.file_name"
+			:type="currentDocument.file_type"
+			:title="currentDocument.document_title"
+			:current-index="currentDocumentIndex"
+			:total-count="selectedDocuments.length"
+			@prev="prevDocument"
+			@next="nextDocument"
+		/>
 	</Modal>
 </template>
