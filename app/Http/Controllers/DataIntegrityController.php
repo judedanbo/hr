@@ -162,7 +162,7 @@ class DataIntegrityController extends Controller
                     'description' => 'Active staff members who have no current unit assignment',
                     'count' => $staffWithoutUnitsCount,
                     'severity' => $staffWithoutUnitsCount > 0 ? 'error' : 'success',
-                    // 'route' => route('data-integrity.staff-without-units'),
+                    'route' => route('data-integrity.staff-without-units'),
                 ],
                 [
                     'id' => 'staff-without-ranks',

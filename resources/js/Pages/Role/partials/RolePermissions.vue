@@ -16,6 +16,8 @@ import {
 	MagnifyingGlassIcon,
 } from "@heroicons/vue/20/solid";
 
+defineOptions({ inheritAttrs: false });
+
 const emit = defineEmits(["openRole"]);
 const props = defineProps({
 	permissions: {
@@ -100,7 +102,10 @@ const tableCols = computed(() => {
 </script>
 
 <template>
-	<section class="flex flex-col mt-6 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+	<section
+		v-bind="$attrs"
+		class="flex flex-col mt-6 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"
+	>
 		<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 			<div class="mb-3 relative">
 				<div

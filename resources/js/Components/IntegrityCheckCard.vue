@@ -25,7 +25,7 @@ const props = defineProps({
 		default: "success",
 		validator: (value) => ["success", "warning", "error"].includes(value),
 	},
-	route: {
+	href: {
 		type: String,
 		required: true,
 	},
@@ -61,7 +61,7 @@ const severityClasses = computed(() => {
 
 <template>
 	<Link
-		:href="route"
+		:href="href"
 		class="block rounded-lg border-2 p-6 transition-all hover:shadow-lg"
 		:class="[severityClasses.bg, severityClasses.border]"
 	>

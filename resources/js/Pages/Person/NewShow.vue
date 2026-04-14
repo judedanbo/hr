@@ -17,11 +17,15 @@ import EditPersonForm from "@/Pages/Person/partials/EditPersonForm.vue";
 import RolesDetail from "./partials/RolesDetail.vue";
 
 let showEditForm = ref(false);
+let showPromotionForm = ref(false);
+let showTransferForm = ref(false);
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
 
 let toggleEditForm = useToggle(showEditForm);
+let togglePromotionForm = useToggle(showPromotionForm);
+let toggleTransferForm = useToggle(showTransferForm);
 
 let props = defineProps({
 	person: { type: Object, required: true },
@@ -176,7 +180,7 @@ let BreadcrumbLinks = [
 							v-if="staff !== null && staff[0] !== null"
 							:promote="false"
 							:edit-promotion="false"
-							:promotions="staff[0].ranks"
+							:promotions="staff[0].ranks ?? []"
 							:staff="staff[0].staff_id"
 							:institution="staff[0].institution_id"
 							:show-promotion-form="showPromotionForm"
@@ -187,7 +191,7 @@ let BreadcrumbLinks = [
 							v-if="staff !== null && staff[0] !== null"
 							:transfer="false"
 							:edit-transfer="false"
-							:transfers="staff[0].units"
+							:transfers="staff[0].units ?? []"
 							:staff="staff[0].staff_id"
 							:staff-name="person.name"
 							:institution="staff[0].institution_id"
