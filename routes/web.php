@@ -151,6 +151,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
 // })->name('dashboard');
 
+Route::middleware(['auth', 'can:qualifications.reports.view'])
+    ->get('/dashboard/qualifications-widgets', [\App\Http\Controllers\QualificationDashboardController::class, 'widgets'])
+    ->name('dashboard.qualifications');
+
 // Application Routes
 // person
 Route::controller(PersonController::class)->middleware(['auth', 'password_changed'])->group(function () {
