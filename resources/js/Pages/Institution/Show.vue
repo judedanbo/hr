@@ -167,6 +167,7 @@ function closeStaffModal() {
 
 				<!-- Organizational View -->
 				<OrganizationalViewSection
+					v-if="can?.view_organizational_structure"
 					:departments="departments"
 					:institution-id="institution?.id"
 					@department-click="openStaffModal"

@@ -116,7 +116,8 @@ class InstitutionController extends Controller
                 'view_promotions' => Gate::allows('view all staff promotions'),
                 'manage_units' => Gate::allows('edit unit'),
                 'view_data_integrity' => Gate::allows('view data integrity'),
-                'view_action_items' => ! auth()->user()->hasRole('aag-admin'),
+                'view_action_items' => ! auth()->user()->hasRole(['aag-admin', 'internal-audit-user']),
+                'view_organizational_structure' => ! auth()->user()->hasRole('internal-audit-user'),
             ],
         ]);
     }
