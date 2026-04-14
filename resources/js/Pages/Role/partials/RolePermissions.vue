@@ -1,6 +1,7 @@
 <script setup>
 import { router, usePage } from "@inertiajs/vue3";
 import { computed, ref } from "vue";
+import { debouncedWatch } from "@vueuse/core";
 import NoItem from "@/Components/NoItem.vue";
 import MainTable from "@/Components/MainTable.vue";
 import TableHead from "@/Components/TableHead.vue";
@@ -9,7 +10,11 @@ import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
 import NewModal from "@/Components/NewModal.vue";
-import { XMarkIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
+import {
+	XMarkIcon,
+	ExclamationTriangleIcon,
+	MagnifyingGlassIcon,
+} from "@heroicons/vue/20/solid";
 
 const emit = defineEmits(["openRole"]);
 const props = defineProps({
@@ -21,12 +26,39 @@ const props = defineProps({
 		type: Number,
 		required: true,
 	},
+	initialSearch: {
+		type: String,
+		default: "",
+	},
 });
 
 const page = usePage();
 const canManagePermissions = computed(() =>
 	page.props?.auth.permissions?.includes("assign permissions to role"),
 );
+
+const search = ref(props.initialSearch);
+
+debouncedWatch(
+	search,
+	(value) => {
+		router.get(
+			route("role.show", { role: props.role }),
+			{ permission_search: value || undefined },
+			{
+				preserveScroll: true,
+				preserveState: true,
+				only: ["permissions", "filters"],
+				replace: true,
+			},
+		);
+	},
+	{ debounce: 300 },
+);
+
+const clearSearch = () => {
+	search.value = "";
+};
 
 const showConfirmModal = ref(false);
 const permissionToRemove = ref(null);
@@ -70,6 +102,31 @@ const tableCols = computed(() => {
 <template>
 	<section class="flex flex-col mt-6 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 		<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+			<div class="mb-3 relative">
+				<div
+					class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+				>
+					<MagnifyingGlassIcon
+						class="h-5 w-5 text-gray-400"
+						aria-hidden="true"
+					/>
+				</div>
+				<input
+					v-model="search"
+					type="text"
+					placeholder="Search permissions..."
+					class="block w-full rounded-md border-0 py-2 pl-10 pr-10 text-gray-900 dark:text-gray-100 dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm"
+				/>
+				<button
+					v-if="search"
+					type="button"
+					class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+					title="Clear search"
+					@click="clearSearch"
+				>
+					<XMarkIcon class="h-5 w-5" />
+				</button>
+			</div>
 			<div
 				v-if="permissions?.total > 0"
 				class="overflow-hidden border-b border-gray-200 rounded-md shadow-md"
@@ -108,6 +165,12 @@ const tableCols = computed(() => {
 					</TableBody>
 				</MainTable>
 				<slot name="pagination" />
+			</div>
+			<div
+				v-else-if="search"
+				class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-600"
+			>
+				No permissions match "{{ search }}"
 			</div>
 			<NoItem v-else name="Permission" />
 		</div>

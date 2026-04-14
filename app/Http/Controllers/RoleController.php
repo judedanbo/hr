@@ -40,7 +40,7 @@ class RoleController extends Controller
         return Inertia::render('Role/Index', [
             'roles' => Role::withCount(['permissions', 'users'])
                 ->paginate()
-                ->through(fn ($role) => [
+                ->through(fn($role) => [
                     'id' => $role->id,
                     'name' => $role->name,
                     'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
@@ -87,20 +87,30 @@ class RoleController extends Controller
                 'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
             ],
             'users' => $role->users()
-                ->withCount('permissions')
-                ->paginate(10, ['*'], 'users_page'),
+                ->paginate(10, ['*'], 'users_page')
+                ->through(fn(User $user) => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'permissions_count' => $user->getAllPermissions()->count(),
+                ]),
             'permissions' => $role
                 ->permissions()
-                ->withCount('users')
-                ->paginate(15, ['*'], 'permissions_page')
-                ->through(fn ($permission) => [
+                ->when(request('permission_search'), function ($query, $search) {
+                    $query->where('name', 'like', "%{$search}%");
+                })
+                ->paginate(10, ['*'], 'permissions_page')
+                ->through(fn($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'displayName' => Str::of($permission->name)->replace('-', ' ')->title(),
-                    'users_count' => $permission->users_count,
+                    'users_count' => User::permission($permission->name)->count(),
                 ])
                 ->withQueryString(),
             'rolePermissionNames' => $role->permissions()->pluck('name')->values()->toArray(),
+            'filters' => [
+                'permission_search' => request('permission_search', ''),
+            ],
         ]);
     }
 

@@ -43,6 +43,7 @@ let props = defineProps({
 	permissions: { type: Object, default: () => null },
 	users: { type: Object, default: () => null },
 	rolePermissionNames: { type: Array, default: () => [] },
+	filters: { type: Object, default: () => ({ permission_search: "" }) },
 });
 
 let breadcrumbLinks = [
@@ -201,6 +202,7 @@ const editContactModal = () => {
 						<RolePermissions
 							:permissions="permissions"
 							:role="role.id"
+							:initial-search="filters.permission_search"
 							class="w-full xl:flex-1"
 							@close-form="togglePermissionsForm()"
 						>
