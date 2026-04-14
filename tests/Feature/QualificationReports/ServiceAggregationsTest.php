@@ -103,4 +103,50 @@ class ServiceAggregationsTest extends TestCase
 
         $this->assertArrayNotHasKey('Ended Unit', $result);
     }
+
+    public function test_top_institutions_normalizes_casing_and_trimming(): void
+    {
+        Qualification::factory()->approved()->create(['institution' => 'University of Ghana']);
+        Qualification::factory()->approved()->create(['institution' => ' university of ghana ']);
+        Qualification::factory()->approved()->create(['institution' => 'KNUST']);
+
+        $result = app(QualificationReportService::class)->topInstitutions(new QualificationReportFilter, 10);
+
+        $byName = collect($result)->keyBy('name');
+        $uog = $byName->first(fn ($r) => stripos($r['name'], 'University of Ghana') !== false);
+        $this->assertNotNull($uog, 'Expected a University of Ghana entry');
+        $this->assertSame(2, $uog['count'], 'Casing/trim variants should collapse to one group');
+    }
+
+    public function test_top_institutions_respects_limit(): void
+    {
+        foreach (['A', 'B', 'C', 'D', 'E'] as $name) {
+            Qualification::factory()->approved()->create(['institution' => $name]);
+        }
+        $result = app(QualificationReportService::class)->topInstitutions(new QualificationReportFilter, 3);
+        $this->assertCount(3, $result);
+    }
+
+    public function test_trend_by_year_returns_year_counts(): void
+    {
+        Qualification::factory()->approved()->count(3)->create(['year' => '2018']);
+        Qualification::factory()->approved()->count(2)->create(['year' => '2020']);
+
+        $result = app(QualificationReportService::class)->trendByYear(new QualificationReportFilter);
+
+        $this->assertSame(3, $result[2018] ?? 0);
+        $this->assertSame(2, $result[2020] ?? 0);
+    }
+
+    public function test_trend_by_year_skips_non_numeric_years(): void
+    {
+        Qualification::factory()->approved()->create(['year' => '']);
+        Qualification::factory()->approved()->create(['year' => null]);
+        Qualification::factory()->approved()->create(['year' => '2019']);
+
+        $result = app(QualificationReportService::class)->trendByYear(new QualificationReportFilter);
+
+        $this->assertSame(1, $result[2019] ?? 0);
+        $this->assertArrayNotHasKey(0, $result);
+    }
 }

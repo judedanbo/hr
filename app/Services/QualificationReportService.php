@@ -133,4 +133,63 @@ class QualificationReportService
         // TODO(later-tasks): unit/department/gender/job_category relationship filters.
         return $query;
     }
+
+    /**
+     * @return array<int, array{name: string, count: int}>
+     */
+    public function topInstitutions(QualificationReportFilter $filter, int $limit = 10): array
+    {
+        $rows = $this->applyFilter(Qualification::query(), $filter)
+            ->approved()
+            ->whereNotNull('institution')
+            ->where('institution', '!=', '')
+            ->get(['institution']);
+
+        $groups = [];
+        foreach ($rows as $row) {
+            $key = mb_strtolower(trim($row->institution));
+            if ($key === '') {
+                continue;
+            }
+            if (! isset($groups[$key])) {
+                $groups[$key] = ['count' => 0, 'labels' => []];
+            }
+            $groups[$key]['count']++;
+            $groups[$key]['labels'][$row->institution] = ($groups[$key]['labels'][$row->institution] ?? 0) + 1;
+        }
+
+        $out = [];
+        foreach ($groups as $data) {
+            arsort($data['labels']);
+            $displayLabel = array_key_first($data['labels']);
+            $out[] = ['name' => $displayLabel, 'count' => $data['count']];
+        }
+        usort($out, fn ($a, $b) => $b['count'] <=> $a['count']);
+
+        return array_slice($out, 0, $limit);
+    }
+
+    /**
+     * @return array<int, int> [2018 => 3, 2020 => 2]
+     */
+    public function trendByYear(QualificationReportFilter $filter): array
+    {
+        $rows = $this->applyFilter(Qualification::query(), $filter)
+            ->approved()
+            ->whereNotNull('year')
+            ->where('year', '!=', '')
+            ->selectRaw('year, COUNT(*) AS n')
+            ->groupBy('year')
+            ->get();
+
+        $out = [];
+        foreach ($rows as $row) {
+            if (is_numeric($row->year)) {
+                $out[(int) $row->year] = (int) $row->n;
+            }
+        }
+        ksort($out);
+
+        return $out;
+    }
 }
