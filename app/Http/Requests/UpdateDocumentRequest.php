@@ -2,16 +2,17 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\DocumentStatusEnum;
+use App\Enums\DocumentTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateDocumentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,19 +22,15 @@ class UpdateDocumentRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'document_type' => 'required|string|max:3',
-            'document_title' => 'required|string|max:100',
-            'document_number' => 'required|string|max:20',
-            'document_file' => 'nullable|string|max:100',
-            'file_name' => 'nullable|file|max:2048|mimes:pdf,png,jpg,jpeg',
-            'document_url' => 'nullable|string|max:255',
-            'document_status' => 'required|string|max:3',
+            'document_type' => ['sometimes', 'required', new Enum(DocumentTypeEnum::class)],
+            'document_title' => 'sometimes|required|string|max:100',
+            'document_number' => 'nullable|string|max:20',
+            'file_name' => 'nullable|file|max:10240|mimes:pdf,png,jpg,jpeg,doc,docx',
+            'document_status' => ['sometimes', new Enum(DocumentStatusEnum::class)],
             'document_remarks' => 'nullable|string|max:255',
-            'documentable_type' => 'required|string|max:255',
-            'documentable_id' => 'required|integer',
         ];
     }
 }

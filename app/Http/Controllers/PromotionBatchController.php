@@ -24,6 +24,7 @@ class PromotionBatchController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted access to view all staff promotions');
+
             return redirect()->back()->with('error', 'You are not authorized to view this page');
         }
         activity()
@@ -51,7 +52,7 @@ class PromotionBatchController extends Controller
                 ->whereColumn('job_categories.id', 'jobs.job_category_id'))
             ->paginate()
             ->withQueryString()
-            ->through(fn($promotion) => [
+            ->through(fn ($promotion) => [
                 'job_id' => $promotion->id,
                 'job_name' => $promotion->name,
                 'april' => $promotion->staff_to_promote_april_count,
@@ -82,6 +83,7 @@ class PromotionBatchController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted access to view staff promotion');
+
             return redirect()->back()->with('error', 'You are not authorized to view this page');
         }
         activity()
@@ -136,13 +138,13 @@ class PromotionBatchController extends Controller
             ->with(['person', 'units', 'ranks'])
             ->paginate()
             ->withQueryString()
-            ->through(fn($staff) => [
+            ->through(fn ($staff) => [
                 'staff_id' => $staff->id,
                 'staff_number' => $staff->staff_number,
                 'file_number' => $staff->file_number,
                 'staff_name' => $staff->person->full_name,
-                'retirement_date' => $staff->person->date_of_birth->addYears(60)->format('d M, Y'),
-                'retirement_date_diff' => $staff->person->date_of_birth->addYears(60)->diffForHumans(),
+                'retirement_date' => $staff->retirement_date_formatted,
+                'retirement_date_diff' => $staff->retirement_date_diff,
                 'institution' => $staff->institution->name,
                 'unit' => $staff->units->count() > 0 ? [
                     'id' => $staff->units->first()->id,

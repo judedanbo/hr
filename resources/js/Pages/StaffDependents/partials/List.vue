@@ -1,8 +1,9 @@
 <script setup>
 import SubMenu from "@/Components/SubMenu.vue";
 import Avatar from "@/Pages/Person/partials/Avatar.vue";
+import ManageDependentContactsModal from "./ManageDependentContactsModal.vue";
 import { Link, usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
@@ -13,6 +14,10 @@ defineProps({
 	dependents: { type: Array, default: () => [] },
 });
 
+// Contacts modal state
+const showContactsModal = ref(false);
+const selectedDependent = ref(null);
+
 const subMenuClicked = (action, model) => {
 	if (action == "Edit") {
 		emit("editDependent", model);
@@ -20,16 +25,24 @@ const subMenuClicked = (action, model) => {
 	if (action == "Delete") {
 		emit("deleteDependent", model);
 	}
+	if (action == "Contacts") {
+		selectedDependent.value = model;
+		showContactsModal.value = true;
+	}
+};
+
+const closeContactsModal = () => {
+	showContactsModal.value = false;
+	selectedDependent.value = null;
 };
 </script>
 <template>
 	<div class="-mx-4 mt-8 flow-root sm:mx-0 w-full px-4">
 		<table v-if="dependents.length > 0" class="min-w-full">
 			<colgroup>
-				<col class="w-full" />
+				<col class="w-3/6" />
 				<col class="sm:w-1/6" />
-				<col class="sm:w-1/6" />
-				<col class="sm:w-1/6" />
+				<col class="sm:w-1/3" />
 			</colgroup>
 			<thead
 				class="border-b border-gray-300 dark:border-gray-200/80 text-gray-900 dark:text-gray-50"
@@ -46,6 +59,12 @@ const subMenuClicked = (action, model) => {
 						class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
 					>
 						Relation
+					</th>
+					<th
+						scope="col"
+						class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:table-cell"
+					>
+						Contacts
 					</th>
 					<th><div class="sr-only">Action</div></th>
 				</tr>
@@ -76,7 +95,7 @@ const subMenuClicked = (action, model) => {
 									<span v-if="dependent.date_of_birth !== null">
 										&bull;
 										{{ dependent.date_of_birth }}
-										({{ dependent.dob_distance }})
+										({{ dependent.age }})
 									</span>
 								</div>
 							</div>
@@ -96,6 +115,28 @@ const subMenuClicked = (action, model) => {
 					>
 						{{ dependent.relation }}
 					</td>
+					<td
+						class="hidden px-3 py-2 text-left text-sm text-gray-500 dark:text-gray-50 sm:table-cell"
+					>
+						<div
+							v-if="dependent.contacts && dependent.contacts.length > 0"
+							class="space-y-1"
+						>
+							<div
+								v-for="contact in dependent.contacts"
+								:key="contact.id"
+								class="text-xs"
+							>
+								<span class="font-medium text-gray-700 dark:text-gray-300">
+									{{ contact.type }}:
+								</span>
+								<span>{{ contact.contact }}</span>
+							</div>
+						</div>
+						<span v-else class="text-xs text-gray-400 dark:text-gray-500">
+							No contacts
+						</span>
+					</td>
 					<td class="flex justify-end">
 						<SubMenu
 							v-if="
@@ -103,8 +144,9 @@ const subMenuClicked = (action, model) => {
 								permissions?.includes('delete staff')
 							"
 							:can-edit="permissions?.includes('update staff')"
+							:can-contacts="permissions?.includes('update staff')"
 							:can-delete="permissions?.includes('delete staff')"
-							:items="['Edit', 'Delete']"
+							:items="['Edit', 'Contacts', 'Delete']"
 							@item-clicked="(action) => subMenuClicked(action, dependent)"
 						/>
 					</td>
@@ -117,5 +159,15 @@ const subMenuClicked = (action, model) => {
 		>
 			No dependents found.
 		</div>
+
+		<!-- Contacts Modal -->
+		<ManageDependentContactsModal
+			v-if="selectedDependent"
+			:is-visible="showContactsModal"
+			:person-id="selectedDependent.person_id"
+			:contacts="selectedDependent.contacts || []"
+			:dependent-name="selectedDependent.name"
+			@close-modal="closeContactsModal"
+		/>
 	</div>
 </template>

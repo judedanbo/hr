@@ -9,7 +9,12 @@ import { usePage } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import DocumentPreview from "./partials/DocumentPreview.vue";
 
-const emit = defineEmits(["editQualification", "deleteQualification"]);
+const emit = defineEmits([
+	"editQualification",
+	"deleteQualification",
+	"approveQualification",
+	"attachDocument",
+]);
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
@@ -26,17 +31,47 @@ defineProps({
 		type: Boolean,
 		default: false,
 	},
+	canApprove: {
+		type: Boolean,
+		default: false,
+	},
+	canAddStaffQualification: {
+		type: Boolean,
+		default: false,
+	},
+	canAttach: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const showPreviewDocumentModal = ref(false);
 const togglePreviewDocumentModal = useToggle(showPreviewDocumentModal);
 
-const documentUrl = ref("");
-const documentFileType = ref("");
-const previewDocument = (document) => {
+// Document preview state
+const selectedDocuments = ref([]);
+const currentDocumentIndex = ref(0);
+
+const openDocumentPreview = (qualification) => {
+	selectedDocuments.value = qualification.documents || [];
+	currentDocumentIndex.value = 0;
 	togglePreviewDocumentModal();
-	documentUrl.value = document.file_name;
-	documentFileType.value = document.file_type;
+};
+
+const currentDocument = computed(() =>
+	selectedDocuments.value[currentDocumentIndex.value] || null,
+);
+
+const nextDocument = () => {
+	if (currentDocumentIndex.value < selectedDocuments.value.length - 1) {
+		currentDocumentIndex.value++;
+	}
+};
+
+const prevDocument = () => {
+	if (currentDocumentIndex.value > 0) {
+		currentDocumentIndex.value--;
+	}
 };
 
 const deleteDocument = (qualification) => {
@@ -64,6 +99,12 @@ const subMenuClicked = (action, model) => {
 	if (action == "Delete") {
 		emit("deleteQualification", model);
 	}
+	if (action == "Approve") {
+		emit("approveQualification", model);
+	}
+	if (action == "Attach") {
+		emit("attachDocument", model);
+	}
 };
 </script>
 <template>
@@ -73,9 +114,9 @@ const subMenuClicked = (action, model) => {
 			<thead
 				class="border-b border-gray-300 dark:border-gray-200/50 text-gray-900 dark:text-gray-50"
 			>
-			<tr class="sm:hidden">
-				<tr>Details</tr>
-			</tr>
+				<tr class="sm:hidden">
+					<th>Details</th>
+				</tr>
 				<tr class="hidden sm:table-row">
 					<th
 						scope="col"
@@ -110,6 +151,12 @@ const subMenuClicked = (action, model) => {
 						class="px-3 py-3.5 text-sm text-center font-semibold text-gray-900 dark:text-gray-50"
 					>
 						Year
+					</th>
+					<th
+						scope="col"
+						class="px-3 py-3.5 text-sm font-semibold text-gray-900 dark:text-gray-50"
+					>
+						Status
 					</th>
 					<!-- <th
 						scope="col"
@@ -157,6 +204,17 @@ const subMenuClicked = (action, model) => {
 					>
 						{{ qualification.year }}
 					</td>
+					<td class="px-1 py-5 text-sm" :class="qualification.status_color">
+						<div class="flex items-center gap-1">
+							{{ qualification.status }}
+							<PaperClipIcon
+								v-if="qualification.documents?.length > 0"
+								class="w-4 h-4 text-gray-400 dark:text-gray-200 cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+								title="Click to preview documents"
+								@click="openDocumentPreview(qualification)"
+							/>
+						</div>
+					</td>
 					<!-- <td class="w-8"> -->
 					<!-- {{ qualification.documents[0].document_title }} -->
 					<!-- <ToolTip
@@ -174,10 +232,19 @@ const subMenuClicked = (action, model) => {
 					<!-- </td> -->
 					<td class="flex justify-end">
 						<SubMenu
-							v-if="canEdit || canDelete"
-							:can-edit="canEdit"
+							v-if="
+								canEdit || canDelete || canApprove || canAddStaffQualification
+							"
+							:can-edit="canEdit && qualification.status === 'Pending'"
 							:can-delete="canDelete"
-							:items="['Edit', 'Delete']"
+							:can-approve="canApprove && qualification.status === 'Pending'"
+							:can-attach="canEdit"
+							:items="
+								(canApprove || canAddStaffQualification) &&
+								qualification.status === 'Pending'
+									? ['Approve', 'Edit', 'Attach', 'Delete']
+									: ['Edit', 'Attach', 'Delete']
+							"
 							@item-clicked="(action) => subMenuClicked(action, qualification)"
 						/>
 					</td>
@@ -186,13 +253,26 @@ const subMenuClicked = (action, model) => {
 					<td
 						v-for="qualification in qualifications"
 						class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-0"
-					><div>
-						{{ qualification.institution }}
-						{{ qualification.level }}
-						{{ qualification.course }}
-						{{ qualification.qualification }}
-						{{ qualification.year }}
-					</div>
+					>
+						<div>
+							{{ qualification.institution }}
+							{{ qualification.level }}
+							{{ qualification.course }}
+							{{ qualification.qualification }}
+							{{ qualification.year }}
+							<span
+								class="inline-flex items-center gap-1"
+								:class="qualification.status_color"
+							>
+								{{ qualification.status }}
+								<PaperClipIcon
+									v-if="qualification.documents?.length > 0"
+									class="w-4 h-4 text-gray-400 dark:text-gray-200 cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+									title="Click to preview documents"
+									@click="openDocumentPreview(qualification)"
+								/>
+							</span>
+						</div>
 					</td>
 					<!-- <td
 						v-if="qualifications.length > 0"
@@ -211,6 +291,15 @@ const subMenuClicked = (action, model) => {
 		</div>
 	</div>
 	<Modal :show="showPreviewDocumentModal" @close="togglePreviewDocumentModal">
-		<DocumentPreview :url="documentUrl" :type="documentFileType" />
+		<DocumentPreview
+			v-if="currentDocument"
+			:url="'/storage/qualifications/' + currentDocument.file_name"
+			:type="currentDocument.file_type"
+			:title="currentDocument.document_title"
+			:current-index="currentDocumentIndex"
+			:total-count="selectedDocuments.length"
+			@prev="prevDocument"
+			@next="nextDocument"
+		/>
 	</Modal>
 </template>

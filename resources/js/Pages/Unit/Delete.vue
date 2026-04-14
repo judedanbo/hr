@@ -1,5 +1,5 @@
 <script setup>
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 const emit = defineEmits(["cancelDelete", "institutionDeleted", "UnitDeleted"]);
@@ -8,11 +8,18 @@ let props = defineProps({
 	selectedModel: Object,
 });
 
+const page = usePage();
+
 const deleteUnit = (unit) => {
 	router.delete(route("unit.delete", { unit: unit }), {
-		PreserveScroll: true,
+		preserveScroll: true,
 		onSuccess: () => {
-			emit("UnitDeleted");
+			// Check if there's a flash error (deletion was prevented)
+			if (page.props.flash?.error) {
+				emit("cancelDelete");
+			} else {
+				emit("UnitDeleted");
+			}
 		},
 	});
 };

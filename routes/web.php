@@ -10,10 +10,14 @@ use App\Http\Controllers\AgeController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanksController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactTypeController;
+use App\Http\Controllers\DataIntegrityController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GenderController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
@@ -37,6 +41,7 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PromotionExportController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationDocumentController;
+use App\Http\Controllers\QualificationLevelController;
 use App\Http\Controllers\RankStaffController;
 use App\Http\Controllers\RankStaffStatsController;
 use App\Http\Controllers\RegionController;
@@ -47,10 +52,12 @@ use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffListController;
 use App\Http\Controllers\StaffReportController;
+use App\Http\Controllers\StaffSearchOptionsController;
 use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitOfficeController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
 use App\Models\Dependent;
@@ -82,37 +89,35 @@ Route::controller(ChangePasswordController::class)->middleware(['auth'])->group(
 // Route::get('/change-password', [ChangePasswordController::class, 'index'])->middleware(['auth'])->name('change-password');
 
 Route::controller(UserController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/user', 'index')->name('user.index');
-    Route::get('/users-list', 'list')->name('users.list');
-    Route::get('/user/{user}', 'show')->name('user.show');
-    Route::post('/user/', 'store')->name('user.store');
-    Route::patch('/user/{user}', 'update')->name('user.update');
-    Route::delete('/user/{user}', 'delete')->name('user.delete');
-    Route::post('/user/{user}', 'resetPassword')->name('user.reset-password');
-    Route::get('/user/{user}/roles', 'roles')->name('user.roles');
-    Route::get('/user/{user}/permissions', 'permissions')->name('user.permissions');
-    Route::get('/user/{user}/roles-permissions', 'rolesPermissions')->name('user.roles-permissions');
+    Route::get('/user', 'index')->middleware('can:view all users')->name('user.index');
+    Route::get('/users-list', 'list')->middleware('can:view all users')->name('users.list');
+    Route::get('/user/{user}', 'show')->middleware('can:view user')->name('user.show');
+    Route::post('/user/', 'store')->middleware('can:create user')->name('user.store');
+    Route::patch('/user/{user}', 'update')->middleware('can:update user')->name('user.update');
+    Route::delete('/user/{user}', 'delete')->middleware('can:delete user')->name('user.delete');
+    Route::post('/user/{user}', 'resetPassword')->middleware('can:reset user password')->name('user.reset-password');
+    Route::get('/user/{user}/roles', 'roles')->middleware('can:view user roles')->name('user.roles');
+    Route::get('/user/{user}/permissions', 'permissions')->middleware('can:view user permissions')->name('user.permissions');
+    Route::get('/user/{user}/roles-permissions', 'rolesPermissions')->middleware('can:view user roles')->name('user.roles-permissions');
 });
 Route::controller(RoleController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/role', 'index')->name('role.index');
-    Route::get('/roles-list', 'list')->name('roles.list');
-    Route::get('/role/{role}', 'show')->name('role.show');
-    // Route::patch('/user/{user}', 'update')->name('user.update');
-    // Route::delete('/user', 'delete')->name('user.delete');
-    Route::post('/user/{user}/add-role', 'addRole')->name('user.add.roles');
-    Route::patch('/user/{user}/revoke-role', 'revokeRole')->name('user.revoke.roles');
-    Route::post('/role/{role}/add-users', 'addUsers')->name('role.add.users');
-    Route::patch('/role/{role}/remove-user', 'removeUser')->name('role.remove.user');
+    Route::get('/role', 'index')->middleware('can:view roles')->name('role.index');
+    Route::get('/roles-list', 'list')->middleware('can:view roles')->name('roles.list');
+    Route::get('/role/{role}', 'show')->middleware('can:view roles')->name('role.show');
+    Route::post('/user/{user}/add-role', 'addRole')->middleware('can:update user roles')->name('user.add.roles');
+    Route::patch('/user/{user}/revoke-role', 'revokeRole')->middleware('can:update user roles')->name('user.revoke.roles');
+    Route::post('/role/{role}/add-users', 'addUsers')->middleware('can:update role')->name('role.add.users');
+    Route::patch('/role/{role}/remove-user', 'removeUser')->middleware('can:update role')->name('role.remove.user');
 });
 Route::controller(PermissionController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/permission', 'index')->name('permission.index');
-    Route::get('/permission-list', 'list')->name('permission.list');
-    Route::get('/permission/{permission}', 'show')->name('permission.show');
-    Route::post('/permission', 'store')->name('permission.store');
-    Route::put('/permission/{permission}', 'update')->name('permission.update');
-    Route::delete('/permission/{permission}', 'destroy')->name('permission.destroy');
-    Route::post('/user/{user}/add-permission', 'addPermission')->name('user.add.permissions');
-    Route::patch('/user/{user}/revoke-permission', 'revokePermission')->name('user.revoke.permissions');
+    Route::get('/permission', 'index')->middleware('can:view permissions')->name('permission.index');
+    Route::get('/permission-list', 'list')->middleware('can:view permissions')->name('permission.list');
+    Route::get('/permission/{permission}', 'show')->middleware('can:view permissions')->name('permission.show');
+    Route::post('/permission', 'store')->middleware('can:create permission')->name('permission.store');
+    Route::put('/permission/{permission}', 'update')->middleware('can:update permission')->name('permission.update');
+    Route::delete('/permission/{permission}', 'destroy')->middleware('can:delete permission')->name('permission.destroy');
+    Route::post('/user/{user}/add-permission', 'addPermission')->middleware('can:update user permissions')->name('user.add.permissions');
+    Route::patch('/user/{user}/revoke-permission', 'revokePermission')->middleware('can:update user permissions')->name('user.revoke.permissions');
 });
 
 Route::get('/dashboard', function () {
@@ -170,6 +175,7 @@ Route::controller(InstitutionController::class)->middleware(['auth', 'password_c
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/create', 'create')->name('institution.create');
     Route::get('/institution/{institution}', 'show')->name('institution.show');
+    Route::get('/institution/{institution}/staff-filter', 'staffFilter')->name('institution.staff-filter');
     Route::post('/institution', 'store')->name('institution.store');
     Route::patch('/institution/{institution}', 'update')->name('institution.update');
     Route::delete('/institution/{institution}', 'delete')->name('institution.delete');
@@ -216,14 +222,30 @@ Route::get('/institution/{institution}/staff-types', function (Institution $inst
 })->name('institution.staff-types');
 
 Route::controller(UnitController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/unit', 'index')->name('unit.index');
-    Route::post('/unit', 'store')->name('unit.store');
-    Route::get('/unit/{unit}', 'show')->name('unit.show');
-    Route::delete('/unit/{unit}', 'delete')->name('unit.delete');
-    Route::patch('/unit/{unit}', 'update')->name('unit.update');
-    Route::get('/unit/{unit}/details', 'details')->name('unit.details');
-    Route::post('/unit/{unit}/details', 'addSub')->name('unit.add-sub');
-    Route::get('/unit/{unit}/download', 'download')->name('export.unit.staff');
+    Route::get('/unit', 'index')->middleware('can:view all units')->name('unit.index');
+    Route::post('/unit', 'store')->middleware('can:create unit')->name('unit.store');
+    Route::get('/unit/{unit}', 'show')->middleware('can:view unit')->name('unit.show');
+    Route::delete('/unit/{unit}', 'delete')->middleware('can:delete unit')->name('unit.delete');
+    Route::patch('/unit/{unit}', 'update')->middleware('can:edit unit')->name('unit.update');
+    Route::get('/unit/{unit}/details', 'details')->middleware('can:view unit')->name('unit.details');
+    Route::post('/unit/{unit}/details', 'addSub')->middleware('can:create unit')->name('unit.add-sub');
+    Route::get('/unit/{unit}/download', 'download')->middleware('can:download unit staff')->name('export.unit.staff');
+});
+
+// Unit Office Management
+Route::controller(UnitOfficeController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::post('/unit/{unit}/office', 'store')->middleware('can:edit unit')->name('unit.office.store');
+    Route::post('/unit/{unit}/office/create', 'storeNew')->middleware('can:edit unit')->name('unit.office.create');
+    Route::delete('/unit/{unit}/office', 'destroy')->middleware('can:edit unit')->name('unit.office.destroy');
+    Route::get('/unit/{unit}/office/history', 'history')->middleware('can:view unit')->name('unit.office.history');
+});
+
+// Office dropdown data endpoints
+Route::middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/offices-list', [UnitOfficeController::class, 'availableOffices'])->name('offices.list');
+    Route::get('/districts-list', [UnitOfficeController::class, 'districtsList'])->name('districts.list');
+    Route::get('/regions-list', [UnitOfficeController::class, 'regionsList'])->name('regions.list');
+    Route::get('/office-types', [UnitOfficeController::class, 'officeTypes'])->name('office-types.list');
 });
 
 Route::get('/unit-list', function () {
@@ -246,45 +268,41 @@ Route::controller(InstitutionStatusController::class)->middleware(['auth', 'pass
 });
 
 // staff
-Route::controller(InstitutionPersonController::class)->middleware(['auth', 'password_changed', 'password_changed'])->group(function () {
-    Route::get('/staff', 'index')->name('staff.index');
-    Route::get('/staff/create', 'create')->name('staff.create');
-    Route::post('/staff', 'store')->name('staff.store');
-    Route::get('/staff/{staff}', 'show')->name('staff.show');
-    Route::patch('/staff/{staff}', 'update')->name('staff.update');
-    // Route::post('/staff/{staff}/promote', 'promote')->name('staff.promote');
-    // Route::post('/staff/{staff}/promote', 'editPromote')->name('staff.promote.edit');
-    Route::get('/staff/{staff}/edit', 'edit')->name('staff.edit');
-    Route::get('/staff/{staff}/promotions', 'promotions')->name('staff.promotion-history');
-    // Route::post('/staff/{staff}/transfer', 'transfer')->name('staff.transfer');
-    Route::post('/staff/{staff}/dependent', 'createDependent')->name('staff.dependent.create');
-    Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->name('staff.dependent.delete');
-    Route::post('/staff/{staff}/write-note', 'writeNote')->name('staff.write-note');
-    Route::post('/staff/{staff}/position', 'assignPosition')->name('staff.position.store');
-    Route::patch('/staff/{staff}/position', 'updatePosition')->name('staff.position.update');
-    Route::delete('/staff/{staff}/position', 'deletePosition')->withTrashed()->name('staff.position.delete');
+Route::controller(InstitutionPersonController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/staff', 'index')->middleware('can:view all staff')->name('staff.index');
+    Route::get('/staff/create', 'create')->middleware('can:create staff')->name('staff.create');
+    Route::post('/staff', 'store')->middleware('can:create staff')->name('staff.store');
+    Route::get('/staff/{staff}', 'show')->middleware('can:view staff')->name('staff.show');
+    Route::patch('/staff/{staff}', 'update')->middleware('can:update staff')->name('staff.update');
+    Route::get('/staff/{staff}/edit', 'edit')->middleware('can:update staff')->name('staff.edit');
+    Route::get('/staff/{staff}/promotions', 'promotions')->middleware('can:view staff promotion')->name('staff.promotion-history');
+    Route::post('/staff/{staff}/dependent', 'createDependent')->middleware('can:update staff')->name('staff.dependent.create');
+    Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->middleware('can:update staff')->name('staff.dependent.delete');
+    Route::post('/staff/{staff}/write-note', 'writeNote')->middleware('can:create staff notes')->name('staff.write-note');
+    Route::post('/staff/{staff}/position', 'assignPosition')->middleware('can:create staff position')->name('staff.position.store');
+    Route::patch('/staff/{staff}/position', 'updatePosition')->middleware('can:update staff position')->name('staff.position.update');
+    Route::delete('/staff/{staff}/position', 'deletePosition')->withTrashed()->middleware('can:delete staff position')->name('staff.position.delete');
 });
 
 // separation
 Route::controller(SeparationController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/separation', 'index')->name('separation.index');
-    Route::get('/separation/{staff}', 'show')->name('separation.show');
-    // Route::delete('/staff/{staff}/separation/{separation}', 'delete')->name('staff.separation.delete');
+    Route::get('/separation', 'index')->middleware('can:view separated staff')->name('separation.index');
+    Route::get('/separation/{staff}', 'show')->middleware('can:view separated staff')->name('separation.show');
 });
 //  promote
 Route::controller(PromoteStaffController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::post('/staff/{staff}/promote', 'store')->name('staff.promote.store');
-    Route::patch('/staff/{staff}/promote/{promotion}', 'update')->name('staff.promote.update');
-    Route::delete('/staff/{staff}/promote/{job}', 'delete')->name('staff.promote.delete');
+    Route::post('/staff/{staff}/promote', 'store')->middleware('can:create staff promotion')->name('staff.promote.store');
+    Route::patch('/staff/{staff}/promote/{promotion}', 'update')->middleware('can:update staff promotion')->name('staff.promote.update');
+    Route::delete('/staff/{staff}/promote/{job}', 'delete')->middleware('can:delete staff promotion')->name('staff.promote.delete');
 });
-Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth', 'password_changed'])->name('rank-staff.promote-all');
+Route::post('/staff/promote-all', [PromoteAllStaffController::class, 'save'])->middleware(['auth', 'password_changed', 'can:create staff promotion'])->name('rank-staff.promote-all');
 
 // transfer
 Route::controller(TransferController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::post('/staff/{staff}/transfer', 'store')->name('staff.transfer.store');
-    Route::patch('/staff/{staff}/unit/{unit}', 'update')->name('staff.transfer.update');
-    Route::delete('/staff/{staff}/transfer/{unit}', 'delete')->name('staff.transfer.delete');
-    Route::patch('/staff/{staff}/transfer/{unit}', 'approve')->name('staff.transfer.approve');
+    Route::post('/staff/{staff}/transfer', 'store')->middleware('can:create staff transfers')->name('staff.transfer.store');
+    Route::patch('/staff/{staff}/unit/{unit}', 'update')->middleware('can:update staff transfers')->name('staff.transfer.update');
+    Route::delete('/staff/{staff}/transfer/{unit}', 'delete')->middleware('can:delete staff transfers')->name('staff.transfer.delete');
+    Route::patch('/staff/{staff}/transfer/{unit}', 'approve')->middleware('can:update staff transfers')->name('staff.transfer.approve');
 });
 
 // dependent
@@ -300,13 +318,13 @@ Route::controller(DependentController::class)->middleware(['auth', 'password_cha
 Route::post('staff/{staff}/profile-image', [PersonAvatarController::class, 'store'])->middleware(['auth', 'password_changed'])->name('staff.profile-image.store');
 
 Route::controller(JobCategoryController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/job-category', 'index')->name('job-category.index');
-    Route::get('/job-category/summary', 'summary')->name('job-category.summary');
-    Route::get('/job-category/create', 'create')->name('job-category.create');
-    Route::post('/job-category', 'store')->name('job-category.store');
-    Route::get('/job-category/{jobCategory}', 'show')->name('job-category.show');
-    Route::patch('/job-category/{jobCategory}', 'update')->name('job-category.update');
-    Route::delete('/job-category/{jobCategory}', 'delete')->name('job-category.delete');
+    Route::get('/job-category', 'index')->middleware('can:view all job categories')->name('job-category.index');
+    Route::get('/job-category/summary', 'summary')->middleware('can:view all job categories')->name('job-category.summary');
+    Route::get('/job-category/create', 'create')->middleware('can:create job category')->name('job-category.create');
+    Route::post('/job-category', 'store')->middleware('can:create job category')->name('job-category.store');
+    Route::get('/job-category/{jobCategory}', 'show')->middleware('can:view job category')->name('job-category.show');
+    Route::patch('/job-category/{jobCategory}', 'update')->middleware('can:edit job category')->name('job-category.update');
+    Route::delete('/job-category/{jobCategory}', 'delete')->middleware('can:delete job category')->name('job-category.delete');
 });
 
 Route::controller(CategoryRanksController::class)->middleware(['auth', 'password_changed'])->group(function () {
@@ -322,16 +340,16 @@ Route::get('/rank/{rank}/export/promotion-list', [RankStaffController::class, 'e
 Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank-all');
 
 Route::controller(JobController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/rank', 'index')->name('job.index');
-    Route::get('/rank-summary', 'summary')->name('job.summary');
-    Route::get('/rank/create', 'create')->name('job.create');
-    Route::get('/rank/{job}', 'show')->name('job.show');
-    Route::patch('/rank/{job}', 'update')->name('job.update');
-    Route::delete('/rank/{job}', 'delete')->name('job.delete');
-    Route::post('/rank', 'store')->name('job.store');
-    Route::get('rank/{job}/stats', 'stats')->name('job.stats');
-    Route::get('rank/{job}/unitStats', 'unitStats')->name('job.unit-stats');
-    Route::get('rank/{job}/age-distribution', 'staffAgeDistribution')->name('job.age-distribution');
+    Route::get('/rank', 'index')->middleware('can:view all jobs')->name('job.index');
+    Route::get('/rank-summary', 'summary')->middleware('can:view all jobs')->name('job.summary');
+    Route::get('/rank/create', 'create')->middleware('can:create job')->name('job.create');
+    Route::get('/rank/{job}', 'show')->middleware('can:view job')->name('job.show');
+    Route::patch('/rank/{job}', 'update')->middleware('can:edit job')->name('job.update');
+    Route::delete('/rank/{job}', 'delete')->middleware('can:delete job')->name('job.delete');
+    Route::post('/rank', 'store')->middleware('can:create job')->name('job.store');
+    Route::get('rank/{job}/stats', 'stats')->middleware('can:view job')->name('job.stats');
+    Route::get('rank/{job}/unitStats', 'unitStats')->middleware('can:view job')->name('job.unit-stats');
+    Route::get('rank/{job}/age-distribution', 'staffAgeDistribution')->middleware('can:view job')->name('job.age-distribution');
 });
 
 Route::get('/rank/{rank}/category', function (Job $rank) {
@@ -441,10 +459,12 @@ Route::controller(PromotionBatchController::class)->middleware(['auth', 'passwor
 });
 
 Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/qualification', 'index')->name('qualification.index');
-    Route::post('/qualification', 'store')->name('qualification.store');
-    Route::patch('/qualification/{qualification}', 'update')->name('qualification.update');
-    Route::delete('/qualification/{qualification}', 'delete')->name('qualification.delete');
+    Route::get('/qualification', 'index')->middleware('can:view staff qualification')->name('qualification.index');
+    Route::post('/qualification', 'store')->middleware('can:create staff qualification')->name('qualification.store');
+    Route::patch('/qualification/{qualification}', 'update')->middleware('can:edit staff qualification')->name('qualification.update');
+    Route::delete('/qualification/{qualification}', 'delete')->middleware('can:edit staff qualification')->name('qualification.delete');
+    Route::patch('/qualification/{qualification}/approve', 'approve')->middleware('can:approve staff qualification')->name('qualification.approve');
+    Route::patch('/qualification/{qualification}/reject', 'reject')->middleware('can:approve staff qualification')->name('qualification.reject');
 });
 
 Route::get('/contact-type', [ContactTypeController::class, 'index'])->middleware(['auth', 'password_changed'])->name('contact-type.index');
@@ -452,6 +472,7 @@ Route::get('/identities', [IdentityController::class, 'index'])->middleware(['au
 
 Route::get('/marital-status', [MaritalStatusController::class, 'index'])->middleware(['auth', 'password_changed'])->name('marital-status.index');
 Route::get('/gender', [GenderController::class, 'index'])->middleware(['auth', 'password_changed'])->name('gender.index');
+Route::get('/qualification-level', [QualificationLevelController::class, 'index'])->middleware(['auth', 'password_changed'])->name('qualification-level.index');
 
 Route::get('/nationality', [NationalityController::class, 'index'])->middleware(['auth', 'password_changed'])->name('nationality.index');
 
@@ -468,22 +489,21 @@ Route::get('/country', function () {
 })->middleware(['auth', 'password_changed'])->name('country.index');
 
 Route::controller(StaffStatusController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/staff-status', 'index')->name('staff-status.index');
-    Route::get('/staff-status/create', 'create')->name('staff-status.create');
-    Route::post('/staff-status', 'store')->name('staff-status.store');
-    Route::get('/staff-status/{staffStatus}', 'show')->name('staff-status.show');
-    Route::patch('/staff-status/{staffStatus}', 'update')->name('staff-status.update');
-    Route::delete('/staff-status/{staffStatus}', 'delete')->name('staff-status.delete');
+    Route::get('/staff-status', 'index')->middleware('can:view staff status')->name('staff-status.index');
+    Route::get('/staff-status/create', 'create')->middleware('can:create staff status')->name('staff-status.create');
+    Route::post('/staff-status', 'store')->middleware('can:create staff status')->name('staff-status.store');
+    Route::get('/staff-status/{staffStatus}', 'show')->middleware('can:view staff status')->name('staff-status.show');
+    Route::patch('/staff-status/{staffStatus}', 'update')->middleware('can:edit staff status')->name('staff-status.update');
+    Route::delete('/staff-status/{staffStatus}', 'delete')->middleware('can:delete staff status')->name('staff-status.delete');
 });
-// Route::post('/staff-status.save', [StaffStatusController::class, 'store'])->middleware(['auth','password_changed'])->name('staff-status.save');
 
 Route::controller(StaffTypeController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/staff-type', 'index')->name('staff-type.index');
-    Route::get('/staff-type/create', 'create')->name('staff-type.create');
-    Route::post('/staff-type', 'store')->name('staff-type.store');
-    Route::get('/staff-type/{staffType}', 'show')->name('staff-type.show');
-    Route::patch('/staff-type/{staffType}', 'update')->name('staff-type.update');
-    Route::delete('/staff-type/{staffType}', 'delete')->name('staff-type.delete');
+    Route::get('/staff-type', 'index')->middleware('can:view all staff')->name('staff-type.index');
+    Route::get('/staff-type/create', 'create')->middleware('can:create staff')->name('staff-type.create');
+    Route::post('/staff-type', 'store')->middleware('can:create staff')->name('staff-type.store');
+    Route::get('/staff-type/{staffType}', 'show')->middleware('can:view staff')->name('staff-type.show');
+    Route::patch('/staff-type/{staffType}', 'update')->middleware('can:update staff')->name('staff-type.update');
+    Route::delete('/staff-type/{staffType}', 'delete')->middleware('can:delete staff')->name('staff-type.delete');
 });
 // Route::post('/staff-type/{`staff}', [StaffTypeController::class, 'store'])->middleware(['auth','password_changed'])->name('staff-type.save');
 
@@ -492,13 +512,13 @@ Route::controller(StaffTypeController::class)->middleware(['auth', 'password_cha
 Route::get('/unit-type', [UnitTypeController::class, 'index'])->middleware(['auth', 'password_changed'])->name('unit-type.index');
 
 Route::controller(NoteController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/notes', 'index')->name('notes.index');
-    Route::get('/notes/create', 'create')->name('notes.create');
-    Route::post('/notes', 'store')->name('notes.store');
-    Route::get('/notes/{note}', 'show')->name('notes.show');
-    Route::get('/notes/{note}/edit', 'edit')->name('notes.edit');
-    Route::patch('/notes/{note}', 'update')->name('notes.update');
-    Route::delete('/notes/{note}', 'delete')->name('notes.delete');
+    Route::get('/notes', 'index')->middleware('can:view staff notes')->name('notes.index');
+    Route::get('/notes/create', 'create')->middleware('can:create staff notes')->name('notes.create');
+    Route::post('/notes', 'store')->middleware('can:create staff notes')->name('notes.store');
+    Route::get('/notes/{note}', 'show')->middleware('can:view staff notes')->name('notes.show');
+    Route::get('/notes/{note}/edit', 'edit')->middleware('can:edit staff notes')->name('notes.edit');
+    Route::patch('/notes/{note}', 'update')->middleware('can:edit staff notes')->name('notes.update');
+    Route::delete('/notes/{note}', 'delete')->middleware('can:edit staff notes')->name('notes.delete');
 });
 
 Route::get('/note-types', function () {
@@ -517,27 +537,49 @@ Route::get('/note-types', function () {
 })->middleware(['auth', 'password_changed'])->name('note-types');
 
 Route::controller(PositionController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/position', 'index')->name('position.index');
-    Route::get('/position/create', 'create')->name('position.create');
-    Route::post('/position', 'store')->name('position.store');
-    Route::get('/position/{position}', 'show')->name('position.show');
-    Route::patch('/position/{position}', 'update')->name('position.update');
-    Route::delete('/position/{position}', 'delete')->withTrashed()->name('position.delete');
-    Route::get('/position-list', 'list')->name('position.list');
-    Route::get('/position/{position}/stat', 'stat')->name('position.stat');
+    Route::get('/position', 'index')->middleware('can:view all positions')->name('position.index');
+    Route::get('/position/create', 'create')->middleware('can:create position')->name('position.create');
+    Route::post('/position', 'store')->middleware('can:create position')->name('position.store');
+    Route::get('/position/{position}', 'show')->middleware('can:view position')->name('position.show');
+    Route::patch('/position/{position}', 'update')->middleware('can:update position')->name('position.update');
+    Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
+    Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
+    Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
 Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');
+Route::get('/help', [HelpController::class, 'index'])->middleware(['auth', 'password_changed'])->name('help.index');
 
-Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed'])->name('role.store');
-Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed'])->name('role.add.permissions');
-Route::get('/role/{role}/permissions', RolePermissionController::class)->middleware(['auth', 'password_changed'])->name('role.permissions');
+Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed', 'can:create role'])->name('role.store');
+Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed', 'can:assign permissions to role'])->name('role.add.permissions');
+Route::get('/role/{role}/permissions', RolePermissionController::class)->middleware(['auth', 'password_changed', 'can:view roles'])->name('role.permissions');
 Route::controller(AuditLogController::class)->middleware(['auth', 'password_changed'])->group(function () {
-    Route::get('/audit-log', 'index')->name('audit-log.index');
-    Route::get('/audit-log/{auditLog}', 'show')->name('audit-log.show');
-    Route::delete('/audit-log/{auditLog}', 'delete')->name('audit-log.delete');
+    Route::get('/audit-log', 'index')->middleware('can:view user activity')->name('audit-log.index');
+    Route::get('/audit-log/{auditLog}', 'show')->middleware('can:view user activity')->name('audit-log.show');
+    Route::delete('/audit-log/{auditLog}', 'delete')->middleware('can:view user activity')->name('audit-log.delete');
+});
+
+Route::controller(ContactController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/contact', 'index')->middleware('can:view contacts')->name('contact.index');
+    Route::get('/contact/create', 'create')->middleware('can:create contacts')->name('contact.create');
+    Route::post('/contact', 'store')->middleware('can:create contacts')->name('contact.store');
+    Route::get('/contact/{contact}', 'show')->middleware('can:view contacts')->name('contact.show');
+    Route::get('/contact/{contact}/edit', 'edit')->middleware('can:update contacts')->name('contact.edit');
+    Route::patch('/contact/{contact}', 'update')->middleware('can:update contacts')->name('contact.update');
+    Route::delete('/contact/{contact}', 'destroy')->middleware('can:delete contacts')->name('contact.destroy');
+});
+
+Route::controller(DocumentController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/document', 'index')->middleware('can:view documents')->name('document.index');
+    Route::get('/document/create', 'create')->middleware('can:create documents')->name('document.create');
+    Route::post('/document', 'store')->middleware('can:create documents')->name('document.store');
+    Route::get('/document/{document}', 'show')->middleware('can:view documents')->name('document.show');
+    Route::get('/document/{document}/download', 'download')->middleware('can:view documents')->name('document.download');
+    Route::get('/document/{document}/edit', 'edit')->middleware('can:update documents')->name('document.edit');
+    Route::patch('/document/{document}', 'update')->middleware('can:update documents')->name('document.update');
+    Route::delete('/document/{document}', 'destroy')->middleware('can:delete documents')->name('document.destroy');
 });
 
 Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->name('rank-staff-stats');
@@ -567,4 +609,31 @@ Route::controller(OfficeController::class)->middleware(['auth', 'password_change
     Route::get('/office/{office}', 'show')->name('office.show');
     Route::patch('/office/{office}', 'update')->name('office.update');
     Route::delete('/office/{office}', 'delete')->name('office.delete');
+});
+
+Route::middleware('auth')->prefix('staff-search')->group(function () {
+    Route::get('/options', [StaffSearchOptionsController::class, 'index'])->name('staff-search.options');
+    Route::get('/job-categories', [StaffSearchOptionsController::class, 'jobCategories'])->name('staff-search.job-categories');
+    Route::get('/jobs', [StaffSearchOptionsController::class, 'jobs'])->name('staff-search.jobs');
+    Route::get('/units', [StaffSearchOptionsController::class, 'units'])->name('staff-search.units');
+    Route::get('/departments', [StaffSearchOptionsController::class, 'departments'])->name('staff-search.departments');
+});
+
+Route::middleware('auth')->prefix('data-integrity')->group(function () {
+    Route::get('/', [DataIntegrityController::class, 'index'])->name('data-integrity.index');
+    Route::get('/multiple-ranks', [DataIntegrityController::class, 'multipleRanks'])->name('data-integrity.multiple-ranks');
+    Route::post('/multiple-ranks/{staff}/fix', [DataIntegrityController::class, 'fixMultipleRanks'])->name('data-integrity.multiple-ranks.fix');
+    Route::post('/multiple-ranks/bulk-fix', [DataIntegrityController::class, 'bulkFixMultipleRanks'])->name('data-integrity.multiple-ranks.bulk-fix');
+
+    Route::get('/staff-without-units', [DataIntegrityController::class, 'staffWithoutUnits'])->name('data-integrity.staff-without-units');
+    Route::get('/staff-without-ranks', [DataIntegrityController::class, 'staffWithoutRanks'])->name('data-integrity.staff-without-ranks');
+    Route::get('/invalid-date-ranges', [DataIntegrityController::class, 'invalidDateRanges'])->name('data-integrity.invalid-date-ranges');
+    Route::post('/invalid-date-ranges/{staff}/fix', [DataIntegrityController::class, 'fixInvalidDateRanges'])->name('data-integrity.invalid-date-ranges.fix');
+    Route::post('/invalid-date-ranges/bulk-fix', [DataIntegrityController::class, 'bulkFixInvalidDateRanges'])->name('data-integrity.invalid-date-ranges.bulk-fix');
+    Route::get('/separated-but-active', [DataIntegrityController::class, 'separatedButActive'])->name('data-integrity.separated-but-active');
+    Route::get('/staff-without-pictures', [DataIntegrityController::class, 'staffWithoutPictures'])->name('data-integrity.staff-without-pictures');
+    Route::get('/expired-active-status', [DataIntegrityController::class, 'expiredActiveStatus'])->name('data-integrity.expired-active-status');
+    Route::get('/multiple-unit-assignments', [DataIntegrityController::class, 'multipleUnitAssignments'])->name('data-integrity.multiple-unit-assignments');
+    Route::get('/staff-without-gender', [DataIntegrityController::class, 'staffWithoutGender'])->name('data-integrity.staff-without-gender');
+    Route::get('/pending-qualifications', [DataIntegrityController::class, 'pendingQualifications'])->name('data-integrity.pending-qualifications');
 });

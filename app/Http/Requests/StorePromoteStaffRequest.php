@@ -29,7 +29,7 @@ class StorePromoteStaffRequest extends FormRequest
 
         return [
             'staff_id' => ['required', 'exists:institution_person,id'],
-            'rank_id' => ['required', 'exists:units,id'],
+            'rank_id' => ['required', 'exists:jobs,id'],
             'start_date' => ['required', 'date', 'after_or_equal:' . $startDate],
             'end_date' => ['nullable', 'date', 'after:start_date', 'before_or_equal:' . $endDate],
             'remarks' => ['nullable', 'string'],

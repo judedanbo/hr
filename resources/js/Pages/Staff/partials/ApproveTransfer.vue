@@ -41,7 +41,7 @@ const submitHandler = (data) => {
 
 		<FormKit
 			type="form"
-			submit-label="Save"
+			submit-label="Approve"
 			:value="{
 				unit_id: transfer.unit_id,
 				staff_id: transfer.staff_id,

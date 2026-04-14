@@ -5,7 +5,6 @@ import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.es.js";
-import { Ziggy } from "./ziggy.js";
 import { plugin as formKitPlugin, defaultConfig } from "@formkit/vue";
 import { createMultiStepPlugin } from "@formkit/addons";
 import "@formkit/addons/css/multistep";
@@ -24,7 +23,7 @@ createInertiaApp({
 	setup({ el, App, props, plugin }) {
 		return createApp({ render: () => h(App, props) })
 			.use(plugin)
-			.use(ZiggyVue, Ziggy)
+			.use(ZiggyVue, props.initialPage.props.ziggy)
 			.use(
 				formKitPlugin,
 				defaultConfig({

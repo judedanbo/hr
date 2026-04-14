@@ -17,9 +17,11 @@ class PersonFactory extends Factory
     public function definition()
     {
         $gender = fake()->randomElements(['M', 'F']);
+
         return [
             'title' => fake()->title($gender),
             'surname' => fake()->lastName(),
+            'first_name' => fake()->firstName($gender),
             'other_names' => fake()->firstName($gender),
             'gender' => $gender[0],
             'nationality' => 'GH',

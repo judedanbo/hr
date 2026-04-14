@@ -4,6 +4,7 @@ import { router } from "@inertiajs/vue3";
 import AddQualification from "@/Pages/Qualification/Add.vue";
 import EditQualification from "@/Pages/Qualification/Edit.vue";
 import DeleteQualification from "@/Pages/Qualification/Delete.vue";
+import AttachDocument from "@/Pages/Qualification/AttachDocument.vue";
 import { usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
@@ -12,13 +13,22 @@ import QualificationList from "../Qualification/QualificationList.vue";
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
-// Edit Qualification
+
+// Add Qualification Modal
+const openQualificationModal = ref(false);
+const toggleQualificationModal = useToggle(openQualificationModal);
+
+// Edit Qualification Modal
 const openEditModal = ref(false);
 const toggleEditModal = useToggle(openEditModal);
 
-// Delete Qualification
+// Delete Qualification Modal
 const openDeleteModal = ref(false);
 const toggleDeleteModal = useToggle(openDeleteModal);
+
+// Attach Document Modal
+const openAttachModal = ref(false);
+const toggleAttachModal = useToggle(openAttachModal);
 
 defineProps({
 	qualifications: {
@@ -30,8 +40,6 @@ defineProps({
 		required: true,
 	},
 });
-let openQualificationModal = ref(false);
-let toggleQualificationModal = useToggle(openQualificationModal);
 
 const qualificationModel = ref(null);
 
@@ -39,10 +47,12 @@ const editQualification = (model) => {
 	qualificationModel.value = model;
 	toggleEditModal();
 };
+
 const confirmDelete = (model) => {
 	qualificationModel.value = model;
 	toggleDeleteModal();
 };
+
 const deleteQualification = () => {
 	router.delete(
 		route("qualification.delete", {
@@ -57,9 +67,23 @@ const deleteQualification = () => {
 		},
 	);
 };
+
+const approveQualification = (qualification) => {
+	router.patch(
+		route("qualification.approve", { qualification: qualification.id }),
+		{},
+		{
+			preserveScroll: true,
+		},
+	);
+};
+
+const attachDocument = (model) => {
+	qualificationModel.value = model;
+	toggleAttachModal();
+};
 </script>
 <template>
-	<!-- Transfer History -->
 	<main>
 		<h2 class="sr-only">staff's Qualifications</h2>
 		<div
@@ -89,35 +113,53 @@ const deleteQualification = () => {
 					:qualifications="qualifications"
 					:can-edit="permissions?.includes('edit staff qualification')"
 					:can-delete="permissions?.includes('delete staff qualification')"
+					:can-approve="permissions?.includes('approve staff qualification')"
+					:can-attach="permissions?.includes('edit staff qualification')"
+					:can-add-staff-qualification="permissions?.includes('view staff')"
 					@edit-qualification="(model) => editQualification(model)"
 					@delete-qualification="(model) => confirmDelete(model)"
+					@approve-qualification="(model) => approveQualification(model)"
+					@attach-document="(model) => attachDocument(model)"
 				/>
 			</dl>
 		</div>
+
+		<!-- Add Qualification Modal -->
 		<NewModal
 			:show="openQualificationModal"
 			@close="toggleQualificationModal()"
 		>
 			<AddQualification
 				:person="person.id"
+				:qualificationLevels="page.props.qualificationLevels"
 				@form-submitted="toggleQualificationModal()"
 			/>
 		</NewModal>
+
+		<!-- Edit Qualification Modal -->
 		<NewModal :show="openEditModal" @close="toggleEditModal()">
 			<EditQualification
 				:person="person.id"
 				:qualification="qualificationModel"
 				@form-submitted="toggleEditModal()"
-				@document-submitted="toggleEditModal()"
 			/>
 		</NewModal>
 
-		<!-- Delete Modal -->
+		<!-- Delete Qualification Modal -->
 		<NewModal :show="openDeleteModal" @close="toggleDeleteModal()">
 			<DeleteQualification
 				:person="person.name"
 				@close="toggleDeleteModal()"
 				@delete-confirmed="deleteQualification()"
+			/>
+		</NewModal>
+
+		<!-- Attach Document Modal -->
+		<NewModal :show="openAttachModal" @close="toggleAttachModal()">
+			<AttachDocument
+				:qualification="qualificationModel"
+				@form-submitted="toggleAttachModal()"
+				@close="toggleAttachModal()"
 			/>
 		</NewModal>
 	</main>

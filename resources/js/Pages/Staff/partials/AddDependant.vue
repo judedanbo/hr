@@ -4,6 +4,7 @@ import { ref } from "vue";
 import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
 import NewDependentForm from "@/Pages/Dependent/partials/NewDependentForm.vue";
+import DependentContactsForm from "@/Pages/Dependent/partials/DependentContactsForm.vue";
 import axios from "axios";
 
 const emit = defineEmits(["formSubmitted"]);
@@ -50,7 +51,15 @@ const submitHandler = (data, node) => {
 	if (data.dependentForm.image.image[0]?.file) {
 		fd.append("image", data.dependentForm.image.image[0].file);
 	}
-	// fd.append('image', data.dependentForm.image.image[0]?.file ?? '')
+
+	// Append contacts array
+	const contacts = data.dependentForm.contacts?.contacts ?? [];
+	contacts.forEach((contact, index) => {
+		if (contact.contact_type && contact.contact) {
+			fd.append(`contacts[${index}][contact_type]`, contact.contact_type);
+			fd.append(`contacts[${index}][contact]`, contact.contact);
+		}
+	});
 
 	// axios.post(route("dependent.store"), fd)
 	//   .then(function (response) {
@@ -112,6 +121,9 @@ const submitHandler = (data, node) => {
 
 				<FormKit id="image" type="step" name="image">
 					<ImageUpload />
+				</FormKit>
+				<FormKit id="contacts" type="step" name="contacts">
+					<DependentContactsForm />
 				</FormKit>
 				<FormKit id="relation" type="step" name="relation">
 					<NewDependentForm :staff_id="staff_id" />

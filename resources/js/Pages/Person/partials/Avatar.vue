@@ -29,7 +29,6 @@ const props = defineProps({
 			:class="size == 'sm' ? ' w-12 h-12' : 'w-36 h-36 md:w-48 md:h-48'"
 			class="flex-none rounded-xl md:rounded-full bg-gray-50 object-cover object-center"
 			:src="image"
-			:alt="initials"
 		/>
 		<div
 			v-else

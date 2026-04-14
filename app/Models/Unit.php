@@ -4,18 +4,18 @@ namespace App\Models;
 
 use App\Enums\UnitType;
 use App\Traits\LogAllTraits;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Unit extends Model
 {
-    use HasFactory, SoftDeletes, LogAllTraits;
+    use HasFactory, LogAllTraits, SoftDeletes;
 
     protected $casts = [
         'type' => UnitType::class,
@@ -60,13 +60,27 @@ class Unit extends Model
     public function offices(): BelongsToMany
     {
         return $this->belongsToMany(Office::class)
-            ->latest();
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps()
+            ->latest('office_unit.created_at');
     }
 
-    public function currentOffice(): HasOne
+    public function currentOffice(): BelongsToMany
     {
-        return $this->hasOne(Office::class, 'id', 'id')->latestOfMany();
+        return $this->belongsToMany(Office::class)
+            ->withPivot('start_date', 'end_date')
+            ->wherePivotNull('end_date')
+            ->latest('office_unit.created_at');
     }
+
+    public function officeHistory(): BelongsToMany
+    {
+        return $this->belongsToMany(Office::class)
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps()
+            ->orderByPivot('start_date', 'desc');
+    }
+
     /**
      * Get all of the subs for the Unit
      */
@@ -107,6 +121,11 @@ class Unit extends Model
             ->whereNull('end_date');
     }
 
+    public function scopeHasSubs(Builder $query)
+    {
+        return $query->whereHas('subs');
+    }
+
     public function scopeDivisions($query)
     {
         return $query
@@ -128,8 +147,8 @@ class Unit extends Model
     {
         return $this->belongsToMany(InstitutionPerson::class, 'staff_unit', 'unit_id', 'staff_id')
             ->using(StaffUnit::class)
-            ->withPivot('start_date', 'end_date') //unit_id
-            ->wherePivotNull('end_date'); //staff_id
+            ->withPivot('start_date', 'end_date') // unit_id
+            ->wherePivotNull('end_date'); // staff_id
         // ->where('status', 'Active');
     }
 

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EmployeeStatusEnum;
-use App\Traits\LogAllTraits;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +11,22 @@ use Spatie\Activitylog\LogOptions;
 
 class Status extends Pivot
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'status';
+
+    /**
+     * The primary key for the model.
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     */
+    public $incrementing = true;
 
     protected $fillable = ['staff_id', 'status', 'description', 'start_date', 'end_date', 'institution_id'];
 
@@ -20,13 +35,13 @@ class Status extends Pivot
         'end_date' => 'date',
         'status' => EmployeeStatusEnum::class,
     ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logFillable()
             ->logOnlyDirty();
     }
-
 
     /**
      * Get the staff that owns the Status

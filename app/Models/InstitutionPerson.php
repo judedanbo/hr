@@ -17,6 +17,21 @@ class InstitutionPerson extends Pivot
 {
     use HasFactory, LogAllTraits;
 
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'institution_person';
+
+    /**
+     * The primary key for the model.
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     */
+    public $incrementing = true;
+
     protected $fillable = [
         'institution_id',
         'person_id',
@@ -469,5 +484,229 @@ class InstitutionPerson extends Pivot
         return $query->whereHas('person', function ($query) {
             $query->female();
         });
+    }
+
+    /**
+     * Filter staff by specific rank/job
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $rankId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByRank($query, $rankId)
+    {
+        return $query->whereHas('ranks', function ($rankQuery) use ($rankId) {
+            $rankQuery->where('jobs.id', $rankId);
+            $rankQuery->whereNull('job_staff.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by job category
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $categoryId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByJobCategory($query, $categoryId)
+    {
+        return $query->whereHas('ranks', function ($rankQuery) use ($categoryId) {
+            $rankQuery->where('jobs.job_category_id', $categoryId);
+            $rankQuery->whereNull('job_staff.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by specific unit
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $unitId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByUnit($query, $unitId)
+    {
+        return $query->whereHas('units', function ($unitQuery) use ($unitId) {
+            $unitQuery->where('units.id', $unitId);
+            $unitQuery->whereNull('staff_unit.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by department (parent unit)
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $departmentId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByDepartment($query, $departmentId)
+    {
+        return $query->whereHas('units', function ($unitQuery) use ($departmentId) {
+            $unitQuery->where('units.unit_id', $departmentId);
+            $unitQuery->whereNull('staff_unit.end_date');
+        });
+    }
+
+    /**
+     * Filter staff by gender
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $gender
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByGender($query, $gender)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($gender) {
+            $personQuery->where('gender', $gender);
+        });
+    }
+
+    /**
+     * Filter staff by employment status
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $status
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->whereHas('statuses', function ($statusQuery) use ($status) {
+            $statusQuery->where('status', $status);
+            $statusQuery->where(function ($dateQuery) {
+                $dateQuery->whereNull('end_date');
+                $dateQuery->orWhere('end_date', '>', now());
+            });
+        });
+    }
+
+    /**
+     * Filter staff by hire date range
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $startDate
+     * @param  string  $endDate
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByHireDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('hire_date', [$startDate, $endDate]);
+    }
+
+    /**
+     * Filter staff by hire date from (minimum date)
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $date
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByHireDateFrom($query, $date)
+    {
+        return $query->where('hire_date', '>=', $date);
+    }
+
+    /**
+     * Filter staff by hire date to (maximum date)
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $date
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByHireDateTo($query, $date)
+    {
+        return $query->where('hire_date', '<=', $date);
+    }
+
+    /**
+     * Filter staff by age range
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $minAge
+     * @param  int  $maxAge
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByAgeRange($query, $minAge, $maxAge)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($minAge, $maxAge) {
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) >= ?', [$minAge]);
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) <= ?', [$maxAge]);
+        });
+    }
+
+    /**
+     * Filter staff by minimum age
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $minAge
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByAgeFrom($query, $minAge)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($minAge) {
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) >= ?', [$minAge]);
+        });
+    }
+
+    /**
+     * Filter staff by maximum age
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $maxAge
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByAgeTo($query, $maxAge)
+    {
+        return $query->whereHas('person', function ($personQuery) use ($maxAge) {
+            $personQuery->whereRaw('(DATEDIFF(NOW(), date_of_birth) / 365.25) <= ?', [$maxAge]);
+        });
+    }
+
+    /**
+     * Calculate the number of years the staff has served.
+     *
+     * @return int|null Number of years served, or null if hire_date is not set
+     */
+    public function getYearsServedAttribute(): ?int
+    {
+        if (! $this->hire_date) {
+            return null;
+        }
+
+        $endDate = $this->end_date ?? Carbon::now();
+
+        return $this->hire_date->diffInYears($endDate);
+    }
+
+    /**
+     * Calculate the staff's retirement date (date of birth + 60 years).
+     *
+     * @return \Carbon\Carbon|null Retirement date, or null if date_of_birth is not set
+     */
+    public function getRetirementDateAttribute(): ?Carbon
+    {
+        if (! $this->person?->date_of_birth) {
+            return null;
+        }
+
+        return $this->person->date_of_birth->copy()->addYears(60);
+    }
+
+    public function getRetirementDateFormattedAttribute(): ?string
+    {
+        if (! $this->retirement_date) {
+            return null;
+        }
+
+        return $this->retirement_date->format('d M Y');
+    }
+
+    public function getRetirementDateDiffAttribute(): ?string
+    {
+        if (! $this->retirement_date) {
+            return null;
+        }
+
+        return $this->retirement_date->diffForHumans([
+            'syntax' => Carbon::DIFF_RELATIVE_TO_NOW,
+            'parts' => 2,
+        ]);
     }
 }

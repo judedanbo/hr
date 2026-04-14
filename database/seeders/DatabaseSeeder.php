@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $this->call(AdminUserSeeder::class);
+        // $this->call(AdminUserSeeder::class);
+        $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
         $this->call(StaffUserSeeder::class);
         $this->call(UserPermissionsSeeder::class);
@@ -34,6 +35,12 @@ class DatabaseSeeder extends Seeder
         $this->call(PromotionsPermissionSeeder::class);
         $this->call(QualificationPermissionSeeder::class);
         $this->call(InstitutionPermissionSeeder::class);
+        $this->call(RolePermissionsSeeder::class);
+        $this->call(DataIntegrityPermissionSeeder::class);
+        $this->call(ContactPermissionSeeder::class);
+        $this->call(DocumentPermissionSeeder::class);
+        $this->call(PastPromotionSeeder::class);
+        $this->call(AllPermissionsSeeder::class);
         $this->call(SuperAdminSeeder::class);
 
         $user = \App\Models\User::where('email', 'admin@audit.gov.gh')->first();

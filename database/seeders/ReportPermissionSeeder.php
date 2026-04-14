@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -15,7 +14,7 @@ class ReportPermissionSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view all reports']);
-        Permission::create(['name' => 'view report']);
+        Permission::firstOrCreate(['name' => 'view all reports']);
+        Permission::firstOrCreate(['name' => 'view report']);
     }
 }

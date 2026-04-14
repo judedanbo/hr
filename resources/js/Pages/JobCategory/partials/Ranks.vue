@@ -150,7 +150,7 @@ const emit = defineEmits([
 									class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
 								>
 									<Link
-										:href="route('job.show', { job: job.id })"
+										:href="'/rank/' + job.id"
 										class="text-green-600 hover:text-green-900"
 										>View<span class="sr-only">, {{ job.name }}</span></Link
 									>

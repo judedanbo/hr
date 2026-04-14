@@ -2,31 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Identity;
+use App\Contracts\Services\PromotionServiceInterface;
+use App\Contracts\Services\StaffManagementServiceInterface;
+use App\Http\Requests\StaffAdvancedSearchRequest;
 use App\Http\Requests\StoreInstitutionPersonRequest;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\StoreStaffPositionRequest;
 use App\Http\Requests\UpdateStaffPositionRequest;
 use App\Http\Requests\UpdateStaffRequest;
-use App\Models\Institution;
 use App\Models\InstitutionPerson;
-use App\Models\Person;
 use App\Models\Position;
+use App\Transformers\Staff\StaffDetailTransformer;
+use App\Transformers\Staff\StaffListTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class InstitutionPersonController extends Controller
 {
+    public function __construct(
+        protected StaffManagementServiceInterface $staffManagementService,
+        protected PromotionServiceInterface $promotionService,
+        protected StaffDetailTransformer $detailTransformer,
+        protected StaffListTransformer $listTransformer
+    ) {}
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(StaffAdvancedSearchRequest $request)
     {
         if (Gate::denies('view all staff')) {
             activity()
@@ -38,6 +46,7 @@ class InstitutionPersonController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to view all staff');
+
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view all staff');
         }
         activity()
@@ -49,51 +58,62 @@ class InstitutionPersonController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('viewed all staff');
+
         $staff = InstitutionPerson::query()
             ->active()
             ->with('person')
             ->currentUnit()
             ->currentRank()
-            ->search(request()->search)
+            ->when($request->rank_id, fn ($q, $rankId) => $q->filterByRank($rankId))
+            ->when($request->job_category_id, fn ($q, $categoryId) => $q->filterByJobCategory($categoryId))
+            ->when($request->unit_id, fn ($q, $unitId) => $q->filterByUnit($unitId))
+            ->when($request->department_id, fn ($q, $deptId) => $q->filterByDepartment($deptId))
+            ->when($request->gender, fn ($q, $gender) => $q->filterByGender($gender))
+            ->when($request->status, fn ($q, $status) => $q->filterByStatus($status))
+            ->when(
+                $request->hire_date_from && $request->hire_date_to,
+                fn ($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to)
+            )
+            ->when(
+                $request->hire_date_from && ! $request->hire_date_to,
+                fn ($q) => $q->filterByHireDateFrom($request->hire_date_from)
+            )
+            ->when(
+                $request->hire_date_to && ! $request->hire_date_from,
+                fn ($q) => $q->filterByHireDateTo($request->hire_date_to)
+            )
+            ->when(
+                $request->age_from && $request->age_to,
+                fn ($q) => $q->filterByAgeRange($request->age_from, $request->age_to)
+            )
+            ->when(
+                $request->age_from && ! $request->age_to,
+                fn ($q) => $q->filterByAgeFrom($request->age_from)
+            )
+            ->when(
+                $request->age_to && ! $request->age_from,
+                fn ($q) => $q->filterByAgeTo($request->age_to)
+            )
+            ->search($request->search)
             ->paginate(10)
             ->withQueryString()
-            ->through(fn($staff) => [
-                'id' => $staff->id,
-                'file_number' => $staff->file_number,
-                'staff_number' => $staff->staff_number,
-                'old_staff_number' => $staff->old_staff_number,
-                'hire_date' => $staff->hire_date?->format('d M Y'),
-                'hire_date_distance' => $staff->hire_date?->diffForHumans(),
-                'initials' => $staff->person->initials,
-                'name' => $staff->person->full_name,
-                'gender' => $staff->person->gender?->label(),
-                'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                'dob_distance' => number_format($staff->person->date_of_birth?->diffInYears(), 0) . ' years old',
-                'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-                'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
-                'current_rank' => $staff->currentRank ? [
-                    'id' => $staff->currentRank?->id,
-                    'name' => $staff->currentRank?->job?->name,
-                    'job_id' => $staff->currentRank->name,
-                    'start_date' => $staff->currentRank->start_date?->format('d M Y'),
-                    'start_date_distance' => $staff->currentRank->start_date?->diffForHumans(),
-                    'end_date' => $staff->currentRank->end_date?->format('d M Y'),
-                    'remarks' => $staff->currentRank->remarks,
-                ] : null,
-                'current_unit' => $staff->currentUnit ? [
-                    'id' => $staff->currentUnit->unit_id,
-                    'rank' => $staff->currentUnit,
-                    'name' => $staff->currentUnit->unit?->name,
-                    'start_date' => $staff->currentUnit->start_date?->format('d M Y'),
-                    'start_date_distance' => $staff->currentUnit->start_date?->diffForHumans(),
-                    'end_date' => $staff->currentUnit->end_date?->format('d M Y'),
-                ] : null,
-            ]);
+            ->through($this->listTransformer->transformForPagination());
 
         return Inertia::render('Staff/Index', [
             'staff' => $staff,
-            'filters' => ['search' => request()->search],
+            'filters' => $request->only([
+                'search',
+                'rank_id',
+                'job_category_id',
+                'unit_id',
+                'department_id',
+                'gender',
+                'status',
+                'hire_date_from',
+                'hire_date_to',
+                'age_from',
+                'age_to',
+            ]),
         ]);
     }
 
@@ -107,6 +127,7 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('create staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
+
         return Inertia::render('Staff/Create');
     }
 
@@ -116,51 +137,22 @@ class InstitutionPersonController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(StorePersonRequest $request)
     public function store(StoreInstitutionPersonRequest $request)
     {
-        // return $request->staffData;
         if (request()->user()->cannot('create staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new staff');
         }
-        $staff = null;
-        $transaction = DB::transaction(function () use ($request, $staff) {
-            $person = Person::create($request->staffData['bio']);
-            $person->identities()->create([
-                'id_type' => Identity::GhanaCard,
-                'id_number' => $request->staffData['bio']['ghana_card'],
-            ]);
-            $institution = Institution::find(1);
 
-            $person->institution()->attach($institution->id, $request->staffData['employment']);
-            $staff = InstitutionPerson::where('person_id', $person->id)->first();
-            $person->address()->create($request->staffData['address']);
-            $person->contacts()->create($request->staffData['contact']);
-            $person->qualifications()->create($request->staffData['qualifications']);
+        try {
+            $staff = $this->staffManagementService->create($request->staffData);
 
-            $staff->statuses()->create([
-                'status' => 'A',
-                'description' => 'Active',
-                'institution_id' => $institution->id,
-                'start_date' => Carbon::now(),
-            ]);
-            $rank = $request->staffData['rank'];
-            $rank['job_id'] = $request->staffData['rank']['rank_id'];
-            unset($rank['rank_id']);
-            $staff->ranks()->attach($rank['job_id'], $rank);
-            if (array_key_exists('unit_id', $request->staffData['unit'])) {
-                $staff->units()->attach($request->staffData['unit']['unit_id'], $request->staffData['unit']);
-            }
-
-            return $staff;
-        });
-
-        if ($transaction === null || $transaction['id'] === null) {
-            return redirect()->route('staff.index')->with('failed', 'could not create staff. please try again on contact administrator');
+            return redirect()->route('staff.show', ['staff' => $staff->id])
+                ->with('success', 'Staff created successfully');
+        } catch (\RuntimeException $e) {
+            return redirect()->back()->withErrors([
+                'institution' => $e->getMessage(),
+            ])->withInput();
         }
-
-        // return $transaction;
-        return redirect()->route('staff.show', ['staff' => $transaction['id']])->with('success', 'Staff created successfully');
     }
 
     /**
@@ -214,6 +206,7 @@ class InstitutionPersonController extends Controller
         if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
+
         // dd($request->session()->all());
         // request()->session()->reflash();
         return Inertia::render('Staff/NewShow', [
@@ -229,40 +222,49 @@ class InstitutionPersonController extends Controller
                 'maiden_name' => $staff->person->maiden_name,
                 'dob-value' => $staff->person->date_of_birth,
                 'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'dob_distance' => number_format($staff->person->date_of_birth?->diffInYears(), 0) . ' years old',
+                'age' => $staff->person->age . ' years old',
                 'gender' => $staff->person->gender?->label(),
                 'ssn' => $staff->person->social_security_number,
                 'initials' => $staff->person->initials,
                 'nationality' => $staff->person->nationality?->nationality(),
                 'religion' => $staff->person->religion,
                 'marital_status' => $staff->person->marital_status?->label(),
-                'image' =>  $staff->person->image ? '/storage/' . $staff->person->image :  null,
-                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn($id) => [
+                'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
+                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
                     'id' => $id->id,
                     'id_type' => $id->id_type,
                     'id_type_display' => $id->id_type->label(),
                     'id_number' => $id->id_number,
                 ]) : null,
             ],
-            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn($qualification) => [
-                'id' => $qualification->id,
-                'person_id' => $qualification->person_id,
-                'course' => $qualification->course,
-                'institution' => $qualification->institution,
-                'qualification' => $qualification->qualification,
-                'qualification_number' => $qualification->qualification_number,
-                'level' => $qualification->level,
-                'year' => $qualification->year,
-                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn($document) => [
-                    'document_type' => $document->document_type,
-                    'document_title' => $document->document_title,
-                    'document_status' => $document->document_status,
-                    'document_number' => $document->document_number,
-                    'file_name' => $document->file_name,
-                    'file_type' => $document->file_type,
-                ]) : null,
-            ]) : [],
-            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn($contact) => [
+            'qualifications' => \App\Models\Qualification::query()
+                ->where('person_id', $staff->person->id)
+                ->visibleTo(auth()->user(), $staff->person->id)
+                ->with('documents')
+                ->get()
+                ->map(fn ($qualification) => [
+                    'id' => $qualification->id,
+                    'person_id' => $qualification->person_id,
+                    'course' => $qualification->course,
+                    'institution' => $qualification->institution,
+                    'qualification' => $qualification->qualification,
+                    'qualification_number' => $qualification->qualification_number,
+                    'level' => $qualification->level ? \App\Enums\QualificationLevelEnum::tryFrom($qualification->level)?->label() ?? $qualification->level : null,
+                    'year' => $qualification->year,
+                    'status' => $qualification->status?->label(),
+                    'status_color' => $qualification->status?->color(),
+                    'can_edit' => $qualification->canBeEditedBy(auth()->user()),
+                    'can_delete' => $qualification->canBeDeletedBy(auth()->user()),
+                    'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
+                        'document_type' => $document->document_type,
+                        'document_title' => $document->document_title,
+                        'document_status' => $document->document_status,
+                        'document_number' => $document->document_number,
+                        'file_name' => $document->file_name,
+                        'file_type' => $document->file_type,
+                    ]) : null,
+                ]),
+            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
                 'contact_type' => $contact->contact_type,
@@ -288,10 +290,10 @@ class InstitutionPersonController extends Controller
                 'old_staff_number' => $staff->old_staff_number,
                 'hire_date' => $staff->hire_date?->format('d M Y'),
                 'hire_date_display' => $staff->hire_date?->diffForHumans(),
-                'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-                'retirement_date_display' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+                'retirement_date' => $staff->retirement_date_formatted,
+                'retirement_date_display' => $staff->retirement_date_diff,
                 'start_date' => $staff->start_date?->format('d M Y'),
-                'statuses' => $staff->statuses?->map(fn($status) => [
+                'statuses' => $staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
                     'status' => $status->status,
                     'status_display' => $status->status?->name,
@@ -301,7 +303,7 @@ class InstitutionPersonController extends Controller
                     'end_date' => $status->end_date?->format('Y-m-d'),
                     'end_date_display' => $status->end_date?->format('d M Y'),
                 ]),
-                'staff_type' => $staff->type?->map(fn($type) => [
+                'staff_type' => $staff->type?->map(fn ($type) => [
                     'id' => $type->id,
                     'type' => $type->staff_type,
                     'type_label' => $type->staff_type->label(),
@@ -310,7 +312,7 @@ class InstitutionPersonController extends Controller
                     'end_date' => $type->end_date?->format('Y-m-d'),
                     'end_date_display' => $type->end_date?->format('d M Y'),
                 ]),
-                'positions' => $staff->positions?->map(fn($position) => [
+                'positions' => $staff->positions?->map(fn ($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
                     'start_date' => $position->pivot->start_date,
@@ -318,7 +320,7 @@ class InstitutionPersonController extends Controller
                     'start_date_display' => $position->pivot->start_date ? Carbon::parse($position->pivot->start_date)->format('d M Y') : null,
                     'end_date_display' => $position->pivot->end_date ? Carbon::parse($position->pivot->end_date)->format('d M Y') : null,
                 ]),
-                'ranks' => $staff->ranks->map(fn($rank) => [
+                'ranks' => $staff->ranks->map(fn ($rank) => [
                     'id' => $rank->id,
                     'name' => $rank->name,
                     'staff_name' => $staff->person->full_name,
@@ -331,14 +333,14 @@ class InstitutionPersonController extends Controller
                     'remarks' => $rank->pivot->remarks,
                     'distance' => $rank->pivot->start_date?->diffForHumans(),
                 ]),
-                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn($note) => [
+                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn ($note) => [
                     'id' => $note->id,
                     'note' => $note->note,
                     'note_date' => $note->note_date->diffForHumans(),
                     'note_date_time' => $note->note_date,
                     'note_type' => $note->note_type,
                     'created_by' => $note->created_by,
-                    'url' => $note->documents->count() > 0 ? $note->documents->map(fn($doc) => [
+                    'url' => $note->documents->count() > 0 ? $note->documents->map(fn ($doc) => [
                         'document_type' => $doc->document_type,
                         'document_title' => $doc->document_title,
                         // 'document_status' => $doc->document_status,
@@ -348,7 +350,7 @@ class InstitutionPersonController extends Controller
                     ]) : null,
 
                 ]) : null,
-                'units' => $staff->units->map(fn($unit) => [
+                'units' => $staff->units->map(fn ($unit) => [
                     // 'unit' => $unit,
                     'unit_id' => $unit->id,
                     'unit_name' => $unit->name,
@@ -365,7 +367,7 @@ class InstitutionPersonController extends Controller
                     'remarks' => $unit->pivot->remarks,
                     'old_data' => $unit->pivot->old_data,
                 ]),
-                'dependents' => $staff->dependents ? $staff->dependents->map(fn($dep) => [
+                'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                     'id' => $dep->id,
                     'person_id' => $dep->person_id,
                     'initials' => $dep->person->initials,
@@ -383,11 +385,16 @@ class InstitutionPersonController extends Controller
                     'gender' => $dep->person->gender?->label(),
                     'gender_form' => $dep->person->gender,
                     'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
-                    'dob_distance' => $dep->person->date_of_birth?->diffInYears() . ' years old',
+                    'age' => $dep->person->age . ' years old',
                     'relation' => $dep->relation,
                     'staff_id' => $staff->id,
                     // $staff->person->image ? '/' . $staff->person->image :  null,
                     'image' => $dep->person->image ? '/storage/' . $dep->person->image : null,
+                    'contacts' => $dep->person->contacts->map(fn ($contact) => [
+                        'id' => $contact->id,
+                        'type' => $contact->contact_type?->label(),
+                        'contact' => $contact->contact,
+                    ]),
                 ]) : null,
             ],
         ]);
@@ -398,6 +405,7 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('create staff promotion')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to add a new promotion');
         }
+
         $request->validate([
             'rank_id' => ['required', 'exists:jobs,id'],
             'start_date' => ['required', 'date'],
@@ -405,15 +413,9 @@ class InstitutionPersonController extends Controller
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $staff->load('ranks');
-
-        $staff->ranks()->wherePivot('end_date', null)->update([
-            'end_date' => Carbon::parse($request->start_date)->subDay(),
-        ]);
-
-        $staff->ranks()->attach($request->rank_id, [
+        $this->promotionService->promote($staff, $request->rank_id, [
             'start_date' => $request->start_date,
-            // 'end_date' => $request->end_date,
+            'end_date' => $request->end_date,
             'remarks' => $request->remarks,
         ]);
 
@@ -423,7 +425,7 @@ class InstitutionPersonController extends Controller
     public function promotions(InstitutionPerson $staff)
     {
         if (request()->user()->cannot('view staff promotion')) {
-            return (['error', 'You do not have permission to view promotions']);
+            return ['error', 'You do not have permission to view promotions'];
         }
         $staff->load('ranks', 'person');
 
@@ -434,15 +436,15 @@ class InstitutionPersonController extends Controller
             'file_number' => $staff->file_number,
             'old_staff_number' => $staff->old_staff_number,
             'hire_date' => $staff->hire_date?->format('d M Y'),
-            'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
+            'retirement_date' => $staff->retirement_date_formatted,
             'start_date' => $staff->start_date,
-            'promotions' => $staff->ranks ? $staff->ranks->map(fn($rank) => [
+            'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
                 'id' => $rank->id,
                 'name' => $rank->name,
                 'start_date' => $rank->pivot->start_date?->format('d M Y'),
                 'end_date' => $rank->pivot->end_date?->format('d M Y'),
                 'remarks' => $rank->pivot->remarks,
-                'distance' => $rank->pivot->start_date->diffInYears(),
+                'distance' => (int) $rank->pivot->start_date->diffInYears(),
             ])
                 : null,
         ];
@@ -521,13 +523,9 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('update staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to edit this staff\'s details');
         }
-        // return $request->validated();
+
         $validated = $request->validated();
-        $personalInformation = $validated['staffData']['personalInformation'];
-        $employmentInformation = $validated['staffData']['employmentInformation'];
-        // dd($personalInformation);
-        $staff->person->update($personalInformation);
-        $staff->update($employmentInformation);
+        $this->staffManagementService->update($staff, $validated['staffData']);
 
         return back()->with('success', 'Staff updated successfully');
     }
@@ -589,7 +587,6 @@ class InstitutionPersonController extends Controller
                 'end_date' => $validated['end_date'] ?? null,
             ]);
         });
-
 
         return redirect()->back()->with('success', 'Position assigned successfully.');
     }

@@ -15,7 +15,10 @@ defineProps({
 		<ol class="list-reset flex items-center">
 			<li>
 				<!-- <a href="/" class="text-green-600 hover:text-green-700"> </a> -->
-				<Link href="/dashboard" class="text-gray-400 hover:text-gray-500">
+				<Link
+					:href="route('dashboard')"
+					class="text-gray-400 hover:text-gray-500"
+				>
 					<HomeIcon class="size-5 shrink-0" aria-hidden="true" />
 					<span class="sr-only">Home</span>
 				</Link>

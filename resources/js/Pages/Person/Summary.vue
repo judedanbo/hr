@@ -47,7 +47,7 @@ const props = defineProps({
 				<div class="flex-none self-end px-6 pt-4">
 					<Link
 						v-if="permissions?.includes('view staff')"
-						:href="route('person.show', { person: person.id })"
+						:href="'/person/' + person.id"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 					>
 						View
@@ -69,9 +69,7 @@ const props = defineProps({
 						class="text-md leading-6 text-gray-500 dark:text-gray-50"
 					>
 						<time :datetime="person.dob_value"> {{ person.dob }}</time>
-						<div v-if="status == 'A'" class="text-sm">
-							({{ person.dob_distance }})
-						</div>
+						<div v-if="status == 'A'" class="text-sm">({{ person.age }})</div>
 					</dd>
 				</div>
 				<div class="mt-4 flex w-full flex-none gap-x-4 px-6">

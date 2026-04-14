@@ -21,7 +21,7 @@ let details = (url = props.link) => {
 		<dd
 			class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-50 sm:text-5xl"
 		>
-			{{ value.toLocaleString() }}
+			{{ value?.toLocaleString() ?? 0 }}
 		</dd>
 	</div>
 </template>

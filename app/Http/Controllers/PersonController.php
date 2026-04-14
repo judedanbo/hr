@@ -58,7 +58,6 @@ class PersonController extends Controller
         }
         try {
             $avatar = Storage::disk('public')->put('/storage/', $request->image);
-            dd($avatar);
 
             return Person::create($request->validated());
             if (! $avatar) {
@@ -102,7 +101,7 @@ class PersonController extends Controller
                 'name' => $selectedPerson->full_name,
                 'dob-value' => $selectedPerson->date_of_birth,
                 'dob' => $selectedPerson->date_of_birth?->format('d M Y'),
-                'dob_distance' => $selectedPerson->date_of_birth ? number_format($selectedPerson->date_of_birth->diffInYears(), 0) . ' years old' : null,
+                'age' => $selectedPerson->date_of_birth ? $selectedPerson->age . ' years old' : null,
                 'gender' => $selectedPerson->gender?->label(),
                 'ssn' => $selectedPerson->social_security_number,
                 'initials' => $selectedPerson->initials,
@@ -209,7 +208,7 @@ class PersonController extends Controller
                     'hire_date' => $inst->staff->hire_date,
                     'hire_date_dis' => $inst->staff->hire_date?->format('d M Y'),
                     'end_date' => $inst->staff->end_date,
-                    'age_at_end' => $inst->staff->end_date?->diffInYears($selectedPerson->date_of_birth),
+                    'age_at_end' => (int) $inst->staff->end_date?->diffInYears($selectedPerson->date_of_birth),
                 ];
             }) : null,
             'dependent' => $selectedPerson->dependent,

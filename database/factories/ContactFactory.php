@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ContactTypeEnum;
 use App\Models\Person;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,24 +16,22 @@ class ContactFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
-        $type = fake()->randomElements([1, 2, 3]);
-        $contact = '';
-        if ($type == 1) {
-            $contact = fake()->phoneNumber();
-        }
-        if ($type == 2) {
-            $contact = fake()->safeEmail();
-        }
-        if ($type == 3) {
-            $contact = fake()->address();
-        }
+        $type = fake()->randomElement(ContactTypeEnum::cases());
+        $contact = match ($type) {
+            ContactTypeEnum::EMAIL => fake()->safeEmail(),
+            ContactTypeEnum::PHONE => fake()->numerify('024#######'),
+            ContactTypeEnum::ADDRESS => fake()->address(),
+            ContactTypeEnum::GHPOSTGPS => 'GA-' . fake()->numerify('###-####'),
+            ContactTypeEnum::EMERGENCY => fake()->numerify('024#######'),
+        };
 
         return [
             'person_id' => Person::factory(),
-            'type' => $type,
+            'contact_type' => $type->value,
             'contact' => $contact,
+            'valid_end' => null,
         ];
     }
 }

@@ -3,8 +3,6 @@
 namespace App\Exports;
 
 use App\Models\InstitutionPerson;
-use App\Models\JobCategory;
-use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -19,6 +17,13 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class StaffPositionExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     use Exportable;
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    public function __construct(
+        protected array $filters = []
+    ) {}
 
     public function title(): string
     {
@@ -53,7 +58,7 @@ class StaffPositionExport implements FromQuery, ShouldAutoSize, ShouldQueue, Wit
             $staff->file_number,
             $staff->staff_number,
             $staff->person->full_name,
-            $staff->hire_date === null ? '' : Carbon::now()->diffInYears($staff->hire_date) . ' years',
+            $staff->years_served . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
             $staff->currentRank?->job?->category->level ?? null,
@@ -67,16 +72,25 @@ class StaffPositionExport implements FromQuery, ShouldAutoSize, ShouldQueue, Wit
             ->active()
             ->with('person')
             ->currentRank()
-            ->currentUnit();
-        // ->where('staff_number', '2743')
-        // ->orderBy(
-        //     JobCategory::query()
-        //         ->join('jobs', 'job_categories.id', '=', 'jobs.job_category_id')
-        //         ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
-        //         ->select('job_categories.level')
-        //         ->whereColumn('job_staff.staff_id', 'institution_person.id')
-        //         ->orderBy('job_categories.level')
-        //         ->limit(1)
-        // );
+            ->currentUnit()
+            ->when($this->filters['rank_id'] ?? null, fn ($q, $rankId) => $q->filterByRank($rankId))
+            ->when($this->filters['job_category_id'] ?? null, fn ($q, $categoryId) => $q->filterByJobCategory($categoryId))
+            ->when($this->filters['unit_id'] ?? null, fn ($q, $unitId) => $q->filterByUnit($unitId))
+            ->when($this->filters['department_id'] ?? null, fn ($q, $deptId) => $q->filterByDepartment($deptId))
+            ->when($this->filters['gender'] ?? null, fn ($q, $gender) => $q->filterByGender($gender))
+            ->when($this->filters['status'] ?? null, fn ($q, $status) => $q->filterByStatus($status))
+            ->when(($this->filters['hire_date_from'] ?? null) && ($this->filters['hire_date_to'] ?? null),
+                fn ($q) => $q->filterByHireDateRange($this->filters['hire_date_from'], $this->filters['hire_date_to']))
+            ->when(($this->filters['hire_date_from'] ?? null) && ! ($this->filters['hire_date_to'] ?? null),
+                fn ($q) => $q->filterByHireDateFrom($this->filters['hire_date_from']))
+            ->when(($this->filters['hire_date_to'] ?? null) && ! ($this->filters['hire_date_from'] ?? null),
+                fn ($q) => $q->filterByHireDateTo($this->filters['hire_date_to']))
+            ->when(($this->filters['age_from'] ?? null) && ($this->filters['age_to'] ?? null),
+                fn ($q) => $q->filterByAgeRange($this->filters['age_from'], $this->filters['age_to']))
+            ->when(($this->filters['age_from'] ?? null) && ! ($this->filters['age_to'] ?? null),
+                fn ($q) => $q->filterByAgeFrom($this->filters['age_from']))
+            ->when(($this->filters['age_to'] ?? null) && ! ($this->filters['age_from'] ?? null),
+                fn ($q) => $q->filterByAgeTo($this->filters['age_to']))
+            ->search($this->filters['search'] ?? null);
     }
 }

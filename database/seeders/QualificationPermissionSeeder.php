@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -15,9 +14,9 @@ class QualificationPermissionSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'veiw all staff qualifications']);
-        Permission::create(['name' => 'delete staff qualification']);
-        Permission::create(['name' => 'restore staff qualification']);
-        Permission::create(['name' => 'destroy staff qualification']);
+        Permission::firstOrCreate(['name' => 'view all staff qualifications']);
+        Permission::firstOrCreate(['name' => 'delete staff qualification']);
+        Permission::firstOrCreate(['name' => 'restore staff qualification']);
+        Permission::firstOrCreate(['name' => 'destroy staff qualification']);
     }
 }

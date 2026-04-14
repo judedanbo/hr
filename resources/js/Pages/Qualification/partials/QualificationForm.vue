@@ -1,3 +1,9 @@
+<script setup>
+defineProps({
+	qualificationLevels: { type: Array, default: () => [] },
+});
+</script>
+
 <template>
 	<FormKit
 		id="institution"
@@ -19,10 +25,16 @@
 		<div>
 			<FormKit
 				id="level"
-				type="text"
+				type="select"
 				name="level"
 				label="Level"
-				validation="string|length:1,10"
+				placeholder="Select level"
+				:options="
+					qualificationLevels.map((l) => ({
+						label: l.label,
+						value: l.value,
+					}))
+				"
 				validation-visibility="submit"
 			/>
 		</div>

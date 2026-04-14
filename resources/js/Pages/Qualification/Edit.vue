@@ -1,10 +1,10 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
-import { getNode, setErrors } from "@formkit/core";
+import axios from "axios";
+import { ArrowPathIcon } from "@heroicons/vue/20/solid";
 import QualificationForm from "./partials/QualificationForm.vue";
-import QualificationEvidence from "./partials/QualificationEvidence.vue";
-const emit = defineEmits(["formSubmitted", "documentSubmitted"]);
+const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
 	qualification: {
@@ -13,54 +13,16 @@ const props = defineProps({
 	},
 });
 
-const document = ref(null);
+const qualificationLevels = ref([]);
+const isSubmitting = ref(false);
 
-onMounted(() => {
-	document.value = props.qualification.documents
-		? props.qualification.documents[0]
-		: null;
+onMounted(async () => {
+	const { data } = await axios.get(route("qualification-level.index"));
+	qualificationLevels.value = data;
 });
-const submitDocuments = async (document) => {
-	const formData = new FormData();
-	// // document.forEach((file) => {
-	formData.append("file_name", document.file_name[0].file);
-	formData.append("document_type", document.document_type);
-	formData.append(
-		"document_title",
-		document.document_title ?? document.file_name[0].name.split(".")[0],
-	);
-	formData.append("document_status", document.document_status ?? "P");
-	formData.append("document_number", document.document_number);
-	formData.append("file_type", document.file_name[0].file.type);
-	// formData.append("document_file", document.document_file);
-	// // });
-	router.post(
-		route("qualification-document.update", {
-			qualification: props.qualification.id,
-		}),
-		formData,
-		{
-			preserveScroll: true,
-			onSuccess: () => {
-				emit("documentSubmitted");
-			},
-			onError: (errors) => {
-				const errorNode = getNode("evidence");
-				const errorMsg = {
-					"evidence.document_type": errors.document_type ?? "",
-					"evidence.document_title": errors.document_title ?? "",
-					"evidence.document_status": errors.document_status ?? "",
-					"evidence.document_number": errors.document_number ?? "",
-					"evidence.file_name": errors.file_name ?? "",
-				};
-				errorNode.setErrors(["Sever side errors"], errorMsg);
-				// errorNode = { errors: "there are errors" }; // TODO fix display server side image errors
-			},
-		},
-	);
-};
 
 const submitHandler = (data, node) => {
+	isSubmitting.value = true;
 	router.patch(
 		route("qualification.update", {
 			qualification: props.qualification.id,
@@ -73,29 +35,41 @@ const submitHandler = (data, node) => {
 				emit("formSubmitted");
 			},
 			onError: (errors) => {
-				node.setErrors(["Sever side errors"], errors);
+				node.setErrors(["Server side errors"], errors);
+			},
+			onFinish: () => {
+				isSubmitting.value = false;
 			},
 		},
 	);
-	// if (data.staffQualification.evidence.file_name.length > 0) {
-	// 	submitDocuments(data.staffQualification.evidence);
-	// }
 };
 </script>
 
 <template>
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Qualification</h1>
+
 		<FormKit
 			type="form"
-			submit-label="Save"
+			:disabled="isSubmitting"
 			:value="qualification"
 			@submit="submitHandler"
 		>
-			<QualificationForm />
+			<QualificationForm :qualification-levels="qualificationLevels" />
 
-			<!-- {{ document }} -->
-			<!-- <QualificationEvidence :document="document" /> -->
+			<template #submit>
+				<button
+					type="submit"
+					:disabled="isSubmitting"
+					class="mt-4 inline-flex items-center justify-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+				>
+					<ArrowPathIcon
+						v-if="isSubmitting"
+						class="w-4 h-4 mr-2 animate-spin"
+					/>
+					{{ isSubmitting ? "Saving..." : "Save" }}
+				</button>
+			</template>
 		</FormKit>
 	</main>
 </template>

@@ -65,10 +65,10 @@ const breadCrumbLinks = [
 	{
 		name: props.units.data[0]?.institution.name,
 		url:
-			props.units.data[0]?.len() > 1
+			props.units.data[0]?.length > 1
 				? route("institution.show", {
 						institution: props.units.data[0]?.institution.id,
-				  })
+					})
 				: "/institution",
 	},
 ];

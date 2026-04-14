@@ -1,158 +1,171 @@
 <script setup>
-import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, Link, usePage } from "@inertiajs/vue3";
-import PageHeader from "@/Components/PageHeader.vue";
-import BreadCrumpVue from "@/Components/BreadCrump.vue";
-import { ref, watch, computed } from "vue";
-import { debouncedWatch } from "@vueuse/core";
-import { router } from "@inertiajs/vue3";
-import SubUnits from "./SubUnits.vue";
-import UnitStaff from "./UnitStaff.vue";
-import InfoCard from "@/Components/InfoCard.vue";
-import { PencilSquareIcon, PlusIcon } from "@heroicons/vue/20/solid";
-import Modal from "@/Components/NewModal.vue";
+import { ref, computed } from "vue";
+import { Head, usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
+import { router } from "@inertiajs/vue3";
+
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
+import Modal from "@/Components/NewModal.vue";
+
+// New section components
+import UnitHeroSection from "./partials/UnitHeroSection.vue";
+import UnitStatsSection from "./partials/UnitStatsSection.vue";
+import UnitOfficeSection from "./partials/UnitOfficeSection.vue";
+import SubUnitsCardGrid from "./partials/SubUnitsCardGrid.vue";
+import RankDistributionSection from "./partials/RankDistributionSection.vue";
+import StaffDirectorySection from "./partials/StaffDirectorySection.vue";
+
+// Modal components
 import EditUnit from "./partials/Edit.vue";
 import AddSubUnit from "./partials/AddSubUnit.vue";
-import { download } from "@formkit/icons";
+import DeleteUnit from "./Delete.vue";
+import ManageOfficeModal from "./partials/ManageOfficeModal.vue";
+import RemoveOfficeModal from "./partials/RemoveOfficeModal.vue";
 
-let props = defineProps({
+const props = defineProps({
 	unit: Object,
 	filters: Object,
+	rank_distribution: Array,
 });
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
 
-let search = ref(props.filters.search);
-
-let dept = ref(props.filters.dept);
-let staff = ref(props.filters.staff);
-
-debouncedWatch(
-	search,
-	() => {
-		router.get(
-			route("unit.show", {
-				unit: props.unit.id,
-			}),
-			{ search: search.value },
-			{ preserveState: true, replace: true, preserveScroll: true },
-		);
-	},
-	{ debounce: 300 },
-);
-debouncedWatch(
-	staff,
-	() => {
-		router.get(
-			route("unit.show", {
-				unit: props.unit.id,
-			}),
-			{ staff: staf.value },
-			{ preserveState: true, replace: true, preserveScroll: true },
-		);
-	},
-	{ debounce: 300 },
-);
-
-let num = 1;
-
-//
-let BreadcrumbLinks = [
-	{
-		name: props.unit?.institution?.name,
-		url: route("institution.show", {
-			institution: props.unit?.institution?.id,
-		}),
-	},
-	{
-		name: "Departments",
-		url: route("unit.index", {
-			institution: props.unit.institution.id,
-		}),
-	},
-	{
-		name: props.unit.parent != null ? props.unit.parent.name : null,
-		url: route("unit.show", {
-			unit: props.unit.parent != null ? props.unit.parent.id : 99999, //use 99999 and unit id if the unit has no parent
-		}),
-	},
-	{ name: props.unit.name },
-];
+// Modal states
 const openEditModal = ref(false);
 const toggleEditForm = useToggle(openEditModal);
 const openAddSubUnitModal = ref(false);
 const toggleAddUnitForm = useToggle(openAddSubUnitModal);
+const openDeleteModal = ref(false);
+const toggleDeleteModal = useToggle(openDeleteModal);
+const openManageOfficeModal = ref(false);
+const toggleManageOfficeModal = useToggle(openManageOfficeModal);
+const openRemoveOfficeModal = ref(false);
+const toggleRemoveOfficeModal = useToggle(openRemoveOfficeModal);
+
+// Check if user can edit unit
+const canEditUnit = computed(() => permissions.value?.includes("edit unit"));
+
+// Get current office (first item from the array since it's a BelongsToMany)
+const currentOffice = computed(() => {
+	const offices = props.unit?.current_office;
+	return Array.isArray(offices) ? offices[0] : offices;
+});
+
+// Handle unit deleted - redirect to parent or index
+const handleUnitDeleted = () => {
+	toggleDeleteModal();
+	if (props.unit?.parent?.id) {
+		router.visit(route("unit.show", { unit: props.unit.parent.id }));
+	} else {
+		router.visit(
+			route("unit.index", { institution: props.unit.institution?.id }),
+		);
+	}
+};
+
+// Handle search from staff directory
+const handleSearch = (query) => {
+	router.get(
+		route("unit.show", { unit: props.unit.id }),
+		{ search: query },
+		{ preserveState: true, replace: true, preserveScroll: true },
+	);
+};
 </script>
 
 <template>
-	<Head :title="props.unit.name" />
+	<Head :title="props.unit?.name" />
 
 	<MainLayout>
-		<!-- <template #header>
-			<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-				{{ props.unit.name }}
-			</h2>
-		</template> -->
-		<main class="max-w-7xl mx-auto">
-			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<div class="text-3xl m-4 text-gray-900 dark:text-gray-50">
-				{{ unit.name }}
-				<span v-if="unit.type" class="block text-xl">{{ unit.type }}</span>
-			</div>
-			<div class="shadow-sm sm:rounded-lg px-6 mt-2 border-b border-gray-200">
-				<section class="sm:flex items-center justify-between my-2">
-					<FormKit
-						v-model="search"
-						prefix-icon="search"
-						type="search"
-						placeholder="`Search unit...`"
-						autofocus
-					/>
-					<div class="flex gap-x-2">
-						<a
-							v-if="permissions?.includes('edit unit')"
-							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
-							href="#"
-							@click.prevent="toggleEditForm()"
-						>
-							<PencilSquareIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-							Edit Unit
-						</a>
-						<a
-							v-if="permissions?.includes('create unit')"
-							class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-800 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:hover:bg-gray-900"
-							href="#"
-							@click.prevent="toggleAddUnitForm()"
-						>
-							<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-							Add sub Unit
-						</a>
-					</div>
-				</section>
+		<main class="w-full px-4 sm:px-6 lg:px-8 py-6">
+			<!-- Hero Section with Header -->
+			<UnitHeroSection
+				:unit="props.unit"
+				:permissions="permissions"
+				@edit="toggleEditForm()"
+				@add-sub-unit="toggleAddUnitForm()"
+				@delete="toggleDeleteModal()"
+			/>
 
-				<div class="flex flex-col items-center justify-center gap-x-4">
-					<SubUnits
-						v-if="unit.subs.length > 0"
-						v-model="dept"
-						:download="permissions?.includes('download unit staff')"
-						:type="unit.name"
-						:subs="props.unit"
-					/>
-					<UnitStaff
-						:download="permissions?.includes('download unit staff')"
-						:unit="props.unit"
-					/>
-				</div>
+			<!-- Dashboard Sections -->
+			<div class="space-y-8">
+				<!-- Overview Stats -->
+				<UnitStatsSection :unit="props.unit" />
+
+				<!-- Office Location -->
+				<UnitOfficeSection
+					:office="currentOffice"
+					:can-edit="canEditUnit"
+					@manage="toggleManageOfficeModal()"
+					@remove="toggleRemoveOfficeModal()"
+				/>
+
+				<!-- Sub-Units Card Grid -->
+				<SubUnitsCardGrid
+					v-if="props.unit?.subs?.length > 0"
+					:subs="props.unit.subs"
+					:parent-name="props.unit.name"
+					:can-download="permissions?.includes('download active staff data')"
+				/>
+
+				<!-- Rank Distribution -->
+				<RankDistributionSection
+					v-if="props.rank_distribution?.length > 0"
+					:distribution="props.rank_distribution"
+				/>
+
+				<!-- Staff Directory -->
+				<StaffDirectorySection
+					:staff="props.unit?.staff || []"
+					:subs="props.unit?.subs || []"
+					:unit-id="props.unit?.id"
+					:unit-name="props.unit?.name"
+					:can-download="permissions?.includes('download active staff data')"
+					@search="handleSearch"
+				/>
 			</div>
 		</main>
+
+		<!-- Edit Unit Modal -->
 		<Modal :show="openEditModal" @close="toggleEditForm()">
-			<EditUnit :unit="props.unit.id" @form-submitted="toggleEditForm()" />
+			<EditUnit :unit="props.unit?.id" @form-submitted="toggleEditForm()" />
 		</Modal>
+
+		<!-- Add Sub-Unit Modal -->
 		<Modal :show="openAddSubUnitModal" @close="toggleAddUnitForm()">
-			<!-- subunit -->
-			<AddSubUnit :unit="props.unit.id" @form-submitted="toggleAddUnitForm()" />
+			<AddSubUnit
+				:unit="props.unit?.id"
+				@form-submitted="toggleAddUnitForm()"
+			/>
+		</Modal>
+
+		<!-- Delete Unit Modal -->
+		<Modal :show="openDeleteModal" @close="toggleDeleteModal()">
+			<DeleteUnit
+				:selected-model="props.unit"
+				@cancel-delete="toggleDeleteModal()"
+				@unit-deleted="handleUnitDeleted"
+			/>
+		</Modal>
+
+		<!-- Manage Office Modal -->
+		<Modal :show="openManageOfficeModal" @close="toggleManageOfficeModal()">
+			<ManageOfficeModal
+				:unit-id="props.unit?.id"
+				:current-office="currentOffice"
+				@form-submitted="toggleManageOfficeModal()"
+			/>
+		</Modal>
+
+		<!-- Remove Office Modal -->
+		<Modal :show="openRemoveOfficeModal" @close="toggleRemoveOfficeModal()">
+			<RemoveOfficeModal
+				:unit-id="props.unit?.id"
+				:office-name="currentOffice?.name"
+				@cancel="toggleRemoveOfficeModal()"
+				@removed="toggleRemoveOfficeModal()"
+			/>
 		</Modal>
 	</MainLayout>
 </template>

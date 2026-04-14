@@ -13,6 +13,11 @@ enum DocumentStatusEnum: string
 
     public function getDocumentStatus(): string
     {
+        return $this->label();
+    }
+
+    public function label(): string
+    {
         return match ($this) {
             self::Draft => 'Draft',
             self::Pending => 'Pending',

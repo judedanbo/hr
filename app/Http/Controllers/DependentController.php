@@ -55,6 +55,13 @@ class DependentController extends Controller
             'relation' => $request->validated()['relation'],
         ]);
 
+        // Create contacts for the dependent
+        if ($request->has('contacts')) {
+            foreach ($request->validated()['contacts'] as $contact) {
+                $newPerson->contacts()->create($contact);
+            }
+        }
+
         return redirect()->back()->with('success', 'Dependent created successfully');
     }
 

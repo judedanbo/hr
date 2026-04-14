@@ -60,7 +60,7 @@ class AllSeparatedExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             $staff->person->full_name,
             $staff->currentRank?->job?->name,
             $staff->statuses->first()->start_date?->format('d F, Y'),
-            $staff->hire_date->diff($staff->statuses->first()->start_date)->format('%y years'),
+            $staff->years_served . ' years',
             $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
             $staff->person->contacts->count() > 0 ? $staff->person->contacts->where('contact_type', ContactTypeEnum::PHONE)->map(function ($item) {
                 return $item->contact;

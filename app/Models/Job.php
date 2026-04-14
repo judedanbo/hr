@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Job extends Model
 {
-    use HasFactory, SoftDeletes, LogAllTraits;
+    use HasFactory, LogAllTraits, SoftDeletes;
 
     protected $fillable = ['name', 'institution_id', 'job_category_id'];
 
@@ -80,10 +79,10 @@ class Job extends Model
     /**
      * Get the previousRank associated with the Job
      */
-    public function previousRank(): BelongsTo
-    {
-        return $this->belongsTo(Job::class, 'previous_rank_id');
-    }
+    // public function previousRank(): BelongsTo
+    // {
+    //     return $this->belongsTo(Job::class, 'previous_rank_id');
+    // }
 
     /**
      * Get the job category associated with the Job

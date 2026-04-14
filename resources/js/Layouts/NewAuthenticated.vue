@@ -22,6 +22,7 @@ import {
 	UsersIcon,
 	XMarkIcon,
 	UserGroupIcon,
+	ShieldCheckIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -142,6 +143,13 @@ const navigation = [
 		current: route().current("logs.*"),
 		visible: permissions.value?.includes("view all audit logs"),
 	},
+	{
+		name: "Data Integrity",
+		href: route("data-integrity.index"),
+		icon: ShieldCheckIcon,
+		current: route().current("data-integrity.*"),
+		visible: page.props?.auth?.roles?.includes("super-administrator"),
+	},
 ];
 const userNavigation = [
 	// { name: "Your profile", href: "#" },
@@ -232,10 +240,7 @@ const closeAlert = (index) => {
 			<div
 				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-900 dark:bg-gray-800"
 			>
-				<Link
-					:href="route('dashboard')"
-					class="flex h-16 shrink-0 items-center pl-2"
-				>
+				<Link :href="route('dashboard')" class="flex h-16 shrink-0 items-center pl-2">
 					<BreezeApplicationLogo class="block h-9 w-auto" />
 					<div class="mx-2">
 						<h2

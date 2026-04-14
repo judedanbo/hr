@@ -6,7 +6,6 @@ use App\Enums\CountryEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
 use App\Traits\LogAllTraits;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Person extends Model
 {
-    use HasFactory, SoftDeletes, LogAllTraits;
+    use HasFactory, LogAllTraits, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -47,7 +46,7 @@ class Person extends Model
         'nationality' => CountryEnum::class,
     ];
 
-    /// get full name of person
+    // / get full name of person
     public function getFullNameAttribute(): string
     {
         return "{$this->title} {$this->first_name} {$this->other_names} {$this->surname}";
@@ -79,7 +78,7 @@ class Person extends Model
 
     public function getAgeAttribute(): int
     {
-        return $this->date_of_birth->diffInYears(new Carbon());
+        return (int) $this->date_of_birth?->diffInYears();
     }
 
     public function getNumberAttribute(): int
@@ -200,6 +199,7 @@ class Person extends Model
     {
         return $query->where('gender', GenderEnum::MALE);
     }
+
     public function scopeFemale($query)
     {
         return $query->where('gender', GenderEnum::FEMALE);
@@ -209,6 +209,7 @@ class Person extends Model
     {
         return $this->institution()->exists() ?? false;
     }
+
     public function isRetired(): bool
     {
         return $this->retired()->exists();

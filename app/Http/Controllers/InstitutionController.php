@@ -6,11 +6,19 @@ use App\Http\Requests\StoreInstitutionRequest;
 use App\Http\Requests\UpdateInstitutionRequest;
 use App\Models\Institution;
 use App\Models\Unit;
+use App\Services\InstitutionDashboardService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class InstitutionController extends Controller
 {
+    public function __construct(
+        protected InstitutionDashboardService $dashboardService
+    ) {}
+
     public function index()
     {
         return Inertia::render('Institution/Index', [
@@ -84,80 +92,48 @@ class InstitutionController extends Controller
     {
         $institution = Institution::query()
             ->where('id', $institution)
-            ->withCount([
-                'departments' => function ($query) {
-                    $query->withCount(['staff' => function ($query) {
-                        $query->active();
-                    }]);
-                    $query->whereNull('end_date');
-                },
-                'divisions',
-                'units' => function ($query) {
-                    $query->where(function ($query) {
-                        $query->whereHas('staff', function ($query) {
-                            $query->active();
-                        });
-                        $query->orWhereHas('subs', function ($query) {
-                            $query->whereHas('staff', function ($query) {
-                                $query->active();
-                            });
-                        });
-                    });
-                },
-                'staff' => function ($query) {
-                    // $query->active();
-                },
-            ])
             ->firstOrFail();
 
-        $departments = Unit::query()
-            ->with(['subs' => function ($query) {
-                $query->withCount('subs');
-                $query->withCount(['staff' => function ($query) {
-                    $query->active();
-                }]);
-            }])
-            ->withCount([
-                'subs' => function ($query) {
-                    $query->whereHas('staff', function ($query) {
-                        $query->active();
-                    });
-                },
-                'staff' => function ($query) {
-                    $query->active();
-                },
-                'divisions',
-            ])
-            ->where('units.type', 'DEP')
-            ->get();
+        // Get all dashboard data from the service
+        $dashboardData = $this->dashboardService->getDashboardData($institution);
 
         return Inertia::render('Institution/Show', [
-            'institution' => $institution != null ? [
+            'institution' => [
                 'id' => $institution->id,
                 'name' => $institution->name,
+                'abbreviation' => $institution->abbreviation,
                 'start_date' => $institution->start_date,
                 'end_date' => $institution->end_date,
-                'departments' => $institution->departments_count,
-                'divisions' => $institution->divisions_count,
-                'units' => $institution->units_count,
-                'staff' => $institution->staff_count,
-            ] : null,
-            'departments' => $departments != null && $departments->count() > 0 ?
-                $departments->map(fn($department) => [
-                    'id' => $department->id,
-                    'institution_id' => $department->institution_id,
-                    'name' => $department->name,
-                    'divisions' => $department->divisions_count,
-                    'type' => $department->type,
-                    'start_date' => $department->start_date,
-                    'end_date' => $department->end_date,
-                    'unit_id' => $department->unit_id,
-                    'units' => $department->subs_count, // + $department->subs->sum('subs_count'),
-                    'staff' => $department->staff_count + $department->subs?->sum('staff_count'),
-                    // 'units' => $department->subs->sum('subs_count'),
-                ])
-                : null,
+            ],
+            'overview' => $dashboardData['overview'],
+            'trends' => $dashboardData['trends'],
+            'analytics' => $dashboardData['analytics'],
+            'action_items' => $dashboardData['action_items'],
+            'departments' => $dashboardData['departments'],
             'filters' => ['search' => request()->search],
+            'can' => [
+                'view_staff' => Gate::allows('view all staff'),
+                'view_promotions' => Gate::allows('view all staff promotions'),
+                'manage_units' => Gate::allows('edit unit'),
+                'view_data_integrity' => Gate::allows('view data integrity'),
+            ],
+        ]);
+    }
+
+    /**
+     * Get filtered staff list for drill-down modals
+     */
+    public function staffFilter(Institution $institution, Request $request): JsonResponse
+    {
+        $filter = $request->get('filter', 'active');
+        $params = $request->only(['value', 'code', 'min', 'max', 'id']);
+
+        $staff = $this->dashboardService->getFilteredStaff($institution, $filter, $params);
+
+        return response()->json([
+            'staff' => $staff,
+            'filter' => $filter,
+            'count' => count($staff),
         ]);
     }
 
@@ -251,7 +227,7 @@ class InstitutionController extends Controller
                 'units' => $stf->units?->map(fn($unit) => [
                     'id' => $unit->id,
                     'name' => $unit->name,
-                ]), //? [
+                ]), // ? [
                 //     'id' => $stf->unit->id,
                 //     'name' => $stf->unit->name
                 // ] : null

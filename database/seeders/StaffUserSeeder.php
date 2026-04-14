@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -16,14 +15,14 @@ class StaffUserSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'upload avatar']);
-        Permission::create(['name' => 'edit avatar']);
-        Permission::create(['name' => 'view dependent']);
-        Permission::create(['name' => 'create dependent']);
-        Permission::create(['name' => 'edit dependent']);
-        Permission::create(['name' => 'delete dependent']);
+        Permission::firstOrCreate(['name' => 'upload avatar']);
+        Permission::firstOrCreate(['name' => 'edit avatar']);
+        Permission::firstOrCreate(['name' => 'view dependent']);
+        Permission::firstOrCreate(['name' => 'create dependent']);
+        Permission::firstOrCreate(['name' => 'edit dependent']);
+        Permission::firstOrCreate(['name' => 'delete dependent']);
 
-        Role::create(['name' => 'staff'])
+        Role::firstOrCreate(['name' => 'staff', 'guard_name' => 'web'])
             ->syncPermissions([
                 'view staff',
                 'upload avatar',

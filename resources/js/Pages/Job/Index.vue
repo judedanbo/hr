@@ -25,8 +25,16 @@ let toggle = useToggle(openAddDialog);
 let props = defineProps({
 	jobs: { type: Object, required: true },
 	filters: { type: Object, default: () => {} },
+	stats: { type: Object, required: true },
 });
 const navigation = computed(() => useNavigation(props.jobs));
+
+const statsArray = computed(() => [
+	{ title: "Total Harmonized Grades", value: props.stats.total_harmonized_grades },
+	{ title: "Active Staff", value: props.stats.active_staff },
+	{ title: "Due for Promotion", value: props.stats.due_for_promotion },
+	{ title: "All Time", value: props.stats.all_time },
+]);
 
 let BreadCrumpLinks = [
 	{
@@ -55,6 +63,7 @@ const searchJobs = (value) => {
 				<PageHeader
 					title="Ranks"
 					:total="jobs.total"
+					:stats="statsArray"
 					:search="search"
 					:add-permission="permissions?.includes('create job')"
 					action-text="Add Rank"

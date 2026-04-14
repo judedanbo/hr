@@ -1,36 +1,43 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import DocumentPreview from "./DocumentPreview.vue";
+
 const props = defineProps({
 	document: {
 		type: Object,
 		default: null,
 	},
+	documentTypes: {
+		type: Array,
+		default: () => [],
+	},
 });
+
 const url = ref(null);
 const fileType = ref(null);
 
 onMounted(() => {
-	url.value = props.document
-		? "/storage/qualifications/" + props.document.file_name
-		: "/images/placeholder.webp";
-	fileType.value = props.document ? props.document.file_type : null;
+	if (props.document) {
+		url.value = "/storage/qualifications/" + props.document.file_name;
+		fileType.value = props.document.file_type;
+	} else {
+		url.value = null;
+		fileType.value = null;
+	}
 });
 
-const documentChanged = () => {
-	const file = file_name.files[0];
-	url.value = file ? URL.createObjectURL(file) : "/images/placeholder.webp";
-	fileType.value = file ? file.type : null;
+const documentChanged = (files) => {
+	if (files && files.length > 0) {
+		const file = files[0].file;
+		url.value = URL.createObjectURL(file);
+		fileType.value = file.type;
+	} else {
+		url.value = props.document
+			? "/storage/qualifications/" + props.document.file_name
+			: null;
+		fileType.value = props.document ? props.document.file_type : null;
+	}
 };
-const documentType = ref([]);
-onMounted(async () => {
-	const documentTypeData = await axios.get(route("document-types"));
-	documentType.value = documentTypeData.data;
-});
-// const documentType = async () => {
-// 	const documentTypeData = await axios.get(route("document-types"));
-// 	return await documentTypeData.data;
-// };
 </script>
 <template>
 	<div class="flex justify-between py-2 space-x-3">
@@ -40,27 +47,29 @@ onMounted(async () => {
 			name="document_type"
 			label="Document Type"
 			placeholder="Select type of document"
-			:options="documentType"
+			:options="documentTypes"
+			:value="document?.document_type"
 			outer-class="flex-2"
 		/>
 		<FormKit
 			id="document_title"
 			type="text"
 			name="document_title"
-			label="Document name"
-			placeholder="Document name"
+			label="Document Title"
+			placeholder="e.g. Bachelor's Degree Certificate"
 			validation="length:0,100"
+			:value="document?.document_title"
 			outer-class="flex-1"
 		/>
 	</div>
-	<DocumentPreview :url="document.file_name" :type="document.file_type" />
+	<DocumentPreview :url="url" :type="fileType" />
 	<FormKit
 		id="file_name"
 		type="file"
 		name="file_name"
+		label="Upload Document"
+		help="Accepted formats: PDF, JPG, JPEG, PNG (max 2MB)"
 		accept=".pdf,.jpg,.jpeg,.png"
-		validation="file"
 		@input="documentChanged"
-	>
-	</FormKit>
+	/>
 </template>

@@ -112,8 +112,12 @@ let props = defineProps({
 								"
 								:can-edit="permissions?.includes('update staff')"
 								:can-delete="permissions?.includes('delete staff')"
-								:can-approve="permissions?.includes('approve staff transfer')"
-								:items="['Approve', 'Edit', 'Delete']"
+								:can-approve="permissions?.includes('update staff transfers')"
+								:items="
+									transfer.status === 'Pending'
+										? ['Approve', 'Edit', 'Delete']
+										: ['Edit', 'Delete']
+								"
 								@item-clicked="(action) => subMenuClicked(action, transfer)"
 							/>
 						</td>

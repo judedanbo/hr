@@ -15,6 +15,7 @@ const emit = defineEmits(["formSubmitted"]);
 const contact_types = ref([]);
 const gender = ref([]);
 const maritalStatus = ref([]);
+const qualificationLevels = ref([]);
 onMounted(async () => {
 	const { data } = await axios.get(route("contact-type.index"));
 	contact_types.value = data;
@@ -22,6 +23,8 @@ onMounted(async () => {
 	gender.value = genderData.data;
 	const maritalStatusData = await axios.get(route("marital-status.index"));
 	maritalStatus.value = maritalStatusData.data;
+	const qualificationLevelsData = await axios.get(route("qualification-level.index"));
+	qualificationLevels.value = qualificationLevelsData.data;
 });
 
 // onMounted(async() =>{
@@ -96,7 +99,7 @@ const submitHandler = (data, node) => {
 					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">
 						Professional and Academic qualifications
 					</h1>
-					<QualificationForm />
+					<QualificationForm :qualification-levels="qualificationLevels" />
 				</FormKit>
 				<FormKit type="step" name="employment">
 					<h1 class="mb-4 font-semibold tracking-wider text-lg text-green-800 dark:text-gray-200">

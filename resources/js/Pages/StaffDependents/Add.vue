@@ -2,6 +2,7 @@
 import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import PersonalInformationForm from "@/Pages/Person/partials/PersonalInformationForm.vue";
+import DependentContactsForm from "@/Pages/Dependent/partials/DependentContactsForm.vue";
 import ImageUpload from "@/Pages/Person/partials/ImageUpload.vue";
 import AddDependentForm from "./Create.vue";
 
@@ -16,8 +17,9 @@ defineProps({
 
 const page_errors = ref(null);
 
-const submitHandler = (data, node) => {
+const submitHandler = async (data, node) => {
 	const fd = new FormData();
+	const dependantData = await data.dependentForm;
 	// fd.append('image', data.staffData.image.image[0].file)
 	// const profileImage = data.staffData.image.image[0].file
 	// data.staffData.personalInformation.image = profileImage
@@ -50,6 +52,13 @@ const submitHandler = (data, node) => {
 	if (data.dependentForm.image.image[0]?.file) {
 		fd.append("image", data.dependentForm.image.image[0].file);
 	}
+	if (dependantData.contacts?.contacts?.length) {
+		dependantData.contacts.contacts.forEach((contact, index) => {
+			fd.append(`contacts[${index}][contact_type]`, contact.contact_type ?? "");
+			fd.append(`contacts[${index}][contact]`, contact.contact ?? "");
+		});
+	}
+
 	// fd.append('image', data.dependentForm.image.image[0]?.file ?? '')
 
 	// axios.post(route("dependent.store"), fd)
@@ -111,11 +120,14 @@ const submitHandler = (data, node) => {
 					<PersonalInformationForm />
 				</FormKit>
 
-				<FormKit id="image" type="step" name="image">
-					<ImageUpload />
-				</FormKit>
 				<FormKit id="relation" type="step" name="relation">
 					<AddDependentForm :staff-id="staffId" />
+				</FormKit>
+				<FormKit id="contacts" type="step" name="contacts">
+					<DependentContactsForm :staff-id="staffId" />
+				</FormKit>
+				<FormKit id="image" type="step" name="image">
+					<ImageUpload />
 					<template #stepNext>
 						<FormKit type="submit" label="Add Dependent" />
 					</template>

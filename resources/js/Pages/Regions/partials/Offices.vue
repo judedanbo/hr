@@ -152,7 +152,7 @@ const emit = defineEmits([
 									class="relative text-xl whitespace-nowrap py-5 pl-3 pr-4 text-right font-medium sm:pr-0 lg:pr-8"
 								>
 									<Link
-										:href="route('office.show', { office: office.id })"
+										:href="('/office/', office.id)"
 										class="text-green-600 hover:text-green-900"
 										>View<span class="sr-only">, {{ office.name }}</span></Link
 									>

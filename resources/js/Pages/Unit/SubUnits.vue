@@ -86,9 +86,7 @@ const exportToExcel = (subUnitId) => {
 									<ArrowDownTrayIcon class="h-5 w-5" aria-hidden="true" />
 								</a>
 								<div class="pl-4">
-									<Link
-										class="text-xl"
-										:href="route('unit.show', { unit: subUnit.id })"
+									<Link class="text-xl" :href="'/unit/' + subUnit.id"
 										>{{ subUnit.name }}
 									</Link>
 									<div

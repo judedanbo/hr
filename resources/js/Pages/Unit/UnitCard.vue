@@ -26,9 +26,7 @@ defineProps({
 			<div
 				class="text-sm font-medium leading-6 text-gray-900 dark:text-gray-50"
 			>
-				<Link :href="route('unit.show', { unit: unit.id })"
-					>{{ unit.name }}
-				</Link>
+				<Link :href="'/unit/' + unit.id">{{ unit.name }} </Link>
 			</div>
 			<Menu as="div" class="relative ml-auto">
 				<MenuButton
@@ -53,7 +51,7 @@ defineProps({
 					>
 						<MenuItem>
 							<Link
-								:href="route('unit.show', { unit: unit.id })"
+								:href="'unit/' + unit.id"
 								class="block px-3 py-1 text-sm leading-6 text-gray-900 dark:text-gray-50 hover:bg-gray-200 dark:hover:bg-gray-800"
 							>
 								View<span class="sr-only">, {{ unit.name }}</span></Link

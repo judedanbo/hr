@@ -12,71 +12,57 @@ class NotePolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        //
+        return $user->can('view staff notes') || $user->can('view all staff');
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Note $note)
+    public function view(User $user, Note $note): bool
     {
-        //
+        return $user->can('view staff notes') || $user->id === $note->user_id;
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        //
+        return $user->can('create staff notes');
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Note $note)
+    public function update(User $user, Note $note): bool
     {
-        //
+        return $user->can('edit staff notes') || $user->id === $note->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Note $note)
+    public function delete(User $user, Note $note): bool
     {
-        //
+        return $user->can('edit staff notes') || $user->id === $note->user_id;
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Note $note)
+    public function restore(User $user, Note $note): bool
     {
-        //
+        return $user->can('edit staff notes');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Note $note)
+    public function forceDelete(User $user, Note $note): bool
     {
-        //
+        return $user->can('edit staff notes');
     }
 }

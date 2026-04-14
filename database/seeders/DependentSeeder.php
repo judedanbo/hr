@@ -14,13 +14,13 @@ class DependentSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view all dependents']);
-        // Permission::create(['name' => 'view dependent']);
-        // Permission::create(['name' => 'create dependent']);
-        Permission::create(['name' => 'update dependent']);
-        // Permission::create(['name' => 'delete dependent']);
-        Permission::create(['name' => 'restore dependent']);
-        Permission::create(['name' => 'destroy dependent']);
+        Permission::firstOrCreate(['name' => 'view all dependents']);
+        // Permission::firstOrCreate(['name' => 'view dependent']);
+        // Permission::firstOrCreate(['name' => 'create dependent']);
+        Permission::firstOrCreate(['name' => 'update dependent']);
+        // Permission::firstOrCreate(['name' => 'delete dependent']);
+        Permission::firstOrCreate(['name' => 'restore dependent']);
+        Permission::firstOrCreate(['name' => 'destroy dependent']);
 
         $role = \Spatie\Permission\Models\Role::findByName('staff');
         $role->givePermissionTo([

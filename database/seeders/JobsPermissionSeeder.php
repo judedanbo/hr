@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -15,12 +14,12 @@ class JobsPermissionSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'view all jobs']);
-        Permission::create(['name' => 'view job']);
-        Permission::create(['name' => 'create job']);
-        Permission::create(['name' => 'edit job']);
-        Permission::create(['name' => 'delete job']);
-        Permission::create(['name' => 'restore job']);
-        Permission::create(['name' => 'destroy job']);
+        Permission::firstOrCreate(['name' => 'view all jobs']);
+        Permission::firstOrCreate(['name' => 'view job']);
+        Permission::firstOrCreate(['name' => 'create job']);
+        Permission::firstOrCreate(['name' => 'edit job']);
+        Permission::firstOrCreate(['name' => 'delete job']);
+        Permission::firstOrCreate(['name' => 'restore job']);
+        Permission::firstOrCreate(['name' => 'destroy job']);
     }
 }
