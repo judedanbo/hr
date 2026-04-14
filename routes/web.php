@@ -468,6 +468,9 @@ Route::middleware(['auth', 'password_changed'])->prefix('qualifications/reports'
     Route::get('/', [\App\Http\Controllers\QualificationReportController::class, 'index'])
         ->name('index')
         ->middleware('can:qualifications.reports.view');
+    Route::get('/export/excel', [\App\Http\Controllers\QualificationReportController::class, 'exportExcel'])
+        ->name('export.excel')
+        ->middleware('can:qualifications.reports.export');
 });
 
 Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {

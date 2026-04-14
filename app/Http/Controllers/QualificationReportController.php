@@ -36,6 +36,39 @@ class QualificationReportController extends Controller
         ]);
     }
 
+    public function exportExcel(Request $request): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:list,by_unit,by_level,gaps',
+        ]);
+
+        $filter = $this->service->applyUnitScope(
+            QualificationReportFilter::fromRequest($request),
+            $request->user(),
+        );
+
+        [$export, $filename] = match ($validated['type']) {
+            'list' => [
+                new \App\Exports\Qualifications\QualificationListExport($filter),
+                'qualifications-list.xlsx',
+            ],
+            'by_unit' => [
+                new \App\Exports\Qualifications\QualificationByUnitExport($filter),
+                'qualifications-by-unit.xlsx',
+            ],
+            'by_level' => [
+                new \App\Exports\Qualifications\QualificationByLevelExport($filter),
+                'qualifications-by-level.xlsx',
+            ],
+            'gaps' => [
+                new \App\Exports\Qualifications\StaffWithoutQualificationsExport($filter),
+                'staff-without-qualifications.xlsx',
+            ],
+        };
+
+        return \Maatwebsite\Excel\Facades\Excel::download($export, $filename);
+    }
+
     /** @return array<string, mixed> */
     private function filterOptions(): array
     {
