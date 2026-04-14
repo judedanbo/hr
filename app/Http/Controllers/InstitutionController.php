@@ -36,7 +36,7 @@ class InstitutionController extends Controller
                 ->whereNull('end_date')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn($institution) => [
+                ->through(fn ($institution) => [
                     'id' => $institution->id,
                     'name' => $institution->name,
                     'start_date' => $institution->start_date,
@@ -79,7 +79,7 @@ class InstitutionController extends Controller
                 'name' => $institution->name,
             ],
             'departments' => $institution->departments != null && $institution->departments->count() > 0 ?
-                $institution->departments->map(fn($department) => [
+                $institution->departments->map(fn ($department) => [
                     'id' => $department->id,
                     'name' => $department->name,
                 ])
@@ -116,6 +116,7 @@ class InstitutionController extends Controller
                 'view_promotions' => Gate::allows('view all staff promotions'),
                 'manage_units' => Gate::allows('edit unit'),
                 'view_data_integrity' => Gate::allows('view data integrity'),
+                'view_action_items' => ! auth()->user()->hasRole('aag-admin'),
             ],
         ]);
     }
@@ -211,7 +212,7 @@ class InstitutionController extends Controller
             ->first();
 
         return Inertia::render('Institution/Staffs', [
-            'staff' => $institution->staff ? $institution->staff->map(fn($stf) => [
+            'staff' => $institution->staff ? $institution->staff->map(fn ($stf) => [
                 'staff_id' => $stf->id,
                 'staff_number' => $stf->staff_number,
                 'old_staff_number' => $stf->old_staff_number,
@@ -224,7 +225,7 @@ class InstitutionController extends Controller
                 'initials' => $stf->person->initials,
                 'current_job' => $stf->ranks[0]->name,
                 'current_job_id' => $stf->ranks[0]->id,
-                'units' => $stf->units?->map(fn($unit) => [
+                'units' => $stf->units?->map(fn ($unit) => [
                     'id' => $unit->id,
                     'name' => $unit->name,
                 ]), // ? [
@@ -287,7 +288,7 @@ class InstitutionController extends Controller
 
                     'email' => strtolower(explode(' ', $staff->person->other_names)[0]) . '.' . strtolower(explode(' ', $staff->person->surname)[0]) . '@audit.gov.gh',
 
-                    'jobs' => $staff->jobs->count() > 0 ? $staff->jobs->map(fn($job) => [
+                    'jobs' => $staff->jobs->count() > 0 ? $staff->jobs->map(fn ($job) => [
                         'id' => $job->id,
                         'name' => $job->name,
 
@@ -298,7 +299,7 @@ class InstitutionController extends Controller
                         'id' => $staff->unit->id,
                         'name' => $staff->unit->name,
                     ] : null,
-                    'dependents' => $staff->dependents ? $staff->dependents->map(fn($dep) => [
+                    'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
                         'id' => $dep->id,
                         'person_id' => $dep->person_id,
                         'name' => $dep->person->full_name,
@@ -333,7 +334,7 @@ class InstitutionController extends Controller
                 'id' => $institution->id,
                 'name' => $institution->name,
             ],
-            'jobs' => $institution->jobs->map(fn($job) => [
+            'jobs' => $institution->jobs->map(fn ($job) => [
                 'id' => $job->id,
                 'name' => $job->name,
                 'staff' => $job->staff_count,

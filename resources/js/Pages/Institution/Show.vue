@@ -160,6 +160,7 @@ function closeStaffModal() {
 
 				<!-- Action Items -->
 				<ActionItemsSection
+					v-if="can?.view_action_items"
 					:items="action_items"
 					@item-click="openStaffModal"
 				/>
