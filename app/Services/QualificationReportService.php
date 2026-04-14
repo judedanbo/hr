@@ -6,7 +6,9 @@ use App\DataTransferObjects\QualificationReportFilter;
 use App\Enums\QualificationLevelEnum;
 use App\Enums\QualificationStatusEnum;
 use App\Models\Qualification;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class QualificationReportService
 {
@@ -226,6 +228,48 @@ class QualificationReportService
         }
 
         return ['count' => $count, 'sparkline' => $sparkline];
+    }
+
+    /**
+     * Scope a filter to the user's accessible units based on their permissions.
+     *
+     * - view.all  → filter is returned unchanged.
+     * - view.own_unit → resolve the user's current unit and inject it into the filter.
+     *   If the unit cannot be resolved the filter is returned unchanged.
+     * - no matching permission → filter returned unchanged.
+     */
+    public function applyUnitScope(QualificationReportFilter $filter, User $user): QualificationReportFilter
+    {
+        if ($user->can('qualifications.reports.view.all')) {
+            return $filter;
+        }
+
+        if ($user->can('qualifications.reports.view.own_unit')) {
+            $unitId = $this->resolveCurrentUnitId($user);
+            if ($unitId !== null) {
+                return $filter->withUnitId($unitId);
+            }
+        }
+
+        return $filter;
+    }
+
+    private function resolveCurrentUnitId(User $user): ?int
+    {
+        if ($user->person_id === null) {
+            return null;
+        }
+
+        $row = DB::table('staff_unit')
+            ->join('institution_person', 'staff_unit.staff_id', '=', 'institution_person.id')
+            ->where('institution_person.person_id', $user->person_id)
+            ->whereNull('institution_person.end_date')
+            ->whereNull('staff_unit.end_date')
+            ->orderByDesc('staff_unit.start_date')
+            ->select('staff_unit.unit_id')
+            ->first();
+
+        return $row?->unit_id;
     }
 
     /**
