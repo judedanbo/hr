@@ -105,6 +105,41 @@ class QualificationReportService
     }
 
     /**
+     * People with no approved qualification record.
+     * Restricted to Person records that have at least one active InstitutionPerson (end_date IS NULL).
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\Person>
+     */
+    public function staffWithoutQualifications(QualificationReportFilter $filter): \Illuminate\Support\Collection
+    {
+        return \App\Models\Person::query()
+            ->whereExists(function ($q) {
+                $q->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('institution_person')
+                    ->whereColumn('institution_person.person_id', 'people.id')
+                    ->whereNull('institution_person.end_date');
+            })
+            ->whereDoesntHave('qualifications', function ($q) {
+                $q->where('status', QualificationStatusEnum::Approved);
+            })
+            ->get();
+    }
+
+    /**
+     * Paginated list of qualifications with eager-loaded person context.
+     */
+    public function staffList(
+        QualificationReportFilter $filter,
+        int $perPage = 25,
+    ): \Illuminate\Contracts\Pagination\LengthAwarePaginator {
+        return $this->applyFilter(Qualification::query(), $filter)
+            ->with(['person'])
+            ->orderByDesc('year')
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    /**
      * Apply filter criteria to a qualifications query. Handles simple column filters.
      * Relationship-based filters (unit, department, gender, job_category) will be added
      * in later tasks when the joins/scopes are wired up.

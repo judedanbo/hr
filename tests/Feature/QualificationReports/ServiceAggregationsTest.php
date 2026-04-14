@@ -171,4 +171,39 @@ class ServiceAggregationsTest extends TestCase
         // last element is today
         $this->assertSame(2, end($result['sparkline']));
     }
+
+    public function test_staff_without_qualifications_excludes_people_who_have_approved_quals(): void
+    {
+        $with = Person::factory()->create();
+        InstitutionPerson::factory()->for($with)->create();
+        Qualification::factory()->for($with)->approved()->create();
+
+        $without = Person::factory()->create();
+        InstitutionPerson::factory()->for($without)->create();
+
+        $result = app(QualificationReportService::class)->staffWithoutQualifications(new QualificationReportFilter);
+
+        $ids = $result->pluck('id')->all();
+        $this->assertContains($without->id, $ids);
+        $this->assertNotContains($with->id, $ids);
+    }
+
+    public function test_staff_without_qualifications_includes_person_with_only_pending_quals(): void
+    {
+        $person = Person::factory()->create();
+        InstitutionPerson::factory()->for($person)->create();
+        Qualification::factory()->for($person)->pending()->create();
+
+        $result = app(QualificationReportService::class)->staffWithoutQualifications(new QualificationReportFilter);
+
+        $this->assertContains($person->id, $result->pluck('id')->all());
+    }
+
+    public function test_staff_list_is_paginated(): void
+    {
+        Qualification::factory()->approved()->count(30)->create();
+        $result = app(QualificationReportService::class)->staffList(new QualificationReportFilter, perPage: 10);
+        $this->assertSame(10, $result->perPage());
+        $this->assertGreaterThanOrEqual(3, $result->lastPage());
+    }
 }
