@@ -471,6 +471,11 @@ Route::middleware(['auth', 'password_changed'])->prefix('qualifications/reports'
     Route::get('/export/excel', [\App\Http\Controllers\QualificationReportController::class, 'exportExcel'])
         ->name('export.excel')
         ->middleware('can:qualifications.reports.export');
+    Route::get('/export/pdf', [\App\Http\Controllers\QualificationReportController::class, 'exportPdf'])
+        ->name('export.pdf')
+        ->middleware('can:qualifications.reports.export');
+    Route::get('/staff/{person}/profile.pdf', [\App\Http\Controllers\QualificationReportController::class, 'staffProfilePdf'])
+        ->name('staff.profile.pdf');
 });
 
 Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {

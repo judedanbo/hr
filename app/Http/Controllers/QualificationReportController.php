@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\DataTransferObjects\QualificationReportFilter;
 use App\Enums\QualificationLevelEnum;
 use App\Enums\QualificationStatusEnum;
+use App\Models\InstitutionPerson;
 use App\Models\JobCategory;
+use App\Models\Person;
 use App\Models\Qualification;
 use App\Models\Unit;
 use App\Services\QualificationReportService;
@@ -99,5 +101,107 @@ class QualificationReportController extends Controller
             'pending' => $this->service->pendingApprovalsStats()['count'],
             'withoutQualifications' => $this->service->staffWithoutQualifications($filter)->count(),
         ];
+    }
+
+    public function exportPdf(Request $request): \Illuminate\Http\Response
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:list,by_unit,by_level,gaps',
+        ]);
+
+        $filter = $this->service->applyUnitScope(
+            QualificationReportFilter::fromRequest($request),
+            $request->user(),
+        );
+
+        $payload = match ($validated['type']) {
+            'list' => [
+                'view' => 'pdf.qualifications.list',
+                'data' => [
+                    'rows' => $this->listRowsForPdf($filter),
+                    'user' => $request->user(),
+                    'filterSummary' => $this->filterSummary($filter),
+                ],
+                'filename' => 'qualifications-list.pdf',
+            ],
+            'by_unit' => [
+                'view' => 'pdf.qualifications.by_unit',
+                'data' => [
+                    'byUnit' => $this->service->byUnit($filter),
+                    'levels' => QualificationLevelEnum::orderedByRank(),
+                    'user' => $request->user(),
+                    'filterSummary' => $this->filterSummary($filter),
+                ],
+                'filename' => 'qualifications-by-unit.pdf',
+            ],
+            'by_level' => [
+                'view' => 'pdf.qualifications.by_level',
+                'data' => [
+                    'distribution' => $this->service->levelDistribution($filter),
+                    'levels' => QualificationLevelEnum::orderedByRank(),
+                    'totalStaff' => InstitutionPerson::query()->whereNull('end_date')->count() ?: 1,
+                    'user' => $request->user(),
+                    'filterSummary' => $this->filterSummary($filter),
+                ],
+                'filename' => 'qualifications-by-level.pdf',
+            ],
+            'gaps' => [
+                'view' => 'pdf.qualifications.gaps',
+                'data' => [
+                    'staff' => $this->service->staffWithoutQualifications($filter),
+                    'user' => $request->user(),
+                    'filterSummary' => $this->filterSummary($filter),
+                ],
+                'filename' => 'staff-without-qualifications.pdf',
+            ],
+        };
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView($payload['view'], $payload['data'])
+            ->setPaper('a4')
+            ->download($payload['filename']);
+    }
+
+    public function staffProfilePdf(Person $person, Request $request): \Illuminate\Http\Response
+    {
+        $user = $request->user();
+        $owns = $user?->person_id === $person->id;
+
+        if (! $owns && ! $user?->can('qualifications.reports.export')) {
+            abort(403);
+        }
+
+        $qualifications = $person->qualifications()->orderByDesc('year')->get();
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.qualifications.staff_profile', [
+            'person' => $person,
+            'qualifications' => $qualifications,
+            'user' => $user,
+        ])->setPaper('a4')->download("qualifications-{$person->id}.pdf");
+    }
+
+    /**
+     * Fetch qualifications + their staff_number for the PDF list view.
+     * Uses a left join to include staff_number without multiple round-trips.
+     */
+    private function listRowsForPdf(QualificationReportFilter $filter): \Illuminate\Support\Collection
+    {
+        return $this->service
+            ->applyFilter(Qualification::query(), $filter)
+            ->leftJoin('institution_person', 'qualifications.person_id', '=', 'institution_person.person_id')
+            ->with('person')
+            ->orderByDesc('qualifications.year')
+            ->select('qualifications.*', 'institution_person.staff_number')
+            ->limit(5000)
+            ->get();
+    }
+
+    private function filterSummary(QualificationReportFilter $filter): string
+    {
+        $parts = [];
+        foreach ($filter->toQueryArray() as $k => $v) {
+            $parts[] = "{$k}={$v}";
+        }
+
+        return $parts ? implode(', ', $parts) : 'none';
     }
 }
