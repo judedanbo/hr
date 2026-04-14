@@ -1199,6 +1199,7 @@ class DataIntegrityController extends Controller
 
         return Inertia::render('DataIntegrity/PendingQualifications', [
             'qualifications' => $pendingQualifications,
+            'pendingStats' => app(\App\Services\QualificationReportService::class)->pendingApprovalsStats(),
             'can' => [
                 'approve' => auth()->user()->can('approve staff qualification'),
             ],
