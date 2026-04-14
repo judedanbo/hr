@@ -67,7 +67,7 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             $staff->years_served . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
-            $staff->retirement_date->format('d F Y'),
+            $staff->retirement_date_formatted,
             $staff->currentRank?->start_date?->format('d F, Y'),
             $staff->currentUnit?->start_date?->format('d F, Y'),
             $staff->currentRank?->job?->category->level ?? null,
@@ -111,17 +111,23 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             ->when($this->filters['gender'] ?? null, fn ($q, $gender) => $q->filterByGender($gender))
             ->when($this->filters['status'] ?? null, fn ($q, $status) => $q->filterByStatus($status))
             ->when(($this->filters['hire_date_from'] ?? null) && ($this->filters['hire_date_to'] ?? null),
-                fn ($q) => $q->filterByHireDateRange($this->filters['hire_date_from'], $this->filters['hire_date_to']))
+                fn ($q) => $q->filterByHireDateRange($this->filters['hire_date_from'], $this->filters['hire_date_to'])
+            )
             ->when(($this->filters['hire_date_from'] ?? null) && ! ($this->filters['hire_date_to'] ?? null),
-                fn ($q) => $q->filterByHireDateFrom($this->filters['hire_date_from']))
+                fn ($q) => $q->filterByHireDateFrom($this->filters['hire_date_from'])
+            )
             ->when(($this->filters['hire_date_to'] ?? null) && ! ($this->filters['hire_date_from'] ?? null),
-                fn ($q) => $q->filterByHireDateTo($this->filters['hire_date_to']))
+                fn ($q) => $q->filterByHireDateTo($this->filters['hire_date_to'])
+            )
             ->when(($this->filters['age_from'] ?? null) && ($this->filters['age_to'] ?? null),
-                fn ($q) => $q->filterByAgeRange($this->filters['age_from'], $this->filters['age_to']))
+                fn ($q) => $q->filterByAgeRange($this->filters['age_from'], $this->filters['age_to'])
+            )
             ->when(($this->filters['age_from'] ?? null) && ! ($this->filters['age_to'] ?? null),
-                fn ($q) => $q->filterByAgeFrom($this->filters['age_from']))
+                fn ($q) => $q->filterByAgeFrom($this->filters['age_from'])
+            )
             ->when(($this->filters['age_to'] ?? null) && ! ($this->filters['age_from'] ?? null),
-                fn ($q) => $q->filterByAgeTo($this->filters['age_to']))
+                fn ($q) => $q->filterByAgeTo($this->filters['age_to'])
+            )
             ->search($this->filters['search'] ?? null);
     }
 }

@@ -24,8 +24,8 @@ class StaffListTransformer
             'dob' => $staff->person->date_of_birth?->format('d M Y'),
             'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
             'age' => $staff->person->age . ' years old',
-            'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-            'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+            'retirement_date' => $staff->retirement_date_formatted,
+            'retirement_date_distance' => $staff->retirement_date_diff,
             'current_rank' => $this->transformCurrentRank($staff),
             'current_unit' => $this->transformCurrentUnit($staff),
         ];

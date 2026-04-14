@@ -70,18 +70,30 @@ class InstitutionPersonController extends Controller
             ->when($request->department_id, fn ($q, $deptId) => $q->filterByDepartment($deptId))
             ->when($request->gender, fn ($q, $gender) => $q->filterByGender($gender))
             ->when($request->status, fn ($q, $status) => $q->filterByStatus($status))
-            ->when($request->hire_date_from && $request->hire_date_to,
-                fn ($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to))
-            ->when($request->hire_date_from && ! $request->hire_date_to,
-                fn ($q) => $q->filterByHireDateFrom($request->hire_date_from))
-            ->when($request->hire_date_to && ! $request->hire_date_from,
-                fn ($q) => $q->filterByHireDateTo($request->hire_date_to))
-            ->when($request->age_from && $request->age_to,
-                fn ($q) => $q->filterByAgeRange($request->age_from, $request->age_to))
-            ->when($request->age_from && ! $request->age_to,
-                fn ($q) => $q->filterByAgeFrom($request->age_from))
-            ->when($request->age_to && ! $request->age_from,
-                fn ($q) => $q->filterByAgeTo($request->age_to))
+            ->when(
+                $request->hire_date_from && $request->hire_date_to,
+                fn ($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to)
+            )
+            ->when(
+                $request->hire_date_from && ! $request->hire_date_to,
+                fn ($q) => $q->filterByHireDateFrom($request->hire_date_from)
+            )
+            ->when(
+                $request->hire_date_to && ! $request->hire_date_from,
+                fn ($q) => $q->filterByHireDateTo($request->hire_date_to)
+            )
+            ->when(
+                $request->age_from && $request->age_to,
+                fn ($q) => $q->filterByAgeRange($request->age_from, $request->age_to)
+            )
+            ->when(
+                $request->age_from && ! $request->age_to,
+                fn ($q) => $q->filterByAgeFrom($request->age_from)
+            )
+            ->when(
+                $request->age_to && ! $request->age_from,
+                fn ($q) => $q->filterByAgeTo($request->age_to)
+            )
             ->search($request->search)
             ->paginate(10)
             ->withQueryString()
@@ -225,24 +237,33 @@ class InstitutionPersonController extends Controller
                     'id_number' => $id->id_number,
                 ]) : null,
             ],
-            'qualifications' => $staff->person->qualifications->count() > 0 ? $staff->person->qualifications->map(fn ($qualification) => [
-                'id' => $qualification->id,
-                'person_id' => $qualification->person_id,
-                'course' => $qualification->course,
-                'institution' => $qualification->institution,
-                'qualification' => $qualification->qualification,
-                'qualification_number' => $qualification->qualification_number,
-                'level' => $qualification->level,
-                'year' => $qualification->year,
-                'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
-                    'document_type' => $document->document_type,
-                    'document_title' => $document->document_title,
-                    'document_status' => $document->document_status,
-                    'document_number' => $document->document_number,
-                    'file_name' => $document->file_name,
-                    'file_type' => $document->file_type,
-                ]) : null,
-            ]) : [],
+            'qualifications' => \App\Models\Qualification::query()
+                ->where('person_id', $staff->person->id)
+                ->visibleTo(auth()->user(), $staff->person->id)
+                ->with('documents')
+                ->get()
+                ->map(fn ($qualification) => [
+                    'id' => $qualification->id,
+                    'person_id' => $qualification->person_id,
+                    'course' => $qualification->course,
+                    'institution' => $qualification->institution,
+                    'qualification' => $qualification->qualification,
+                    'qualification_number' => $qualification->qualification_number,
+                    'level' => $qualification->level ? \App\Enums\QualificationLevelEnum::tryFrom($qualification->level)?->label() ?? $qualification->level : null,
+                    'year' => $qualification->year,
+                    'status' => $qualification->status?->label(),
+                    'status_color' => $qualification->status?->color(),
+                    'can_edit' => $qualification->canBeEditedBy(auth()->user()),
+                    'can_delete' => $qualification->canBeDeletedBy(auth()->user()),
+                    'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
+                        'document_type' => $document->document_type,
+                        'document_title' => $document->document_title,
+                        'document_status' => $document->document_status,
+                        'document_number' => $document->document_number,
+                        'file_name' => $document->file_name,
+                        'file_type' => $document->file_type,
+                    ]) : null,
+                ]),
             'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
                 'id' => $contact->id,
                 'contact' => $contact->contact,
@@ -269,8 +290,8 @@ class InstitutionPersonController extends Controller
                 'old_staff_number' => $staff->old_staff_number,
                 'hire_date' => $staff->hire_date?->format('d M Y'),
                 'hire_date_display' => $staff->hire_date?->diffForHumans(),
-                'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-                'retirement_date_display' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+                'retirement_date' => $staff->retirement_date_formatted,
+                'retirement_date_display' => $staff->retirement_date_diff,
                 'start_date' => $staff->start_date?->format('d M Y'),
                 'statuses' => $staff->statuses?->map(fn ($status) => [
                     'id' => $status->id,
@@ -415,7 +436,7 @@ class InstitutionPersonController extends Controller
             'file_number' => $staff->file_number,
             'old_staff_number' => $staff->old_staff_number,
             'hire_date' => $staff->hire_date?->format('d M Y'),
-            'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
+            'retirement_date' => $staff->retirement_date_formatted,
             'start_date' => $staff->start_date,
             'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
                 'id' => $rank->id,

@@ -27,7 +27,7 @@ class TransferServiceTest extends TestCase
         $this->institution = Institution::factory()->create();
     }
 
-    public function test_transfer_creates_new_unit_assignment(): void
+    public function test_transfer_creates_new_unit_assignment_with_pending_status(): void
     {
         $staff = InstitutionPerson::factory()->create([
             'institution_id' => $this->institution->id,
@@ -42,7 +42,7 @@ class TransferServiceTest extends TestCase
         $this->assertInstanceOf(StaffUnit::class, $result);
         $this->assertEquals($unit->id, $result->unit_id);
         $this->assertEquals($staff->id, $result->staff_id);
-        $this->assertEquals(TransferStatusEnum::Approved, $result->status);
+        $this->assertEquals(TransferStatusEnum::Pending, $result->status);
     }
 
     public function test_transfer_without_start_date_creates_pending_transfer(): void
@@ -61,7 +61,7 @@ class TransferServiceTest extends TestCase
         $this->assertNull($result->start_date);
     }
 
-    public function test_transfer_closes_previous_open_unit_assignments(): void
+    public function test_transfer_does_not_close_previous_open_unit_assignments(): void
     {
         $staff = InstitutionPerson::factory()->create([
             'institution_id' => $this->institution->id,
@@ -76,6 +76,8 @@ class TransferServiceTest extends TestCase
             'status' => TransferStatusEnum::Approved,
         ]);
 
+        // Creating a new transfer should NOT close previous assignments
+        // (that only happens when the transfer is approved)
         $this->service->transfer($staff, $newUnit->id, [
             'start_date' => '2024-01-01',
         ]);
@@ -85,8 +87,10 @@ class TransferServiceTest extends TestCase
         $oldUnitPivot = $staff->units()->where('staff_unit.unit_id', $oldUnit->id)->first();
         $newUnitPivot = $staff->units()->where('staff_unit.unit_id', $newUnit->id)->first();
 
-        $this->assertNotNull($oldUnitPivot->pivot->end_date);
+        // Previous assignment should remain open until transfer is approved
+        $this->assertNull($oldUnitPivot->pivot->end_date);
         $this->assertNull($newUnitPivot->pivot->end_date);
+        $this->assertEquals(TransferStatusEnum::Pending, $newUnitPivot->pivot->status);
     }
 
     public function test_update_transfer_modifies_existing_transfer(): void

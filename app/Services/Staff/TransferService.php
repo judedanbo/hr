@@ -14,24 +14,16 @@ class TransferService implements TransferServiceInterface
 {
     /**
      * Transfer a staff member to a new unit.
-     * Creates a new unit assignment and optionally closes previous assignments.
+     * Creates a new pending unit assignment. Use approveTransfer() to activate.
      */
     public function transfer(InstitutionPerson $staff, int $unitId, array $data): StaffUnit
     {
         return DB::transaction(function () use ($staff, $unitId, $data) {
             $startDate = isset($data['start_date']) ? Carbon::parse($data['start_date']) : null;
 
-            // Close any open unit assignments (except for the same unit)
-            if ($startDate) {
-                $staff->units()->wherePivot('end_date', null)
-                    ->wherePivot('unit_id', '<>', $unitId)
-                    ->update([
-                        'staff_unit.end_date' => $startDate->copy()->subDay(),
-                    ]);
-            }
-
-            // Determine initial status based on whether start_date is provided
-            $status = $startDate ? TransferStatusEnum::Approved : TransferStatusEnum::Pending;
+            // All new transfers start as pending - previous assignments are only
+            // closed when the transfer is explicitly approved via approveTransfer()
+            $status = TransferStatusEnum::Pending;
 
             // Attach the new unit
             $staff->units()->attach($unitId, [

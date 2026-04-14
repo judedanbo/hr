@@ -71,7 +71,7 @@ class StaffToRetireExport implements FromQuery, ShouldAutoSize, ShouldQueue, Wit
             $staff->hire_date === null ? '' : $staff->years_served . ' years',
             $staff->currentRank?->job?->name,
             $staff->currentUnit?->unit?->name,
-            $staff->retirement_date?->format('d F, Y'),
+            $staff->retirement_date_formatted,
             $staff->currentRank?->start_date?->format('d F, Y'),
             $staff->currentUnit?->start_date?->format('d F, Y'),
             $staff->currentRank?->job?->category->level,

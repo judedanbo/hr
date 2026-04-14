@@ -688,4 +688,25 @@ class InstitutionPerson extends Pivot
 
         return $this->person->date_of_birth->copy()->addYears(60);
     }
+
+    public function getRetirementDateFormattedAttribute(): ?string
+    {
+        if (! $this->retirement_date) {
+            return null;
+        }
+
+        return $this->retirement_date->format('d M Y');
+    }
+
+    public function getRetirementDateDiffAttribute(): ?string
+    {
+        if (! $this->retirement_date) {
+            return null;
+        }
+
+        return $this->retirement_date->diffForHumans([
+            'syntax' => Carbon::DIFF_RELATIVE_TO_NOW,
+            'parts' => 2,
+        ]);
+    }
 }

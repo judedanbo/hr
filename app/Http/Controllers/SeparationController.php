@@ -6,12 +6,11 @@ use App\Enums\Identity;
 use App\Models\Separation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class SeparationController extends Controller
 {
-    public function index(): RedirectResponse| \Inertia\Response
+    public function index(): RedirectResponse|\Inertia\Response
     {
         if (Gate::denies('view all separations')) {
             activity()
@@ -23,6 +22,7 @@ class SeparationController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to view all separations');
+
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view separated staff');
         }
         activity()
@@ -72,14 +72,14 @@ class SeparationController extends Controller
                     'dob' => $staff->person->date_of_birth?->format('d M Y'),
                     'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
                     'age' => $staff->person->age . ' years old',
-                    'retirement_date' => $staff->person->date_of_birth?->addYears(60)->format('d M Y'),
-                    'retirement_date_distance' => $staff->person->date_of_birth?->addYears(60)->diffForHumans(),
+                    'retirement_date' => $staff->retirement_date_formatted,
+                    'retirement_date_distance' => $staff->retirement_date_diff,
                     'ghana_card' => $staff->person->identities->where('id_type', Identity::GhanaCard)->first()?->id_number,
                     'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(function ($item) {
                         return [
-                            'id' => $item->id .  $item->contact_type_id .  $item->contact,
+                            'id' => $item->id . $item->contact_type_id . $item->contact,
                             'type' => $item->contact_type->label(),
-                            'value' => $item->contact
+                            'value' => $item->contact,
                         ];
                     }) : [],
                     'current_rank' => $staff->currentRank ? [
@@ -100,7 +100,7 @@ class SeparationController extends Controller
         ]);
     }
 
-    public function show(Separation $staff): RedirectResponse| \Inertia\Response
+    public function show(Separation $staff): RedirectResponse|\Inertia\Response
     {
         if (Gate::denies('view separation')) {
             activity()
@@ -112,6 +112,7 @@ class SeparationController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted to view separated staff');
+
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view separated staff');
         }
         activity()
@@ -124,6 +125,7 @@ class SeparationController extends Controller
             ])
             ->performedOn($staff)
             ->log('viewed separated staff');
+
         return Inertia::render('Separation/Show', []);
     }
 }
