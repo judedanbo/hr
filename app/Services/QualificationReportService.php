@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DataTransferObjects\QualificationReportFilter;
 use App\Enums\QualificationLevelEnum;
+use App\Enums\QualificationStatusEnum;
 use App\Models\Qualification;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -50,6 +51,57 @@ class QualificationReportService
         }
 
         return $counts;
+    }
+
+    /**
+     * Qualification counts per current unit, using highest qualification per person-per-unit.
+     *
+     * @return array<string, array<string, int>> ['Unit A' => ['masters' => 3, 'degree' => 5, ...], ...]
+     */
+    public function byUnit(QualificationReportFilter $filter): array
+    {
+        $ranks = collect(QualificationLevelEnum::cases())
+            ->mapWithKeys(fn ($c) => [$c->value => $c->rank()])
+            ->all();
+
+        $rows = $this->applyFilter(Qualification::query(), $filter)
+            ->where('qualifications.status', QualificationStatusEnum::Approved)
+            ->join('people', 'qualifications.person_id', '=', 'people.id')
+            ->join('institution_person', 'people.id', '=', 'institution_person.person_id')
+            ->join('staff_unit', function ($j) {
+                $j->on('staff_unit.staff_id', '=', 'institution_person.id')
+                    ->whereNull('staff_unit.end_date');
+            })
+            ->join('units', 'staff_unit.unit_id', '=', 'units.id')
+            ->get([
+                'qualifications.person_id',
+                'qualifications.level',
+                'units.id as unit_id',
+                'units.name as unit_name',
+            ]);
+
+        $highest = [];
+        foreach ($rows as $row) {
+            $currentLevel = $highest[$row->unit_name][$row->person_id] ?? null;
+            $newRank = $ranks[$row->level] ?? -1;
+            $currentRank = $currentLevel !== null ? ($ranks[$currentLevel] ?? -1) : -1;
+            if ($newRank > $currentRank) {
+                $highest[$row->unit_name][$row->person_id] = $row->level;
+            }
+        }
+
+        $result = [];
+        foreach ($highest as $unitName => $personLevels) {
+            $result[$unitName] = [];
+            foreach (QualificationLevelEnum::cases() as $case) {
+                $result[$unitName][$case->value] = 0;
+            }
+            foreach ($personLevels as $level) {
+                $result[$unitName][$level]++;
+            }
+        }
+
+        return $result;
     }
 
     /**

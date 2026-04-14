@@ -4,10 +4,14 @@ namespace Tests\Feature\QualificationReports;
 
 use App\DataTransferObjects\QualificationReportFilter;
 use App\Enums\QualificationLevelEnum;
+use App\Enums\TransferStatusEnum;
+use App\Models\InstitutionPerson;
 use App\Models\Person;
 use App\Models\Qualification;
+use App\Models\Unit;
 use App\Services\QualificationReportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ServiceAggregationsTest extends TestCase
@@ -51,5 +55,52 @@ class ServiceAggregationsTest extends TestCase
 
         $this->assertSame(0, $result['masters'] ?? 0);
         $this->assertSame(0, $result['degree'] ?? 0);
+    }
+
+    public function test_by_unit_groups_highest_qualifications_by_current_unit(): void
+    {
+        $unitA = Unit::factory()->create(['name' => 'Unit A']);
+
+        $person = Person::factory()->create();
+        $instPerson = InstitutionPerson::factory()->for($person)->create();
+
+        DB::table('staff_unit')->insert([
+            'staff_id' => $instPerson->id,
+            'unit_id' => $unitA->id,
+            'start_date' => now()->subYear()->toDateString(),
+            'end_date' => null,
+            'status' => TransferStatusEnum::Pending->value,
+        ]);
+
+        Qualification::factory()->for($person)->approved()->atLevel(QualificationLevelEnum::Degree)->create();
+        Qualification::factory()->for($person)->approved()->atLevel(QualificationLevelEnum::Masters)->create();
+
+        $result = app(QualificationReportService::class)->byUnit(new QualificationReportFilter);
+
+        $this->assertArrayHasKey('Unit A', $result);
+        $this->assertSame(1, $result['Unit A']['masters'] ?? 0, 'Person should be counted once at their highest level (Masters)');
+        $this->assertSame(0, $result['Unit A']['degree'] ?? 0, 'Person should NOT be double-counted under Degree');
+    }
+
+    public function test_by_unit_ignores_ended_unit_assignments(): void
+    {
+        $unitA = Unit::factory()->create(['name' => 'Ended Unit']);
+
+        $person = Person::factory()->create();
+        $instPerson = InstitutionPerson::factory()->for($person)->create();
+
+        DB::table('staff_unit')->insert([
+            'staff_id' => $instPerson->id,
+            'unit_id' => $unitA->id,
+            'start_date' => now()->subYears(2)->toDateString(),
+            'end_date' => now()->subYear()->toDateString(),  // ended assignment — should be excluded
+            'status' => TransferStatusEnum::Pending->value,
+        ]);
+
+        Qualification::factory()->for($person)->approved()->atLevel(QualificationLevelEnum::Masters)->create();
+
+        $result = app(QualificationReportService::class)->byUnit(new QualificationReportFilter);
+
+        $this->assertArrayNotHasKey('Ended Unit', $result);
     }
 }
