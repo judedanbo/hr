@@ -159,7 +159,7 @@ class AllPermissionsSeeder extends Seeder
             'destroy staff status',
 
             // ============================================
-            // Staff Qualifications (7)
+            // Staff Qualifications (8)
             // ============================================
             'view all staff qualifications',
             'view staff qualification',
@@ -168,6 +168,7 @@ class AllPermissionsSeeder extends Seeder
             'delete staff qualification',
             'restore staff qualification',
             'destroy staff qualification',
+            'download staff qualification data',
 
             // ============================================
             // Staff Notes (3)
