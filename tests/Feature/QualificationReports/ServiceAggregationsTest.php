@@ -206,4 +206,18 @@ class ServiceAggregationsTest extends TestCase
         $this->assertSame(10, $result->perPage());
         $this->assertGreaterThanOrEqual(3, $result->lastPage());
     }
+
+    public function test_cache_invalidates_when_qualification_is_saved(): void
+    {
+        $service = app(QualificationReportService::class);
+
+        $first = $service->levelDistribution(new QualificationReportFilter);
+        $this->assertSame(0, array_sum($first));
+
+        $person = Person::factory()->create();
+        Qualification::factory()->for($person)->approved()->atLevel(QualificationLevelEnum::Masters)->create();
+
+        $second = $service->levelDistribution(new QualificationReportFilter);
+        $this->assertSame(1, $second['masters']);
+    }
 }
