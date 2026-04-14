@@ -35,6 +35,7 @@ const navigation = [
 		href: route("dashboard"),
 		icon: HomeIcon,
 		current: route().current("institution.show"),
+		visible: permissions.value?.includes("view dashboard"),
 	},
 	{
 		name: "Staff",

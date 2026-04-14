@@ -247,10 +247,18 @@ class AllPermissionsSeeder extends Seeder
             'destroy separation',
 
             // ============================================
-            // Reports (2)
+            // Reports & Downloads (5)
             // ============================================
             'view all reports',
             'view report',
+            'download promotion data',
+            'download recruitment data',
+            'download rank staff data',
+
+            // ============================================
+            // Dashboard (1)
+            // ============================================
+            'view dashboard',
 
             // ============================================
             // Data Integrity (2)

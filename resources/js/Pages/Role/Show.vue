@@ -42,6 +42,7 @@ let props = defineProps({
 	role: { type: Object, default: () => null },
 	permissions: { type: Object, default: () => null },
 	users: { type: Object, default: () => null },
+	rolePermissionNames: { type: Array, default: () => [] },
 });
 
 let breadcrumbLinks = [
@@ -219,7 +220,7 @@ const editContactModal = () => {
 		>
 			<AddPermissionForm
 				:role="role.id"
-				role-permissions="permissions"
+				:role-permissions="rolePermissionNames"
 				@form-submitted="toggleAddPermissionForm()"
 			/>
 		</NewModal>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class PersonAvatarController extends Controller
 {
@@ -25,7 +27,8 @@ class PersonAvatarController extends Controller
 
     public function update(Request $request, Person $person)
     {
-        // dd($request->all());
+        $this->authorizeAvatarAction($request->user(), $person);
+
         $request->validate([
             'image' => [
                 'required',
@@ -35,11 +38,9 @@ class PersonAvatarController extends Controller
         ]);
 
         $avatar = Storage::disk('public')->put('avatars', $request->image);
-        // dd($avatar);
-        // $fileName = $request->file('image')->store('public/avatar');
 
         $person->update([
-            'image' => $avatar, //$request->file('image')->hashName(),
+            'image' => $avatar,
         ]);
 
         activity()
@@ -53,24 +54,32 @@ class PersonAvatarController extends Controller
 
     public function delete(Request $request, Person $person)
     {
+        $this->authorizeAvatarAction($request->user(), $person);
 
         $person->update([
             'image' => null,
         ]);
 
-        // record the action in the activity log
         activity()
             ->performedOn($person)
             ->causedBy($request->user())
             ->event('deleted avatar')
             ->log('Deleted avatar');
-        // ->create([
-        //     'action' => 'deleted',
-        //     'description' => 'Deleted avatar',
-        //     'model_type' => Person::class,
-        //     'model_id' => $person->id,
-        // ]);
 
         return back()->with('success', 'Image deleted successfully');
+    }
+
+    /**
+     * Users may modify their own avatar. Others require the upload avatar permission.
+     */
+    protected function authorizeAvatarAction(User $user, Person $person): void
+    {
+        if ($user->person?->id === $person->id) {
+            return;
+        }
+
+        if (! $user->can('upload avatar')) {
+            abort(Response::HTTP_FORBIDDEN, 'You can only modify your own avatar.');
+        }
     }
 }

@@ -2,6 +2,7 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import { onMounted, ref, watch, computed } from "vue";
+const permissions = computed(() => usePage().props?.auth.permissions);
 import { router } from "@inertiajs/vue3";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import RecruitmentChart from "./Chart.vue";
@@ -182,6 +183,7 @@ let BreadCrumpLinks = [
 											</div>
 											<div class="flex">
 												<a
+													v-if="permissions?.includes('download recruitment data')"
 													:href="route('report.recruitment.export-data')"
 													class="flex items-center justify-center gap-2 cursor-pointer px-4 border-b border-green-500 hover:text-white hover:bg-green-800 hover:border-white"
 												>

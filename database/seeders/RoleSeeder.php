@@ -18,6 +18,7 @@ class RoleSeeder extends Seeder
         'general-admin-user' => 'General administrative functions',
         'hr-user' => 'Human resources management access',
         'personel-user' => 'Personnel/staff data management',
+        'aag-admin' => 'AAG Admin with dashboard access',
         'internal-audit-user' => 'Internal audit with read-only staff list access',
         'staff' => 'Basic staff access with limited permissions',
     ];

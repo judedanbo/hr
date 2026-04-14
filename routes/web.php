@@ -122,9 +122,21 @@ Route::controller(PermissionController::class)->middleware(['auth', 'password_ch
 
 Route::get('/dashboard', function () {
     request()->session()->reflash();
-    $error = request()->session()->get('error');
-    // dd($error);
-    if (auth()->user()->hasRole('super-administrator')) {
+
+    $user = auth()->user();
+
+    // Staff role: redirect to their own staff page
+    if ($user->hasRole('staff')) {
+        if ($user->person) {
+            return redirect()
+                ->route('staff.show', [$user->person->institution->first()->staff->id]);
+        }
+
+        return redirect()->route('staff.index');
+    }
+
+    // Admin roles with dashboard access: show institution dashboard
+    if ($user->hasRole('super-administrator') || $user->can('view dashboard')) {
         if (Institution::count() < 1) {
             session()->flash('info', 'No institution found. Please create an institution to proceed');
 
@@ -133,16 +145,9 @@ Route::get('/dashboard', function () {
 
         return redirect()->route('institution.show', [1]);
     }
-    if (auth()->user()->hasRole('staff')) {
-        // dd(auth()->user()->person);
-        if (auth()->user()->person) {
-            return redirect()
-                ->route('staff.show', [auth()->user()->person->institution->first()->staff->id]);
-        }
-    }
 
-    // TODO: design custom page for users without staff information
-    return auth()->logout();
+    // All other authenticated users: redirect to staff list
+    return redirect()->route('staff.index');
 })->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
 // })->name('dashboard');
 
@@ -174,7 +179,7 @@ Route::delete('person/{person}/avatar/delete', [PersonAvatarController::class, '
 Route::controller(InstitutionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/create', 'create')->name('institution.create');
-    Route::get('/institution/{institution}', 'show')->name('institution.show');
+    Route::get('/institution/{institution}', 'show')->middleware('can:view dashboard')->name('institution.show');
     Route::get('/institution/{institution}/staff-filter', 'staffFilter')->name('institution.staff-filter');
     Route::post('/institution', 'store')->name('institution.store');
     Route::patch('/institution/{institution}', 'update')->name('institution.update');
@@ -554,6 +559,7 @@ Route::get('/help', [HelpController::class, 'index'])->middleware(['auth', 'pass
 
 Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed', 'can:create role'])->name('role.store');
 Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed', 'can:assign permissions to role'])->name('role.add.permissions');
+Route::patch('/role/{role}/remove-permission', [RoleController::class, 'removePermission'])->middleware(['auth', 'password_changed', 'can:assign permissions to role'])->name('role.remove.permission');
 Route::get('/role/{role}/permissions', RolePermissionController::class)->middleware(['auth', 'password_changed', 'can:view roles'])->name('role.permissions');
 Route::controller(AuditLogController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/audit-log', 'index')->middleware('can:view user activity')->name('audit-log.index');
