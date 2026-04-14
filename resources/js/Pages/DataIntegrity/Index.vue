@@ -44,7 +44,7 @@ const breadcrumbLinks = [
 							:description="check.description"
 							:count="check.count"
 							:severity="check.severity"
-							:route="check.route"
+							:href="check.route"
 						/>
 					</div>
 				</div>

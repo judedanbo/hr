@@ -34,7 +34,6 @@ let breadcrumbLinks = [
 	{ name: "Dashboard", url: "/dashboard" },
 	{ name: "Users", url: "/user" },
 	{ name: props.user.name, url: null },
-	4, // { name: props.person.name, url: "/" },
 ];
 const page = usePage();
 const permissions = computed(() => {

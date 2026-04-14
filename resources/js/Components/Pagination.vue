@@ -1,6 +1,6 @@
 <script setup>
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
-import { Link, router } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 const emit = defineEmits(["refreshData"]);
 const pageClicked = (link = null) => {
 	if (link) {
@@ -21,20 +21,28 @@ defineProps({
 		class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
 	>
 		<div class="flex-1 flex justify-between sm:hidden">
-			<Link
-				:href="navigation.prev_page_url ?? 'null'"
-				preserve-scroll
-				class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+			<div
+				class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
+				:class="
+					navigation.prev_page_url
+						? 'cursor-pointer hover:bg-gray-50'
+						: 'opacity-50 cursor-not-allowed'
+				"
+				@click="pageClicked(navigation.prev_page_url)"
 			>
 				Previous
-			</Link>
-			<Link
-				:href="navigation.next_page_url"
-				preserve-scroll
-				class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+			</div>
+			<div
+				class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
+				:class="
+					navigation.next_page_url
+						? 'cursor-pointer hover:bg-gray-50'
+						: 'opacity-50 cursor-not-allowed'
+				"
+				@click="pageClicked(navigation.next_page_url)"
 			>
 				Next
-			</Link>
+			</div>
 		</div>
 		<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
 			<div>

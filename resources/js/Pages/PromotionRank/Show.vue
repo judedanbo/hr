@@ -13,14 +13,10 @@ const permissions = computed(() => page.props?.auth.permissions);
 let props = defineProps({
 	promotions: Object,
 	rank: {
-		type: String,
+		type: Number,
 		required: true,
 	},
 	filters: Object,
-	rank: {
-		type: String,
-		required: true,
-	},
 });
 
 let search = ref(props.filters.search);

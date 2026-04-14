@@ -28,7 +28,7 @@ const selectedStaff = ref(null);
 const breadcrumbLinks = [
 	{
 		name: "Data Integrity",
-		href: route("data-integrity.index"),
+		url: route("data-integrity.index"),
 	},
 	{
 		name: "Invalid Date Ranges",

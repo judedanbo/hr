@@ -28,7 +28,7 @@ const props = defineProps({
 const breadcrumbLinks = [
 	{
 		name: "Data Integrity",
-		href: route("data-integrity.index"),
+		url: route("data-integrity.index"),
 	},
 	{
 		name: "Pending Qualifications",
