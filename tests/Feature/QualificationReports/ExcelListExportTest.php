@@ -34,4 +34,61 @@ class ExcelListExportTest extends TestCase
         $this->assertContains('Year', $headings);
         $this->assertContains('Status', $headings);
     }
+
+    public function test_by_unit_export_downloads(): void
+    {
+        Excel::fake();
+        Qualification::factory()->approved()->count(2)->create();
+
+        Excel::download(
+            new \App\Exports\Qualifications\QualificationByUnitExport(new QualificationReportFilter),
+            'by-unit.xlsx'
+        );
+        Excel::assertDownloaded('by-unit.xlsx');
+    }
+
+    public function test_by_level_export_downloads(): void
+    {
+        Excel::fake();
+        Qualification::factory()->approved()->count(2)->create();
+
+        Excel::download(
+            new \App\Exports\Qualifications\QualificationByLevelExport(new QualificationReportFilter),
+            'by-level.xlsx'
+        );
+        Excel::assertDownloaded('by-level.xlsx');
+    }
+
+    public function test_by_level_export_headings(): void
+    {
+        $export = new \App\Exports\Qualifications\QualificationByLevelExport(new QualificationReportFilter);
+        $h = $export->headings();
+        $this->assertContains('Level', $h);
+        $this->assertContains('Staff Count', $h);
+        $this->assertContains('% of Workforce', $h);
+        $this->assertContains('Pending', $h);
+    }
+
+    public function test_staff_without_quals_export_downloads(): void
+    {
+        Excel::fake();
+        Excel::download(
+            new \App\Exports\Qualifications\StaffWithoutQualificationsExport(new QualificationReportFilter),
+            'gaps.xlsx'
+        );
+        Excel::assertDownloaded('gaps.xlsx');
+    }
+
+    public function test_staff_qualification_profile_export_downloads(): void
+    {
+        Excel::fake();
+        $person = \App\Models\Person::factory()->create();
+        Qualification::factory()->for($person)->approved()->count(2)->create();
+
+        Excel::download(
+            new \App\Exports\Qualifications\StaffQualificationProfileExport($person),
+            "profile-{$person->id}.xlsx"
+        );
+        Excel::assertDownloaded("profile-{$person->id}.xlsx");
+    }
 }
