@@ -50,12 +50,17 @@ class RolesAndPermissionsSeeder extends Seeder
             'create staff transfers',
             'create staff promotion',
             'create staff notes',
+            'qualifications.reports.view',
+            'qualifications.reports.export',
+            'qualifications.reports.view.all',
         ],
 
         'aag-admin' => [
             'view dashboard',
             'view all staff',
             'view staff',
+            'qualifications.reports.view',
+            'qualifications.reports.view.all',
         ],
 
         'hr-user' => [
@@ -72,6 +77,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'view all reports',
             'view report',
             'download staff qualification data',
+            'qualifications.reports.view',
+            'qualifications.reports.export',
+            'qualifications.reports.view.all',
         ],
 
         'personel-user' => [
