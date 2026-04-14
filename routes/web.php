@@ -463,6 +463,13 @@ Route::controller(PromotionBatchController::class)->middleware(['auth', 'passwor
     Route::get('/next-promotions/{rank}/{year?}', 'show')->name('promotion.batch.show');
 });
 
+// qualification reports
+Route::middleware(['auth', 'password_changed'])->prefix('qualifications/reports')->name('qualifications.reports.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\QualificationReportController::class, 'index'])
+        ->name('index')
+        ->middleware('can:qualifications.reports.view');
+});
+
 Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/qualification', 'index')->middleware('can:view staff qualification')->name('qualification.index');
     Route::post('/qualification', 'store')->middleware('can:create staff qualification')->name('qualification.store');
