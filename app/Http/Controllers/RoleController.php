@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -41,7 +40,7 @@ class RoleController extends Controller
         return Inertia::render('Role/Index', [
             'roles' => Role::withCount(['permissions', 'users'])
                 ->paginate()
-                ->through(fn ($role) => [
+                ->through(fn($role) => [
                     'id' => $role->id,
                     'name' => $role->name,
                     'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
@@ -80,13 +79,7 @@ class RoleController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('view a role');
-        $role->load(['permissions' => function (Builder $query) {
-            $query->withCount('users');
-            $query->paginate(5);
-            // $query->withQueryString();
-        }, 'users']);
 
-        // dd($role->permissions);
         return Inertia::render('Role/Show', [
             'role' => [
                 'id' => $role->id,
@@ -94,16 +87,30 @@ class RoleController extends Controller
                 'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
             ],
             'users' => $role->users()
-                ->withCount('permissions')
-                ->paginate(),
+                ->paginate(10, ['*'], 'users_page')
+                ->through(fn(User $user) => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'permissions_count' => $user->getAllPermissions()->count(),
+                ]),
             'permissions' => $role
-                ->permissions
-                ->map(fn ($permission) => [
+                ->permissions()
+                ->when(request('permission_search'), function ($query, $search) {
+                    $query->where('name', 'like', "%{$search}%");
+                })
+                ->paginate(10, ['*'], 'permissions_page')
+                ->through(fn($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'displayName' => Str::of($permission->name)->replace('-', ' ')->title(),
-                    'userCount' => $permission->user_count,
-                ]),
+                    'users_count' => User::permission($permission->name)->count(),
+                ])
+                ->withQueryString(),
+            'rolePermissionNames' => $role->permissions()->pluck('name')->values()->toArray(),
+            'filters' => [
+                'permission_search' => request('permission_search', ''),
+            ],
         ]);
     }
 
@@ -329,6 +336,45 @@ class RoleController extends Controller
         $user->removeRole($request->role);
 
         return redirect()->back()->with('success', 'Role revoked successfully');
+    }
+
+    public function removePermission(Request $request, Role $role)
+    {
+        if (Gate::denies('assign permissions to role')) {
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($role)
+                ->event('revoke permission from role')
+                ->withProperties([
+                    'result' => 'failed',
+                    'user_ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'permission' => $request->permission,
+                ])
+                ->log('attempted to revoke a role permission');
+
+            return redirect()->back()->with('error', 'You do not have permission to revoke permissions from roles');
+        }
+
+        $request->validate([
+            'permission' => 'required|string|exists:permissions,name',
+        ]);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($role)
+            ->event('revoke permission from role')
+            ->withProperties([
+                'result' => 'success',
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'permission' => $request->permission,
+            ])
+            ->log('revoked a role permission');
+
+        $role->revokePermissionTo($request->permission);
+
+        return redirect()->back()->with('success', 'Permission revoked successfully');
     }
 
     public function addPermission(Request $request, Role $role)

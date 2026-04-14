@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class PermissionSeeder extends Seeder
 {
@@ -44,6 +43,7 @@ class PermissionSeeder extends Seeder
 
         Permission::firstOrCreate(['name' => 'download active staff data']);
         Permission::firstOrCreate(['name' => 'download separated staff data']);
+        Permission::firstOrCreate(['name' => 'download staff qualification data']);
 
         // Transfer staff permissions
         Permission::firstOrCreate(['name' => 'view all staff transfers']);
@@ -80,42 +80,5 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'delete staff position']);
         Permission::firstOrCreate(['name' => 'restore staff position']);
         Permission::firstOrCreate(['name' => 'destroy staff position']);
-
-        Role::firstOrCreate(['name' => 'super-administrator', 'guard_name' => 'web'])
-            ->givePermissionTo(Permission::all());
-        Role::firstOrCreate(['name' => 'personel-user', 'guard_name' => 'web'])
-            ->givePermissionTo([
-                'view all staff',
-                'view staff',
-                'update staff',
-                'view separated staff',
-            ]);
-        Role::firstOrCreate(['name' => 'hr-user', 'guard_name' => 'web'])
-            ->givePermissionTo([
-                'view all staff',
-                'view staff qualification',
-                'create staff qualification',
-                'edit staff qualification',
-                'create staff notes',
-                'view staff notes',
-                'edit staff notes',
-                'create staff transfers',
-            ]);
-        Role::firstOrCreate(['name' => 'general-admin-user', 'guard_name' => 'web'])
-            ->givePermissionTo([
-                'view all staff',
-            ]);
-        Role::firstOrCreate(['name' => 'admin-user', 'guard_name' => 'web'])
-            ->givePermissionTo([
-                'view all staff',
-                'view staff',
-                'create staff',
-                'update staff',
-                'download active staff data',
-                'create staff transfers',
-                'create staff promotion',
-                'create staff notes',
-                'download separated staff data',
-            ]);
     }
 }

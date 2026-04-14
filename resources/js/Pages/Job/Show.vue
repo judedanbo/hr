@@ -101,7 +101,7 @@ const deleteJob = () => {
 			/>
 			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<a
-					v-if="permissions?.includes('view job')"
+					v-if="permissions?.includes('download rank staff data')"
 					class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 					:href="
 						route('rank-staff.export-rank-promote', { rank: props.job.id })

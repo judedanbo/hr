@@ -12,6 +12,7 @@
 				</p>
 			</div>
 			<a
+				v-if="permissions?.includes('download rank staff data')"
 				class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 				:href="'rank/' + props.rank + '/export'"
 			>
@@ -149,7 +150,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUpdated, watch } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
+const permissions = computed(() => usePage().props?.auth.permissions);
 import Pagination from "@/Components/Pagination.vue";
 import { useNavigation } from "@/Composables/navigation";
 import Modal from "@/Components/NewModal.vue";

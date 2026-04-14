@@ -3,11 +3,13 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import Pagination from "@/Components/Pagination.vue";
 import PromotionList from "./PromotionList.vue";
 import { ref, computed } from "vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import PageHeader from "@/Components/PageHeader.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
+const page = usePage();
+const permissions = computed(() => page.props?.auth.permissions);
 let props = defineProps({
 	promotions: Object,
 	rank: {
@@ -66,6 +68,7 @@ const exportToExcel = () => {
 					:total="promotions.total"
 					:search="search"
 					action-text="Export Data to excel"
+					:add-permission="permissions?.includes('download promotion data')"
 					@action-clicked="exportToExcel()"
 					@search-entered="(value) => searchStaff(value)"
 				/>

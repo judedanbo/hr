@@ -9,6 +9,10 @@ import { Link, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 const user = computed(() => page.props?.auth.user);
+const permissions = computed(() => page.props?.auth?.permissions);
+const canViewDashboard = computed(() =>
+	permissions.value?.includes("view dashboard"),
+);
 
 import AppMenu from "@/Components/Menu.vue";
 
@@ -152,6 +156,7 @@ const showingNavigationDropdown = ref(false);
 			>
 				<div class="pt-2 pb-3 space-y-1">
 					<BreezeResponsiveNavLink
+						v-if="canViewDashboard"
 						:href="route('dashboard')"
 						:active="route().current('dashboard')"
 					>

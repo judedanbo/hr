@@ -9,11 +9,18 @@ class StoreQualificationRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      *
-     * @return bool
+     * Users with the approval permission can create for anyone. Other users
+     * (typically staff) may only create qualifications for themselves.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+
+        if ($user->can('approve staff qualification')) {
+            return true;
+        }
+
+        return $user->person && (int) $this->input('person_id') === $user->person->id;
     }
 
     /**
