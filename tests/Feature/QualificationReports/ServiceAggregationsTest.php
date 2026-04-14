@@ -149,4 +149,26 @@ class ServiceAggregationsTest extends TestCase
         $this->assertSame(1, $result[2019] ?? 0);
         $this->assertArrayNotHasKey(0, $result);
     }
+
+    public function test_pending_approvals_stats_returns_count_and_sparkline(): void
+    {
+        Qualification::factory()->pending()->count(3)->create();
+        Qualification::factory()->approved()->count(5)->create();  // should NOT be counted
+
+        $result = app(QualificationReportService::class)->pendingApprovalsStats();
+
+        $this->assertSame(3, $result['count']);
+        $this->assertCount(30, $result['sparkline']);
+        $this->assertContainsOnly('int', $result['sparkline']);
+    }
+
+    public function test_pending_approvals_sparkline_reflects_today_submissions(): void
+    {
+        Qualification::factory()->pending()->count(2)->create();
+
+        $result = app(QualificationReportService::class)->pendingApprovalsStats();
+
+        // last element is today
+        $this->assertSame(2, end($result['sparkline']));
+    }
 }

@@ -170,6 +170,30 @@ class QualificationReportService
     }
 
     /**
+     * @return array{count: int, sparkline: array<int, int>} 30-day daily submissions, newest last.
+     */
+    public function pendingApprovalsStats(): array
+    {
+        $count = Qualification::query()->pending()->count();
+
+        $since = now()->subDays(29)->startOfDay();
+        $daily = Qualification::query()
+            ->pending()
+            ->where('created_at', '>=', $since)
+            ->selectRaw('DATE(created_at) AS d, COUNT(*) AS n')
+            ->groupBy('d')
+            ->pluck('n', 'd');
+
+        $sparkline = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i)->toDateString();
+            $sparkline[] = (int) ($daily[$date] ?? 0);
+        }
+
+        return ['count' => $count, 'sparkline' => $sparkline];
+    }
+
+    /**
      * @return array<int, int> [2018 => 3, 2020 => 2]
      */
     public function trendByYear(QualificationReportFilter $filter): array
