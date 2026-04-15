@@ -81,6 +81,80 @@ const breadcrumbs = [
 	{ name: "Qualifications", url: "" },
 ];
 
+const statusLabels = computed(() => {
+	const m = {};
+	(props.filterOptions?.statuses ?? []).forEach((s) => {
+		m[s.value] = s.label;
+	});
+	return m;
+});
+
+const departmentById = computed(() => {
+	const m = {};
+	(props.filterOptions?.departments ?? []).forEach((d) => {
+		m[d.id] = d.name;
+	});
+	return m;
+});
+
+const unitById = computed(() => {
+	const m = {};
+	(props.filterOptions?.units ?? []).forEach((u) => {
+		m[u.id] = u.name;
+	});
+	return m;
+});
+
+const genderLabels = { M: "Male", F: "Female" };
+
+const activeFilters = computed(() => {
+	const f = form.value;
+	const out = [];
+	if (f.department_id)
+		out.push({
+			key: "department_id",
+			label: "Department",
+			value: departmentById.value[f.department_id] ?? f.department_id,
+		});
+	if (f.unit_id)
+		out.push({
+			key: "unit_id",
+			label: "Unit",
+			value: unitById.value[f.unit_id] ?? f.unit_id,
+		});
+	if (f.level)
+		out.push({
+			key: "level",
+			label: "Level",
+			value: levelLabels.value[f.level] ?? f.level,
+		});
+	if (f.status)
+		out.push({
+			key: "status",
+			label: "Status",
+			value: statusLabels.value[f.status] ?? f.status,
+		});
+	if (f.gender)
+		out.push({
+			key: "gender",
+			label: "Gender",
+			value: genderLabels[f.gender] ?? f.gender,
+		});
+	if (f.year_from)
+		out.push({ key: "year_from", label: "Year from", value: f.year_from });
+	if (f.year_to)
+		out.push({ key: "year_to", label: "Year to", value: f.year_to });
+	if (f.institution)
+		out.push({ key: "institution", label: "Institution", value: f.institution });
+	if (f.course)
+		out.push({ key: "course", label: "Course", value: f.course });
+	return out;
+});
+
+function removeFilter(key) {
+	form.value[key] = "";
+}
+
 function cleanParams() {
 	const out = {};
 	for (const [k, v] of Object.entries(form.value)) {
@@ -298,6 +372,30 @@ const reportTypes = [
 						Clear all
 					</button>
 				</div>
+			</div>
+
+			<div v-if="activeFilters.length" class="flex flex-wrap items-center gap-2">
+				<span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+					Active filters:
+				</span>
+				<span
+					v-for="f in activeFilters"
+					:key="f.key"
+					class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-200 text-xs"
+				>
+					<span class="font-medium">{{ f.label }}:</span>
+					<span>{{ f.value }}</span>
+					<button
+						type="button"
+						class="ml-0.5 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 p-0.5"
+						:title="`Remove ${f.label} filter`"
+						@click="removeFilter(f.key)"
+					>
+						<svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+						</svg>
+					</button>
+				</span>
 			</div>
 
 			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
