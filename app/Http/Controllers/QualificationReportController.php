@@ -237,10 +237,49 @@ class QualificationReportController extends Controller
     private function filterSummary(QualificationReportFilter $filter): string
     {
         $parts = [];
-        foreach ($filter->toQueryArray() as $k => $v) {
-            $parts[] = "{$k}={$v}";
+
+        if ($filter->departmentId) {
+            $name = Unit::whereKey($filter->departmentId)->value('name');
+            $parts[] = 'Department: ' . ($name ?? $filter->departmentId);
+        }
+        if ($filter->unitId) {
+            $name = Unit::whereKey($filter->unitId)->value('name');
+            $parts[] = 'Unit: ' . ($name ?? $filter->unitId);
+        }
+        if ($filter->level) {
+            $case = QualificationLevelEnum::tryFrom($filter->level);
+            $parts[] = 'Level: ' . ($case?->label() ?? $filter->level);
+        }
+        if ($filter->status) {
+            $case = QualificationStatusEnum::tryFrom($filter->status);
+            $parts[] = 'Status: ' . ($case?->label() ?? $filter->status);
+        }
+        if ($filter->gender) {
+            $parts[] = 'Gender: ' . match ($filter->gender) {
+                'M' => 'Male',
+                'F' => 'Female',
+                default => $filter->gender,
+            };
+        }
+        if ($filter->jobCategoryId) {
+            $name = class_exists(JobCategory::class)
+                ? JobCategory::whereKey($filter->jobCategoryId)->value('name')
+                : null;
+            $parts[] = 'Rank Category: ' . ($name ?? $filter->jobCategoryId);
+        }
+        if ($filter->yearFrom) {
+            $parts[] = 'Year from: ' . $filter->yearFrom;
+        }
+        if ($filter->yearTo) {
+            $parts[] = 'Year to: ' . $filter->yearTo;
+        }
+        if ($filter->institution) {
+            $parts[] = 'Institution: ' . $filter->institution;
+        }
+        if ($filter->course) {
+            $parts[] = 'Course: ' . $filter->course;
         }
 
-        return $parts ? implode(', ', $parts) : 'none';
+        return $parts ? implode(' · ', $parts) : 'none';
     }
 }
