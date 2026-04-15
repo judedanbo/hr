@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { Link, usePage } from "@inertiajs/vue3";
+import ExpandableChart from "@/Components/Charts/Qualifications/ExpandableChart.vue";
 import LevelDistributionChart from "@/Components/Charts/Qualifications/LevelDistributionChart.vue";
 import ByUnitChart from "@/Components/Charts/Qualifications/ByUnitChart.vue";
 import TopInstitutionsChart from "@/Components/Charts/Qualifications/TopInstitutionsChart.vue";
@@ -66,10 +67,67 @@ onMounted(async () => {
 		</div>
 
 		<div v-else-if="data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-			<LevelDistributionChart :distribution="data.levelDistribution" :labels="levelLabels" />
-			<ByUnitChart :by-unit="data.byUnit" :level-labels="levelLabels" />
-			<TopInstitutionsChart :institutions="data.topInstitutions" />
-			<AcquiredOverTimeChart :trend="data.trendByYear" />
+			<ExpandableChart title="Qualification Level Distribution">
+				<template #default="{ labelMode }">
+					<LevelDistributionChart
+						:distribution="data.levelDistribution"
+						:labels="levelLabels"
+						:label-mode="labelMode"
+					/>
+				</template>
+				<template #expanded="{ labelMode }">
+					<LevelDistributionChart
+						:distribution="data.levelDistribution"
+						:labels="levelLabels"
+						:label-mode="labelMode"
+						:expanded="true"
+					/>
+				</template>
+			</ExpandableChart>
+			<ExpandableChart title="Qualifications by Unit">
+				<template #default="{ labelMode }">
+					<ByUnitChart
+						:by-unit="data.byUnit"
+						:level-labels="levelLabels"
+						:label-mode="labelMode"
+					/>
+				</template>
+				<template #expanded="{ labelMode }">
+					<ByUnitChart
+						:by-unit="data.byUnit"
+						:level-labels="levelLabels"
+						:label-mode="labelMode"
+						:expanded="true"
+					/>
+				</template>
+			</ExpandableChart>
+			<ExpandableChart title="Top Institutions">
+				<template #default="{ labelMode }">
+					<TopInstitutionsChart
+						:institutions="data.topInstitutions"
+						:label-mode="labelMode"
+					/>
+				</template>
+				<template #expanded="{ labelMode }">
+					<TopInstitutionsChart
+						:institutions="data.topInstitutions"
+						:label-mode="labelMode"
+						:expanded="true"
+					/>
+				</template>
+			</ExpandableChart>
+			<ExpandableChart title="Qualifications Acquired Over Time">
+				<template #default="{ labelMode }">
+					<AcquiredOverTimeChart :trend="data.trendByYear" :label-mode="labelMode" />
+				</template>
+				<template #expanded="{ labelMode }">
+					<AcquiredOverTimeChart
+						:trend="data.trendByYear"
+						:label-mode="labelMode"
+						:expanded="true"
+					/>
+				</template>
+			</ExpandableChart>
 			<PendingApprovalsWidget
 				:count="data.pendingApprovals.count"
 				:sparkline="data.pendingApprovals.sparkline"
