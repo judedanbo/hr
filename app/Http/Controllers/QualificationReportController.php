@@ -33,6 +33,8 @@ class QualificationReportController extends Controller
             'levelDistribution' => $this->service->levelDistribution($filter),
             'byUnit' => $this->service->byUnit($filter),
             'topInstitutions' => $this->service->topInstitutions($filter, 10),
+            'topQualifications' => $this->service->topQualifications($filter, 10),
+            'levelByGender' => $this->service->levelByGender($filter),
             'trendByYear' => $this->service->trendByYear($filter),
             'staffList' => $this->service->staffList($filter),
         ]);

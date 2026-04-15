@@ -271,6 +271,92 @@ class QualificationReportService
     }
 
     /**
+     * Top qualification titles (free-text `qualification` column) with casing/trimming normalized.
+     *
+     * @return array<int, array{name: string, count: int}>
+     */
+    public function topQualifications(QualificationReportFilter $filter, int $limit = 10): array
+    {
+        return $this->remember("topQualifications:{$limit}", $filter, function () use ($filter, $limit) {
+            $rows = $this->applyFilter(Qualification::query(), $filter)
+                ->approved()
+                ->whereNotNull('qualification')
+                ->where('qualification', '!=', '')
+                ->get(['qualification']);
+
+            $groups = [];
+            foreach ($rows as $row) {
+                $key = mb_strtolower(trim($row->qualification));
+                if ($key === '') {
+                    continue;
+                }
+                if (! isset($groups[$key])) {
+                    $groups[$key] = ['count' => 0, 'labels' => []];
+                }
+                $groups[$key]['count']++;
+                $groups[$key]['labels'][$row->qualification] = ($groups[$key]['labels'][$row->qualification] ?? 0) + 1;
+            }
+
+            $out = [];
+            foreach ($groups as $data) {
+                arsort($data['labels']);
+                $out[] = ['name' => array_key_first($data['labels']), 'count' => $data['count']];
+            }
+            usort($out, fn ($a, $b) => $b['count'] <=> $a['count']);
+
+            return array_slice($out, 0, $limit);
+        });
+    }
+
+    /**
+     * Highest-qualification-per-person count split by gender.
+     *
+     * @return array<string, array{M: int, F: int}> keyed by level enum value
+     */
+    public function levelByGender(QualificationReportFilter $filter): array
+    {
+        return $this->remember('levelByGender', $filter, function () use ($filter) {
+            $rows = $this->applyFilter(Qualification::query(), $filter)
+                ->approved()
+                ->join('people', 'qualifications.person_id', '=', 'people.id')
+                ->whereIn('people.gender', ['M', 'F'])
+                ->get([
+                    'qualifications.person_id',
+                    'qualifications.level',
+                    'people.gender',
+                ]);
+
+            // Highest level per person
+            $highest = [];  // [person_id] => ['level' => enumValue, 'gender' => M|F]
+            foreach ($rows as $row) {
+                $case = QualificationLevelEnum::normalize($row->level);
+                if ($case === null) {
+                    continue;
+                }
+                $current = $highest[$row->person_id] ?? null;
+                if ($current === null || $case->rank() > $current['rank']) {
+                    $highest[$row->person_id] = [
+                        'level' => $case->value,
+                        'rank' => $case->rank(),
+                        'gender' => $row->gender,
+                    ];
+                }
+            }
+
+            $out = [];
+            foreach (QualificationLevelEnum::cases() as $case) {
+                $out[$case->value] = ['M' => 0, 'F' => 0];
+            }
+            foreach ($highest as $entry) {
+                $gender = $entry['gender'] === 'M' ? 'M' : 'F';
+                $out[$entry['level']][$gender]++;
+            }
+
+            return $out;
+        });
+    }
+
+    /**
      * @return array{count: int, sparkline: array<int, int>} 30-day daily submissions, newest last.
      */
     public function pendingApprovalsStats(): array

@@ -8,6 +8,8 @@ import Pagination from "@/Components/Pagination.vue";
 import LevelDistributionChart from "@/Components/Charts/Qualifications/LevelDistributionChart.vue";
 import ByUnitChart from "@/Components/Charts/Qualifications/ByUnitChart.vue";
 import TopInstitutionsChart from "@/Components/Charts/Qualifications/TopInstitutionsChart.vue";
+import TopQualificationsChart from "@/Components/Charts/Qualifications/TopQualificationsChart.vue";
+import LevelByGenderChart from "@/Components/Charts/Qualifications/LevelByGenderChart.vue";
 import AcquiredOverTimeChart from "@/Components/Charts/Qualifications/AcquiredOverTimeChart.vue";
 
 const props = defineProps({
@@ -17,6 +19,8 @@ const props = defineProps({
 	levelDistribution: Object,
 	byUnit: Object,
 	topInstitutions: Array,
+	topQualifications: Array,
+	levelByGender: Object,
 	trendByYear: Object,
 	staffList: Object,
 });
@@ -221,9 +225,11 @@ const reportTypes = [
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<LevelDistributionChart :distribution="levelDistribution" :labels="levelLabels" />
+				<LevelByGenderChart :level-by-gender="levelByGender" :level-labels="levelLabels" />
 				<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" />
-				<TopInstitutionsChart :institutions="topInstitutions" />
 				<AcquiredOverTimeChart :trend="trendByYear" />
+				<TopInstitutionsChart :institutions="topInstitutions" />
+				<TopQualificationsChart :qualifications="topQualifications" />
 			</div>
 
 			<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 overflow-hidden">
