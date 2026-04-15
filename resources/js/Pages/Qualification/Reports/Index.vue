@@ -4,6 +4,7 @@ import { router, Head, usePage } from "@inertiajs/vue3";
 import { debouncedWatch } from "@vueuse/core";
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import Pagination from "@/Components/Pagination.vue";
 import LevelDistributionChart from "@/Components/Charts/Qualifications/LevelDistributionChart.vue";
 import ByUnitChart from "@/Components/Charts/Qualifications/ByUnitChart.vue";
 import TopInstitutionsChart from "@/Components/Charts/Qualifications/TopInstitutionsChart.vue";
@@ -256,9 +257,7 @@ const reportTypes = [
 						</tbody>
 					</table>
 				</div>
-				<div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
-					Page {{ staffList.current_page }} of {{ staffList.last_page }} &middot; {{ staffList.total }} rows
-				</div>
+				<Pagination v-if="staffList?.total > 0" :navigation="staffList" />
 			</div>
 		</div>
 	</MainLayout>
