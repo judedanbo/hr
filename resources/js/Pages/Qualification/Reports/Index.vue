@@ -6,6 +6,8 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Pagination from "@/Components/Pagination.vue";
 import ExpandableChart from "@/Components/Charts/Qualifications/ExpandableChart.vue";
+import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/24/outline";
 import LevelDistributionChart from "@/Components/Charts/Qualifications/LevelDistributionChart.vue";
 import ByUnitChart from "@/Components/Charts/Qualifications/ByUnitChart.vue";
 import TopInstitutionsChart from "@/Components/Charts/Qualifications/TopInstitutionsChart.vue";
@@ -146,46 +148,56 @@ const reportTypes = [
 			<BreadCrumpVue :links="breadcrumbs" />
 
 			<div v-if="canExport" class="flex justify-end gap-2">
-				<div class="relative group">
-					<button
-						type="button"
-						class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
+				<Menu as="div" class="relative">
+					<MenuButton
+						class="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
 					>
-						Export PDF &#9662;
-					</button>
-					<div
-						class="absolute right-0 mt-1 hidden group-hover:block bg-white dark:bg-gray-800 shadow-lg rounded border border-gray-200 dark:border-gray-700 z-10 min-w-[180px]"
+						Export PDF
+						<ChevronDownIcon class="h-4 w-4" />
+					</MenuButton>
+					<MenuItems
+						class="absolute right-0 mt-1 min-w-[180px] origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 focus:outline-none z-20"
 					>
-						<a
+						<MenuItem
 							v-for="rt in reportTypes"
 							:key="'pdf-' + rt.value"
-							:href="exportUrl('pdf', rt.value)"
-							class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
+							v-slot="{ active }"
 						>
-							{{ rt.label }}
-						</a>
-					</div>
-				</div>
-				<div class="relative group">
-					<button
-						type="button"
-						class="px-3 py-1.5 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700"
+							<a
+								:href="exportUrl('pdf', rt.value)"
+								class="block px-3 py-2 text-sm text-gray-800 dark:text-gray-100"
+								:class="active ? 'bg-gray-100 dark:bg-gray-700' : ''"
+							>
+								{{ rt.label }}
+							</a>
+						</MenuItem>
+					</MenuItems>
+				</Menu>
+				<Menu as="div" class="relative">
+					<MenuButton
+						class="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700"
 					>
-						Export Excel &#9662;
-					</button>
-					<div
-						class="absolute right-0 mt-1 hidden group-hover:block bg-white dark:bg-gray-800 shadow-lg rounded border border-gray-200 dark:border-gray-700 z-10 min-w-[180px]"
+						Export Excel
+						<ChevronDownIcon class="h-4 w-4" />
+					</MenuButton>
+					<MenuItems
+						class="absolute right-0 mt-1 min-w-[180px] origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 focus:outline-none z-20"
 					>
-						<a
+						<MenuItem
 							v-for="rt in reportTypes"
 							:key="'excel-' + rt.value"
-							:href="exportUrl('excel', rt.value)"
-							class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
+							v-slot="{ active }"
 						>
-							{{ rt.label }}
-						</a>
-					</div>
-				</div>
+							<a
+								:href="exportUrl('excel', rt.value)"
+								class="block px-3 py-2 text-sm text-gray-800 dark:text-gray-100"
+								:class="active ? 'bg-gray-100 dark:bg-gray-700' : ''"
+							>
+								{{ rt.label }}
+							</a>
+						</MenuItem>
+					</MenuItems>
+				</Menu>
 			</div>
 
 			<div
@@ -263,18 +275,18 @@ const reportTypes = [
 						class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm"
 					/>
 				</div>
-				<div class="flex justify-between flex-grow">
+				<div class="flex justify-around flex-grow mt-3 gap-5">
 					<input
 						v-model="form.institution"
 						type="text"
 						placeholder="Institution"
-						class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm"
+						class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm w-full"
 					/>
 					<input
 						v-model="form.course"
 						type="text"
 						placeholder="Course keyword"
-						class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm"
+						class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm w-full"
 					/>
 				</div>
 				<div class="mt-3 flex justify-end">
