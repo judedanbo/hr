@@ -41,15 +41,24 @@ function sanitizeFilename(name) {
 	return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-// Deep-clone a Chart.js config, stripping reactivity. `data` can contain
-// typed arrays / functions via Chart.js internals — we only need plain
-// JSON-serialisable fields here, so a structured clone with a fallback works.
-function cloneConfig(src) {
-	try {
-		return structuredClone(src);
-	} catch {
-		return JSON.parse(JSON.stringify(src));
+// Deep-clone preserving function references (datalabels formatters, tooltip
+// callbacks) — unlike structuredClone, which throws on functions, or JSON
+// round-trip, which silently strips them.
+function cloneDeep(src) {
+	if (src === null || typeof src !== "object") return src;
+	if (Array.isArray(src)) return src.map(cloneDeep);
+	const out = {};
+	for (const k of Object.keys(src)) out[k] = cloneDeep(src[k]);
+	return out;
+}
+
+function ensure(obj, path) {
+	let node = obj;
+	for (const key of path) {
+		if (node[key] === undefined || node[key] === null) node[key] = {};
+		node = node[key];
 	}
+	return node;
 }
 
 // Render the live chart into a large offscreen canvas so category labels,
@@ -64,12 +73,49 @@ async function renderChartAtSize(liveChart, width, height) {
 	host.appendChild(canvas);
 	document.body.appendChild(host);
 
-	const data = cloneConfig(liveChart.config.data);
-	const options = cloneConfig(liveChart.config.options ?? {});
+	const data = cloneDeep(liveChart.config.data);
+	const options = cloneDeep(liveChart.config.options ?? {});
 	options.responsive = false;
 	options.maintainAspectRatio = false;
 	options.animation = false;
 	options.devicePixelRatio = 2;
+
+	// Force dark-mode tick / legend / title / datalabel colors back to a
+	// dark tone since the PDF background is white.
+	const DARK = "rgba(0,0,0,0.8)";
+	const MUTED = "rgba(0,0,0,0.6)";
+
+	// Force the legend on (several charts hide it inline to save space) and
+	// ensure readable font sizing at print resolution.
+	const legend = ensure(options, ["plugins", "legend"]);
+	if (legend.display !== true) legend.display = true;
+	const legendLabels = ensure(options, ["plugins", "legend", "labels"]);
+	legendLabels.font = { size: 16, weight: "600", ...(legendLabels.font ?? {}) };
+	legendLabels.color = DARK;
+	legendLabels.padding = legendLabels.padding ?? 12;
+
+	// Title: slightly larger than default.
+	const title = ensure(options, ["plugins", "title"]);
+	title.font = { size: 20, weight: "bold", ...(title.font ?? {}) };
+	title.color = DARK;
+
+	// Datalabels: bump up so they're readable.
+	const dl = ensure(options, ["plugins", "datalabels"]);
+	dl.font = { size: 16, weight: "bold", ...(dl.font ?? {}) };
+
+	// Axis ticks: bump up so category labels are visible.
+	if (options.scales) {
+		for (const axisKey of Object.keys(options.scales)) {
+			const axis = options.scales[axisKey];
+			const ticks = (axis.ticks = axis.ticks ?? {});
+			ticks.font = { size: 14, ...(ticks.font ?? {}) };
+			ticks.color = MUTED;
+			if (axis.grid) axis.grid.color = "rgba(0,0,0,0.08)";
+			// Prevent Chart.js from skipping category labels at high res.
+			if (ticks.autoSkip === undefined) ticks.autoSkip = false;
+			if (ticks.maxRotation === undefined) ticks.maxRotation = 0;
+		}
+	}
 
 	const bigChart = new Chart(canvas, {
 		type: liveChart.config.type,
@@ -104,12 +150,12 @@ async function exportToPdf(source) {
 
 	exporting.value = true;
 	try {
-		// A4 landscape at 150 DPI ≈ 1754x1240; we render a bit smaller to keep
-		// filesize reasonable while still giving Chart.js room for full labels.
+		// A4 landscape at 200 DPI ≈ 2339x1654; render at 2200x1400 with
+		// devicePixelRatio 2 so the embedded PNG stays crisp at print scale.
 		const { dataUrl, width, height } = await renderChartAtSize(
 			liveChart,
-			1600,
-			1000,
+			2200,
+			1400,
 		);
 
 		const pdf = new jsPDF({
