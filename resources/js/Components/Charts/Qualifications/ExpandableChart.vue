@@ -18,6 +18,7 @@ import {
 	ArrowDownTrayIcon,
 } from "@heroicons/vue/24/outline";
 import { jsPDF } from "jspdf";
+import { Chart } from "chart.js";
 
 const props = defineProps({
 	title: { type: String, default: "Chart" },
@@ -40,32 +41,86 @@ function sanitizeFilename(name) {
 	return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function exportToPdf(source) {
+// Deep-clone a Chart.js config, stripping reactivity. `data` can contain
+// typed arrays / functions via Chart.js internals — we only need plain
+// JSON-serialisable fields here, so a structured clone with a fallback works.
+function cloneConfig(src) {
+	try {
+		return structuredClone(src);
+	} catch {
+		return JSON.parse(JSON.stringify(src));
+	}
+}
+
+// Render the live chart into a large offscreen canvas so category labels,
+// legend entries, and datalabels are captured at a resolution where they
+// don't get truncated or culled by Chart.js's auto-layout.
+async function renderChartAtSize(liveChart, width, height) {
+	const host = document.createElement("div");
+	host.style.cssText = `position:fixed;left:-100000px;top:0;width:${width}px;height:${height}px;background:#ffffff;`;
+	const canvas = document.createElement("canvas");
+	canvas.width = width;
+	canvas.height = height;
+	host.appendChild(canvas);
+	document.body.appendChild(host);
+
+	const data = cloneConfig(liveChart.config.data);
+	const options = cloneConfig(liveChart.config.options ?? {});
+	options.responsive = false;
+	options.maintainAspectRatio = false;
+	options.animation = false;
+	options.devicePixelRatio = 2;
+
+	const bigChart = new Chart(canvas, {
+		type: liveChart.config.type,
+		data,
+		options,
+		plugins: liveChart.config.plugins ?? [],
+	});
+
+	// One frame to layout + render.
+	await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+	// Composite onto a white-backed canvas to avoid transparent PNG + dark mode.
+	const composite = document.createElement("canvas");
+	composite.width = canvas.width;
+	composite.height = canvas.height;
+	const ctx = composite.getContext("2d");
+	ctx.fillStyle = "#ffffff";
+	ctx.fillRect(0, 0, composite.width, composite.height);
+	ctx.drawImage(canvas, 0, 0);
+	const dataUrl = composite.toDataURL("image/png");
+
+	bigChart.destroy();
+	document.body.removeChild(host);
+	return { dataUrl, width, height };
+}
+
+async function exportToPdf(source) {
 	const canvas = source?.querySelector("canvas");
 	if (!canvas) return;
+	const liveChart = Chart.getChart(canvas);
+	if (!liveChart) return;
 
 	exporting.value = true;
 	try {
-		// Draw the chart onto a white-backed canvas first so the PDF background
-		// isn't transparent black when the browser is in dark mode.
-		const off = document.createElement("canvas");
-		off.width = canvas.width;
-		off.height = canvas.height;
-		const ctx = off.getContext("2d");
-		ctx.fillStyle = "#ffffff";
-		ctx.fillRect(0, 0, off.width, off.height);
-		ctx.drawImage(canvas, 0, 0);
-		const dataUrl = off.toDataURL("image/png");
+		// A4 landscape at 150 DPI ≈ 1754x1240; we render a bit smaller to keep
+		// filesize reasonable while still giving Chart.js room for full labels.
+		const { dataUrl, width, height } = await renderChartAtSize(
+			liveChart,
+			1600,
+			1000,
+		);
 
 		const pdf = new jsPDF({
-			orientation: canvas.width >= canvas.height ? "landscape" : "portrait",
+			orientation: width >= height ? "landscape" : "portrait",
 			unit: "pt",
 			format: "a4",
 		});
 
 		const pageWidth = pdf.internal.pageSize.getWidth();
 		const pageHeight = pdf.internal.pageSize.getHeight();
-		const margin = 36; // 0.5in
+		const margin = 36;
 		const headerHeight = 48;
 		const footerHeight = 24;
 
@@ -76,16 +131,12 @@ function exportToPdf(source) {
 		pdf.setFont("helvetica", "normal");
 		pdf.setFontSize(9);
 		pdf.setTextColor(120);
-		pdf.text(
-			`Generated ${new Date().toLocaleString()}`,
-			margin,
-			margin + 32,
-		);
+		pdf.text(`Generated ${new Date().toLocaleString()}`, margin, margin + 32);
 		pdf.setTextColor(0);
 
 		const availW = pageWidth - margin * 2;
 		const availH = pageHeight - margin * 2 - headerHeight - footerHeight;
-		const ratio = canvas.width / canvas.height;
+		const ratio = width / height;
 		let imgW = availW;
 		let imgH = imgW / ratio;
 		if (imgH > availH) {
