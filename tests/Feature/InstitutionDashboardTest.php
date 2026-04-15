@@ -30,73 +30,84 @@ class InstitutionDashboardTest extends TestCase
 
     public function test_dashboard_page_loads_successfully(): void
     {
+        $this->user->assignRole('super-administrator');
+
         $response = $this->actingAs($this->user)
             ->get(route('institution.show', $this->institution));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->component('Institution/Show')
-            ->has('institution')
-            ->has('overview')
-            ->has('trends')
-            ->has('analytics')
-            ->has('action_items')
-            ->has('departments')
-            ->has('can')
+        $response->assertInertia(
+            fn($page) => $page
+                ->component('Institution/Show')
+                ->has('institution')
+                ->has('overview')
+                ->has('trends')
+                ->has('analytics')
+                ->has('action_items')
+                ->has('departments')
+                ->has('can')
         );
     }
 
     public function test_dashboard_returns_correct_overview_structure(): void
     {
+        $this->user->assignRole('super-administrator');
         $response = $this->actingAs($this->user)
             ->get(route('institution.show', $this->institution));
 
-        $response->assertInertia(fn ($page) => $page
-            ->has('overview.active_staff')
-            ->has('overview.male_count')
-            ->has('overview.female_count')
-            ->has('overview.retired_count')
-            ->has('overview.new_hires_this_year')
-            ->has('overview.avg_tenure_years')
-            ->has('overview.departments_count')
-            ->has('overview.divisions_count')
-            ->has('overview.units_count')
+        $response->assertInertia(
+            fn($page) => $page
+                ->has('overview.active_staff')
+                ->has('overview.male_count')
+                ->has('overview.female_count')
+                ->has('overview.retired_count')
+                ->has('overview.new_hires_this_year')
+                ->has('overview.avg_tenure_years')
+                ->has('overview.departments_count')
+                ->has('overview.divisions_count')
+                ->has('overview.units_count')
         );
     }
 
     public function test_dashboard_returns_correct_analytics_structure(): void
     {
+        $this->user->assignRole('super-administrator');
         $response = $this->actingAs($this->user)
             ->get(route('institution.show', $this->institution));
 
-        $response->assertInertia(fn ($page) => $page
-            ->has('analytics.gender')
-            ->has('analytics.age_distribution')
-            ->has('analytics.status')
-            ->has('analytics.tenure_distribution')
+        $response->assertInertia(
+            fn($page) => $page
+                ->has('analytics.gender')
+                ->has('analytics.age_distribution')
+                ->has('analytics.status')
+                ->has('analytics.tenure_distribution')
         );
     }
 
     public function test_dashboard_returns_correct_trends_structure(): void
     {
+        $this->user->assignRole('super-administrator');
         $response = $this->actingAs($this->user)
             ->get(route('institution.show', $this->institution));
 
-        $response->assertInertia(fn ($page) => $page
-            ->has('trends.recruitment')
-            ->has('trends.separations')
+        $response->assertInertia(
+            fn($page) => $page
+                ->has('trends.recruitment')
+                ->has('trends.separations')
         );
     }
 
     public function test_dashboard_returns_action_items(): void
     {
+        $this->user->assignRole('super-administrator');
         $response = $this->actingAs($this->user)
             ->get(route('institution.show', $this->institution));
 
-        $response->assertInertia(fn ($page) => $page
-            ->has('action_items', 7) // 7 action items: promotion, retirement, units, pictures, ranks, multiple-units, without-gender
-            ->where('action_items.0.id', 'due-promotion')
-            ->where('action_items.1.id', 'nearing-retirement')
+        $response->assertInertia(
+            fn($page) => $page
+                ->has('action_items', 7) // 7 action items: promotion, retirement, units, pictures, ranks, multiple-units, without-gender
+                ->where('action_items.0.id', 'due-promotion')
+                ->where('action_items.1.id', 'nearing-retirement')
         );
     }
 
@@ -215,16 +226,19 @@ class InstitutionDashboardTest extends TestCase
 
     public function test_dashboard_handles_institution_with_no_data(): void
     {
+        $this->user->assignRole('super-administrator');
+
         $emptyInstitution = Institution::factory()->create();
 
         $response = $this->actingAs($this->user)
             ->get(route('institution.show', $emptyInstitution));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->where('overview.active_staff', 0)
-            ->where('overview.male_count', 0)
-            ->where('overview.female_count', 0)
+        $response->assertInertia(
+            fn($page) => $page
+                ->where('overview.active_staff', 0)
+                ->where('overview.male_count', 0)
+                ->where('overview.female_count', 0)
         );
     }
 }

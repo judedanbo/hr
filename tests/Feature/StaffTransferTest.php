@@ -130,7 +130,7 @@ class StaffTransferTest extends TestCase
         ]);
     }
 
-    public function test_transfer_with_start_date_sets_approved_status(): void
+    public function test_transfer_with_start_date_sets_pending_status(): void
     {
         $transferData = [
             'staff_id' => $this->staff->id,
@@ -145,23 +145,28 @@ class StaffTransferTest extends TestCase
 
         // Verify the status is Approved
         $transfer = $this->staff->units()->where('staff_unit.unit_id', $this->newUnit->id)->first();
-        $this->assertEquals(TransferStatusEnum::Approved, $transfer->pivot->status);
+        $this->assertEquals(TransferStatusEnum::Pending, $transfer->pivot->status);
     }
 
     public function test_transfer_closes_previous_unit_assignment(): void
     {
         $startDate = now()->format('Y-m-d');
 
-        $response = $this->actingAs($this->user)
+        $this->actingAs($this->user)
             ->post(route('staff.transfer.store', $this->staff), [
                 'staff_id' => $this->staff->id,
                 'unit_id' => $this->newUnit->id,
                 'start_date' => $startDate,
-            ]);
+            ])->assertRedirect();
 
-        $response->assertRedirect();
+        // Approval is what closes previous assignments under the pending-first workflow.
+        $this->actingAs($this->user)
+            ->patch(route('staff.transfer.approve', [$this->staff, $this->newUnit]), [
+                'staff_id' => $this->staff->id,
+                'unit_id' => $this->newUnit->id,
+                'start_date' => $startDate,
+            ])->assertRedirect();
 
-        // Check that previous unit assignment has an end date set
         $previousUnit = $this->staff->units()
             ->where('staff_unit.unit_id', $this->currentUnit->id)
             ->first();
