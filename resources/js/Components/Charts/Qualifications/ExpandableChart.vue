@@ -198,11 +198,21 @@ function exportToPdf(source) {
 							leave-to="opacity-0 scale-95"
 						>
 							<DialogPanel
+								ref="modalRoot"
 								class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[95vw] h-[90vh] max-w-[1400px] flex flex-col p-4 sm:p-6"
 							>
 								<div class="flex items-center justify-between mb-3 flex-shrink-0">
 									<h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ title }}</h3>
 									<div class="flex items-center gap-1">
+										<button
+											type="button"
+											class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-50"
+											title="Export as PDF"
+											:disabled="exporting"
+											@click="exportToPdf(modalRoot?.$el ?? modalRoot)"
+										>
+											<ArrowDownTrayIcon class="h-5 w-5" />
+										</button>
 										<Menu as="div" class="relative">
 											<MenuButton
 												class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
