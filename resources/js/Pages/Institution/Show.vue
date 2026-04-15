@@ -15,6 +15,7 @@ import RecruitmentTrendsSection from "./partials/RecruitmentTrendsSection.vue";
 import ActionItemsSection from "./partials/ActionItemsSection.vue";
 import OrganizationalViewSection from "./partials/OrganizationalViewSection.vue";
 import RankDistributionSection from "./partials/RankDistributionSection.vue";
+import QualificationsSection from "./partials/QualificationsSection.vue";
 
 // Unit management components (preserved from original)
 import AddForm from "./partials/AddForm.vue";
@@ -158,14 +159,19 @@ function closeStaffModal() {
 				<!-- Recruitment Trends -->
 				<RecruitmentTrendsSection :trends="trends" />
 
+				<!-- Workforce Qualifications -->
+				<QualificationsSection />
+
 				<!-- Action Items -->
 				<ActionItemsSection
+					v-if="can?.view_action_items"
 					:items="action_items"
 					@item-click="openStaffModal"
 				/>
 
 				<!-- Organizational View -->
 				<OrganizationalViewSection
+					v-if="can?.view_organizational_structure"
 					:departments="departments"
 					:institution-id="institution?.id"
 					@department-click="openStaffModal"

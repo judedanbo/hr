@@ -97,7 +97,14 @@ const attachDocument = (model) => {
 						Qualifications
 					</dt>
 				</div>
-				<div class="flex-none self-end px-6 pt-4">
+				<div class="flex-none self-end px-6 pt-4 flex gap-2">
+					<a
+						v-if="permissions?.includes('qualifications.reports.export')"
+						:href="route('qualifications.reports.staff.profile.pdf', person.id)"
+						class="rounded-md bg-indigo-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-indigo-600 dark:text-gray-50 ring-1 ring-inset ring-indigo-600/20 dark:ring-gray-500"
+					>
+						Download Profile PDF
+					</a>
 					<button
 						v-if="
 							permissions?.includes('update staff') ||

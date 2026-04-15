@@ -151,6 +151,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
 // })->name('dashboard');
 
+Route::middleware(['auth', 'can:qualifications.reports.view'])
+    ->get('/dashboard/qualifications-widgets', [\App\Http\Controllers\QualificationDashboardController::class, 'widgets'])
+    ->name('dashboard.qualifications');
+
 // Application Routes
 // person
 Route::controller(PersonController::class)->middleware(['auth', 'password_changed'])->group(function () {
@@ -461,6 +465,21 @@ Route::controller(PromotionController::class)->middleware(['auth', 'password_cha
 Route::controller(PromotionBatchController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/next-promotions', 'index')->name('promotion.batch.index');
     Route::get('/next-promotions/{rank}/{year?}', 'show')->name('promotion.batch.show');
+});
+
+// qualification reports
+Route::middleware(['auth', 'password_changed'])->prefix('qualifications/reports')->name('qualifications.reports.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\QualificationReportController::class, 'index'])
+        ->name('index')
+        ->middleware('can:qualifications.reports.view');
+    Route::get('/export/excel', [\App\Http\Controllers\QualificationReportController::class, 'exportExcel'])
+        ->name('export.excel')
+        ->middleware('can:qualifications.reports.export');
+    Route::get('/export/pdf', [\App\Http\Controllers\QualificationReportController::class, 'exportPdf'])
+        ->name('export.pdf')
+        ->middleware('can:qualifications.reports.export');
+    Route::get('/staff/{person}/profile.pdf', [\App\Http\Controllers\QualificationReportController::class, 'staffProfilePdf'])
+        ->name('staff.profile.pdf');
 });
 
 Route::controller(QualificationController::class)->middleware(['auth', 'password_changed'])->group(function () {

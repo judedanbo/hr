@@ -94,7 +94,9 @@ class RolesAndPermissionsSeederTest extends TestCase
         $this->assertContains('view dashboard', $permissions);
         $this->assertContains('view all staff', $permissions);
         $this->assertContains('view staff', $permissions);
-        $this->assertCount(3, $permissions);
+        $this->assertContains('qualifications.reports.view', $permissions);
+        $this->assertContains('qualifications.reports.view.all', $permissions);
+        $this->assertCount(5, $permissions);
     }
 
     public function test_personel_user_has_only_view_permissions(): void

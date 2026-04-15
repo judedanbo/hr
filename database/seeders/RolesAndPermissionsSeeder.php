@@ -50,12 +50,17 @@ class RolesAndPermissionsSeeder extends Seeder
             'create staff transfers',
             'create staff promotion',
             'create staff notes',
+            'qualifications.reports.view',
+            'qualifications.reports.export',
+            'qualifications.reports.view.all',
         ],
 
         'aag-admin' => [
             'view dashboard',
             'view all staff',
             'view staff',
+            'qualifications.reports.view',
+            'qualifications.reports.view.all',
         ],
 
         'hr-user' => [
@@ -72,6 +77,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'view all reports',
             'view report',
             'download staff qualification data',
+            'qualifications.reports.view',
+            'qualifications.reports.export',
+            'qualifications.reports.view.all',
         ],
 
         'personel-user' => [
@@ -108,6 +116,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ],
 
         'internal-audit-user' => [
+            'view dashboard',
             'view all staff',
             'view staff',
             'view separated staff',
@@ -138,11 +147,11 @@ class RolesAndPermissionsSeeder extends Seeder
             $role = Role::findByName($roleName);
             $role->syncPermissions($permissions);
 
-            $this->command->info("Synced {$roleName}: ".count($permissions).' permissions');
+            $this->command->info("Synced {$roleName}: " . count($permissions) . ' permissions');
         }
 
         Role::findByName('super-administrator')->syncPermissions(Permission::all());
 
-        $this->command->info('Super-administrator granted all '.Permission::count().' permissions');
+        $this->command->info('Super-administrator granted all ' . Permission::count() . ' permissions');
     }
 }

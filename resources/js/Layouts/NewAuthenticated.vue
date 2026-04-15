@@ -120,8 +120,16 @@ const navigation = [
 				// href: route("report.unit"),
 				current: route().current("report.unit"),
 			},
+			{
+				name: "Qualifications",
+				href: route("qualifications.reports.index"),
+				current: route().current("qualifications.reports.*"),
+				visible: permissions.value?.includes("qualifications.reports.view"),
+			},
 		],
-		visible: permissions.value?.includes("view all reports"),
+		visible:
+			permissions.value?.includes("view all reports") ||
+			permissions.value?.includes("qualifications.reports.view"),
 	},
 	{
 		name: "Users",

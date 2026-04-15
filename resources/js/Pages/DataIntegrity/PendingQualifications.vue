@@ -6,6 +6,7 @@ import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Modal from "@/Components/NewModal.vue";
 import DocumentPreview from "@/Pages/Qualification/partials/DocumentPreview.vue";
+import PendingApprovalsWidget from "@/Components/Charts/Qualifications/PendingApprovalsWidget.vue";
 import {
 	CheckCircleIcon,
 	AcademicCapIcon,
@@ -18,6 +19,10 @@ const props = defineProps({
 	qualifications: {
 		type: Array,
 		required: true,
+	},
+	pendingStats: {
+		type: Object,
+		default: () => null,
 	},
 	can: {
 		type: Object,
@@ -91,6 +96,15 @@ const rejectQualification = (qualification) => {
 			<BreadCrumpVue :links="breadcrumbLinks" />
 			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
 				<div class="py-6">
+					<!-- Pending Approvals Widget -->
+					<div v-if="pendingStats" class="mb-6 max-w-md">
+						<PendingApprovalsWidget
+							:count="pendingStats.count"
+							:sparkline="pendingStats.sparkline"
+							link-to="#"
+						/>
+					</div>
+
 					<!-- Header -->
 					<div class="mb-6">
 						<h1
