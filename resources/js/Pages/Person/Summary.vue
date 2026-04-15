@@ -44,7 +44,7 @@ const props = defineProps({
 						</div>
 					</dd>
 				</div>
-				<div class="flex-none self-end px-6 pt-4">
+				<!-- <div class="flex-none self-end px-6 pt-4">
 					<Link
 						v-if="permissions?.includes('view staff')"
 						:href="'/person/' + person.id"
@@ -52,7 +52,7 @@ const props = defineProps({
 					>
 						View
 					</Link>
-				</div>
+				</div> -->
 
 				<div
 					class="mt-4 flex w-full flex-none gap-x-4 px-6 pt-6 border-t border-gray-900/5 dark:border-gray-200/30"
