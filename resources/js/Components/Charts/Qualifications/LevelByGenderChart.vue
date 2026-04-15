@@ -16,12 +16,20 @@ const props = defineProps({
 	levelLabels: { type: Object, required: true },
 	title: { type: String, default: "Highest Qualification Level by Gender" },
 	expanded: { type: Boolean, default: false },
+	labelMode: { type: String, default: "count" },
 });
 
 const orderedLevels = computed(() =>
 	Object.keys(props.levelByGender).filter((lv) => {
 		const entry = props.levelByGender[lv];
 		return (entry.M ?? 0) + (entry.F ?? 0) > 0;
+	}),
+);
+
+const columnTotals = computed(() =>
+	orderedLevels.value.map((lv) => {
+		const e = props.levelByGender[lv] ?? {};
+		return (e.M ?? 0) + (e.F ?? 0);
 	}),
 );
 
@@ -69,9 +77,17 @@ const chartOptions = computed(() => ({
 			},
 		},
 		datalabels: {
+			display: props.labelMode !== "none",
 			color: "#fff",
 			font: { weight: "bold", size: props.expanded ? 12 : 10 },
-			formatter: (v) => (v > 0 ? v : ""),
+			formatter: (v, ctx) => {
+				if (v === 0) return "";
+				const colTotal = columnTotals.value[ctx.dataIndex] ?? 0;
+				const pct = colTotal > 0 ? (v / colTotal) * 100 : 0;
+				if (props.labelMode === "percent") return `${pct.toFixed(0)}%`;
+				if (props.labelMode === "both") return `${v}\n${pct.toFixed(0)}%`;
+				return v.toLocaleString();
+			},
 		},
 	},
 	scales: {

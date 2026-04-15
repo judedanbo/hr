@@ -13,6 +13,7 @@ const props = defineProps({
 	labels: { type: Object, required: true },
 	title: { type: String, default: "Qualification Level Distribution" },
 	expanded: { type: Boolean, default: false },
+	labelMode: { type: String, default: "both" },
 });
 
 const colors = [
@@ -61,12 +62,16 @@ const chartOptions = computed(() => ({
 			},
 		},
 		datalabels: {
+			display: props.labelMode !== "none",
 			color: "#fff",
 			font: { weight: "bold", size: props.expanded ? 13 : 11 },
 			formatter: (value) => {
-				if (total.value === 0) return "";
+				if (total.value === 0 || value === 0) return "";
 				const pct = (value / total.value) * 100;
-				return pct < 4 ? "" : `${value}\n${pct.toFixed(0)}%`;
+				if (pct < 3 && !props.expanded) return "";
+				if (props.labelMode === "count") return value.toLocaleString();
+				if (props.labelMode === "percent") return `${pct.toFixed(0)}%`;
+				return `${value}\n${pct.toFixed(0)}%`;
 			},
 			textAlign: "center",
 		},

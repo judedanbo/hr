@@ -17,6 +17,7 @@ const props = defineProps({
 	title: { type: String, default: "Qualifications by Unit" },
 	topN: { type: Number, default: 8 },
 	expanded: { type: Boolean, default: false },
+	labelMode: { type: String, default: "count" },
 });
 
 const colors = [
@@ -74,9 +75,18 @@ const chartOptions = computed(() => ({
 			},
 		},
 		datalabels: {
+			display: props.labelMode !== "none",
 			color: "#fff",
 			font: { weight: "bold", size: props.expanded ? 11 : 9 },
-			formatter: (v) => (v >= 3 ? v : ""),
+			formatter: (v, ctx) => {
+				if (v === 0) return "";
+				if (v < 3 && !props.expanded) return "";
+				const rowTotal = topUnits.value[ctx.dataIndex]?.total ?? 0;
+				const pct = rowTotal > 0 ? (v / rowTotal) * 100 : 0;
+				if (props.labelMode === "percent") return `${pct.toFixed(0)}%`;
+				if (props.labelMode === "both") return `${v} (${pct.toFixed(0)}%)`;
+				return v.toString();
+			},
 		},
 	},
 	scales: {

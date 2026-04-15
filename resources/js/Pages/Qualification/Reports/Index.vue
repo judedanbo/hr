@@ -226,39 +226,69 @@ const reportTypes = [
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<ExpandableChart title="Qualification Level Distribution">
-					<LevelDistributionChart :distribution="levelDistribution" :labels="levelLabels" />
-					<template #expanded>
-						<LevelDistributionChart :distribution="levelDistribution" :labels="levelLabels" :expanded="true" />
+					<template #default="{ labelMode }">
+						<LevelDistributionChart
+							:distribution="levelDistribution"
+							:labels="levelLabels"
+							:label-mode="labelMode"
+						/>
+					</template>
+					<template #expanded="{ labelMode }">
+						<LevelDistributionChart
+							:distribution="levelDistribution"
+							:labels="levelLabels"
+							:label-mode="labelMode"
+							:expanded="true"
+						/>
 					</template>
 				</ExpandableChart>
 				<ExpandableChart title="Highest Qualification Level by Gender">
-					<LevelByGenderChart :level-by-gender="levelByGender" :level-labels="levelLabels" />
-					<template #expanded>
-						<LevelByGenderChart :level-by-gender="levelByGender" :level-labels="levelLabels" :expanded="true" />
+					<template #default="{ labelMode }">
+						<LevelByGenderChart
+							:level-by-gender="levelByGender"
+							:level-labels="levelLabels"
+							:label-mode="labelMode"
+						/>
+					</template>
+					<template #expanded="{ labelMode }">
+						<LevelByGenderChart
+							:level-by-gender="levelByGender"
+							:level-labels="levelLabels"
+							:label-mode="labelMode"
+							:expanded="true"
+						/>
 					</template>
 				</ExpandableChart>
 				<ExpandableChart title="Qualifications by Unit">
-					<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" />
-					<template #expanded>
-						<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" :expanded="true" />
+					<template #default="{ labelMode }">
+						<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" :label-mode="labelMode" />
+					</template>
+					<template #expanded="{ labelMode }">
+						<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" :label-mode="labelMode" :expanded="true" />
 					</template>
 				</ExpandableChart>
 				<ExpandableChart title="Qualifications Acquired Over Time">
-					<AcquiredOverTimeChart :trend="trendByYear" />
-					<template #expanded>
-						<AcquiredOverTimeChart :trend="trendByYear" :expanded="true" />
+					<template #default="{ labelMode }">
+						<AcquiredOverTimeChart :trend="trendByYear" :label-mode="labelMode" />
+					</template>
+					<template #expanded="{ labelMode }">
+						<AcquiredOverTimeChart :trend="trendByYear" :label-mode="labelMode" :expanded="true" />
 					</template>
 				</ExpandableChart>
 				<ExpandableChart title="Top Institutions">
-					<TopInstitutionsChart :institutions="topInstitutions" />
-					<template #expanded>
-						<TopInstitutionsChart :institutions="topInstitutions" :expanded="true" />
+					<template #default="{ labelMode }">
+						<TopInstitutionsChart :institutions="topInstitutions" :label-mode="labelMode" />
+					</template>
+					<template #expanded="{ labelMode }">
+						<TopInstitutionsChart :institutions="topInstitutions" :label-mode="labelMode" :expanded="true" />
 					</template>
 				</ExpandableChart>
 				<ExpandableChart title="Top Qualifications">
-					<TopQualificationsChart :qualifications="topQualifications" />
-					<template #expanded>
-						<TopQualificationsChart :qualifications="topQualifications" :expanded="true" />
+					<template #default="{ labelMode }">
+						<TopQualificationsChart :qualifications="topQualifications" :label-mode="labelMode" />
+					</template>
+					<template #expanded="{ labelMode }">
+						<TopQualificationsChart :qualifications="topQualifications" :label-mode="labelMode" :expanded="true" />
 					</template>
 				</ExpandableChart>
 			</div>

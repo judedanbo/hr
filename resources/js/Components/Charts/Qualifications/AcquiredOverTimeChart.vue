@@ -18,7 +18,12 @@ const props = defineProps({
 	trend: { type: Object, required: true },
 	title: { type: String, default: "Qualifications Acquired Over Time" },
 	expanded: { type: Boolean, default: false },
+	labelMode: { type: String, default: "count" },
 });
+
+const trendTotal = computed(() =>
+	Object.values(props.trend).reduce((a, b) => a + (b ?? 0), 0),
+);
 
 const sortedYears = computed(() =>
 	Object.keys(props.trend).map(Number).sort((a, b) => a - b),
@@ -49,10 +54,17 @@ const chartOptions = computed(() => ({
 			font: { size: 14, weight: "bold" },
 		},
 		datalabels: {
+			display: props.labelMode !== "none",
 			align: "top",
 			color: isDark.value ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.7)",
 			font: { size: props.expanded ? 11 : 9, weight: "bold" },
-			formatter: (v) => (v > 0 ? v : ""),
+			formatter: (v) => {
+				if (v === 0) return "";
+				const pct = trendTotal.value > 0 ? ((v / trendTotal.value) * 100).toFixed(1) : 0;
+				if (props.labelMode === "percent") return `${pct}%`;
+				if (props.labelMode === "both") return `${v} (${pct}%)`;
+				return v.toString();
+			},
 		},
 	},
 	scales: {

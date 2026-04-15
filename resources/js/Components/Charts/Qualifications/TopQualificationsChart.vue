@@ -15,6 +15,7 @@ const props = defineProps({
 	qualifications: { type: Array, required: true },
 	title: { type: String, default: "Top Qualifications" },
 	expanded: { type: Boolean, default: false },
+	labelMode: { type: String, default: "count" },
 });
 
 const total = computed(() =>
@@ -53,11 +54,18 @@ const chartOptions = computed(() => ({
 			},
 		},
 		datalabels: {
+			display: props.labelMode !== "none",
 			anchor: "end",
 			align: "end",
 			color: isDark.value ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.7)",
 			font: { size: props.expanded ? 11 : 10, weight: "bold" },
-			formatter: (v) => v.toLocaleString(),
+			formatter: (v) => {
+				if (v === 0) return "";
+				const pct = total.value > 0 ? ((v / total.value) * 100).toFixed(1) : 0;
+				if (props.labelMode === "percent") return `${pct}%`;
+				if (props.labelMode === "both") return `${v.toLocaleString()} (${pct}%)`;
+				return v.toLocaleString();
+			},
 		},
 	},
 	layout: { padding: { right: 32 } },
