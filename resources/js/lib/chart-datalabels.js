@@ -1,25 +1,48 @@
 // Safe wrapper around chartjs-plugin-datalabels.
 //
-// v2.2.0 has a known regression against Chart.js 4: the plugin's beforeDestroy
-// hook dereferences chart[EXPANDO_KEY]._listened without guarding the case
-// where the expando was never populated (e.g. when a chart is unmounted before
-// its first render or during a rapid mount/unmount cycle in a modal).
+// v2.2.0 + Chart.js 4 has a known class of bugs where several plugin hooks
+// (beforeUpdate, afterDatasetUpdate, beforeEvent, afterEvent, afterDatasetsDraw,
+// etc.) dereference `chart[EXPANDO_KEY]` or its inner fields without guarding
+// against the expando being absent. This happens during rapid mount/unmount
+// cycles (our expand-to-modal flow triggers it) and late events fired during
+// teardown.
 //
-// We wrap beforeDestroy so the expando-missing case becomes a no-op instead of
-// a TypeError that crashes the dev overlay.
+// We wrap every known hook so the specific TypeError family gets swallowed,
+// while any unrelated error still bubbles up.
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
-const originalBeforeDestroy = ChartDataLabels.beforeDestroy;
+const HOOKS = [
+	"beforeInit",
+	"beforeUpdate",
+	"afterDatasetUpdate",
+	"afterUpdate",
+	"afterDatasetsDraw",
+	"beforeEvent",
+	"afterEvent",
+	"beforeDestroy",
+];
 
-if (typeof originalBeforeDestroy === "function") {
-	ChartDataLabels.beforeDestroy = function safeBeforeDestroy(...args) {
+// The message differs per browser but always mentions one of these internal
+// field names, which are unique to the plugin's expando object.
+const EXPANDO_FIELD_RE =
+	/_listened|_actives|_datasets|_labels|_listeners|_dirty|EXPANDO_KEY/i;
+
+function isExpandoError(err) {
+	return (
+		err instanceof TypeError &&
+		typeof err.message === "string" &&
+		EXPANDO_FIELD_RE.test(err.message)
+	);
+}
+
+for (const hook of HOOKS) {
+	const original = ChartDataLabels[hook];
+	if (typeof original !== "function") continue;
+	ChartDataLabels[hook] = function safeHook(...args) {
 		try {
-			return originalBeforeDestroy.apply(this, args);
+			return original.apply(this, args);
 		} catch (err) {
-			// Specifically tolerate the expando-not-initialised TypeError.
-			if (err instanceof TypeError && /_listened|EXPANDO_KEY/i.test(String(err.message))) {
-				return undefined;
-			}
+			if (isExpandoError(err)) return undefined;
 			throw err;
 		}
 	};
