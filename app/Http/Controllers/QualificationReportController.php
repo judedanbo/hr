@@ -172,6 +172,7 @@ class QualificationReportController extends Controller
                     'filterSummary' => $this->filterSummary($filter),
                 ],
                 'filename' => 'qualifications-by-unit.pdf',
+                'orientation' => 'landscape',
             ],
             'by_level' => [
                 'view' => 'pdf.qualifications.by_level',
@@ -196,7 +197,7 @@ class QualificationReportController extends Controller
         };
 
         return \Barryvdh\DomPDF\Facade\Pdf::loadView($payload['view'], $payload['data'])
-            ->setPaper('a4')
+            ->setPaper('a4', $payload['orientation'] ?? 'portrait')
             ->download($payload['filename']);
     }
 
