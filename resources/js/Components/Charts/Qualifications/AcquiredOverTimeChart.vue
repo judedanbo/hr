@@ -5,7 +5,7 @@ import {
 	Chart as ChartJS, Title, Legend, Tooltip,
 	LineElement, PointElement, CategoryScale, LinearScale, Filler,
 } from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartDataLabels from "@/lib/chart-datalabels.js";
 import { useDark } from "@vueuse/core";
 
 ChartJS.register(

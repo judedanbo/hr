@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { Doughnut } from "vue-chartjs";
 import { Chart as ChartJS, Title, Legend, Tooltip, ArcElement } from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartDataLabels from "@/lib/chart-datalabels.js";
 import { useDark } from "@vueuse/core";
 
 ChartJS.register(Title, Legend, Tooltip, ArcElement, ChartDataLabels);
