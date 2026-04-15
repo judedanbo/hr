@@ -151,33 +151,86 @@ class QualificationReportService
     }
 
     /**
-     * Apply filter criteria to a qualifications query. Handles simple column filters.
-     * Relationship-based filters (unit, department, gender, job_category) will be added
-     * in later tasks when the joins/scopes are wired up.
+     * Apply filter criteria to a qualifications query.
+     * All column references are table-qualified so the filter can be safely
+     * composed with queries that join related tables sharing column names
+     * (e.g. staff_unit.status, institution_person.end_date).
      */
     public function applyFilter(Builder $query, QualificationReportFilter $filter): Builder
     {
         if ($filter->level) {
-            $query->where('level', $filter->level);
+            $query->where('qualifications.level', $filter->level);
         }
         if ($filter->status) {
-            $query->where('status', $filter->status);
+            $query->where('qualifications.status', $filter->status);
         }
         if ($filter->yearFrom) {
-            $query->where('year', '>=', (string) $filter->yearFrom);
+            $query->where('qualifications.year', '>=', (string) $filter->yearFrom);
         }
         if ($filter->yearTo) {
-            $query->where('year', '<=', (string) $filter->yearTo);
+            $query->where('qualifications.year', '<=', (string) $filter->yearTo);
         }
         if ($filter->institution) {
-            $query->where('institution', 'like', "%{$filter->institution}%");
+            $query->where('qualifications.institution', 'like', "%{$filter->institution}%");
         }
         if ($filter->course) {
-            $query->where('course', 'like', "%{$filter->course}%");
+            $query->where('qualifications.course', 'like', "%{$filter->course}%");
         }
 
-        // TODO(later-tasks): unit/department/gender/job_category relationship filters.
+        if ($filter->gender) {
+            $query->whereExists(function ($q) use ($filter) {
+                $q->select(DB::raw(1))
+                    ->from('people')
+                    ->whereColumn('people.id', 'qualifications.person_id')
+                    ->where('people.gender', $filter->gender);
+            });
+        }
+
+        if ($filter->unitId) {
+            $query->whereExists(function ($q) use ($filter) {
+                $q->select(DB::raw(1))
+                    ->from('staff_unit')
+                    ->join('institution_person', 'staff_unit.staff_id', '=', 'institution_person.id')
+                    ->whereColumn('institution_person.person_id', 'qualifications.person_id')
+                    ->whereNull('staff_unit.end_date')
+                    ->where('staff_unit.unit_id', $filter->unitId);
+            });
+        }
+
+        if ($filter->departmentId) {
+            $descendants = $this->unitDescendantIds($filter->departmentId);
+            $query->whereExists(function ($q) use ($descendants) {
+                $q->select(DB::raw(1))
+                    ->from('staff_unit')
+                    ->join('institution_person', 'staff_unit.staff_id', '=', 'institution_person.id')
+                    ->whereColumn('institution_person.person_id', 'qualifications.person_id')
+                    ->whereNull('staff_unit.end_date')
+                    ->whereIn('staff_unit.unit_id', $descendants);
+            });
+        }
+
         return $query;
+    }
+
+    /**
+     * All unit IDs under (and including) the given unit — walked via `units.unit_id` parent chain.
+     *
+     * @return array<int, int>
+     */
+    private function unitDescendantIds(int $rootId): array
+    {
+        $ids = [$rootId];
+        $frontier = [$rootId];
+        while (! empty($frontier)) {
+            $children = DB::table('units')
+                ->whereIn('unit_id', $frontier)
+                ->pluck('id')
+                ->all();
+            $frontier = array_values(array_diff($children, $ids));
+            $ids = array_merge($ids, $frontier);
+        }
+
+        return $ids;
     }
 
     /**

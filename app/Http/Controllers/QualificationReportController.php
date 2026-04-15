@@ -74,8 +74,45 @@ class QualificationReportController extends Controller
     /** @return array<string, mixed> */
     private function filterOptions(): array
     {
+        $allUnits = Unit::query()
+            ->whereNull('end_date')
+            ->select('id', 'name', 'unit_id', 'type')
+            ->orderBy('name')
+            ->get();
+
+        $parents = $allUnits->keyBy('id');
+        $resolveDepartment = function ($unit) use ($parents) {
+            $current = $unit;
+            $seen = [];
+            while ($current && ! in_array($current->id, $seen, true)) {
+                if ($current->type === \App\Enums\UnitType::DEPARTMENT) {
+                    return $current->id;
+                }
+                $seen[] = $current->id;
+                $current = $current->unit_id ? $parents->get($current->unit_id) : null;
+            }
+
+            return null;
+        };
+
+        $departments = $allUnits
+            ->where('type', \App\Enums\UnitType::DEPARTMENT)
+            ->values()
+            ->map(fn ($u) => ['id' => $u->id, 'name' => $u->name])
+            ->all();
+
+        $units = $allUnits
+            ->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+                'department_id' => $resolveDepartment($u),
+            ])
+            ->values()
+            ->all();
+
         return [
-            'units' => Unit::query()->select('id', 'name')->orderBy('name')->get(),
+            'departments' => $departments,
+            'units' => $units,
             'levels' => collect(QualificationLevelEnum::cases())->map(fn ($c) => [
                 'value' => $c->value,
                 'label' => $c->label(),

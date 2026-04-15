@@ -23,6 +23,7 @@ const props = defineProps({
 const page = usePage();
 
 const form = ref({
+	department_id: props.filters?.department_id ?? "",
 	unit_id: props.filters?.unit_id ?? "",
 	level: props.filters?.level ?? "",
 	status: props.filters?.status ?? "",
@@ -32,6 +33,25 @@ const form = ref({
 	institution: props.filters?.institution ?? "",
 	course: props.filters?.course ?? "",
 });
+
+// Units filtered by the currently selected department.
+const availableUnits = computed(() => {
+	const all = props.filterOptions?.units ?? [];
+	if (!form.value.department_id) return all;
+	const dep = Number(form.value.department_id);
+	return all.filter((u) => u.department_id === dep);
+});
+
+// If department changes and the current unit isn't under that department, clear it.
+watch(
+	() => form.value.department_id,
+	() => {
+		if (!form.value.unit_id) return;
+		const unitId = Number(form.value.unit_id);
+		const stillValid = availableUnits.value.some((u) => u.id === unitId);
+		if (!stillValid) form.value.unit_id = "";
+	},
+);
 
 const levelLabels = computed(() => {
 	const m = {};
@@ -73,6 +93,7 @@ debouncedWatch(
 
 function clearFilters() {
 	form.value = {
+		department_id: "",
 		unit_id: "",
 		level: "",
 		status: "",
@@ -141,9 +162,13 @@ const reportTypes = [
 
 			<div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700">
 				<div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+					<select v-model="form.department_id" class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm">
+						<option value="">All Departments</option>
+						<option v-for="d in filterOptions?.departments ?? []" :key="d.id" :value="d.id">{{ d.name }}</option>
+					</select>
 					<select v-model="form.unit_id" class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm">
-						<option value="">All Units</option>
-						<option v-for="u in filterOptions?.units ?? []" :key="u.id" :value="u.id">{{ u.name }}</option>
+						<option value="">{{ form.department_id ? 'All Units in Department' : 'All Units' }}</option>
+						<option v-for="u in availableUnits" :key="u.id" :value="u.id">{{ u.name }}</option>
 					</select>
 					<select v-model="form.level" class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm">
 						<option value="">All Levels</option>
