@@ -22,22 +22,21 @@ class QualificationReportService
     public function levelDistribution(QualificationReportFilter $filter): array
     {
         return $this->remember('levelDistribution', $filter, function () use ($filter) {
-            $ranks = collect(QualificationLevelEnum::cases())
-                ->mapWithKeys(fn ($case) => [$case->value => $case->rank()])
-                ->all();
-
             $highestPerPerson = $this->applyFilter(Qualification::query(), $filter)
                 ->approved()
                 ->get(['person_id', 'level'])
                 ->groupBy('person_id')
-                ->map(function ($quals) use ($ranks) {
+                ->map(function ($quals) {
                     $best = null;
                     $bestRank = -1;
                     foreach ($quals as $q) {
-                        $r = $ranks[$q->level] ?? -1;
-                        if ($r > $bestRank) {
-                            $bestRank = $r;
-                            $best = $q->level;
+                        $case = QualificationLevelEnum::normalize($q->level);
+                        if ($case === null) {
+                            continue;
+                        }
+                        if ($case->rank() > $bestRank) {
+                            $bestRank = $case->rank();
+                            $best = $case->value;
                         }
                     }
 
@@ -88,11 +87,14 @@ class QualificationReportService
 
             $highest = [];
             foreach ($rows as $row) {
+                $case = QualificationLevelEnum::normalize($row->level);
+                if ($case === null) {
+                    continue;
+                }
                 $currentLevel = $highest[$row->unit_name][$row->person_id] ?? null;
-                $newRank = $ranks[$row->level] ?? -1;
                 $currentRank = $currentLevel !== null ? ($ranks[$currentLevel] ?? -1) : -1;
-                if ($newRank > $currentRank) {
-                    $highest[$row->unit_name][$row->person_id] = $row->level;
+                if ($case->rank() > $currentRank) {
+                    $highest[$row->unit_name][$row->person_id] = $case->value;
                 }
             }
 
