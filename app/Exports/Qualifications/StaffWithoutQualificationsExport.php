@@ -39,7 +39,7 @@ class StaffWithoutQualificationsExport implements FromArray, ShouldAutoSize, Wit
                 $inst?->staff_number,
                 $person->first_name,
                 $person->surname,
-                $hireDate instanceof \Carbon\Carbon ? $hireDate->format('Y-m-d') : $hireDate,
+                $hireDate instanceof \Carbon\Carbon ? $hireDate->format('Y-m-d') : 'hireDate',
             ];
         }
 
