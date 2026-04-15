@@ -5,9 +5,10 @@ import {
 	Chart as ChartJS, Title, Legend, Tooltip,
 	BarElement, CategoryScale, LinearScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useDark } from "@vueuse/core";
 
-ChartJS.register(Title, Legend, Tooltip, BarElement, CategoryScale, LinearScale);
+ChartJS.register(Title, Legend, Tooltip, BarElement, CategoryScale, LinearScale, ChartDataLabels);
 const isDark = useDark();
 
 const props = defineProps({
@@ -15,6 +16,7 @@ const props = defineProps({
 	levelLabels: { type: Object, required: true },
 	title: { type: String, default: "Qualifications by Unit" },
 	topN: { type: Number, default: 8 },
+	expanded: { type: Boolean, default: false },
 });
 
 const colors = [
@@ -23,6 +25,7 @@ const colors = [
 ];
 
 const topUnits = computed(() => {
+	const limit = props.expanded ? 20 : props.topN;
 	return Object.entries(props.byUnit)
 		.map(([name, counts]) => ({
 			name,
@@ -30,13 +33,13 @@ const topUnits = computed(() => {
 			counts,
 		}))
 		.sort((a, b) => b.total - a.total)
-		.slice(0, props.topN);
+		.slice(0, limit);
 });
 
 const levelKeys = computed(() => {
 	const keys = new Set();
 	topUnits.value.forEach((u) =>
-		Object.keys(u.counts).forEach((k) => keys.add(k))
+		Object.keys(u.counts).forEach((k) => keys.add(k)),
 	);
 	return [...keys];
 });
@@ -57,15 +60,23 @@ const chartOptions = computed(() => ({
 	plugins: {
 		legend: {
 			position: "top",
-			labels: {
-				color: isDark.value ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.7)",
-			},
+			labels: { color: isDark.value ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.7)" },
 		},
 		title: {
 			display: true,
 			text: props.title,
 			color: isDark.value ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.7)",
 			font: { size: 14, weight: "bold" },
+		},
+		tooltip: {
+			callbacks: {
+				label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.x.toLocaleString()}`,
+			},
+		},
+		datalabels: {
+			color: "#fff",
+			font: { weight: "bold", size: props.expanded ? 11 : 9 },
+			formatter: (v) => (v >= 3 ? v : ""),
 		},
 	},
 	scales: {
@@ -83,7 +94,7 @@ const chartOptions = computed(() => ({
 
 <template>
 	<div class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 p-4">
-		<div class="h-96">
+		<div :class="expanded ? 'h-full' : 'h-96'">
 			<Bar :data="chartData" :options="chartOptions" />
 		</div>
 	</div>

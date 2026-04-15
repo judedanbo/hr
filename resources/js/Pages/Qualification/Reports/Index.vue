@@ -5,6 +5,7 @@ import { debouncedWatch } from "@vueuse/core";
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import Pagination from "@/Components/Pagination.vue";
+import ExpandableChart from "@/Components/Charts/Qualifications/ExpandableChart.vue";
 import LevelDistributionChart from "@/Components/Charts/Qualifications/LevelDistributionChart.vue";
 import ByUnitChart from "@/Components/Charts/Qualifications/ByUnitChart.vue";
 import TopInstitutionsChart from "@/Components/Charts/Qualifications/TopInstitutionsChart.vue";
@@ -224,12 +225,42 @@ const reportTypes = [
 			</div>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<LevelDistributionChart :distribution="levelDistribution" :labels="levelLabels" />
-				<LevelByGenderChart :level-by-gender="levelByGender" :level-labels="levelLabels" />
-				<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" />
-				<AcquiredOverTimeChart :trend="trendByYear" />
-				<TopInstitutionsChart :institutions="topInstitutions" />
-				<TopQualificationsChart :qualifications="topQualifications" />
+				<ExpandableChart title="Qualification Level Distribution">
+					<LevelDistributionChart :distribution="levelDistribution" :labels="levelLabels" />
+					<template #expanded>
+						<LevelDistributionChart :distribution="levelDistribution" :labels="levelLabels" :expanded="true" />
+					</template>
+				</ExpandableChart>
+				<ExpandableChart title="Highest Qualification Level by Gender">
+					<LevelByGenderChart :level-by-gender="levelByGender" :level-labels="levelLabels" />
+					<template #expanded>
+						<LevelByGenderChart :level-by-gender="levelByGender" :level-labels="levelLabels" :expanded="true" />
+					</template>
+				</ExpandableChart>
+				<ExpandableChart title="Qualifications by Unit">
+					<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" />
+					<template #expanded>
+						<ByUnitChart :by-unit="byUnit" :level-labels="levelLabels" :expanded="true" />
+					</template>
+				</ExpandableChart>
+				<ExpandableChart title="Qualifications Acquired Over Time">
+					<AcquiredOverTimeChart :trend="trendByYear" />
+					<template #expanded>
+						<AcquiredOverTimeChart :trend="trendByYear" :expanded="true" />
+					</template>
+				</ExpandableChart>
+				<ExpandableChart title="Top Institutions">
+					<TopInstitutionsChart :institutions="topInstitutions" />
+					<template #expanded>
+						<TopInstitutionsChart :institutions="topInstitutions" :expanded="true" />
+					</template>
+				</ExpandableChart>
+				<ExpandableChart title="Top Qualifications">
+					<TopQualificationsChart :qualifications="topQualifications" />
+					<template #expanded>
+						<TopQualificationsChart :qualifications="topQualifications" :expanded="true" />
+					</template>
+				</ExpandableChart>
 			</div>
 
 			<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 overflow-hidden">

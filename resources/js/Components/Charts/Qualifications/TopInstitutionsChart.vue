@@ -5,15 +5,21 @@ import {
 	Chart as ChartJS, Title, Legend, Tooltip,
 	BarElement, CategoryScale, LinearScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useDark } from "@vueuse/core";
 
-ChartJS.register(Title, Legend, Tooltip, BarElement, CategoryScale, LinearScale);
+ChartJS.register(Title, Legend, Tooltip, BarElement, CategoryScale, LinearScale, ChartDataLabels);
 const isDark = useDark();
 
 const props = defineProps({
 	institutions: { type: Array, required: true },
 	title: { type: String, default: "Top Institutions" },
+	expanded: { type: Boolean, default: false },
 });
+
+const total = computed(() =>
+	props.institutions.reduce((sum, i) => sum + (i.count ?? 0), 0),
+);
 
 const chartData = computed(() => ({
 	labels: props.institutions.map((i) => i.name),
@@ -37,7 +43,24 @@ const chartOptions = computed(() => ({
 			color: isDark.value ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.7)",
 			font: { size: 14, weight: "bold" },
 		},
+		tooltip: {
+			callbacks: {
+				label: (ctx) => {
+					const v = ctx.parsed.x;
+					const pct = total.value > 0 ? ((v / total.value) * 100).toFixed(1) : 0;
+					return `${v.toLocaleString()} (${pct}%)`;
+				},
+			},
+		},
+		datalabels: {
+			anchor: "end",
+			align: "end",
+			color: isDark.value ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.7)",
+			font: { size: props.expanded ? 11 : 10, weight: "bold" },
+			formatter: (v) => v.toLocaleString(),
+		},
 	},
+	layout: { padding: { right: 32 } },
 	scales: {
 		x: { ticks: { color: isDark.value ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" } },
 		y: { ticks: { color: isDark.value ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" } },
@@ -47,7 +70,7 @@ const chartOptions = computed(() => ({
 
 <template>
 	<div class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 p-4">
-		<div class="h-80">
+		<div :class="expanded ? 'h-full' : 'h-80'">
 			<Bar :data="chartData" :options="chartOptions" />
 		</div>
 	</div>
