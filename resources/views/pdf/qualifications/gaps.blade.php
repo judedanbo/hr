@@ -19,7 +19,7 @@
             <tr>
                 <td>{{ $inst?->staff_number }}</td>
                 <td>{{ $person->first_name }} {{ $person->surname }}</td>
-                <td>{{ $inst?->hire_date instanceof \Carbon\Carbon ? $inst->hire_date->format('Y-m-d') : $inst?->hire_date }}</td>
+                <td>{{ $inst?->hire_date instanceof \Carbon\Carbon ? $inst->hire_date->format('d M Y') : $inst?->hire_date }}</td>
             </tr>
         @endforeach
         </tbody>
