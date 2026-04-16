@@ -85,4 +85,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('staff') && $this->roles->count() > 1;
     }
+
+    public function canAccessAdminDashboard(): bool
+    {
+        return $this->hasRole('super-administrator') || $this->can('view dashboard');
+    }
 }
