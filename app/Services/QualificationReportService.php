@@ -123,18 +123,42 @@ class QualificationReportService
      */
     public function staffWithoutQualifications(QualificationReportFilter $filter): \Illuminate\Support\Collection
     {
-        return $this->remember('staffWithoutQualifications', $filter, function () {
-            return \App\Models\Person::query()
-                ->whereExists(function ($q) {
-                    $q->select(\Illuminate\Support\Facades\DB::raw(1))
+        return $this->remember('staffWithoutQualifications', $filter, function () use ($filter) {
+            $query = \App\Models\Person::query()
+                ->whereExists(function ($q) use ($filter) {
+                    $q->select(DB::raw(1))
                         ->from('institution_person')
                         ->whereColumn('institution_person.person_id', 'people.id')
                         ->whereNull('institution_person.end_date');
+
+                    if ($filter->unitId) {
+                        $q->whereExists(function ($sq) use ($filter) {
+                            $sq->select(DB::raw(1))
+                                ->from('staff_unit')
+                                ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                                ->whereNull('staff_unit.end_date')
+                                ->where('staff_unit.unit_id', $filter->unitId);
+                        });
+                    } elseif ($filter->departmentId) {
+                        $descendants = $this->unitDescendantIds($filter->departmentId);
+                        $q->whereExists(function ($sq) use ($descendants) {
+                            $sq->select(DB::raw(1))
+                                ->from('staff_unit')
+                                ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                                ->whereNull('staff_unit.end_date')
+                                ->whereIn('staff_unit.unit_id', $descendants);
+                        });
+                    }
                 })
                 ->whereDoesntHave('qualifications', function ($q) {
                     $q->where('status', QualificationStatusEnum::Approved);
-                })
-                ->get();
+                });
+
+            if ($filter->gender) {
+                $query->where('people.gender', $filter->gender);
+            }
+
+            return $query->get();
         });
     }
 
@@ -443,6 +467,16 @@ class QualificationReportService
                     ->whereColumn('staff_unit.staff_id', 'institution_person.id')
                     ->whereNull('staff_unit.end_date')
                     ->whereIn('staff_unit.unit_id', $descendants);
+            });
+        }
+
+        if ($filter?->gender) {
+            $gender = $filter->gender;
+            $query->whereExists(function ($q) use ($gender) {
+                $q->select(DB::raw(1))
+                    ->from('people')
+                    ->whereColumn('people.id', 'institution_person.person_id')
+                    ->where('people.gender', $gender);
             });
         }
 

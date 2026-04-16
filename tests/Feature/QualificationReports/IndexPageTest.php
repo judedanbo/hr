@@ -136,4 +136,57 @@ class IndexPageTest extends TestCase
                 ->where('kpis.staffCovered.value', 1)
             );
     }
+
+    public function test_staff_without_quals_kpi_respects_gender_filter(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['qualifications.reports.view', 'qualifications.reports.view.all']);
+
+        $males = \App\Models\Person::factory()->count(3)->create(['gender' => 'M']);
+        $females = \App\Models\Person::factory()->count(2)->create(['gender' => 'F']);
+        foreach ($males->merge($females) as $p) {
+            InstitutionPerson::factory()->for($p)->create(['end_date' => null]);
+        }
+
+        $this->actingAs($user->fresh())
+            ->get('/qualifications/reports?gender=M')
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('kpis.withoutQualifications.value', 3)
+            );
+    }
+
+    public function test_staff_without_quals_kpi_respects_unit_filter(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['qualifications.reports.view', 'qualifications.reports.view.all']);
+
+        $unitA = \App\Models\Unit::factory()->create();
+        $unitB = \App\Models\Unit::factory()->create();
+
+        // 2 staff in unit A, 4 staff in unit B — none have approved quals.
+        $this->assignStaffToUnit($unitA->id, 2);
+        $this->assignStaffToUnit($unitB->id, 4);
+
+        $this->actingAs($user->fresh())
+            ->get('/qualifications/reports?unit_id=' . $unitA->id)
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('kpis.withoutQualifications.value', 2)
+                ->where('kpis.withoutQualifications.total', 2)
+            );
+    }
+
+    private function assignStaffToUnit(int $unitId, int $count): void
+    {
+        foreach (range(1, $count) as $_) {
+            $p = \App\Models\Person::factory()->create();
+            $staff = InstitutionPerson::factory()->for($p)->create(['end_date' => null]);
+            \Illuminate\Support\Facades\DB::table('staff_unit')->insert([
+                'staff_id' => $staff->id,
+                'unit_id' => $unitId,
+                'start_date' => now()->subYear()->toDateString(),
+                'end_date' => null,
+                'status' => \App\Enums\TransferStatusEnum::Pending->value,
+            ]);
+        }
+    }
 }
