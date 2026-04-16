@@ -247,4 +247,18 @@ class DashboardTest extends TestCase
             ->where('auth.viewModeLabel', 'Other')
         );
     }
+
+    public function test_inertia_isMultiRoleStaff_is_false_for_pure_staff_user(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole('staff');
+
+        $response = $this->actingAs($user)->get('/help');
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('auth.isMultiRoleStaff', false)
+            ->where('auth.viewMode', null)
+            ->where('auth.viewModeLabel', null)
+        );
+    }
 }
