@@ -78,9 +78,8 @@ function buildParams(page = 1) {
 }
 
 function reload(page = 1) {
-	router.reload({
+	router.get(route("unit.show", { unit: props.unitId }), buildParams(page), {
 		only: ["staff", "filter_options", "filters"],
-		data: buildParams(page),
 		preserveState: true,
 		preserveScroll: true,
 		replace: true,
