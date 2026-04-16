@@ -357,7 +357,7 @@ class QualificationReportService
     }
 
     /**
-     * @return array{count: int, sparkline: array<int, int>} 30-day daily submissions, newest last.
+     * @return array{count: int, sparkline: array<int, int>, oldestDays: int|null} 30-day daily submissions, newest last; oldestDays is whole days since earliest pending record.
      */
     public function pendingApprovalsStats(): array
     {
@@ -378,7 +378,12 @@ class QualificationReportService
                 $sparkline[] = (int) ($daily[$date] ?? 0);
             }
 
-            return ['count' => $count, 'sparkline' => $sparkline];
+            $oldest = Qualification::query()->pending()->min('created_at');
+            $oldestDays = $oldest
+                ? (int) \Illuminate\Support\Carbon::parse($oldest)->diffInDays(now())
+                : null;
+
+            return ['count' => $count, 'sparkline' => $sparkline, 'oldestDays' => $oldestDays];
         });
     }
 
