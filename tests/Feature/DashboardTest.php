@@ -105,4 +105,53 @@ class DashboardTest extends TestCase
 
         $response->assertRedirect(route('dashboard'));
     }
+
+    public function test_switch_mode_to_staff_sets_session_and_redirects_to_dashboard(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'super-administrator']);
+
+        $response = $this->actingAs($user)
+            ->post('/dashboard/switch-mode', ['mode' => 'staff']);
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertSame('staff', session('view_mode'));
+    }
+
+    public function test_switch_mode_to_other_sets_session_and_redirects_to_dashboard(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'super-administrator']);
+
+        $response = $this->actingAs($user)
+            ->post('/dashboard/switch-mode', ['mode' => 'other']);
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertSame('other', session('view_mode'));
+    }
+
+    public function test_switch_mode_rejects_invalid_mode(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'super-administrator']);
+
+        $response = $this->actingAs($user)
+            ->from('/dashboard/choose-mode')
+            ->post('/dashboard/switch-mode', ['mode' => 'bogus']);
+
+        $response->assertSessionHasErrors('mode');
+        $this->assertNull(session('view_mode'));
+    }
+
+    public function test_switch_mode_rejects_non_multi_role_user(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole('staff');
+
+        $response = $this->actingAs($user)
+            ->post('/dashboard/switch-mode', ['mode' => 'other']);
+
+        $response->assertForbidden();
+        $this->assertNull(session('view_mode'));
+    }
 }

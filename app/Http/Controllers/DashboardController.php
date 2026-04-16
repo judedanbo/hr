@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SwitchViewModeRequest;
 use App\Models\Institution;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -54,6 +55,13 @@ class DashboardController extends Controller
                 'mode' => 'other',
             ],
         ]);
+    }
+
+    public function switchMode(SwitchViewModeRequest $request): RedirectResponse
+    {
+        $request->session()->put('view_mode', $request->validated('mode'));
+
+        return redirect()->route('dashboard');
     }
 
     private function redirectToStaffLanding(User $user): RedirectResponse
