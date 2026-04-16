@@ -5,9 +5,11 @@ namespace App\Services;
 use App\DataTransferObjects\QualificationReportFilter;
 use App\Enums\QualificationLevelEnum;
 use App\Enums\QualificationStatusEnum;
+use App\Models\InstitutionPerson;
 use App\Models\Qualification;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -121,18 +123,42 @@ class QualificationReportService
      */
     public function staffWithoutQualifications(QualificationReportFilter $filter): \Illuminate\Support\Collection
     {
-        return $this->remember('staffWithoutQualifications', $filter, function () {
-            return \App\Models\Person::query()
-                ->whereExists(function ($q) {
-                    $q->select(\Illuminate\Support\Facades\DB::raw(1))
+        return $this->remember('staffWithoutQualifications', $filter, function () use ($filter) {
+            $query = \App\Models\Person::query()
+                ->whereExists(function ($q) use ($filter) {
+                    $q->select(DB::raw(1))
                         ->from('institution_person')
                         ->whereColumn('institution_person.person_id', 'people.id')
                         ->whereNull('institution_person.end_date');
+
+                    if ($filter->unitId) {
+                        $q->whereExists(function ($sq) use ($filter) {
+                            $sq->select(DB::raw(1))
+                                ->from('staff_unit')
+                                ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                                ->whereNull('staff_unit.end_date')
+                                ->where('staff_unit.unit_id', $filter->unitId);
+                        });
+                    } elseif ($filter->departmentId) {
+                        $descendants = $this->unitDescendantIds($filter->departmentId);
+                        $q->whereExists(function ($sq) use ($descendants) {
+                            $sq->select(DB::raw(1))
+                                ->from('staff_unit')
+                                ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                                ->whereNull('staff_unit.end_date')
+                                ->whereIn('staff_unit.unit_id', $descendants);
+                        });
+                    }
                 })
                 ->whereDoesntHave('qualifications', function ($q) {
                     $q->where('status', QualificationStatusEnum::Approved);
-                })
-                ->get();
+                });
+
+            if ($filter->gender) {
+                $query->where('people.gender', $filter->gender);
+            }
+
+            return $query->get();
         });
     }
 
@@ -357,18 +383,20 @@ class QualificationReportService
     }
 
     /**
-     * @return array{count: int, sparkline: array<int, int>} 30-day daily submissions, newest last.
+     * @return array{count: int, sparkline: array<int, int>, oldestDays: int|null} 30-day daily submissions, newest last; oldestDays is whole days since earliest pending record.
      */
-    public function pendingApprovalsStats(): array
+    public function pendingApprovalsStats(?QualificationReportFilter $filter = null): array
     {
-        return $this->remember('pendingApprovalsStats', new QualificationReportFilter, function () {
-            $count = Qualification::query()->pending()->count();
+        $scope = $this->filterForPending($filter);
+
+        return $this->remember('pendingApprovalsStats', $scope, function () use ($scope) {
+            $count = $this->applyFilter(Qualification::query(), $scope)->pending()->count();
 
             $since = now()->subDays(29)->startOfDay();
-            $daily = Qualification::query()
+            $daily = $this->applyFilter(Qualification::query(), $scope)
                 ->pending()
-                ->where('created_at', '>=', $since)
-                ->selectRaw('DATE(created_at) AS d, COUNT(*) AS n')
+                ->where('qualifications.created_at', '>=', $since)
+                ->selectRaw('DATE(qualifications.created_at) AS d, COUNT(*) AS n')
                 ->groupBy('d')
                 ->pluck('n', 'd');
 
@@ -378,8 +406,81 @@ class QualificationReportService
                 $sparkline[] = (int) ($daily[$date] ?? 0);
             }
 
-            return ['count' => $count, 'sparkline' => $sparkline];
+            $oldest = $this->applyFilter(Qualification::query(), $scope)->pending()->min('qualifications.created_at');
+            $oldestDays = $oldest
+                ? (int) Carbon::parse($oldest)->diffInDays(now())
+                : null;
+
+            return ['count' => $count, 'sparkline' => $sparkline, 'oldestDays' => $oldestDays];
         });
+    }
+
+    /**
+     * Strip the status clause from the filter so the pending KPI keeps its
+     * "pending" meaning even when the rest of the report is filtered by a
+     * different status (e.g. Approved). Other clauses — dept/unit/year/etc. —
+     * still narrow the count.
+     */
+    private function filterForPending(?QualificationReportFilter $filter): QualificationReportFilter
+    {
+        if ($filter === null) {
+            return new QualificationReportFilter;
+        }
+
+        return new QualificationReportFilter(
+            unitId: $filter->unitId,
+            departmentId: $filter->departmentId,
+            level: $filter->level,
+            status: null,
+            yearFrom: $filter->yearFrom,
+            yearTo: $filter->yearTo,
+            gender: $filter->gender,
+            jobCategoryId: $filter->jobCategoryId,
+            institution: $filter->institution,
+            course: $filter->course,
+        );
+    }
+
+    /**
+     * Count of active staff (InstitutionPerson with no end_date), optionally
+     * narrowed by the filter's department_id / unit_id. Serves as the
+     * denominator for "covered / without quals" percentages in the KPI row.
+     */
+    public function activeStaffCount(?QualificationReportFilter $filter = null): int
+    {
+        $query = InstitutionPerson::query()->whereNull('end_date');
+
+        if ($filter?->unitId) {
+            $unitId = $filter->unitId;
+            $query->whereExists(function ($q) use ($unitId) {
+                $q->select(DB::raw(1))
+                    ->from('staff_unit')
+                    ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                    ->whereNull('staff_unit.end_date')
+                    ->where('staff_unit.unit_id', $unitId);
+            });
+        } elseif ($filter?->departmentId) {
+            $descendants = $this->unitDescendantIds($filter->departmentId);
+            $query->whereExists(function ($q) use ($descendants) {
+                $q->select(DB::raw(1))
+                    ->from('staff_unit')
+                    ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                    ->whereNull('staff_unit.end_date')
+                    ->whereIn('staff_unit.unit_id', $descendants);
+            });
+        }
+
+        if ($filter?->gender) {
+            $gender = $filter->gender;
+            $query->whereExists(function ($q) use ($gender) {
+                $q->select(DB::raw(1))
+                    ->from('people')
+                    ->whereColumn('people.id', 'institution_person.person_id')
+                    ->where('people.gender', $gender);
+            });
+        }
+
+        return $query->count();
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Models\Qualification;
 use App\Models\Unit;
 use App\Services\QualificationReportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -219,5 +220,31 @@ class ServiceAggregationsTest extends TestCase
 
         $second = $service->levelDistribution(new QualificationReportFilter);
         $this->assertSame(1, $second['masters']);
+    }
+
+    public function test_pending_approvals_stats_includes_oldest_days_null_when_no_pending(): void
+    {
+        Qualification::factory()->approved()->count(2)->create();
+
+        $result = app(QualificationReportService::class)->pendingApprovalsStats();
+
+        $this->assertSame(0, $result['count']);
+        $this->assertNull($result['oldestDays']);
+    }
+
+    public function test_pending_approvals_stats_returns_oldest_days_for_oldest_pending(): void
+    {
+        Carbon::setTestNow('2026-04-16 12:00:00');
+
+        Qualification::factory()->pending()->create(['created_at' => now()->subDays(3)]);
+        Qualification::factory()->pending()->create(['created_at' => now()->subDays(10)]);
+        Qualification::factory()->pending()->create(['created_at' => now()->subDays(1)]);
+
+        $result = app(QualificationReportService::class)->pendingApprovalsStats();
+
+        $this->assertSame(3, $result['count']);
+        $this->assertSame(10, $result['oldestDays']);
+
+        Carbon::setTestNow();
     }
 }
