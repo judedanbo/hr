@@ -11,7 +11,6 @@ use App\Models\Job;
 use App\Models\JobCategory;
 use App\Models\Unit;
 use App\Services\UnitHierarchy;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -185,198 +184,45 @@ class UnitController extends Controller
         ]);
     }
 
-    public function show($unit)
+    public function show(StaffDirectoryFilterRequest $request, $unit, UnitHierarchy $hierarchy)
     {
         $unit = Unit::query()
             ->with([
                 'institution',
                 'parent',
                 'currentOffice.district.region',
-                'staff' => function ($query) {
-                    $query->with(['person', 'ranks', 'units']);
-                    $query->active();
-                    $query->search(request()->search);
-                },
-                // 'subs'
                 'subs' => function ($query) {
-                    $query->when(request()->search, function ($query) {
-                        $query->where('name', 'like', '%' . request()->search . '%');
-                    });
-                    $query->where(function ($query) {
-                        $query->whereHas('staff', function ($query) {
-                            $query->active();
-                            $query->search(request()->search);
-                        });
-                        $query->orWhereHas('subs', function ($query) {
-                            $query->whereHas('staff', function ($query) {
-                                $query->active();
-                                $query->search(request()->search);
-                            });
-                        });
-                    });
-                    $query->with([
-                        'subs' => function ($query) {
-                            $query->where(function ($query) {
-                                $query->whereHas('staff', function ($query) {
-                                    $query->active();
-                                    $query->search(request()->search);
-                                });
-                                $query->orWhereHas('subs', function ($query) {
-                                    $query->whereHas('staff', function ($query) {
-                                        $query->active();
-                                        $query->search(request()->search);
-                                    });
-                                });
-                            });
-                            $query->withCount([
-                                'staff' => function ($query) {
-                                    $query->active();
-                                },
-                                'staff as male' => function ($query) {
-                                    $query->active();
-                                    $query->maleStaff();
-                                },
-                                'staff as female' => function ($query) {
-                                    $query->active();
-                                    $query->femaleStaff();
-                                },
-
-                            ]);
-                        },
-                        'staff' => function ($query) {
-                            $query->with(['person', 'ranks.category', 'units']);
-                            $query->active();
-                            $query->search(request()->search);
-                        },
-                    ]);
-
-                    $query->withCount([
-                        'staff' => function ($query) {
-                            $query->active();
-                            $query->search(request()->search);
-                        },
-                        'staff as male_staff' => function ($query) {
-                            $query->active();
-                            $query->search(request()->search);
-                            $query->maleStaff();
-                        },
-                        'staff as female_staff' => function ($query) {
-                            $query->active();
-                            $query->search(request()->search);
-                            $query->femaleStaff();
-                        },
-                        'subs' => function ($query) {
-                            $query->whereHas('staff', function ($query) {
-                                $query->active();
-                            });
-                        },
-                    ]);
-                },
-            ])
-            ->withCount([
-                'subs' => function ($query) {
-                    $query->where(function ($query) {
-                        $query->whereHas('staff', function ($query) {
-                            $query->active();
-                            $query->search(request()->search);
-                        });
-                        $query->orWhereHas('subs', function ($query) {
-                            $query->whereHas('staff', function ($query) {
-                                $query->active();
-                                $query->search(request()->search);
-                            });
-                        });
-                    });
-                },
-                'staff' => function ($query) {
-                    $query->active();
-                    $query->search(request()->search);
-                },
-                'staff as male_staff' => function ($query) {
-                    $query->active();
-                    $query->maleStaff();
-                },
-                'staff as female_staff' => function ($query) {
-                    $query->active();
-                    $query->femaleStaff();
+                    $query->whereNull('end_date');
                 },
             ])
             ->whereId($unit)
             ->firstOrFail();
 
-        if (request()->user()->cannot('view', $unit)) {
+        if ($request->user()->cannot('view', $unit)) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view this unit');
         }
 
-        // return $unit;
-        // $filtered = $unit->staff->filter(function ($value) {
-        //     return $value->person !== null &&  $value->person?->date_of_birth->diffInYears(Carbon::now()) < 60;
-        // });
-        $sub_staff = $unit?->subs?->map(fn ($sub) => $sub->staff)->flatten(1);
-        // return $sub_staff;
-        $allStaff = $unit?->staff->merge($sub_staff)->flatten(1);
+        $allIds = $hierarchy->descendantIds($unit);
+        $childIdMap = $hierarchy->descendantIdsGroupedByChild($unit);
 
-        $sorted = $allStaff->sortBy(function ($staff) {
-            return $staff->ranks->first()?->category->level ?? 99;
-        });
+        $stats = $this->buildRootStats($unit, $allIds);
+        $subs = $this->buildSubUnitCards($unit, $childIdMap);
+        $rankDistribution = $this->buildRankDistribution($allIds);
 
-        // Get rank distribution for staff in this unit (and sub-units)
-        $staffIds = $allStaff->pluck('id')->toArray();
-        $rankDistribution = Job::query()
-            ->select('jobs.id', 'jobs.name')
-            ->selectRaw('COUNT(job_staff.id) as staff_count')
-            ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
-            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
-            ->whereIn('job_staff.staff_id', $staffIds)
-            ->whereNull('job_staff.end_date')
-            ->groupBy('jobs.id', 'jobs.name', 'job_categories.level')
-            ->orderBy('job_categories.level')
-            ->get()
-            ->map(fn ($job) => [
-                'id' => $job->id,
-                'name' => $job->name,
-                'full_name' => $job->name,
-                'count' => $job->staff_count,
-            ])
-            ->toArray();
-
-        // return $sorted;
         return Inertia::render('Unit/Show', [
             'unit' => [
-                // 'unit' => $unit,
-                'id' => $unit?->id,
-                'name' => $unit?->name,
-                'staff_number' => $unit?->subs ? $unit?->staff_count + $unit?->subs->sum(function ($sub) {
-                    return $sub->staff_count + $sub->subs->sum('staff_count');
-                }) : $unit?->staff_count,
-                'male_staff' => $unit?->subs ? $unit?->male_staff + $unit?->subs->sum(function ($sub) {
-                    return $sub->male_staff + $sub->subs->sum('male_staff');
-                }) : $unit?->male_staff,
-                // 'staff_number' => $unit->subs->sum('staff_count'),
-                'subs_number' => $unit?->subs_count,
-                'institution' => $unit?->institution ? [
-                    'name' => $unit?->institution->name,
-                    'id' => $unit?->institution->id,
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'type' => $unit->type->label(),
+                'institution' => $unit->institution ? [
+                    'id' => $unit->institution->id,
+                    'name' => $unit->institution->name,
                 ] : null,
-                'parent' => $unit?->parent ? [
-                    'name' => $unit?->parent->name,
-                    'id' => $unit?->parent->id,
+                'parent' => $unit->parent ? [
+                    'id' => $unit->parent->id,
+                    'name' => $unit->parent->name,
                 ] : null,
-                // 'subs' => $unit->subs ? $unit->subs->map(fn ($sub) => [
-                //     'id' => $sub->id,
-                //     'name' => $sub->name,
-                //     'subs' => $sub->subs_count,
-                //     'staff_count' => $sub->staff_count,
-                //     'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
-                //         'id' => $stafff->id,
-                //         'name' => $stafff->full_name,
-                //         'dob' => $stafff->date_of_birth,
-                //         'ssn' => $stafff->social_security_number,
-                //         'initials' => $stafff->initials
-                //     ]) : null,
-                // ]) : null,
-                'type' => $unit?->type->label(),
-                'current_office' => $unit?->currentOffice->first() ? [
+                'current_office' => $unit->currentOffice->first() ? [
                     'id' => $unit->currentOffice->first()->id,
                     'name' => $unit->currentOffice->first()->name,
                     'type' => $unit->currentOffice->first()->type?->label(),
@@ -389,76 +235,99 @@ class UnitController extends Controller
                         ] : null,
                     ] : null,
                 ] : null,
-                'staff' => $sorted->values()->map(fn ($staff) => [
-                    'id' => $staff->person->id,
-                    'name' => $staff->person->full_name,
-                    'gender' => $staff->person->gender?->value,
-                    'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                    'dob_raw' => $staff->person->date_of_birth?->format('Y-m-d'),
-                    'initials' => $staff->person->initials,
-                    'hire_date' => $staff->hire_date?->format('d M Y'),
-                    'hire_date_raw' => $staff->hire_date?->format('Y-m-d'),
-                    'staff_number' => $staff->staff_number,
-                    'file_number' => $staff->file_number,
-                    'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                    'rank' => $staff->ranks->count() > 0 ? [
-                        'id' => $staff->ranks->first()->id,
-                        'name' => $staff->ranks->first()->name,
-                        'start_date' => $staff->ranks->first()->pivot->start_date->format('d M Y'),
-                        'remarks' => $staff->ranks->first()->pivot->remarks,
-                        'cat' => $staff->ranks->first()->category,
-                        'category_id' => $staff->ranks->first()->job_category_id,
-                    ] : null,
-                    'unit' => $staff->units->count() > 0 ? [
-                        'id' => $staff->units->first()->id,
-                        'name' => $staff->units->first()->name,
-                        'start_date' => $staff->units->first()?->pivot->start_date?->format('d M Y'),
-                        'start_date_full' => $staff->units->first()->pivot?->start_date?->format('d M Y'),
-                        'duration' => $staff->units->first()->pivot->start_date?->diffForHumans(),
-                    ] : null,
-                ]),
-                'subs' => $unit?->subs ? $unit->subs->map(fn ($sub) => [
-                    'id' => $sub->id,
-                    'name' => $sub->name,
-                    'type' => $sub->type->label(),
-                    'subs' => $sub->subs_count,
-                    'staff_count' => $sub->staff_count + $sub->subs->sum(function ($sub) {
-                        return $sub->staff_count + $sub->subs->sum('staff_count');
-                    }),
-                    'male_staff' => $sub->male_staff + $sub->subs->sum(function ($sub) {
-                        return $sub->male_staff + $sub->subs->sum('male_staff');
-                    }),
-                    'female_staff' => $sub->female_staff + $sub->subs->sum(function ($sub) {
-                        return $sub->female_staff + $sub->subs->sum('female_staff');
-                    }),
-                    'office' => $unit->currentOffice->first() ? [
-                        'id' => $unit->currentOffice->first()->id,
-                        'name' => $unit->currentOffice->first()->name,
-                        'district' => $unit->currentOffice->first()->district ? [
-                            'id' => $unit->currentOffice->first()->district->id,
-                            'name' => $unit->currentOffice->first()->district->name,
-                            'region' => $unit->currentOffice->first()->district->region ? [
-                                'id' => $unit->currentOffice->first()->district->region->id,
-                                'name' => $unit->currentOffice->first()->district->region->name,
-                            ] : null,
-                        ] : null,
-                    ] : null,
-                    // 'staff' => $sub->staff ? $sub->staff->map(fn ($stafff) => [
-                    //     'id' => $stafff->id,
-                    //     'name' => $stafff->full_name,
-                    //     'dob' => $stafff->date_of_birth,
-                    //     'ssn' => $stafff->social_security_number,
-                    //     'initials' => $stafff->initials,
-                    // ]) : null,
-                ]) : null,
             ],
-
-            'filters' => [
-                'dept' => request()->dept,
-                'staff' => request()->staff,
-            ],
+            'stats' => $stats,
+            'subs' => $subs,
             'rank_distribution' => $rankDistribution,
+            'staff' => $this->loadStaffPage($allIds, $request->validated()),
+            'filter_options' => $this->buildFilterOptions($unit, $allIds),
+            'filters' => $request->validated(),
         ]);
+    }
+
+    /**
+     * @param  int[]  $allIds
+     * @return array<string, int>
+     */
+    private function buildRootStats(Unit $unit, array $allIds): array
+    {
+        $totals = InstitutionPerson::query()
+            ->active()
+            ->whereHas('units', fn ($q) => $q->whereIn('units.id', $allIds)->whereNull('staff_unit.end_date'))
+            ->leftJoin('people', 'people.id', '=', 'institution_person.person_id')
+            ->selectRaw('count(*) as total')
+            ->selectRaw("sum(case when people.gender = 'M' then 1 else 0 end) as male")
+            ->selectRaw("sum(case when people.gender = 'F' then 1 else 0 end) as female")
+            ->first();
+
+        $directSubs = $unit->subs->count();
+        $totalDescendants = max(0, count($allIds) - 1);
+
+        return [
+            'total' => (int) ($totals->total ?? 0),
+            'male' => (int) ($totals->male ?? 0),
+            'female' => (int) ($totals->female ?? 0),
+            'direct_subs' => $directSubs,
+            'total_descendants' => $totalDescendants,
+        ];
+    }
+
+    /**
+     * @param  array<int, int[]>  $childIdMap
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildSubUnitCards(Unit $unit, array $childIdMap): array
+    {
+        return $unit->subs->map(function (Unit $sub) use ($childIdMap) {
+            $subtreeIds = $childIdMap[$sub->id] ?? [$sub->id];
+
+            $totals = InstitutionPerson::query()
+                ->active()
+                ->whereHas('units', fn ($q) => $q->whereIn('units.id', $subtreeIds)->whereNull('staff_unit.end_date'))
+                ->leftJoin('people', 'people.id', '=', 'institution_person.person_id')
+                ->selectRaw('count(*) as total')
+                ->selectRaw("sum(case when people.gender = 'M' then 1 else 0 end) as male")
+                ->selectRaw("sum(case when people.gender = 'F' then 1 else 0 end) as female")
+                ->first();
+
+            return [
+                'id' => $sub->id,
+                'name' => $sub->name,
+                'type' => $sub->type->label(),
+                'subs' => max(0, count($subtreeIds) - 1),
+                'staff_count' => (int) ($totals->total ?? 0),
+                'male_staff' => (int) ($totals->male ?? 0),
+                'female_staff' => (int) ($totals->female ?? 0),
+            ];
+        })->values()->all();
+    }
+
+    /**
+     * @param  int[]  $allIds
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildRankDistribution(array $allIds): array
+    {
+        return Job::query()
+            ->select('jobs.id', 'jobs.name')
+            ->selectRaw('COUNT(DISTINCT job_staff.id) as staff_count')
+            ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
+            ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
+            ->join('staff_unit', 'staff_unit.staff_id', '=', 'job_staff.staff_id')
+            ->whereIn('staff_unit.unit_id', $allIds)
+            ->whereNull('job_staff.end_date')
+            ->whereNull('staff_unit.end_date')
+            ->groupBy('jobs.id', 'jobs.name', 'job_categories.level')
+            ->orderBy('job_categories.level')
+            ->get()
+            ->map(fn ($job) => [
+                'id' => $job->id,
+                'name' => $job->name,
+                'full_name' => $job->name,
+                'count' => (int) $job->staff_count,
+            ])
+            ->values()
+            ->all();
     }
 
     public function staff(StaffDirectoryFilterRequest $request, Unit $unit, UnitHierarchy $hierarchy)
