@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanksController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactTypeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataIntegrityController;
 use App\Http\Controllers\DependentController;
 use App\Http\Controllers\DistrictController;
@@ -120,36 +121,17 @@ Route::controller(PermissionController::class)->middleware(['auth', 'password_ch
     Route::patch('/user/{user}/revoke-permission', 'revokePermission')->middleware('can:update user permissions')->name('user.revoke.permissions');
 });
 
-Route::get('/dashboard', function () {
-    request()->session()->reflash();
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'password_changed', 'verified'])
+    ->name('dashboard');
 
-    $user = auth()->user();
+Route::get('/dashboard/choose-mode', [DashboardController::class, 'showChooser'])
+    ->middleware(['auth', 'password_changed', 'verified'])
+    ->name('dashboard.choose-mode');
 
-    // Staff role: redirect to their own staff page
-    if ($user->hasRole('staff')) {
-        if ($user->person) {
-            return redirect()
-                ->route('staff.show', [$user->person->institution->first()->staff->id]);
-        }
-
-        return redirect()->route('staff.index');
-    }
-
-    // Admin roles with dashboard access: show institution dashboard
-    if ($user->hasRole('super-administrator') || $user->can('view dashboard')) {
-        if (Institution::count() < 1) {
-            session()->flash('info', 'No institution found. Please create an institution to proceed');
-
-            return redirect()->route('institution.index');
-        }
-
-        return redirect()->route('institution.show', [1]);
-    }
-
-    // All other authenticated users: redirect to staff list
-    return redirect()->route('staff.index');
-})->middleware(['auth', 'password_changed', 'verified'])->name('dashboard');
-// })->name('dashboard');
+Route::post('/dashboard/switch-mode', [DashboardController::class, 'switchMode'])
+    ->middleware(['auth', 'password_changed', 'verified'])
+    ->name('dashboard.switch-mode');
 
 Route::middleware(['auth', 'can:qualifications.reports.view'])
     ->get('/dashboard/qualifications-widgets', [\App\Http\Controllers\QualificationDashboardController::class, 'widgets'])

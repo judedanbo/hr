@@ -34,10 +34,13 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => fn() => $request->user()?->only('id', 'name', 'email'),
-                'roles' => fn() => $request->user()?->getRoleNames(),
+                'user' => fn () => $request->user()?->only('id', 'name', 'email'),
+                'roles' => fn () => $request->user()?->getRoleNames(),
                 // 'is_admin' => fn() => $request->user()?->isAdmin(),
-                'permissions' => fn() => $request->user()?->getAllPermissions()->pluck('name'),
+                'permissions' => fn () => $request->user()?->getAllPermissions()->pluck('name'),
+                'viewMode' => fn () => $request->session()->get('view_mode'),
+                'isMultiRoleStaff' => fn () => $request->user()?->isMultiRoleStaff() ?? false,
+                'viewModeLabel' => fn () => $this->resolveViewModeLabel($request->user()),
             ],
             // 'permissions' => fn() => $request->user()?->getAllPermissions()->pluck('name'),
             'ziggy' => function () use ($request) {
@@ -46,11 +49,20 @@ class HandleInertiaRequests extends Middleware
                 ]);
             },
             'flash' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
-                'warning' => fn() => $request->session()->get('warning'),
-                'info' => fn() => $request->session()->get('info'),
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
             ],
         ]);
+    }
+
+    private function resolveViewModeLabel(?\App\Models\User $user): ?string
+    {
+        if (! $user?->isMultiRoleStaff()) {
+            return null;
+        }
+
+        return $user->canAccessAdminDashboard() ? 'Admin' : 'Other';
     }
 }
