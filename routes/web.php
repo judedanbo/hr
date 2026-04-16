@@ -125,6 +125,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'password_changed', 'verified'])
     ->name('dashboard');
 
+Route::get('/dashboard/choose-mode', [DashboardController::class, 'showChooser'])
+    ->middleware(['auth', 'password_changed', 'verified'])
+    ->name('dashboard.choose-mode');
+
 Route::middleware(['auth', 'can:qualifications.reports.view'])
     ->get('/dashboard/qualifications-widgets', [\App\Http\Controllers\QualificationDashboardController::class, 'widgets'])
     ->name('dashboard.qualifications');

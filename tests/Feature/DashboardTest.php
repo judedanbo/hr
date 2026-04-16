@@ -53,4 +53,56 @@ class DashboardTest extends TestCase
 
         $response->assertRedirect(route('staff.index'));
     }
+
+    public function test_multi_role_staff_user_sees_chooser_page(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'super-administrator']);
+
+        $response = $this->actingAs($user)->get('/dashboard/choose-mode');
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('Dashboard/ChooseMode')
+            ->has('staffOption')
+            ->has('otherOption')
+            ->where('staffOption.mode', 'staff')
+            ->where('otherOption.mode', 'other')
+        );
+    }
+
+    public function test_chooser_shows_admin_option_when_user_has_admin_access(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'super-administrator']);
+
+        $response = $this->actingAs($user)->get('/dashboard/choose-mode');
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('otherOption.label', 'Go to admin dashboard')
+        );
+    }
+
+    public function test_chooser_shows_staff_list_option_when_user_has_no_admin_access(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        // 'hr-user' is a seeded role without 'view dashboard' permission (confirmed in AuthorizationTest).
+        // If hr-user actually has 'view dashboard', pick a different seeded role that lacks it.
+        $user->assignRole(['staff', 'hr-user']);
+
+        $response = $this->actingAs($user)->get('/dashboard/choose-mode');
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('otherOption.label', 'Go to staff list')
+        );
+    }
+
+    public function test_chooser_redirects_non_multi_role_user_to_dashboard(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole('staff');
+
+        $response = $this->actingAs($user)->get('/dashboard/choose-mode');
+
+        $response->assertRedirect(route('dashboard'));
+    }
 }

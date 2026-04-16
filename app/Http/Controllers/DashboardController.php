@@ -6,6 +6,8 @@ use App\Models\Institution;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 class DashboardController extends Controller
 {
@@ -25,6 +27,33 @@ class DashboardController extends Controller
         }
 
         return redirect()->route('staff.index');
+    }
+
+    public function showChooser(Request $request): RedirectResponse|InertiaResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! $user->isMultiRoleStaff()) {
+            return redirect()->route('dashboard');
+        }
+
+        $canAdmin = $user->canAccessAdminDashboard();
+
+        return Inertia::render('Dashboard/ChooseMode', [
+            'staffOption' => [
+                'label' => 'View my staff record',
+                'description' => 'Go to your personal staff page.',
+                'mode' => 'staff',
+            ],
+            'otherOption' => [
+                'label' => $canAdmin ? 'Go to admin dashboard' : 'Go to staff list',
+                'description' => $canAdmin
+                    ? 'Continue to the institution dashboard with your administrative permissions.'
+                    : 'Continue to the staff directory.',
+                'mode' => 'other',
+            ],
+        ]);
     }
 
     private function redirectToStaffLanding(User $user): RedirectResponse
