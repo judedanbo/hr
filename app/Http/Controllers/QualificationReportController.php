@@ -131,14 +131,28 @@ class QualificationReportController extends Controller
         ];
     }
 
-    /** @return array<string, int> */
+    /** @return array<string, array<string, int|null>> */
     private function kpis(QualificationReportFilter $filter): array
     {
+        $activeStaff = InstitutionPerson::query()->whereNull('end_date')->count();
+        $pendingStats = $this->service->pendingApprovalsStats();
+
         return [
-            'totalQualifications' => Qualification::query()->approved()->count(),
-            'staffCovered' => Qualification::query()->approved()->distinct('person_id')->count('person_id'),
-            'pending' => $this->service->pendingApprovalsStats()['count'],
-            'withoutQualifications' => $this->service->staffWithoutQualifications($filter)->count(),
+            'totalQualifications' => [
+                'value' => Qualification::query()->approved()->count(),
+            ],
+            'staffCovered' => [
+                'value' => Qualification::query()->approved()->distinct('person_id')->count('person_id'),
+                'total' => $activeStaff,
+            ],
+            'pending' => [
+                'value' => $pendingStats['count'],
+                'oldestDays' => $pendingStats['oldestDays'] ?? null,
+            ],
+            'withoutQualifications' => [
+                'value' => $this->service->staffWithoutQualifications($filter)->count(),
+                'total' => $activeStaff,
+            ],
         ];
     }
 
