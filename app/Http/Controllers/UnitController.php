@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Exports\UnitStaffExport;
+use App\Http\Requests\StaffDirectoryFilterRequest;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
+use App\Models\InstitutionPerson;
 use App\Models\Job;
+use App\Models\JobCategory;
 use App\Models\Unit;
+use App\Services\UnitHierarchy;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -454,6 +459,160 @@ class UnitController extends Controller
             ],
             'rank_distribution' => $rankDistribution,
         ]);
+    }
+
+    public function staff(StaffDirectoryFilterRequest $request, Unit $unit, UnitHierarchy $hierarchy)
+    {
+        if ($request->user()->cannot('view', $unit)) {
+            abort(403);
+        }
+
+        $unitIds = $hierarchy->descendantIds($unit);
+
+        return Inertia::render('Unit/Show', [
+            'staff' => $this->loadStaffPage($unitIds, $request->validated()),
+            'filter_options' => $this->buildFilterOptions($unit, $unitIds),
+            'filters' => $request->validated(),
+        ]);
+    }
+
+    /**
+     * Build a paginated, filtered listing of active staff across the given unit ids.
+     *
+     * @param  int[]  $unitIds
+     * @param  array<string, mixed>  $filters
+     * @return array<string, mixed>
+     */
+    private function loadStaffPage(array $unitIds, array $filters): array
+    {
+        $query = InstitutionPerson::query()
+            ->active()
+            ->with(['person', 'ranks.category', 'units'])
+            ->whereHas('units', function ($q) use ($unitIds) {
+                $q->whereIn('units.id', $unitIds);
+                $q->whereNull('staff_unit.end_date');
+            });
+
+        if (! empty($filters['search'])) {
+            $query->search($filters['search']);
+        }
+        if (! empty($filters['job_category_id'])) {
+            $query->whereHas('ranks', fn ($q) => $q->where('job_category_id', $filters['job_category_id']));
+        }
+        if (! empty($filters['rank_id'])) {
+            $query->whereHas('ranks', fn ($q) => $q->where('jobs.id', $filters['rank_id']));
+        }
+        if (! empty($filters['sub_unit_id'])) {
+            $query->whereHas('units', fn ($q) => $q->where('units.id', $filters['sub_unit_id']));
+        }
+        if (! empty($filters['gender'])) {
+            $filters['gender'] === 'M' ? $query->maleStaff() : $query->femaleStaff();
+        }
+        if (! empty($filters['hire_date_from'])) {
+            $query->whereDate('hire_date', '>=', $filters['hire_date_from']);
+        }
+        if (! empty($filters['hire_date_to'])) {
+            $query->whereDate('hire_date', '<=', $filters['hire_date_to']);
+        }
+        if (! empty($filters['age_from'])) {
+            $cutoff = now()->subYears((int) $filters['age_from'])->endOfDay();
+            $query->whereHas('person', fn ($q) => $q->where('date_of_birth', '<=', $cutoff));
+        }
+        if (! empty($filters['age_to'])) {
+            $cutoff = now()->subYears((int) $filters['age_to'] + 1)->startOfDay();
+            $query->whereHas('person', fn ($q) => $q->where('date_of_birth', '>=', $cutoff));
+        }
+
+        $paginator = $query
+            ->orderByRaw('(select coalesce(min(jc.level), 99) from jobs inner join job_categories jc on jc.id = jobs.job_category_id inner join job_staff on job_staff.job_id = jobs.id where job_staff.staff_id = institution_person.id and job_staff.end_date is null)')
+            ->paginate(15)
+            ->withQueryString()
+            ->through(fn (InstitutionPerson $staff) => $this->shapeStaffRow($staff));
+
+        return JsonResource::collection($paginator)->response()->getData(true);
+    }
+
+    /**
+     * Shape one staff row for the directory.
+     *
+     * @return array<string, mixed>
+     */
+    private function shapeStaffRow(InstitutionPerson $staff): array
+    {
+        $rank = $staff->ranks->first();
+        $unit = $staff->units->first();
+
+        return [
+            'id' => $staff->person->id,
+            'name' => $staff->person->full_name,
+            'gender' => $staff->person->gender?->value,
+            'dob' => $staff->person->date_of_birth?->format('d M Y'),
+            'dob_raw' => $staff->person->date_of_birth?->format('Y-m-d'),
+            'initials' => $staff->person->initials,
+            'hire_date' => $staff->hire_date?->format('d M Y'),
+            'hire_date_raw' => $staff->hire_date?->format('Y-m-d'),
+            'staff_number' => $staff->staff_number,
+            'file_number' => $staff->file_number,
+            'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
+            'rank' => $rank ? [
+                'id' => $rank->id,
+                'name' => $rank->name,
+                'start_date' => $rank->pivot->start_date?->format('d M Y'),
+                'remarks' => $rank->pivot->remarks,
+                'cat' => $rank->category,
+                'category_id' => $rank->job_category_id,
+            ] : null,
+            'unit' => $unit ? [
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'start_date' => $unit->pivot->start_date?->format('d M Y'),
+                'duration' => $unit->pivot->start_date?->diffForHumans(),
+            ] : null,
+        ];
+    }
+
+    /**
+     * Build dropdown option lists derived from all staff in the descendant set.
+     *
+     * @param  int[]  $unitIds
+     * @return array<string, mixed>
+     */
+    private function buildFilterOptions(Unit $unit, array $unitIds): array
+    {
+        $categories = JobCategory::query()
+            ->whereHas('jobs.activeStaff', fn ($q) => $q->whereHas('units', fn ($u) => $u->whereIn('units.id', $unitIds)))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn ($c) => ['value' => $c->id, 'label' => $c->name])
+            ->values()
+            ->all();
+
+        $ranks = Job::query()
+            ->whereHas('activeStaff', fn ($q) => $q->whereHas('units', fn ($u) => $u->whereIn('units.id', $unitIds)))
+            ->orderBy('name')
+            ->get(['id', 'name', 'job_category_id'])
+            ->map(fn ($r) => ['value' => $r->id, 'label' => $r->name, 'category_id' => $r->job_category_id])
+            ->values()
+            ->all();
+
+        $subUnits = Unit::query()
+            ->where('unit_id', $unit->id)
+            ->whereNull('end_date')
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn ($u) => ['value' => $u->id, 'label' => $u->name])
+            ->values()
+            ->all();
+
+        return [
+            'job_categories' => $categories,
+            'ranks' => $ranks,
+            'sub_units' => $subUnits,
+            'genders' => [
+                ['value' => 'M', 'label' => 'Male'],
+                ['value' => 'F', 'label' => 'Female'],
+            ],
+        ];
     }
 
     public function store(StoreUnitRequest $request)

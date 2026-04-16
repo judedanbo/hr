@@ -216,6 +216,7 @@ Route::controller(UnitController::class)->middleware(['auth', 'password_changed'
     Route::get('/unit', 'index')->middleware('can:view all units')->name('unit.index');
     Route::post('/unit', 'store')->middleware('can:create unit')->name('unit.store');
     Route::get('/unit/{unit}', 'show')->middleware('can:view unit')->name('unit.show');
+    Route::get('/unit/{unit}/staff', 'staff')->middleware('can:view unit')->name('unit.staff');
     Route::delete('/unit/{unit}', 'delete')->middleware('can:delete unit')->name('unit.delete');
     Route::patch('/unit/{unit}', 'update')->middleware('can:edit unit')->name('unit.update');
     Route::get('/unit/{unit}/details', 'details')->middleware('can:view unit')->name('unit.details');
