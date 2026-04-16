@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('super-administrator');
     }
+
+    public function isMultiRoleStaff(): bool
+    {
+        return $this->hasRole('staff') && $this->roles->count() > 1;
+    }
 }
