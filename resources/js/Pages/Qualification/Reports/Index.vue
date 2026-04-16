@@ -14,6 +14,13 @@ import TopInstitutionsChart from "@/Components/Charts/Qualifications/TopInstitut
 import TopQualificationsChart from "@/Components/Charts/Qualifications/TopQualificationsChart.vue";
 import LevelByGenderChart from "@/Components/Charts/Qualifications/LevelByGenderChart.vue";
 import AcquiredOverTimeChart from "@/Components/Charts/Qualifications/AcquiredOverTimeChart.vue";
+import StatCard from "@/Components/StatCard.vue";
+import {
+	AcademicCapIcon,
+	UserGroupIcon,
+	ClockIcon,
+	ExclamationTriangleIcon,
+} from "@heroicons/vue/24/outline";
 
 const props = defineProps({
 	filters: Object,
@@ -149,6 +156,55 @@ const activeFilters = computed(() => {
 	if (f.course)
 		out.push({ key: "course", label: "Course", value: f.course });
 	return out;
+});
+
+const sparklineSeries = computed(() => {
+	const t = props.trendByYear ?? {};
+	const entries = Object.entries(t)
+		.map(([year, count]) => [Number(year), Number(count)])
+		.filter(([y, c]) => Number.isFinite(y) && Number.isFinite(c))
+		.sort((a, b) => a[0] - b[0]);
+	if (entries.length < 2) return null;
+	return entries.map(([, c]) => c);
+});
+
+const sparklineSummary = computed(() => {
+	const series = sparklineSeries.value;
+	if (!series) return null;
+	const first = series[0];
+	const last = series[series.length - 1];
+	if (first === 0) return `${series.length} yrs of history`;
+	const pct = (((last - first) / first) * 100).toFixed(0);
+	const sign = pct >= 0 ? "+" : "";
+	return `${sign}${pct}% over ${series.length} yrs`;
+});
+
+const coveredSecondary = computed(() => {
+	const total = props.kpis?.staffCovered?.total ?? 0;
+	const value = props.kpis?.staffCovered?.value ?? 0;
+	if (total === 0) return null;
+	return `${((value / total) * 100).toFixed(1)}% of active staff`;
+});
+
+const gapsSecondary = computed(() => {
+	const total = props.kpis?.withoutQualifications?.total ?? 0;
+	const value = props.kpis?.withoutQualifications?.value ?? 0;
+	if (total === 0) return null;
+	return `${((value / total) * 100).toFixed(1)}% of active staff`;
+});
+
+const pendingSecondary = computed(() => {
+	const value = props.kpis?.pending?.value ?? 0;
+	if (value === 0) return "None pending";
+	const totalQuals = props.kpis?.totalQualifications?.value ?? 0;
+	const pct = totalQuals > 0 ? ((value / totalQuals) * 100).toFixed(1) : null;
+	const oldest = props.kpis?.pending?.oldestDays;
+	const parts = [];
+	if (pct !== null) parts.push(`${pct}% of total`);
+	if (oldest !== null && oldest !== undefined) {
+		parts.push(oldest === 0 ? "oldest today" : `oldest ${oldest}d`);
+	}
+	return parts.join(" · ") || null;
 });
 
 function removeFilter(key) {
@@ -398,55 +454,36 @@ const reportTypes = [
 				</span>
 			</div>
 
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-				<div
-					class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700"
-				>
-					<div
-						class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400"
-					>
-						Total Qualifications
-					</div>
-					<div class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-						{{ kpis.totalQualifications?.toLocaleString() }}
-					</div>
-				</div>
-				<div
-					class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700"
-				>
-					<div
-						class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400"
-					>
-						Staff Covered
-					</div>
-					<div class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-						{{ kpis.staffCovered?.toLocaleString() }}
-					</div>
-				</div>
-				<div
-					class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700"
-				>
-					<div
-						class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400"
-					>
-						Pending
-					</div>
-					<div class="mt-1 text-2xl font-bold text-yellow-600">
-						{{ kpis.pending?.toLocaleString() }}
-					</div>
-				</div>
-				<div
-					class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700"
-				>
-					<div
-						class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400"
-					>
-						Staff Without Quals
-					</div>
-					<div class="mt-1 text-2xl font-bold text-red-600">
-						{{ kpis.withoutQualifications?.toLocaleString() }}
-					</div>
-				</div>
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+				<StatCard
+					label="Total Qualifications"
+					:value="kpis.totalQualifications.value"
+					:icon="AcademicCapIcon"
+					accent="indigo"
+					:sparkline="sparklineSeries"
+					:secondary="sparklineSummary"
+				/>
+				<StatCard
+					label="Staff Covered"
+					:value="kpis.staffCovered.value"
+					:icon="UserGroupIcon"
+					accent="emerald"
+					:secondary="coveredSecondary"
+				/>
+				<StatCard
+					label="Pending"
+					:value="kpis.pending.value"
+					:icon="ClockIcon"
+					accent="amber"
+					:secondary="pendingSecondary"
+				/>
+				<StatCard
+					label="Staff Without Quals"
+					:value="kpis.withoutQualifications.value"
+					:icon="ExclamationTriangleIcon"
+					accent="red"
+					:secondary="gapsSecondary"
+				/>
 			</div>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
