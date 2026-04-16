@@ -5,9 +5,11 @@ namespace App\Services;
 use App\DataTransferObjects\QualificationReportFilter;
 use App\Enums\QualificationLevelEnum;
 use App\Enums\QualificationStatusEnum;
+use App\Models\InstitutionPerson;
 use App\Models\Qualification;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -359,16 +361,18 @@ class QualificationReportService
     /**
      * @return array{count: int, sparkline: array<int, int>, oldestDays: int|null} 30-day daily submissions, newest last; oldestDays is whole days since earliest pending record.
      */
-    public function pendingApprovalsStats(): array
+    public function pendingApprovalsStats(?QualificationReportFilter $filter = null): array
     {
-        return $this->remember('pendingApprovalsStats', new QualificationReportFilter, function () {
-            $count = Qualification::query()->pending()->count();
+        $scope = $this->filterForPending($filter);
+
+        return $this->remember('pendingApprovalsStats', $scope, function () use ($scope) {
+            $count = $this->applyFilter(Qualification::query(), $scope)->pending()->count();
 
             $since = now()->subDays(29)->startOfDay();
-            $daily = Qualification::query()
+            $daily = $this->applyFilter(Qualification::query(), $scope)
                 ->pending()
-                ->where('created_at', '>=', $since)
-                ->selectRaw('DATE(created_at) AS d, COUNT(*) AS n')
+                ->where('qualifications.created_at', '>=', $since)
+                ->selectRaw('DATE(qualifications.created_at) AS d, COUNT(*) AS n')
                 ->groupBy('d')
                 ->pluck('n', 'd');
 
@@ -378,13 +382,71 @@ class QualificationReportService
                 $sparkline[] = (int) ($daily[$date] ?? 0);
             }
 
-            $oldest = Qualification::query()->pending()->min('created_at');
+            $oldest = $this->applyFilter(Qualification::query(), $scope)->pending()->min('qualifications.created_at');
             $oldestDays = $oldest
-                ? (int) \Illuminate\Support\Carbon::parse($oldest)->diffInDays(now())
+                ? (int) Carbon::parse($oldest)->diffInDays(now())
                 : null;
 
             return ['count' => $count, 'sparkline' => $sparkline, 'oldestDays' => $oldestDays];
         });
+    }
+
+    /**
+     * Strip the status clause from the filter so the pending KPI keeps its
+     * "pending" meaning even when the rest of the report is filtered by a
+     * different status (e.g. Approved). Other clauses — dept/unit/year/etc. —
+     * still narrow the count.
+     */
+    private function filterForPending(?QualificationReportFilter $filter): QualificationReportFilter
+    {
+        if ($filter === null) {
+            return new QualificationReportFilter;
+        }
+
+        return new QualificationReportFilter(
+            unitId: $filter->unitId,
+            departmentId: $filter->departmentId,
+            level: $filter->level,
+            status: null,
+            yearFrom: $filter->yearFrom,
+            yearTo: $filter->yearTo,
+            gender: $filter->gender,
+            jobCategoryId: $filter->jobCategoryId,
+            institution: $filter->institution,
+            course: $filter->course,
+        );
+    }
+
+    /**
+     * Count of active staff (InstitutionPerson with no end_date), optionally
+     * narrowed by the filter's department_id / unit_id. Serves as the
+     * denominator for "covered / without quals" percentages in the KPI row.
+     */
+    public function activeStaffCount(?QualificationReportFilter $filter = null): int
+    {
+        $query = InstitutionPerson::query()->whereNull('end_date');
+
+        if ($filter?->unitId) {
+            $unitId = $filter->unitId;
+            $query->whereExists(function ($q) use ($unitId) {
+                $q->select(DB::raw(1))
+                    ->from('staff_unit')
+                    ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                    ->whereNull('staff_unit.end_date')
+                    ->where('staff_unit.unit_id', $unitId);
+            });
+        } elseif ($filter?->departmentId) {
+            $descendants = $this->unitDescendantIds($filter->departmentId);
+            $query->whereExists(function ($q) use ($descendants) {
+                $q->select(DB::raw(1))
+                    ->from('staff_unit')
+                    ->whereColumn('staff_unit.staff_id', 'institution_person.id')
+                    ->whereNull('staff_unit.end_date')
+                    ->whereIn('staff_unit.unit_id', $descendants);
+            });
+        }
+
+        return $query->count();
     }
 
     /**

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\QualificationReports;
 
+use App\Enums\QualificationLevelEnum;
 use App\Models\InstitutionPerson;
+use App\Models\Qualification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -66,6 +68,72 @@ class IndexPageTest extends TestCase
                 ->where('kpis.staffCovered.total', 3)
                 ->where('kpis.withoutQualifications.total', 3)
                 ->where('kpis.pending.oldestDays', null)
+            );
+    }
+
+    public function test_total_qualifications_kpi_respects_year_filter(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['qualifications.reports.view', 'qualifications.reports.view.all']);
+
+        Qualification::factory()->approved()->count(2)->create(['year' => '2020']);
+        Qualification::factory()->approved()->count(3)->create(['year' => '2023']);
+
+        $this->actingAs($user->fresh())
+            ->get('/qualifications/reports?year_from=2022')
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('kpis.totalQualifications.value', 3)
+            );
+    }
+
+    public function test_total_qualifications_kpi_respects_level_filter(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['qualifications.reports.view', 'qualifications.reports.view.all']);
+
+        Qualification::factory()->approved()->atLevel(QualificationLevelEnum::Degree)->count(4)->create();
+        Qualification::factory()->approved()->atLevel(QualificationLevelEnum::Masters)->count(2)->create();
+
+        $this->actingAs($user->fresh())
+            ->get('/qualifications/reports?level=' . QualificationLevelEnum::Masters->value)
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('kpis.totalQualifications.value', 2)
+            );
+    }
+
+    public function test_pending_kpi_ignores_status_filter_so_pending_count_stays_meaningful(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['qualifications.reports.view', 'qualifications.reports.view.all']);
+
+        Qualification::factory()->pending()->count(3)->create();
+        Qualification::factory()->approved()->count(5)->create();
+
+        // Even though the user filters by status=Approved, the Pending card
+        // should still count pending qualifications (matching other filters).
+        $this->actingAs($user->fresh())
+            ->get('/qualifications/reports?status=approved')
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('kpis.pending.value', 3)
+                ->where('kpis.totalQualifications.value', 5)
+            );
+    }
+
+    public function test_staff_covered_kpi_respects_level_filter(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['qualifications.reports.view', 'qualifications.reports.view.all']);
+
+        $personA = \App\Models\Person::factory()->create();
+        $personB = \App\Models\Person::factory()->create();
+
+        Qualification::factory()->approved()->atLevel(QualificationLevelEnum::Degree)->for($personA)->create();
+        Qualification::factory()->approved()->atLevel(QualificationLevelEnum::Masters)->for($personB)->create();
+
+        $this->actingAs($user->fresh())
+            ->get('/qualifications/reports?level=' . QualificationLevelEnum::Masters->value)
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('kpis.staffCovered.value', 1)
             );
     }
 }
