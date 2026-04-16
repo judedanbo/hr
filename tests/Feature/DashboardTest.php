@@ -217,4 +217,34 @@ class DashboardTest extends TestCase
 
         $response->assertRedirect(route('institution.index'));
     }
+
+    public function test_inertia_shares_view_mode_props_for_multi_role_staff(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'super-administrator']);
+
+        $response = $this->actingAs($user)
+            ->withSession(['view_mode' => 'other'])
+            ->get('/dashboard/choose-mode');
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('auth.viewMode', 'other')
+            ->where('auth.isMultiRoleStaff', true)
+            ->where('auth.viewModeLabel', 'Admin')
+        );
+    }
+
+    public function test_inertia_view_mode_label_is_other_when_user_has_no_admin_access(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->assignRole(['staff', 'hr-user']);
+
+        $response = $this->actingAs($user)
+            ->get('/dashboard/choose-mode');
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('auth.isMultiRoleStaff', true)
+            ->where('auth.viewModeLabel', 'Other')
+        );
+    }
 }
