@@ -24,8 +24,12 @@ import RemoveOfficeModal from "./partials/RemoveOfficeModal.vue";
 
 const props = defineProps({
 	unit: Object,
-	filters: Object,
+	stats: Object,
+	subs: Array,
+	staff: Object,
 	rank_distribution: Array,
+	filter_options: Object,
+	filters: Object,
 });
 
 const page = usePage();
@@ -63,15 +67,6 @@ const handleUnitDeleted = () => {
 		);
 	}
 };
-
-// Handle search from staff directory
-const handleSearch = (query) => {
-	router.get(
-		route("unit.show", { unit: props.unit.id }),
-		{ search: query },
-		{ preserveState: true, replace: true, preserveScroll: true },
-	);
-};
 </script>
 
 <template>
@@ -91,7 +86,7 @@ const handleSearch = (query) => {
 			<!-- Dashboard Sections -->
 			<div class="space-y-8">
 				<!-- Overview Stats -->
-				<UnitStatsSection :unit="props.unit" />
+				<UnitStatsSection :stats="props.stats" />
 
 				<!-- Office Location -->
 				<UnitOfficeSection
@@ -103,8 +98,8 @@ const handleSearch = (query) => {
 
 				<!-- Sub-Units Card Grid -->
 				<SubUnitsCardGrid
-					v-if="props.unit?.subs?.length > 0"
-					:subs="props.unit.subs"
+					v-if="props.subs?.length > 0"
+					:subs="props.subs"
 					:parent-name="props.unit.name"
 					:can-download="permissions?.includes('download active staff data')"
 				/>
@@ -117,12 +112,12 @@ const handleSearch = (query) => {
 
 				<!-- Staff Directory -->
 				<StaffDirectorySection
-					:staff="props.unit?.staff || []"
-					:subs="props.unit?.subs || []"
+					:staff="props.staff"
+					:filter-options="props.filter_options"
+					:filters="props.filters"
 					:unit-id="props.unit?.id"
 					:unit-name="props.unit?.name"
 					:can-download="permissions?.includes('download active staff data')"
-					@search="handleSearch"
 				/>
 			</div>
 		</main>
