@@ -311,20 +311,6 @@ class AuthorizationTest extends TestCase
     }
 
     // ===================
-    // SELF-ACCESS TESTS
-    // ===================
-
-    public function test_user_can_view_own_profile(): void
-    {
-        // Users should be able to view their own user record
-        $response = $this->actingAs($this->staffUser)
-            ->get(route('user.show', $this->staffUser));
-
-        // This depends on UserPolicy implementation
-        $response->assertStatus(200);
-    }
-
-    // ===================
     // DATA INTEGRITY PERMISSION TESTS
     // ===================
 

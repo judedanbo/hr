@@ -32,18 +32,6 @@ defineProps({
 						{{ "Staff of " + sta.institution_name }}
 					</dt>
 				</div>
-				<div class="flex-none self-end px-6 pt-4">
-					<!-- <Link
-						v-if="
-							permissions?.includes('update staff') ||
-							permissions?.includes('delete staff')
-						"
-						:href="route('staff.edit', { staff: sta.staff_id })"
-						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
-					>
-						Edit
-					</Link> -->
-				</div>
 				<div class="mt-4 w-full border-t pt-6 px-6 flex gap-5 justify-between">
 					<div
 						class="gap-x-4 space-y-3 border-gray-900/5 dark:border-gray-200/30"
