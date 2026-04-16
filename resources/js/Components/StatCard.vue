@@ -8,7 +8,8 @@ const props = defineProps({
 	accent: {
 		type: String,
 		default: "slate",
-		validator: (v) => ["indigo", "emerald", "amber", "red", "slate"].includes(v),
+		validator: (v) =>
+			["indigo", "emerald", "amber", "red", "pink", "slate"].includes(v),
 	},
 	secondary: { type: String, default: null },
 	trend: { type: Object, default: null }, // { direction: 'up'|'down'|'flat', text: string }
@@ -39,6 +40,12 @@ const accentClasses = {
 		iconBg: "bg-red-50 dark:bg-red-900/40",
 		iconText: "text-red-600 dark:text-red-300",
 		spark: "#dc2626",
+	},
+	pink: {
+		border: "border-pink-500 dark:border-pink-400",
+		iconBg: "bg-pink-50 dark:bg-pink-900/40",
+		iconText: "text-pink-600 dark:text-pink-300",
+		spark: "#db2777",
 	},
 	slate: {
 		border: "border-slate-400 dark:border-slate-500",

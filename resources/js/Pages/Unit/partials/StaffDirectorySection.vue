@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, watch, reactive } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { ref, computed, reactive, watch } from "vue";
+import { router, Link } from "@inertiajs/vue3";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import {
 	ArrowDownTrayIcon,
@@ -18,12 +18,16 @@ import SearchNumberInput from "@/Components/Forms/SearchNumberInput.vue";
 
 const props = defineProps({
 	staff: {
-		type: Array,
+		type: Object,
 		required: true,
 	},
-	subs: {
-		type: Array,
-		default: () => [],
+	filterOptions: {
+		type: Object,
+		required: true,
+	},
+	filters: {
+		type: Object,
+		default: () => ({}),
 	},
 	unitId: {
 		type: Number,
@@ -39,250 +43,113 @@ const props = defineProps({
 	},
 });
 
-const searchQuery = ref("");
-const currentPage = ref(1);
-const perPage = ref(15);
-
-const emit = defineEmits(["search"]);
-
-// Advanced filter state
+const searchQuery = ref(props.filters.search ?? "");
 const filterForm = reactive({
-	job_category_id: null,
-	rank_id: null,
-	sub_unit_id: null,
-	gender: null,
-	hire_date_from: null,
-	hire_date_to: null,
-	age_from: null,
-	age_to: null,
+	job_category_id: props.filters.job_category_id ?? null,
+	rank_id: props.filters.rank_id ?? null,
+	sub_unit_id: props.filters.sub_unit_id ?? null,
+	gender: props.filters.gender ?? null,
+	hire_date_from: props.filters.hire_date_from ?? null,
+	hire_date_to: props.filters.hire_date_to ?? null,
+	age_from: props.filters.age_from ?? null,
+	age_to: props.filters.age_to ?? null,
 });
 
-// Extract unique job categories from staff
-const jobCategories = computed(() => {
-	const categories = new Map();
-	props.staff.forEach((member) => {
-		if (member.rank?.cat) {
-			categories.set(member.rank.cat.id, {
-				value: member.rank.cat.id,
-				label: member.rank.cat.name,
-			});
-		}
+const rows = computed(() => props.staff?.data ?? []);
+const meta = computed(() => props.staff?.meta ?? {});
+
+const ranksForCategory = computed(() => {
+	const all = props.filterOptions?.ranks ?? [];
+	if (!filterForm.job_category_id) return all;
+	return all.filter((r) => r.category_id === filterForm.job_category_id);
+});
+
+const hasActiveFilters = computed(() =>
+	Object.values(filterForm).some((v) => v !== null && v !== ""),
+);
+
+function buildParams(page = 1) {
+	const params = { page };
+	if (searchQuery.value) params.search = searchQuery.value;
+	Object.entries(filterForm).forEach(([key, value]) => {
+		if (value !== null && value !== "") params[key] = value;
 	});
-	return Array.from(categories.values()).sort((a, b) =>
-		a.label.localeCompare(b.label),
-	);
-});
+	return params;
+}
 
-// Extract unique ranks from staff (filtered by category if selected)
-const ranks = computed(() => {
-	const rankMap = new Map();
-	props.staff.forEach((member) => {
-		if (member.rank?.id) {
-			if (
-				!filterForm.job_category_id ||
-				member.rank.category_id === filterForm.job_category_id
-			) {
-				rankMap.set(member.rank.id, {
-					value: member.rank.id,
-					label: member.rank.name,
-					category_id: member.rank.category_id,
-				});
-			}
-		}
+function reload(page = 1) {
+	router.get(route("unit.show", { unit: props.unitId }), buildParams(page), {
+		only: ["staff", "filter_options", "filters"],
+		preserveState: true,
+		preserveScroll: true,
+		replace: true,
 	});
-	return Array.from(rankMap.values()).sort((a, b) =>
-		a.label.localeCompare(b.label),
-	);
-});
+}
 
-// Sub-units options from subs prop
-const subUnits = computed(() => {
-	return props.subs.map((sub) => ({
-		value: sub.id,
-		label: sub.name,
-	}));
-});
+let searchTimeout = null;
+function onSearchInput() {
+	clearTimeout(searchTimeout);
+	searchTimeout = setTimeout(() => reload(1), 300);
+}
 
-// Gender options (values match GenderEnum: M, F)
-const genderOptions = [
-	{ value: "M", label: "Male" },
-	{ value: "F", label: "Female" },
-];
+watch(
+	filterForm,
+	() => {
+		reload(1);
+	},
+	{ deep: true },
+);
 
-// Filter staff based on search query and advanced filters
-const filteredStaff = computed(() => {
-	let result = props.staff;
-
-	// Text search
-	if (searchQuery.value) {
-		const query = searchQuery.value.toLowerCase();
-		result = result.filter(
-			(member) =>
-				member.name?.toLowerCase().includes(query) ||
-				member.staff_number?.toLowerCase().includes(query) ||
-				member.file_number?.toLowerCase().includes(query) ||
-				member.rank?.name?.toLowerCase().includes(query),
-		);
-	}
-
-	// Job Category filter
-	if (filterForm.job_category_id) {
-		result = result.filter(
-			(member) => member.rank?.category_id === filterForm.job_category_id,
-		);
-	}
-
-	// Rank filter
-	if (filterForm.rank_id) {
-		result = result.filter((member) => member.rank?.id === filterForm.rank_id);
-	}
-
-	// Sub-unit filter
-	if (filterForm.sub_unit_id) {
-		result = result.filter(
-			(member) => member.unit?.id === filterForm.sub_unit_id,
-		);
-	}
-
-	// Gender filter
-	if (filterForm.gender) {
-		result = result.filter((member) => member.gender === filterForm.gender);
-	}
-
-	// Hire date range
-	if (filterForm.hire_date_from) {
-		result = result.filter(
-			(member) => member.hire_date_raw >= filterForm.hire_date_from,
-		);
-	}
-	if (filterForm.hire_date_to) {
-		result = result.filter(
-			(member) => member.hire_date_raw <= filterForm.hire_date_to,
-		);
-	}
-
-	// Age range (calculate from dob_raw)
-	if (filterForm.age_from || filterForm.age_to) {
-		const today = new Date();
-		result = result.filter((member) => {
-			if (!member.dob_raw) return false;
-			const birthDate = new Date(member.dob_raw);
-			const age = Math.floor(
-				(today - birthDate) / (365.25 * 24 * 60 * 60 * 1000),
+watch(
+	() => filterForm.job_category_id,
+	() => {
+		if (filterForm.rank_id) {
+			const stillValid = ranksForCategory.value.some(
+				(r) => r.value === filterForm.rank_id,
 			);
-			if (filterForm.age_from && age < filterForm.age_from) return false;
-			if (filterForm.age_to && age > filterForm.age_to) return false;
-			return true;
-		});
-	}
+			if (!stillValid) filterForm.rank_id = null;
+		}
+	},
+);
 
-	return result;
-});
-
-// Check if any filter is active
-const hasActiveFilters = computed(() => {
-	return Object.values(filterForm).some((v) => v !== null && v !== "");
-});
-
-// Reset all filters
-const resetFilters = () => {
+function resetFilters() {
 	Object.keys(filterForm).forEach((key) => {
 		filterForm[key] = null;
 	});
-};
+}
 
-// Pagination computed properties
-const totalPages = computed(() =>
-	Math.ceil(filteredStaff.value.length / perPage.value),
-);
+function goToPage(page) {
+	if (typeof page !== "number") return;
+	if (page < 1 || page > (meta.value.last_page ?? 1)) return;
+	reload(page);
+}
 
-const paginatedStaff = computed(() => {
-	const start = (currentPage.value - 1) * perPage.value;
-	const end = start + perPage.value;
-	return filteredStaff.value.slice(start, end);
-});
+function prevPage() {
+	goToPage((meta.value.current_page ?? 1) - 1);
+}
 
-const paginationInfo = computed(() => ({
-	from:
-		filteredStaff.value.length === 0
-			? 0
-			: (currentPage.value - 1) * perPage.value + 1,
-	to: Math.min(currentPage.value * perPage.value, filteredStaff.value.length),
-	total: filteredStaff.value.length,
-}));
+function nextPage() {
+	goToPage((meta.value.current_page ?? 1) + 1);
+}
 
-// Generate page numbers to display (limit to 5 pages around current)
 const visiblePages = computed(() => {
 	const pages = [];
-	const total = totalPages.value;
-	const current = currentPage.value;
-
+	const total = meta.value.last_page ?? 1;
+	const current = meta.value.current_page ?? 1;
 	if (total <= 7) {
 		for (let i = 1; i <= total; i++) pages.push(i);
 	} else {
 		pages.push(1);
 		if (current > 3) pages.push("...");
-
 		const start = Math.max(2, current - 1);
 		const end = Math.min(total - 1, current + 1);
-
 		for (let i = start; i <= end; i++) pages.push(i);
-
 		if (current < total - 2) pages.push("...");
 		pages.push(total);
 	}
 	return pages;
 });
 
-// Reset page when search or filters change
-watch(
-	[searchQuery, filterForm],
-	() => {
-		currentPage.value = 1;
-	},
-	{ deep: true },
-);
-
-// Clear rank when category changes if it doesn't belong to the new category
-watch(
-	() => filterForm.job_category_id,
-	() => {
-		if (filterForm.rank_id) {
-			const selectedRank = ranks.value.find(
-				(r) => r.value === filterForm.rank_id,
-			);
-			if (!selectedRank) {
-				filterForm.rank_id = null;
-			}
-		}
-	},
-);
-
-// Pagination navigation functions
-function goToPage(page) {
-	if (typeof page === "number" && page >= 1 && page <= totalPages.value) {
-		currentPage.value = page;
-	}
-}
-
-function prevPage() {
-	goToPage(currentPage.value - 1);
-}
-
-function nextPage() {
-	goToPage(currentPage.value + 1);
-}
-
-// Debounced search emit
-let searchTimeout = null;
-function handleSearch() {
-	clearTimeout(searchTimeout);
-	searchTimeout = setTimeout(() => {
-		emit("search", searchQuery.value);
-	}, 300);
-}
-
-// Get initials background color based on name
 function getInitialsColor(name) {
 	const colors = [
 		"bg-red-500",
@@ -307,59 +174,30 @@ function getInitialsColor(name) {
 	return colors[charCode % colors.length];
 }
 
-const exportToExcel = () => {
+function exportToExcel() {
 	const params = new URLSearchParams();
-
-	if (searchQuery.value) {
-		params.append("search", searchQuery.value);
-	}
-	if (filterForm.job_category_id) {
-		params.append("job_category_id", filterForm.job_category_id);
-	}
-	if (filterForm.rank_id) {
-		params.append("rank_id", filterForm.rank_id);
-	}
-	if (filterForm.sub_unit_id) {
-		params.append("sub_unit_id", filterForm.sub_unit_id);
-	}
-	if (filterForm.gender) {
-		params.append("gender", filterForm.gender);
-	}
-	if (filterForm.hire_date_from) {
-		params.append("hire_date_from", filterForm.hire_date_from);
-	}
-	if (filterForm.hire_date_to) {
-		params.append("hire_date_to", filterForm.hire_date_to);
-	}
-	if (filterForm.age_from) {
-		params.append("age_from", filterForm.age_from);
-	}
-	if (filterForm.age_to) {
-		params.append("age_to", filterForm.age_to);
-	}
-
-	const queryString = params.toString();
+	Object.entries(buildParams(1)).forEach(([k, v]) => {
+		if (k !== "page") params.append(k, v);
+	});
 	const baseUrl = route("export.unit.staff", { unit: props.unitId });
-
-	window.location = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-};
+	const qs = params.toString();
+	window.location = qs ? `${baseUrl}?${qs}` : baseUrl;
+}
 </script>
 
 <template>
 	<section>
-		<!-- Section Header -->
 		<div
 			class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"
 		>
 			<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
 				Staff Directory
 				<span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-					({{ staff.length }})
+					({{ meta.total ?? 0 }})
 				</span>
 			</h2>
 
 			<div class="flex items-center gap-3">
-				<!-- Search -->
 				<div class="relative">
 					<MagnifyingGlassIcon
 						class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
@@ -369,11 +207,10 @@ const exportToExcel = () => {
 						type="search"
 						placeholder="Search staff..."
 						class="block w-full sm:w-64 rounded-md border-0 py-2 pl-10 pr-3 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-						@input="handleSearch"
+						@input="onSearchInput"
 					/>
 				</div>
 
-				<!-- Export Button -->
 				<a
 					v-if="canDownload"
 					class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -385,7 +222,6 @@ const exportToExcel = () => {
 			</div>
 		</div>
 
-		<!-- Advanced Search Panel -->
 		<Disclosure v-slot="{ open }" as="div" class="mb-4">
 			<div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
 				<DisclosureButton
@@ -411,114 +247,79 @@ const exportToExcel = () => {
 					/>
 				</DisclosureButton>
 
-				<transition
-					enter-active-class="transition duration-200 ease-out"
-					enter-from-class="transform scale-95 opacity-0"
-					enter-to-class="transform scale-100 opacity-100"
-					leave-active-class="transition duration-100 ease-in"
-					leave-from-class="transform scale-100 opacity-100"
-					leave-to-class="transform scale-95 opacity-0"
-				>
-					<DisclosurePanel class="px-4 pb-4 pt-2">
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-							<!-- Job Category Filter -->
-							<SearchSelect
-								v-model="filterForm.job_category_id"
-								label="Job Category"
-								placeholder="All Categories"
-								:options="jobCategories"
-							/>
+				<DisclosurePanel class="px-4 pb-4 pt-2">
+					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						<SearchSelect
+							v-model="filterForm.job_category_id"
+							label="Job Category"
+							placeholder="All Categories"
+							:options="filterOptions.job_categories"
+						/>
+						<SearchSelect
+							v-model="filterForm.rank_id"
+							label="Rank / Job"
+							placeholder="All Ranks"
+							:options="ranksForCategory"
+							searchable
+						/>
+						<SearchSelect
+							v-if="filterOptions.sub_units.length > 0"
+							v-model="filterForm.sub_unit_id"
+							label="Sub-Unit"
+							placeholder="All Sub-Units"
+							:options="filterOptions.sub_units"
+							searchable
+						/>
+						<SearchSelect
+							v-model="filterForm.gender"
+							label="Gender"
+							placeholder="All Genders"
+							:options="filterOptions.genders"
+						/>
+						<SearchDateInput
+							v-model="filterForm.hire_date_from"
+							label="Hired From"
+							placeholder="Start Date"
+						/>
+						<SearchDateInput
+							v-model="filterForm.hire_date_to"
+							label="Hired To"
+							placeholder="End Date"
+							:min="filterForm.hire_date_from"
+						/>
+						<SearchNumberInput
+							v-model="filterForm.age_from"
+							label="Age From"
+							placeholder="Min Age"
+							:min="18"
+							:max="100"
+						/>
+						<SearchNumberInput
+							v-model="filterForm.age_to"
+							label="Age To"
+							placeholder="Max Age"
+							:min="filterForm.age_from || 18"
+							:max="100"
+						/>
+					</div>
 
-							<!-- Rank Filter -->
-							<SearchSelect
-								v-model="filterForm.rank_id"
-								label="Rank / Job"
-								placeholder="All Ranks"
-								:options="ranks"
-								searchable
-							/>
-
-							<!-- Sub-unit Filter (only show if subs exist) -->
-							<SearchSelect
-								v-if="subs.length > 0"
-								v-model="filterForm.sub_unit_id"
-								label="Sub-Unit"
-								placeholder="All Sub-Units"
-								:options="subUnits"
-								searchable
-							/>
-
-							<!-- Gender Filter -->
-							<SearchSelect
-								v-model="filterForm.gender"
-								label="Gender"
-								placeholder="All Genders"
-								:options="genderOptions"
-							/>
-
-							<!-- Hire Date From -->
-							<SearchDateInput
-								v-model="filterForm.hire_date_from"
-								label="Hired From"
-								placeholder="Start Date"
-							/>
-
-							<!-- Hire Date To -->
-							<SearchDateInput
-								v-model="filterForm.hire_date_to"
-								label="Hired To"
-								placeholder="End Date"
-								:min="filterForm.hire_date_from"
-							/>
-
-							<!-- Age From -->
-							<SearchNumberInput
-								v-model="filterForm.age_from"
-								label="Age From"
-								placeholder="Min Age"
-								:min="18"
-								:max="100"
-							/>
-
-							<!-- Age To -->
-							<SearchNumberInput
-								v-model="filterForm.age_to"
-								label="Age To"
-								placeholder="Max Age"
-								:min="filterForm.age_from || 18"
-								:max="100"
-							/>
-						</div>
-
-						<!-- Clear Filters Button -->
-						<div class="mt-4 flex flex-wrap gap-3">
-							<button
-								v-if="hasActiveFilters"
-								type="button"
-								class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
-								@click="resetFilters"
-							>
-								<XMarkIcon class="h-4 w-4" />
-								Clear All Filters
-							</button>
-						</div>
-
-						<!-- Results count with filters -->
-						<p
+					<div class="mt-4 flex flex-wrap gap-3">
+						<button
 							v-if="hasActiveFilters"
-							class="mt-3 text-sm text-gray-500 dark:text-gray-400"
+							type="button"
+							class="inline-flex items-center gap-2 rounded-md bg-white dark:bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+							@click="resetFilters"
 						>
-							Showing {{ filteredStaff.length }} of {{ staff.length }} staff
-							members
-						</p>
-					</DisclosurePanel>
-				</transition>
+							<XMarkIcon class="h-4 w-4" />
+							Clear All Filters
+						</button>
+					</div>
+				</DisclosurePanel>
 			</div>
 		</Disclosure>
 
-		<!-- Empty State -->
 		<div
-			v-if="filteredStaff.length === 0"
+			v-if="rows.length === 0"
 			class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg ring-1 ring-gray-900/5 dark:ring-gray-700"
 		>
 			<UsersIcon class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
@@ -539,18 +340,16 @@ const exportToExcel = () => {
 			</button>
 		</div>
 
-		<!-- Staff List -->
 		<div
 			v-else
 			class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 overflow-hidden"
 		>
 			<ul role="list" class="divide-y divide-gray-100 dark:divide-gray-700">
 				<li
-					v-for="member in paginatedStaff"
+					v-for="member in rows"
 					:key="member.id"
 					class="relative flex items-center gap-x-4 px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
 				>
-					<!-- Avatar -->
 					<div class="flex-shrink-0">
 						<img
 							v-if="member.image"
@@ -568,8 +367,6 @@ const exportToExcel = () => {
 							{{ member.initials }}
 						</div>
 					</div>
-
-					<!-- Staff Info -->
 					<div class="min-w-0 flex-1">
 						<div class="flex items-center gap-x-3">
 							<Link
@@ -596,8 +393,6 @@ const exportToExcel = () => {
 							</span>
 						</div>
 					</div>
-
-					<!-- Right side info -->
 					<div
 						class="hidden sm:flex flex-col items-end gap-1 text-xs text-gray-500 dark:text-gray-400"
 					>
@@ -609,16 +404,14 @@ const exportToExcel = () => {
 				</li>
 			</ul>
 
-			<!-- Pagination Footer -->
 			<footer
-				v-if="totalPages > 1"
+				v-if="(meta.last_page ?? 1) > 1"
 				class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6"
 			>
-				<!-- Mobile pagination -->
 				<div class="flex-1 flex justify-between sm:hidden">
 					<button
 						type="button"
-						:disabled="currentPage === 1"
+						:disabled="meta.current_page === 1"
 						class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
 						@click="prevPage"
 					>
@@ -626,80 +419,69 @@ const exportToExcel = () => {
 					</button>
 					<button
 						type="button"
-						:disabled="currentPage === totalPages"
+						:disabled="meta.current_page === meta.last_page"
 						class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
 						@click="nextPage"
 					>
 						Next
 					</button>
 				</div>
-
-				<!-- Desktop pagination -->
 				<div
 					class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
 				>
-					<div>
-						<p class="text-sm text-gray-700 dark:text-gray-300">
-							Showing
-							<span class="font-medium">{{ paginationInfo.from }}</span>
-							to
-							<span class="font-medium">{{ paginationInfo.to }}</span>
-							of
-							<span class="font-medium">{{ paginationInfo.total }}</span>
-							results
-						</p>
-					</div>
-					<div>
-						<nav
-							class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-							aria-label="Pagination"
+					<p class="text-sm text-gray-700 dark:text-gray-300">
+						Showing
+						<span class="font-medium">{{ meta.from ?? 0 }}</span>
+						to
+						<span class="font-medium">{{ meta.to ?? 0 }}</span>
+						of
+						<span class="font-medium">{{ meta.total ?? 0 }}</span>
+						results
+					</p>
+					<nav
+						class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+						aria-label="Pagination"
+					>
+						<button
+							type="button"
+							:disabled="meta.current_page === 1"
+							class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+							@click="prevPage"
 						>
-							<!-- Previous button -->
-							<button
-								type="button"
-								:disabled="currentPage === 1"
-								class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-								@click="prevPage"
+							<span class="sr-only">Previous</span>
+							<ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
+						</button>
+						<template v-for="(page, index) in visiblePages" :key="index">
+							<span
+								v-if="page === '...'"
+								class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400"
 							>
-								<span class="sr-only">Previous</span>
-								<ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
-							</button>
-
-							<!-- Page numbers -->
-							<template v-for="(page, index) in visiblePages" :key="index">
-								<span
-									v-if="page === '...'"
-									class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400"
-								>
-									...
-								</span>
-								<button
-									v-else
-									type="button"
-									class="relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer"
-									:class="
-										page === currentPage
-											? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600 text-green-600 dark:text-green-400 z-10'
-											: 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-									"
-									@click="goToPage(page)"
-								>
-									{{ page }}
-								</button>
-							</template>
-
-							<!-- Next button -->
+								...
+							</span>
 							<button
+								v-else
 								type="button"
-								:disabled="currentPage === totalPages"
-								class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-								@click="nextPage"
+								class="relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer"
+								:class="
+									page === meta.current_page
+										? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600 text-green-600 dark:text-green-400 z-10'
+										: 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+								"
+								@click="goToPage(page)"
 							>
-								<span class="sr-only">Next</span>
-								<ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
+								{{ page }}
 							</button>
-						</nav>
-					</div>
+						</template>
+						<button
+							type="button"
+							:disabled="meta.current_page === meta.last_page"
+							class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+							@click="nextPage"
+						>
+							<span class="sr-only">Next</span>
+							<ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
+						</button>
+					</nav>
 				</div>
 			</footer>
 		</div>
