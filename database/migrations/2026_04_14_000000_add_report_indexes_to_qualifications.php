@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -28,20 +27,22 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('qualifications', function (Blueprint $table) {
-            $table->dropIndex('qualifications_level_status_index');
-            $table->dropIndex('qualifications_status_approved_at_index');
-            $table->dropIndex('qualifications_year_index');
-            $table->dropIndex('qualifications_institution_index');
+            foreach ([
+                'qualifications_level_status_index',
+                'qualifications_status_approved_at_index',
+                'qualifications_year_index',
+                'qualifications_institution_index',
+            ] as $index) {
+                if ($this->hasIndex('qualifications', $index)) {
+                    $table->dropIndex($index);
+                }
+            }
         });
     }
 
     private function hasIndex(string $table, string $index): bool
     {
-        $db = DB::getDatabaseName();
-
-        return DB::selectOne(
-            'SELECT COUNT(*) AS c FROM information_schema.statistics WHERE table_schema = ? AND table_name = ? AND index_name = ?',
-            [$db, $table, $index]
-        )->c > 0;
+        return collect(Schema::getIndexes($table))
+            ->contains(fn (array $existing) => $existing['name'] === $index);
     }
 };
