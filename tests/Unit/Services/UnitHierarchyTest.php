@@ -74,4 +74,34 @@ class UnitHierarchyTest extends TestCase
         $this->assertSame([$childA->id, $grandA->id], $groups[$childA->id]);
         $this->assertSame([$childB->id, $grandB->id], $groups[$childB->id]);
     }
+
+    public function test_grouped_by_child_includes_leaf_child_bucket(): void
+    {
+        $root = Unit::factory()->create(['unit_id' => null]);
+        $leafChild = Unit::factory()->create(['unit_id' => $root->id]);
+
+        $groups = $this->hierarchy->descendantIdsGroupedByChild($root);
+
+        $this->assertSame([$leafChild->id => [$leafChild->id]], $groups);
+    }
+
+    public function test_grouped_by_child_excludes_ended_children(): void
+    {
+        $root = Unit::factory()->create(['unit_id' => null]);
+        $active = Unit::factory()->create(['unit_id' => $root->id]);
+        Unit::factory()->ended()->create(['unit_id' => $root->id]);
+
+        $groups = $this->hierarchy->descendantIdsGroupedByChild($root);
+
+        $this->assertSame([$active->id], array_keys($groups));
+    }
+
+    public function test_grouped_by_child_returns_empty_for_root_without_children(): void
+    {
+        $root = Unit::factory()->create();
+
+        $groups = $this->hierarchy->descendantIdsGroupedByChild($root);
+
+        $this->assertSame([], $groups);
+    }
 }

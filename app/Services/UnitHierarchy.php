@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Unit;
 use Illuminate\Support\Facades\DB;
 
-final class UnitHierarchy
+class UnitHierarchy
 {
     /**
      * Return the ID of $unit plus every active descendant unit's ID at any depth.
@@ -14,26 +14,7 @@ final class UnitHierarchy
      */
     public function descendantIds(Unit $unit): array
     {
-        $collected = [$unit->id];
-        $frontier = [$unit->id];
-
-        while (! empty($frontier)) {
-            $next = DB::table('units')
-                ->whereIn('unit_id', $frontier)
-                ->whereNull('end_date')
-                ->whereNull('deleted_at')
-                ->pluck('id')
-                ->all();
-
-            if (empty($next)) {
-                break;
-            }
-
-            $collected = array_merge($collected, $next);
-            $frontier = $next;
-        }
-
-        return array_values(array_unique($collected));
+        return $this->descendantIdsFromId($unit->id);
     }
 
     /**
@@ -52,10 +33,40 @@ final class UnitHierarchy
 
         $groups = [];
         foreach ($children as $childId) {
-            $child = Unit::find($childId);
-            $groups[$childId] = $child ? $this->descendantIds($child) : [$childId];
+            $groups[$childId] = $this->descendantIdsFromId((int) $childId);
         }
 
         return $groups;
+    }
+
+    /**
+     * BFS over the active unit tree starting from $id, returning $id plus all descendant IDs.
+     *
+     * @return int[]
+     */
+    private function descendantIdsFromId(int $id): array
+    {
+        $collected = [$id];
+        $frontier = [$id];
+
+        while (! empty($frontier)) {
+            $next = DB::table('units')
+                ->whereIn('unit_id', $frontier)
+                ->whereNull('end_date')
+                ->whereNull('deleted_at')
+                ->pluck('id')
+                ->all();
+
+            $next = array_values(array_diff($next, $collected));
+
+            if (empty($next)) {
+                break;
+            }
+
+            $collected = array_merge($collected, $next);
+            $frontier = $next;
+        }
+
+        return array_values($collected);
     }
 }
