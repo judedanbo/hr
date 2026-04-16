@@ -5,6 +5,7 @@ import { computed } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { BellIcon, MoonIcon, SunIcon } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
+import ViewModeSwitcher from "@/Components/ViewModeSwitcher.vue";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -60,6 +61,9 @@ defineProps({
 				class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"
 				aria-hidden="true"
 			/>
+
+			<!-- View mode switcher (multi-role users only) -->
+			<ViewModeSwitcher />
 
 			<!-- Profile dropdown -->
 			<Menu as="div" class="relative">
