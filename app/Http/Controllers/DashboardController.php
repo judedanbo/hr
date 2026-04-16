@@ -19,6 +19,10 @@ class DashboardController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        if ($user->isMultiRoleStaff()) {
+            return $this->routeMultiRoleUser($user, $request->session()->get('view_mode'));
+        }
+
         if ($user->hasRole('staff')) {
             return $this->redirectToStaffLanding($user);
         }
@@ -62,6 +66,28 @@ class DashboardController extends Controller
         $request->session()->put('view_mode', $request->validated('mode'));
 
         return redirect()->route('dashboard');
+    }
+
+    private function routeMultiRoleUser(User $user, ?string $mode): RedirectResponse
+    {
+        if ($mode === 'staff') {
+            return $this->redirectToStaffLanding($user);
+        }
+
+        if ($mode === 'other') {
+            return $this->redirectToOtherLanding($user);
+        }
+
+        return redirect()->route('dashboard.choose-mode');
+    }
+
+    private function redirectToOtherLanding(User $user): RedirectResponse
+    {
+        if ($user->canAccessAdminDashboard()) {
+            return $this->redirectToAdminDashboard();
+        }
+
+        return redirect()->route('staff.index');
     }
 
     private function redirectToStaffLanding(User $user): RedirectResponse
