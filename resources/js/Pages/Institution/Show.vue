@@ -23,6 +23,7 @@ import EditForm from "./partials/EditForm.vue";
 import DeleteUnit from "../Unit/Delete.vue";
 
 import { PlusIcon, Cog6ToothIcon } from "@heroicons/vue/24/outline";
+import CompletionBanner from "@/Components/MyProfile/CompletionBanner.vue";
 
 const props = defineProps({
 	institution: Object,
@@ -108,6 +109,9 @@ function closeStaffModal() {
 
 	<NewLayout>
 		<main class="w-full px-4 sm:px-6 lg:px-8 py-6">
+			<!-- Profile Completion Banner -->
+			<CompletionBanner class="mb-4" />
+
 			<!-- Header -->
 			<div
 				class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
