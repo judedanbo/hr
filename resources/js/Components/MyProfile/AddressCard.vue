@@ -159,7 +159,7 @@ function changeAddress() {
 					</button>
 					<button
 						type="button"
-						class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+						class="text-[11px] font-semibold text-green-600 dark:text-green-400 hover:underline"
 						@click="openChangeModal()"
 					>
 						Change
@@ -325,7 +325,9 @@ function changeAddress() {
 						</p>
 					</div>
 
-					<div class="mt-5 flex justify-end gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+					<div
+						class="mt-5 flex justify-end gap-2 pt-4 border-t border-gray-100 dark:border-gray-700"
+					>
 						<button
 							type="button"
 							class="inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -378,7 +380,7 @@ function changeAddress() {
 							v-model="changeForm.address_line_1"
 							type="text"
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-500"
 							:class="{ 'border-red-500': changeErrors.address_line_1 }"
 						/>
 						<p
@@ -400,7 +402,7 @@ function changeAddress() {
 							id="change_address_line_2"
 							v-model="changeForm.address_line_2"
 							type="text"
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-500"
 						/>
 					</div>
 
@@ -417,7 +419,7 @@ function changeAddress() {
 								v-model="changeForm.city"
 								type="text"
 								required
-								class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+								class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-500"
 								:class="{ 'border-red-500': changeErrors.city }"
 							/>
 							<p
@@ -438,7 +440,7 @@ function changeAddress() {
 								id="change_post_code"
 								v-model="changeForm.post_code"
 								type="text"
-								class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+								class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-500"
 							/>
 						</div>
 					</div>
@@ -489,7 +491,7 @@ function changeAddress() {
 						</p>
 					</div>
 
-					<div class="mt-5 flex justify-end gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+					<div class="mt-5 flex justify-end gap-2 pt-4">
 						<button
 							type="button"
 							class="inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -499,7 +501,7 @@ function changeAddress() {
 						</button>
 						<button
 							type="submit"
-							class="inline-flex items-center rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-colors"
+							class="inline-flex items-center rounded-lg bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800 transition-colors"
 						>
 							Save as new address
 						</button>

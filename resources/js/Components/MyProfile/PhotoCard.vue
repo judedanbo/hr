@@ -17,6 +17,8 @@ const showDeleteModal = ref(false);
 const accepted = ["image/jpeg", "image/png"];
 const maxBytes = 2 * 1024 * 1024;
 
+const hasPending = computed(() => Boolean(props.person.pending_image));
+
 const statusLabel = computed(() => (props.person.image ? "✓ Set" : "Not set"));
 const statusClass = computed(() =>
 	props.person.image
@@ -111,11 +113,24 @@ function remove() {
 					}}
 				</p>
 			</div>
-			<span
-				class="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-				:class="statusClass"
-				>{{ statusLabel }}</span
-			>
+			<div class="flex items-center gap-2">
+				<span
+					v-if="hasPending"
+					class="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+				>
+					<img
+						:src="person.pending_image"
+						alt="Pending photo"
+						class="w-5 h-5 rounded-full object-cover"
+					/>
+					Pending review
+				</span>
+				<span
+					class="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+					:class="statusClass"
+					>{{ statusLabel }}</span
+				>
+			</div>
 		</header>
 
 		<!-- FILLED -->

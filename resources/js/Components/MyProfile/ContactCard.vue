@@ -43,7 +43,8 @@ function isLastActivePhone(c) {
 		return false;
 	}
 	const otherActivePhones = activeContacts.value.filter(
-		(x) => x.id !== c.id && x.contact_type === CONTACT_TYPE_PHONE && !x.valid_end,
+		(x) =>
+			x.id !== c.id && x.contact_type === CONTACT_TYPE_PHONE && !x.valid_end,
 	);
 	return otherActivePhones.length === 0;
 }
@@ -175,7 +176,7 @@ function onMutationSuccess() {
 		</NewModal>
 
 		<NewModal :show="openDelete" @close="toggleDelete()">
-			<div class="bg-gray-100 dark:bg-gray-700 px-8 py-8">
+			<div class="bg-gray-100 dark:bg-gray-800 px-8 py-8">
 				<h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
 					Delete contact?
 				</h2>

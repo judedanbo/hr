@@ -123,10 +123,7 @@ function buildFormData() {
 	fd.append("course", form.value.course ?? "");
 	fd.append("level", form.value.level ?? "");
 	fd.append("qualification", form.value.qualification ?? "");
-	fd.append(
-		"qualification_number",
-		form.value.qualification_number ?? "",
-	);
+	fd.append("qualification_number", form.value.qualification_number ?? "");
 	fd.append("institution", form.value.institution ?? "");
 	fd.append("year", form.value.year ?? "");
 
@@ -208,9 +205,7 @@ function submit() {
 </script>
 
 <template>
-	<main
-		class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 shadow-sm"
-	>
+	<main class="bg-white dark:bg-gray-800 rounded-2xl p-5 sm:p-6 shadow-sm">
 		<!-- Header -->
 		<header class="flex justify-between items-start mb-5">
 			<div>
@@ -218,8 +213,8 @@ function submit() {
 					Add Qualification
 				</h2>
 				<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-					Degree, diploma, certificate, or training. Optional
-					certificate upload.
+					Degree, diploma, certificate, or training. Optional certificate
+					upload.
 				</p>
 			</div>
 			<button
@@ -244,10 +239,7 @@ function submit() {
 							: 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-500 text-emerald-600 dark:text-emerald-400'
 					"
 				>
-					<CheckCircleIcon
-						v-if="currentStep === 2"
-						class="w-4 h-4"
-					/>
+					<CheckCircleIcon v-if="currentStep === 2" class="w-4 h-4" />
 					<span v-else>1</span>
 				</div>
 				<span
@@ -265,9 +257,7 @@ function submit() {
 			<div
 				class="flex-1 h-px transition-colors"
 				:class="
-					currentStep === 2
-						? 'bg-emerald-400'
-						: 'bg-gray-200 dark:bg-gray-700'
+					currentStep === 2 ? 'bg-emerald-400' : 'bg-gray-200 dark:bg-gray-700'
 				"
 			/>
 
@@ -477,10 +467,7 @@ function submit() {
 			</div>
 
 			<!-- File list with per-file type + title -->
-			<ul
-				v-if="selectedFiles.length > 0"
-				class="space-y-3 mb-4"
-			>
+			<ul v-if="selectedFiles.length > 0" class="space-y-3 mb-4">
 				<li
 					v-for="(entry, index) in selectedFiles"
 					:key="index"
@@ -529,8 +516,7 @@ function submit() {
 								v-model="entry.document_type"
 								class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
 								:class="{
-									'border-red-400 dark:border-red-500':
-										!entry.document_type,
+									'border-red-400 dark:border-red-500': !entry.document_type,
 								}"
 							>
 								<option value="" disabled>Select type</option>
@@ -585,8 +571,7 @@ function submit() {
 				v-if="selectedFiles.length > 0 && hasIncompleteFiles"
 				class="text-xs text-amber-600 dark:text-amber-400 mb-3"
 			>
-				Please fill in the document type and title for every file before
-				saving.
+				Please fill in the document type and title for every file before saving.
 			</p>
 
 			<!-- Step 2 actions -->
@@ -608,10 +593,7 @@ function submit() {
 					class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					@click="submit"
 				>
-					<ArrowPathIcon
-						v-if="isSubmitting"
-						class="w-4 h-4 animate-spin"
-					/>
+					<ArrowPathIcon v-if="isSubmitting" class="w-4 h-4 animate-spin" />
 					{{ saveLabel }}
 				</button>
 			</div>

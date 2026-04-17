@@ -81,7 +81,7 @@ function confirmDeleteDocument() {
 
 <template>
 	<main
-		class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 shadow-sm max-w-3xl"
+		class="bg-white dark:bg-gray-800 rounded-2xl p-5 sm:p-6 shadow-sm max-w-3xl"
 	>
 		<header class="flex justify-between items-start mb-5">
 			<div>
@@ -161,9 +161,7 @@ function confirmDeleteDocument() {
 
 					<!-- Confirming state: inline prompt -->
 					<div v-else class="flex items-center gap-2">
-						<span
-							class="text-xs text-red-600 dark:text-red-400 font-medium"
-						>
+						<span class="text-xs text-red-600 dark:text-red-400 font-medium">
 							Delete this document?
 						</span>
 						<button

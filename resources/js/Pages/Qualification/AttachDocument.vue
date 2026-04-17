@@ -115,7 +115,7 @@ function submit() {
 
 <template>
 	<main
-		class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 shadow-sm max-w-2xl"
+		class="bg-white dark:bg-gray-800 rounded-2xl p-5 sm:p-6 shadow-sm max-w-2xl"
 	>
 		<header class="flex justify-between items-start mb-5">
 			<div>
@@ -204,11 +204,15 @@ function submit() {
 								v-model="entry.document_type"
 								class="rounded border border-gray-300 bg-white text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 text-sm py-1 px-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400"
 								:class="{
-									'border-red-400 dark:border-red-500':
-										!entry.document_type,
+									'border-red-400 dark:border-red-500': !entry.document_type,
 								}"
 							>
-								<option value="" class="text-gray-900 dark:bg-gray-900 dark:text-gray-100">Select type</option>
+								<option
+									value=""
+									class="text-gray-900 dark:bg-gray-900 dark:text-gray-100"
+								>
+									Select type
+								</option>
 								<option
 									v-for="t in documentTypes"
 									:key="t.value"
@@ -224,8 +228,7 @@ function submit() {
 								placeholder="Title"
 								class="rounded border border-gray-300 bg-white text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 text-sm py-1 px-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400"
 								:class="{
-									'border-red-400 dark:border-red-500':
-										!entry.document_title,
+									'border-red-400 dark:border-red-500': !entry.document_title,
 								}"
 							/>
 						</div>
@@ -266,9 +269,7 @@ function submit() {
 			<button
 				type="button"
 				:disabled="
-					isSubmitting ||
-					selectedFiles.length === 0 ||
-					hasIncompleteFiles
+					isSubmitting || selectedFiles.length === 0 || hasIncompleteFiles
 				"
 				class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 				@click="submit"
