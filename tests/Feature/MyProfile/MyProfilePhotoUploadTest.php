@@ -6,7 +6,9 @@ use App\Models\InstitutionPerson;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 class MyProfilePhotoUploadTest extends TestCase
@@ -16,6 +18,12 @@ class MyProfilePhotoUploadTest extends TestCase
     public function test_authenticated_staff_can_upload_own_photo(): void
     {
         Storage::fake('public');
+        Notification::fake();
+
+        // Upload now lands in pending_image (not image) until an admin approves.
+        // Create the permission so notification sending does not fail.
+        Permission::firstOrCreate(['name' => 'approve staff photo']);
+
         $staff = $this->createActiveStaff();
         $user = User::factory()->create(['person_id' => $staff->person_id]);
 
@@ -25,7 +33,11 @@ class MyProfilePhotoUploadTest extends TestCase
             ])
             ->assertSessionDoesntHaveErrors();
 
-        $this->assertNotNull($staff->person->fresh()->image);
+        $person = $staff->person->fresh();
+
+        // Photo lands as pending — approved image stays null until admin approves.
+        $this->assertNotNull($person->pending_image);
+        $this->assertNull($person->image);
     }
 
     public function test_staff_cannot_upload_photo_for_another_person(): void
