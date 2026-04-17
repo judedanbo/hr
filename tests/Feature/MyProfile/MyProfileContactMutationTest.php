@@ -101,6 +101,94 @@ class MyProfileContactMutationTest extends TestCase
         $this->assertNull(Contact::find($contact->id));
     }
 
+    public function test_cannot_delete_last_phone_contact(): void
+    {
+        $user = $this->staffUser();
+        $phone = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::PHONE,
+            'contact' => '0244000001',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $phone->id,
+            ]))
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertNotNull(Contact::find($phone->id));
+    }
+
+    public function test_can_delete_phone_when_another_active_phone_exists(): void
+    {
+        $user = $this->staffUser();
+        Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::PHONE,
+            'contact' => '0244000001',
+        ]);
+        $secondPhone = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::PHONE,
+            'contact' => '0244000002',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $secondPhone->id,
+            ]))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertNull(Contact::find($secondPhone->id));
+    }
+
+    public function test_can_delete_expired_phone_even_if_no_other_active_phone(): void
+    {
+        $user = $this->staffUser();
+        $activePhone = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::PHONE,
+            'contact' => '0244000001',
+        ]);
+        $expiredPhone = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::PHONE,
+            'contact' => '0244000099',
+            'valid_end' => now()->subDay(),
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $expiredPhone->id,
+            ]))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertNull(Contact::find($expiredPhone->id));
+        $this->assertNotNull(Contact::find($activePhone->id));
+    }
+
+    public function test_can_delete_email_with_no_other_email(): void
+    {
+        $user = $this->staffUser();
+        $email = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'only@example.org',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $email->id,
+            ]))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertNull(Contact::find($email->id));
+    }
+
     private function staffUser(): User
     {
         $staff = InstitutionPerson::factory()->create();

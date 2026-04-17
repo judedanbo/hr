@@ -155,6 +155,21 @@ class ContactController extends Controller
     {
         $this->authorize('delete', $contact);
 
+        if ($contact->contact_type === ContactTypeEnum::PHONE) {
+            $remaining = Contact::query()
+                ->where('person_id', $contact->person_id)
+                ->where('contact_type', ContactTypeEnum::PHONE)
+                ->whereNull('valid_end')
+                ->where('id', '!=', $contact->id)
+                ->count();
+
+            if ($remaining === 0) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'contact' => 'You must keep at least one active phone number.',
+                ]);
+            }
+        }
+
         $this->logSuccess('deleted a contact', $contact);
 
         $contact->delete();

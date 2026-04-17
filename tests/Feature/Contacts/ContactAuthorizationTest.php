@@ -80,6 +80,11 @@ class ContactAuthorizationTest extends TestCase
         $person = Person::factory()->create();
         $user = User::factory()->create(['person_id' => $person->id, 'password_change_at' => now()]);
         $user->givePermissionTo('delete contacts');
+        Contact::factory()->create([
+            'person_id' => $person->id,
+            'contact_type' => ContactTypeEnum::PHONE->value,
+            'contact' => '0244000001',
+        ]);
         $contact = Contact::factory()->create([
             'person_id' => $person->id,
             'contact_type' => ContactTypeEnum::PHONE->value,
@@ -91,5 +96,23 @@ class ContactAuthorizationTest extends TestCase
             ->assertRedirect();
 
         $this->assertSoftDeleted('contacts', ['id' => $contact->id]);
+    }
+
+    public function test_contact_destroy_route_also_blocks_deleting_last_phone(): void
+    {
+        $person = Person::factory()->create();
+        $user = User::factory()->create(['person_id' => $person->id, 'password_change_at' => now()]);
+        $user->givePermissionTo('delete contacts');
+        $contact = Contact::factory()->create([
+            'person_id' => $person->id,
+            'contact_type' => ContactTypeEnum::PHONE->value,
+            'contact' => '0244123456',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('contact.destroy', ['contact' => $contact->id]))
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertNotSoftDeleted('contacts', ['id' => $contact->id]);
     }
 }

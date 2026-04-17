@@ -297,6 +297,21 @@ class PersonController extends Controller
         $contactModel = Contact::findOrFail($contact);
         $this->authorize('delete', $contactModel);
 
+        if ($contactModel->contact_type === ContactTypeEnum::PHONE) {
+            $remaining = Contact::query()
+                ->where('person_id', $contactModel->person_id)
+                ->where('contact_type', ContactTypeEnum::PHONE)
+                ->whereNull('valid_end')
+                ->where('id', '!=', $contactModel->id)
+                ->count();
+
+            if ($remaining === 0) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'contact' => 'You must keep at least one active phone number.',
+                ]);
+            }
+        }
+
         $person->contacts()->where('id', $contact)->forceDelete();
 
         return redirect()->back();
