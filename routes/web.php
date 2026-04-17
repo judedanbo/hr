@@ -405,6 +405,7 @@ Route::get('/document-statuses', function () {
 })->middleware(['auth', 'password_changed'])->name('document-statuses');
 
 Route::controller(QualificationDocumentController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::post('/qualification/{qualification}/document/store', 'store')->name('qualification-document.store');
     Route::post('/qualification/{qualification}/document', 'update')->name('qualification-document.update');
     Route::delete('/qualification/{qualification}/document', 'delete')->name('qualification-document.delete');
     Route::delete('/qualification/{qualification}/document/{document}', 'destroy')->name('qualification-document.destroy');
