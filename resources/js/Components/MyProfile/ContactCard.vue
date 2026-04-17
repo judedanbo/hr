@@ -11,7 +11,6 @@ const CONTACT_TYPE_PHONE = 2;
 const props = defineProps({
 	personId: { type: Number, required: true },
 	contacts: { type: Array, default: () => null },
-	address: { type: Object, default: () => null },
 });
 
 const openEdit = ref(false);
@@ -31,16 +30,6 @@ const primaryPhone = computed(
 		activeContacts.value.find((c) => c.contact_type === CONTACT_TYPE_PHONE) ??
 		null,
 );
-
-const addressDisplay = computed(() => {
-	if (!props.address) return "—";
-	const parts = [
-		props.address.address_line_1,
-		props.address.city,
-		props.address.region,
-	].filter(Boolean);
-	return parts.length ? parts.join(", ") : "—";
-});
 
 // Local editable copies for the modal form
 const editableContacts = ref([]);
@@ -99,14 +88,6 @@ function saveContact(c) {
 					class="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[60%] text-right"
 				>
 					{{ primaryPhone?.contact ?? "—" }}
-				</dd>
-			</div>
-			<div class="flex justify-between py-1.5">
-				<dt class="text-gray-500 dark:text-gray-400">Address</dt>
-				<dd
-					class="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[60%] text-right"
-				>
-					{{ addressDisplay }}
 				</dd>
 			</div>
 		</dl>

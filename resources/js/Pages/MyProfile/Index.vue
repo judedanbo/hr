@@ -5,6 +5,7 @@ import IdentityStrip from "@/Components/MyProfile/IdentityStrip.vue";
 import PhotoCard from "@/Components/MyProfile/PhotoCard.vue";
 import QualificationsCard from "@/Components/MyProfile/QualificationsCard.vue";
 import ContactCard from "@/Components/MyProfile/ContactCard.vue";
+import AddressCard from "@/Components/MyProfile/AddressCard.vue";
 import ReadOnlyKvCard from "@/Components/MyProfile/ReadOnlyKvCard.vue";
 import PersonalDetailsCard from "@/Components/MyProfile/PersonalDetailsCard.vue";
 import DependentsCard from "@/Components/MyProfile/DependentsCard.vue";
@@ -57,13 +58,18 @@ const employmentRows = computed(() => {
 				/>
 			</div>
 
-			<div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+			<!-- Row 1: Personal + Contact + Address (three evenly-balanced cards) -->
+			<div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<PersonalDetailsCard :person="person" />
 				<ContactCard
 					:person-id="person.id"
 					:contacts="contacts"
-					:address="address"
 				/>
+				<AddressCard :person-id="person.id" :address="address" />
+			</div>
+
+			<!-- Row 2: Employment + Dependents (wider cards with more breathing room) -->
+			<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
 				<ReadOnlyKvCard
 					title="Employment"
 					lock-label="HR-managed"
