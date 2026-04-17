@@ -129,6 +129,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit avatar',
             'create staff qualification',
             'view staff qualification',
+            'update contacts',
         ],
     ];
 
