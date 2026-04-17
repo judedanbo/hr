@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
+import { getNode } from "@formkit/core";
 import axios from "axios";
 import {
 	ArrowPathIcon,
@@ -41,19 +42,23 @@ const form = ref({
 	qualification_number: "",
 	institution: "",
 	year: "",
-	document_type: "",
 });
 
 // ── Step-1 validation errors ──────────────────────────────────────────────────
 const step1Errors = ref({});
 
-// ── Step-2: selected files ────────────────────────────────────────────────────
+// ── Step-2: selected files with per-file metadata ────────────────────────────
+// Each entry: { file: File, document_type: string, document_title: string }
 const selectedFiles = ref([]);
 
 function onFileInput(event) {
 	const files = Array.from(event.target.files || []);
-	selectedFiles.value = [...selectedFiles.value, ...files];
-	// Reset the input so the same file can be added again if needed
+	const newEntries = files.map((file) => ({
+		file,
+		document_type: "",
+		document_title: file.name.replace(/\.[^.]+$/, ""),
+	}));
+	selectedFiles.value = [...selectedFiles.value, ...newEntries];
 	event.target.value = "";
 }
 
@@ -66,8 +71,6 @@ function formatSize(bytes) {
 }
 
 // ── Step 1 → 2 ───────────────────────────────────────────────────────────────
-const step1FormRef = ref(null);
-
 // FormKit only fires @submit after validation passes, so both "Next" and
 // "Save without document" route through this single handler. The button
 // sets `pendingAction` on click (before the submit fires) so we know which
@@ -87,12 +90,19 @@ function onStep1Submit() {
 
 function clickSaveWithoutDocuments() {
 	pendingAction.value = "save";
-	step1FormRef.value?.node?.submit();
+	getNode("addQualificationStep1")?.submit();
 }
 
 function goBackToStep1() {
 	currentStep.value = 1;
 }
+
+// ── Step-2 validation ─────────────────────────────────────────────────────────
+const hasIncompleteFiles = computed(() =>
+	selectedFiles.value.some(
+		(entry) => !entry.document_type || !entry.document_title.trim(),
+	),
+);
 
 // ── Save button label ─────────────────────────────────────────────────────────
 const saveLabel = computed(() => {
@@ -121,9 +131,10 @@ function buildFormData() {
 	fd.append("year", form.value.year ?? "");
 
 	if (selectedFiles.value.length > 0) {
-		fd.append("document_type", form.value.document_type ?? "");
-		selectedFiles.value.forEach((file) => {
-			fd.append("file_name[]", file);
+		selectedFiles.value.forEach((entry) => {
+			fd.append("file_name[]", entry.file);
+			fd.append("document_type[]", entry.document_type);
+			fd.append("document_title[]", entry.document_title);
 		});
 	}
 
@@ -181,7 +192,6 @@ function submit() {
 				qualification_number: "",
 				institution: "",
 				year: "",
-				document_type: "",
 			};
 			selectedFiles.value = [];
 			currentStep.value = 1;
@@ -195,7 +205,6 @@ function submit() {
 		},
 	});
 }
-
 </script>
 
 <template>
@@ -289,7 +298,7 @@ function submit() {
 		<!-- ── STEP 1: Qualification details ─────────────────────────────── -->
 		<div v-show="currentStep === 1">
 			<FormKit
-				ref="step1FormRef"
+				id="addQualificationStep1"
 				type="form"
 				:disabled="isSubmitting"
 				:actions="false"
@@ -376,9 +385,7 @@ function submit() {
 				</div>
 
 				<!-- Row 4: Year (narrow) -->
-				<div
-					class="w-1/2 sm:w-1/3 xl:w-1/4"
-				>
+				<div class="w-1/2 sm:w-1/3 xl:w-1/4">
 					<FormKit
 						id="year"
 						v-model="form.year"
@@ -448,20 +455,6 @@ function submit() {
 				</p>
 			</div>
 
-			<!-- Document type -->
-			<FormKit
-				v-model="form.document_type"
-				type="select"
-				name="document_type"
-				label="Document type"
-				placeholder="Select type"
-				:options="documentTypes"
-				:validation="
-					selectedFiles.length > 0 ? 'required' : ''
-				"
-				validation-visibility="submit"
-			/>
-
 			<!-- File picker -->
 			<div class="mt-1 mb-3">
 				<label
@@ -483,42 +476,118 @@ function submit() {
 				</label>
 			</div>
 
-			<!-- File list -->
+			<!-- File list with per-file type + title -->
 			<ul
 				v-if="selectedFiles.length > 0"
-				class="space-y-2 mb-4"
+				class="space-y-3 mb-4"
 			>
 				<li
-					v-for="(file, index) in selectedFiles"
+					v-for="(entry, index) in selectedFiles"
 					:key="index"
-					class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 p-2.5"
+					class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 p-3"
 				>
-					<div
-						class="w-9 h-9 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0"
-					>
-						<DocumentIcon class="h-4 w-4 text-gray-400" />
-					</div>
-					<div class="flex-1 min-w-0 text-xs">
-						<p
-							class="font-semibold text-gray-900 dark:text-gray-100 truncate"
+					<!-- File info row -->
+					<div class="flex items-center gap-3 mb-2">
+						<div
+							class="w-9 h-9 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0"
 						>
-							{{ file.name }}
-						</p>
-						<p class="text-gray-500 dark:text-gray-400">
-							{{ formatSize(file.size) }} &middot;
-							{{ file.type || "unknown type" }}
-						</p>
+							<DocumentIcon class="h-4 w-4 text-gray-400" />
+						</div>
+						<div class="flex-1 min-w-0 text-xs">
+							<p
+								class="font-semibold text-gray-900 dark:text-gray-100 truncate"
+							>
+								{{ entry.file.name }}
+							</p>
+							<p class="text-gray-500 dark:text-gray-400">
+								{{ formatSize(entry.file.size) }} &middot;
+								{{ entry.file.type || "unknown type" }}
+							</p>
+						</div>
+						<button
+							type="button"
+							class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors flex-shrink-0"
+							:aria-label="`Remove ${entry.file.name}`"
+							@click="removeFile(index)"
+						>
+							<XCircleIcon class="h-5 w-5" />
+						</button>
 					</div>
-					<button
-						type="button"
-						class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors flex-shrink-0"
-						:aria-label="`Remove ${file.name}`"
-						@click="removeFile(index)"
-					>
-						<XCircleIcon class="h-5 w-5" />
-					</button>
+
+					<!-- Per-file metadata -->
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+						<div>
+							<label
+								:for="`doc-type-${index}`"
+								class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1"
+							>
+								Document type
+								<span class="text-red-500">*</span>
+							</label>
+							<select
+								:id="`doc-type-${index}`"
+								v-model="entry.document_type"
+								class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+								:class="{
+									'border-red-400 dark:border-red-500':
+										!entry.document_type,
+								}"
+							>
+								<option value="" disabled>Select type</option>
+								<option
+									v-for="opt in documentTypes"
+									:key="opt.value"
+									:value="opt.value"
+								>
+									{{ opt.label }}
+								</option>
+							</select>
+							<p
+								v-if="!entry.document_type"
+								class="mt-1 text-[11px] text-red-500"
+							>
+								Document type is required
+							</p>
+						</div>
+						<div>
+							<label
+								:for="`doc-title-${index}`"
+								class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1"
+							>
+								Document title
+								<span class="text-red-500">*</span>
+							</label>
+							<input
+								:id="`doc-title-${index}`"
+								v-model="entry.document_title"
+								type="text"
+								maxlength="100"
+								placeholder="e.g. Bachelor of Science Degree"
+								class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+								:class="{
+									'border-red-400 dark:border-red-500':
+										!entry.document_title.trim(),
+								}"
+							/>
+							<p
+								v-if="!entry.document_title.trim()"
+								class="mt-1 text-[11px] text-red-500"
+							>
+								Document title is required
+							</p>
+						</div>
+					</div>
 				</li>
 			</ul>
+
+			<!-- Hint when files have incomplete metadata -->
+			<p
+				v-if="selectedFiles.length > 0 && hasIncompleteFiles"
+				class="text-xs text-amber-600 dark:text-amber-400 mb-3"
+			>
+				Please fill in the document type and title for every file before
+				saving.
+			</p>
 
 			<!-- Step 2 actions -->
 			<div
@@ -535,7 +604,7 @@ function submit() {
 
 				<button
 					type="button"
-					:disabled="isSubmitting"
+					:disabled="isSubmitting || hasIncompleteFiles"
 					class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					@click="submit"
 				>
