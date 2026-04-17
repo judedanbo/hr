@@ -56,6 +56,7 @@ const employmentRows = computed(() => {
 				:staff="staff"
 				:qualifications="qualifications"
 				:contacts="contacts"
+				:address="address"
 			/>
 
 			<div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">

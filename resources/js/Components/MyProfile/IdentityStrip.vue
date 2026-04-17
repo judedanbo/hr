@@ -7,6 +7,7 @@ const props = defineProps({
 	staff: { type: Object, required: true },
 	qualifications: { type: Array, default: () => [] },
 	contacts: { type: Array, default: () => null },
+	address: { type: Object, default: () => null },
 });
 
 const currentRank = computed(
@@ -57,6 +58,7 @@ const currentDepartment = computed(() => {
 				:person="person"
 				:qualifications="qualifications"
 				:contacts="contacts"
+				:address="address"
 			/>
 		</div>
 	</div>

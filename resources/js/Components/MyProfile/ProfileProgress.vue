@@ -1,27 +1,31 @@
 <script setup>
 import { computed } from "vue";
 
+// ContactTypeEnum: Phone = 2 (backed int enum serialized as integer).
+const CONTACT_TYPE_PHONE = 2;
+
 const props = defineProps({
 	person: { type: Object, required: true },
 	qualifications: { type: Array, default: () => [] },
 	contacts: { type: Array, default: () => null },
+	address: { type: Object, default: () => null },
 });
-
-// ContactTypeEnum: Email = 1, Phone = 2 (backed int enum serialized as integer).
-const CONTACT_TYPE_EMAIL = 1;
-const CONTACT_TYPE_PHONE = 2;
 
 const checkpoints = computed(() => {
 	const hasPhoto = Boolean(props.person?.image);
 	const hasQualification = props.qualifications.length > 0;
-	const active = (props.contacts ?? []).filter((c) => !c.valid_end);
-	const hasEmail = active.some((c) => c.contact_type === CONTACT_TYPE_EMAIL);
-	const hasPhone = active.some((c) => c.contact_type === CONTACT_TYPE_PHONE);
-	return [hasPhoto, hasQualification, hasEmail && hasPhone];
+	const hasPhone = (props.contacts ?? []).some(
+		(c) => c.contact_type === CONTACT_TYPE_PHONE && !c.valid_end,
+	);
+	const a = props.address;
+	const hasValidAddress = Boolean(
+		a && a.address_line_1 && a.city && a.country,
+	);
+	return [hasPhoto, hasQualification, hasPhone, hasValidAddress];
 });
 
 const percent = computed(() =>
-	Math.round((checkpoints.value.filter(Boolean).length / 3) * 100),
+	Math.round((checkpoints.value.filter(Boolean).length / 4) * 100),
 );
 const isComplete = computed(() => percent.value === 100);
 </script>
