@@ -165,7 +165,12 @@ const attachDocument = (model) => {
 		<NewModal :show="openAttachModal" @close="toggleAttachModal()">
 			<AttachDocument
 				:qualification="qualificationModel"
-				@form-submitted="toggleAttachModal()"
+				@form-submitted="
+					() => {
+						toggleAttachModal();
+						router.reload();
+					}
+				"
 				@close="toggleAttachModal()"
 			/>
 		</NewModal>
