@@ -1,13 +1,79 @@
 <script setup>
-defineProps({
-    person: Object,
-    qualifications: Array,
-    contacts: Array,
-    address: Object,
-    staff: Object,
-})
+import { Head } from "@inertiajs/vue3";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
+import IdentityStrip from "@/Components/MyProfile/IdentityStrip.vue";
+import PhotoCard from "@/Components/MyProfile/PhotoCard.vue";
+import QualificationsCard from "@/Components/MyProfile/QualificationsCard.vue";
+import ContactCard from "@/Components/MyProfile/ContactCard.vue";
+import ReadOnlyKvCard from "@/Components/MyProfile/ReadOnlyKvCard.vue";
+import { computed } from "vue";
+
+const props = defineProps({
+	person: { type: Object, required: true },
+	staff: { type: Object, required: true },
+	qualifications: { type: Array, default: () => [] },
+	contacts: { type: Array, default: () => null },
+	address: { type: Object, default: () => null },
+});
+
+const employmentRows = computed(() => {
+	const currentRank = props.staff.ranks?.find((r) => !r.end_date) ?? props.staff.ranks?.[0];
+	const currentUnit = props.staff.units?.find((u) => !u.end_date) ?? props.staff.units?.[0];
+	return [
+		{ key: "Rank", value: currentRank?.name ?? "—" },
+		{ key: "Unit", value: currentUnit?.unit_name ?? "—" },
+		{ key: "Joined", value: props.staff.hire_date ?? "—" },
+	];
+});
+
+const dependentRows = computed(() => {
+	const deps = props.staff.dependents ?? [];
+	const spouse = deps.find((d) => (d.relation ?? "").toLowerCase() === "spouse");
+	const childrenCount = deps.filter((d) => (d.relation ?? "").toLowerCase() === "child").length;
+	return [
+		{ key: "Spouse", value: spouse?.name ?? "—" },
+		{ key: "Children", value: String(childrenCount) },
+	];
+});
 </script>
 
 <template>
-    <div></div>
+	<Head title="My Profile" />
+	<MainLayout>
+		<main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+			<IdentityStrip
+				:person="person"
+				:staff="staff"
+				:qualifications="qualifications"
+				:contacts="contacts"
+			/>
+
+			<div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+				<PhotoCard :person="person" />
+				<QualificationsCard
+					:qualifications="qualifications"
+					:person="{ id: person.id, name: person.name }"
+				/>
+			</div>
+
+			<div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+				<ContactCard
+					:person-id="person.id"
+					:contacts="contacts"
+					:address="address"
+				/>
+				<ReadOnlyKvCard
+					title="Employment"
+					lock-label="HR-managed"
+					:rows="employmentRows"
+				/>
+				<ReadOnlyKvCard
+					title="Dependents"
+					lock-label="View only"
+					:rows="dependentRows"
+					footer="Need changes? Contact HR."
+				/>
+			</div>
+		</main>
+	</MainLayout>
 </template>
