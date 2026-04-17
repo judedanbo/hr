@@ -92,11 +92,14 @@ class QualificationController extends Controller
             );
 
             if ($request->hasFile('file_name')) {
-                foreach ((array) $request->file('file_name') as $file) {
+                $types = (array) $request->input('document_type', []);
+                $titles = (array) $request->input('document_title', []);
+
+                foreach ($request->file('file_name') as $i => $file) {
                     $path = Storage::disk('qualifications-documents')->put('/', $file);
                     $qualification->documents()->create([
-                        'document_type' => $request->input('document_type'),
-                        'document_title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                        'document_type' => $types[$i] ?? null,
+                        'document_title' => $titles[$i] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
                         'document_status' => 'P',
                         'file_name' => $path,
                         'file_type' => $file->getMimeType(),

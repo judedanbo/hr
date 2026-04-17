@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\DocumentTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreQualificationRequest extends FormRequest
 {
@@ -40,10 +42,13 @@ class StoreQualificationRequest extends FormRequest
             'pk' => 'string|max:6|nullable',
             'year' => 'string|max:4|nullable',
 
-            // Optional inline documents — only validated when files are uploaded.
-            'document_type' => ['required_with:file_name', 'nullable', new \Illuminate\Validation\Rules\Enum(\App\Enums\DocumentTypeEnum::class)],
+            // Per-file parallel arrays — all three are required together when any file is uploaded.
             'file_name' => 'nullable|array',
             'file_name.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'document_type' => 'nullable|array|required_with:file_name',
+            'document_type.*' => ['required', new Enum(DocumentTypeEnum::class)],
+            'document_title' => 'nullable|array|required_with:file_name',
+            'document_title.*' => 'required|string|max:100',
         ];
     }
 }
