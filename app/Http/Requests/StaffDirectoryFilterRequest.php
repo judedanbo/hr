@@ -11,6 +11,20 @@ class StaffDirectoryFilterRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $integerFields = ['job_category_id', 'rank_id', 'sub_unit_id', 'age_from', 'age_to', 'page'];
+        $data = $this->all();
+
+        foreach ($integerFields as $field) {
+            if (array_key_exists($field, $data) && is_numeric($data[$field])) {
+                $data[$field] = (int) $data[$field];
+            }
+        }
+
+        $this->replace($data);
+    }
+
     /**
      * @return array<string, array<int, string>>
      */
