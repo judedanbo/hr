@@ -31,6 +31,13 @@ const permissions = computed(() => page.props?.auth?.permissions);
 const alert = computed(() => page.props?.flash);
 const navigation = [
 	{
+		name: "My Profile",
+		href: route("my-profile.show"),
+		icon: UserGroupIcon,
+		current: route().current("my-profile.*"),
+		visible: Boolean(page.props?.auth?.user?.person_id),
+	},
+	{
 		name: "Dashboard",
 		href: route("dashboard"),
 		icon: HomeIcon,
