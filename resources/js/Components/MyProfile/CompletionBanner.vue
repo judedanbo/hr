@@ -17,7 +17,10 @@ onMounted(() => {
 });
 
 const shouldShow = computed(
-	() => hasPersonId.value && (!hasPhoto.value || !hasQuals.value) && !dismissed.value,
+	() =>
+		hasPersonId.value &&
+		(!hasPhoto.value || !hasQuals.value) &&
+		!dismissed.value,
 );
 
 function dismiss() {
@@ -26,7 +29,8 @@ function dismiss() {
 }
 
 const message = computed(() => {
-	if (!hasPhoto.value && !hasQuals.value) return "Add your photo and first qualification.";
+	if (!hasPhoto.value && !hasQuals.value)
+		return "Add your photo and first qualification.";
 	if (!hasPhoto.value) return "Add your profile photo.";
 	return "Add your first qualification.";
 });
@@ -45,11 +49,14 @@ const message = computed(() => {
 		<Link
 			:href="route('my-profile.show')"
 			class="inline-flex items-center rounded-lg bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
-		>Open My Profile →</Link>
+			>Open My Profile →</Link
+		>
 		<button
 			type="button"
 			class="text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:underline"
 			@click="dismiss"
-		>Dismiss</button>
+		>
+			Dismiss
+		</button>
 	</div>
 </template>

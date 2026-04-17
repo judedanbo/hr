@@ -20,8 +20,8 @@ const checkpoints = computed(() => {
 	return [hasPhoto, hasQualification, hasContacts];
 });
 
-const percent = computed(
-	() => Math.round((checkpoints.value.filter(Boolean).length / 3) * 100),
+const percent = computed(() =>
+	Math.round((checkpoints.value.filter(Boolean).length / 3) * 100),
 );
 const isComplete = computed(() => percent.value === 100);
 </script>
@@ -38,7 +38,9 @@ const isComplete = computed(() => percent.value === 100);
 		<div
 			:class="[
 				'w-20 h-1.5 rounded-full overflow-hidden',
-				isComplete ? 'bg-emerald-200 dark:bg-emerald-800' : 'bg-amber-200 dark:bg-amber-800',
+				isComplete
+					? 'bg-emerald-200 dark:bg-emerald-800'
+					: 'bg-amber-200 dark:bg-amber-800',
 			]"
 		>
 			<div

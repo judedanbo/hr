@@ -13,7 +13,8 @@ const currentRank = computed(
 	() => props.staff.ranks?.find((r) => !r.end_date) ?? props.staff.ranks?.[0],
 );
 const currentDepartment = computed(() => {
-	const unit = props.staff.units?.find((u) => !u.end_date) ?? props.staff.units?.[0];
+	const unit =
+		props.staff.units?.find((u) => !u.end_date) ?? props.staff.units?.[0];
 	return unit?.department ?? unit?.unit_name ?? null;
 });
 </script>
@@ -46,7 +47,9 @@ const currentDepartment = computed(() => {
 				<span v-if="currentRank">{{ currentRank.name }}</span>
 				<span v-if="currentRank && currentDepartment"> · </span>
 				<span v-if="currentDepartment">{{ currentDepartment }}</span>
-				<span v-if="staff.staff_number"> · Staff #{{ staff.staff_number }}</span>
+				<span v-if="staff.staff_number">
+					· Staff #{{ staff.staff_number }}</span
+				>
 			</p>
 		</div>
 		<div class="flex items-center justify-center sm:justify-end">

@@ -96,15 +96,18 @@ function statusTag(status) {
 					v-if="canExport"
 					:href="route('qualifications.reports.staff.profile.pdf', person.id)"
 					class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-200"
-				>PDF</a>
+					>PDF</a
+				>
 				<span
 					v-if="qualifications.length === 0"
 					class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
-				>0 added</span>
+					>0 added</span
+				>
 				<span
 					v-else
 					class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
-				>&#10003; Active</span>
+					>&#10003; Active</span
+				>
 			</div>
 		</header>
 
@@ -134,7 +137,8 @@ function statusTag(status) {
 					v-for="tag in ['Degree', 'Diploma', 'Certificate', 'Training']"
 					:key="tag"
 					class="px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-[11px] text-gray-600 dark:text-gray-300"
-				>{{ tag }}</span>
+					>{{ tag }}</span
+				>
 			</div>
 		</div>
 
@@ -147,7 +151,8 @@ function statusTag(status) {
 			>
 				<span
 					class="w-9 h-9 rounded-md bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200 flex items-center justify-center text-base"
-				>&#127891;</span>
+					>&#127891;</span
+				>
 				<div class="flex-1 min-w-0">
 					<div
 						class="text-sm font-bold truncate text-gray-900 dark:text-gray-50"
@@ -165,10 +170,12 @@ function statusTag(status) {
 								'px-2 py-0.5 rounded-full text-[10px] font-semibold',
 								statusTag(q.status),
 							]"
-						>{{ q.status }}</span>
+							>{{ q.status }}</span
+						>
 						<span v-if="q.documents" class="text-gray-500"
-							>&#183; {{ q.documents.length }}
-							document{{ q.documents.length === 1 ? "" : "s" }}</span
+							>&#183; {{ q.documents.length }} document{{
+								q.documents.length === 1 ? "" : "s"
+							}}</span
 						>
 					</div>
 				</div>

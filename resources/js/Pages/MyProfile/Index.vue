@@ -17,8 +17,10 @@ const props = defineProps({
 });
 
 const employmentRows = computed(() => {
-	const currentRank = props.staff.ranks?.find((r) => !r.end_date) ?? props.staff.ranks?.[0];
-	const currentUnit = props.staff.units?.find((u) => !u.end_date) ?? props.staff.units?.[0];
+	const currentRank =
+		props.staff.ranks?.find((r) => !r.end_date) ?? props.staff.ranks?.[0];
+	const currentUnit =
+		props.staff.units?.find((u) => !u.end_date) ?? props.staff.units?.[0];
 	return [
 		{ key: "Rank", value: currentRank?.name ?? "—" },
 		{ key: "Unit", value: currentUnit?.unit_name ?? "—" },
@@ -28,8 +30,12 @@ const employmentRows = computed(() => {
 
 const dependentRows = computed(() => {
 	const deps = props.staff.dependents ?? [];
-	const spouse = deps.find((d) => (d.relation ?? "").toLowerCase() === "spouse");
-	const childrenCount = deps.filter((d) => (d.relation ?? "").toLowerCase() === "child").length;
+	const spouse = deps.find(
+		(d) => (d.relation ?? "").toLowerCase() === "spouse",
+	);
+	const childrenCount = deps.filter(
+		(d) => (d.relation ?? "").toLowerCase() === "child",
+	).length;
 	return [
 		{ key: "Spouse", value: spouse?.name ?? "—" },
 		{ key: "Children", value: String(childrenCount) },
