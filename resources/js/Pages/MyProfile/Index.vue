@@ -32,11 +32,19 @@ const employmentRows = computed(() => {
 
 	return [
 		{ key: "Joined", value: props.staff.hire_date ?? "—" },
-		{ key: "Rank", value: withDistance(currentRank?.name, currentRank?.distance) },
-		{ key: "Unit", value: withDistance(currentUnit?.unit_name ?? currentUnit?.department, currentUnit?.distance) },
+		{
+			key: "Rank",
+			value: withDistance(currentRank?.name, currentRank?.distance),
+		},
+		{
+			key: "Unit",
+			value: withDistance(
+				currentUnit?.unit_name ?? currentUnit?.department,
+				currentUnit?.distance,
+			),
+		},
 	];
 });
-
 </script>
 
 <template>
@@ -61,10 +69,7 @@ const employmentRows = computed(() => {
 			<!-- Row 1: Personal + Contact + Address (three evenly-balanced cards) -->
 			<div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<PersonalDetailsCard :person="person" />
-				<ContactCard
-					:person-id="person.id"
-					:contacts="contacts"
-				/>
+				<ContactCard :person-id="person.id" :contacts="contacts" />
 				<AddressCard :person-id="person.id" :address="address" />
 			</div>
 

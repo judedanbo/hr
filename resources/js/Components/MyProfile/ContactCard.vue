@@ -66,7 +66,9 @@ function onMutationSuccess() {
 				type="button"
 				class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
 				@click="toggleAdd()"
-			>+ Add</button>
+			>
+				+ Add
+			</button>
 		</header>
 
 		<ul v-if="activeContacts.length > 0" class="space-y-2">
@@ -75,20 +77,28 @@ function onMutationSuccess() {
 				:key="c.id"
 				class="flex items-center gap-2 text-sm"
 			>
-				<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 whitespace-nowrap">
+				<span
+					class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 whitespace-nowrap"
+				>
 					{{ c.contact_type_dis }}
 				</span>
-				<span class="flex-1 truncate text-gray-900 dark:text-gray-100">{{ c.contact }}</span>
+				<span class="flex-1 truncate text-gray-900 dark:text-gray-100">{{
+					c.contact
+				}}</span>
 				<button
 					type="button"
 					class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
 					@click="startEdit(c)"
-				>Edit</button>
+				>
+					Edit
+				</button>
 				<button
 					type="button"
 					class="text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline"
 					@click="startDelete(c)"
-				>Delete</button>
+				>
+					Delete
+				</button>
 			</li>
 		</ul>
 		<p v-else class="text-sm text-gray-500 dark:text-gray-400 py-2">
@@ -98,7 +108,12 @@ function onMutationSuccess() {
 		<NewModal :show="openAdd" @close="toggleAdd()">
 			<AddContact
 				:person="personId"
-				@form-submitted="() => { toggleAdd(); onMutationSuccess(); }"
+				@form-submitted="
+					() => {
+						toggleAdd();
+						onMutationSuccess();
+					}
+				"
 			/>
 		</NewModal>
 
@@ -107,7 +122,12 @@ function onMutationSuccess() {
 				v-if="current"
 				:person="personId"
 				:contact="current"
-				@form-submitted="() => { toggleEdit(); onMutationSuccess(); }"
+				@form-submitted="
+					() => {
+						toggleEdit();
+						onMutationSuccess();
+					}
+				"
 			/>
 		</NewModal>
 
@@ -117,19 +137,25 @@ function onMutationSuccess() {
 					Delete contact?
 				</h2>
 				<p v-if="current" class="text-sm text-gray-600 dark:text-gray-300 mb-5">
-					Remove <strong>{{ current.contact }}</strong> ({{ current.contact_type_dis }}) from your profile. This cannot be undone.
+					Remove <strong>{{ current.contact }}</strong> ({{
+						current.contact_type_dis
+					}}) from your profile. This cannot be undone.
 				</p>
 				<div class="flex justify-end gap-2">
 					<button
 						type="button"
 						class="text-sm text-gray-600 dark:text-gray-400 hover:underline px-3 py-1.5"
 						@click="toggleDelete()"
-					>Cancel</button>
+					>
+						Cancel
+					</button>
 					<button
 						type="button"
 						class="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg px-3 py-1.5"
 						@click="confirmDelete"
-					>Delete</button>
+					>
+						Delete
+					</button>
 				</div>
 			</div>
 		</NewModal>
