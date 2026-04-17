@@ -32,11 +32,14 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-:deep(.formkit-outer) {
-	width: 100%;
-}
+:deep(.formkit-outer),
+:deep(.formkit-wrapper),
 :deep(.formkit-inner),
 :deep(.formkit-input) {
 	width: 100%;
+	max-width: 100%;
+}
+:deep(.formkit-input) {
+	box-sizing: border-box;
 }
 </style>
