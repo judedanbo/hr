@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Person;
+use App\Models\Qualification;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -34,13 +36,20 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => fn () => $request->user()?->only('id', 'name', 'email'),
+                'user' => fn () => $request->user()
+                    ? array_merge(
+                        $request->user()->only('id', 'name', 'email'),
+                        ['person_id' => $request->user()->person_id],
+                    )
+                    : null,
                 'roles' => fn () => $request->user()?->getRoleNames(),
                 // 'is_admin' => fn() => $request->user()?->isAdmin(),
                 'permissions' => fn () => $request->user()?->getAllPermissions()->pluck('name'),
                 'viewMode' => fn () => $request->session()->get('view_mode'),
                 'isMultiRoleStaff' => fn () => $request->user()?->isMultiRoleStaff() ?? false,
                 'viewModeLabel' => fn () => $this->resolveViewModeLabel($request->user()),
+                'has_photo' => fn () => $this->hasPhotoForCurrentUser($request),
+                'qualifications_count' => fn () => $this->qualificationsCountForCurrentUser($request),
             ],
             // 'permissions' => fn() => $request->user()?->getAllPermissions()->pluck('name'),
             'ziggy' => function () use ($request) {
@@ -64,5 +73,30 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $user->canAccessAdminDashboard() ? 'Admin' : 'Other';
+    }
+
+    private function hasPhotoForCurrentUser(Request $request): ?bool
+    {
+        $user = $request->user();
+        if (! $user || ! $user->person_id) {
+            return null;
+        }
+
+        return (bool) Person::query()
+            ->whereKey($user->person_id)
+            ->whereNotNull('image')
+            ->exists();
+    }
+
+    private function qualificationsCountForCurrentUser(Request $request): ?int
+    {
+        $user = $request->user();
+        if (! $user || ! $user->person_id) {
+            return null;
+        }
+
+        return Qualification::query()
+            ->where('person_id', $user->person_id)
+            ->count();
     }
 }
