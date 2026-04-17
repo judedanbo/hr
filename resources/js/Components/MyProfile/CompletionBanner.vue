@@ -9,12 +9,38 @@ const hasPersonId = computed(() => Boolean(auth.value?.user?.person_id));
 const hasPhoto = computed(() => auth.value?.has_photo === true);
 const hasQuals = computed(() => (auth.value?.qualifications_count ?? 0) > 0);
 
-const dismissedKey = "my-profile.banner.dismissed";
+// Dismissal persists across tabs and restarts for seven days. After that the
+// banner reappears so users who still haven't completed their profile get
+// another gentle nudge.
+const dismissedKey = "my-profile.banner.dismissed-at";
+const dismissalTtlMs = 7 * 24 * 60 * 60 * 1000;
 const dismissed = ref(false);
 
 onMounted(() => {
-	dismissed.value = sessionStorage.getItem(dismissedKey) === "1";
+	dismissed.value = isCurrentlyDismissed();
 });
+
+function isCurrentlyDismissed() {
+	try {
+		const value = localStorage.getItem(dismissedKey);
+		if (!value) return false;
+		const dismissedAt = Number(value);
+		if (!Number.isFinite(dismissedAt)) return false;
+		return Date.now() - dismissedAt < dismissalTtlMs;
+	} catch {
+		// localStorage unavailable (private mode, etc.) — don't suppress the banner.
+		return false;
+	}
+}
+
+function dismiss() {
+	try {
+		localStorage.setItem(dismissedKey, String(Date.now()));
+	} catch {
+		// Swallow — UI still hides for the rest of this render.
+	}
+	dismissed.value = true;
+}
 
 const shouldShow = computed(
 	() =>
@@ -22,11 +48,6 @@ const shouldShow = computed(
 		(!hasPhoto.value || !hasQuals.value) &&
 		!dismissed.value,
 );
-
-function dismiss() {
-	sessionStorage.setItem(dismissedKey, "1");
-	dismissed.value = true;
-}
 
 const message = computed(() => {
 	if (!hasPhoto.value && !hasQuals.value)
@@ -39,6 +60,7 @@ const message = computed(() => {
 <template>
 	<div
 		v-if="shouldShow"
+		data-testid="profile-completion-banner"
 		class="flex items-center gap-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 px-4 py-3"
 	>
 		<div class="text-2xl">📝</div>
