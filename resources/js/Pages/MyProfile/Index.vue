@@ -21,10 +21,16 @@ const employmentRows = computed(() => {
 		props.staff.ranks?.find((r) => !r.end_date) ?? props.staff.ranks?.[0];
 	const currentUnit =
 		props.staff.units?.find((u) => !u.end_date) ?? props.staff.units?.[0];
+
+	const withDistance = (label, distance) => {
+		if (!label) return "—";
+		return distance ? `${label} · ${distance}` : label;
+	};
+
 	return [
-		{ key: "Rank", value: currentRank?.name ?? "—" },
-		{ key: "Unit", value: currentUnit?.unit_name ?? "—" },
 		{ key: "Joined", value: props.staff.hire_date ?? "—" },
+		{ key: "Rank", value: withDistance(currentRank?.name, currentRank?.distance) },
+		{ key: "Unit", value: withDistance(currentUnit?.unit_name ?? currentUnit?.department, currentUnit?.distance) },
 	];
 });
 
