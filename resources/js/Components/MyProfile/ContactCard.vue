@@ -6,6 +6,8 @@ import NewModal from "@/Components/NewModal.vue";
 import AddContact from "@/Pages/Person/partials/AddContact.vue";
 import EditContact from "@/Pages/Person/partials/EditContact.vue";
 
+const CONTACT_TYPE_PHONE = 2;
+
 const props = defineProps({
 	personId: { type: Number, required: true },
 	contacts: { type: Array, default: () => null },
@@ -23,6 +25,19 @@ const current = ref(null);
 const activeContacts = computed(() =>
 	(props.contacts ?? []).filter((c) => !c.valid_end),
 );
+
+function isLastActivePhone(c) {
+	if (c.contact_type !== CONTACT_TYPE_PHONE) {
+		return false;
+	}
+	if (c.valid_end) {
+		return false;
+	}
+	const otherActivePhones = activeContacts.value.filter(
+		(x) => x.id !== c.id && x.contact_type === CONTACT_TYPE_PHONE && !x.valid_end,
+	);
+	return otherActivePhones.length === 0;
+}
 
 function startEdit(contact) {
 	current.value = contact;
@@ -92,7 +107,13 @@ function onMutationSuccess() {
 				>
 					Edit
 				</button>
+				<template v-if="isLastActivePhone(c)">
+					<span class="text-[11px] italic text-gray-500 dark:text-gray-400"
+						>Required</span
+					>
+				</template>
 				<button
+					v-else
 					type="button"
 					class="text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline"
 					@click="startDelete(c)"
