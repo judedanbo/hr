@@ -10,7 +10,9 @@ use App\Models\Qualification;
 use App\Models\User;
 use App\Notifications\QualificationPendingApprovalNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class QualificationController extends Controller
@@ -84,7 +86,25 @@ class QualificationController extends Controller
         $data = $request->validated();
         $data['status'] = QualificationStatusEnum::Pending;
 
-        $qualification = Qualification::create($data);
+        $qualification = DB::transaction(function () use ($request, $data) {
+            $qualification = Qualification::create(
+                collect($data)->except(['document_type', 'document_title', 'file_name'])->all()
+            );
+
+            if ($request->hasFile('file_name')) {
+                $path = Storage::disk('qualifications-documents')->put('/', $request->file('file_name'));
+                $qualification->documents()->create([
+                    'document_type' => $request->input('document_type'),
+                    'document_title' => $request->input('document_title')
+                        ?? pathinfo($request->file('file_name')->getClientOriginalName(), PATHINFO_FILENAME),
+                    'document_status' => 'P',
+                    'file_name' => $path,
+                    'file_type' => $request->file('file_name')->getMimeType(),
+                ]);
+            }
+
+            return $qualification;
+        });
 
         // Send notification to all users with approve permission
         $qualification->load('person');

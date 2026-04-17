@@ -28,7 +28,7 @@ class StoreQualificationRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'person_id' => 'required|integer|exists:people,id',
@@ -39,6 +39,11 @@ class StoreQualificationRequest extends FormRequest
             'level' => 'string|max:50|nullable',
             'pk' => 'string|max:6|nullable',
             'year' => 'string|max:4|nullable',
+
+            // Optional inline document — only validated when a file is uploaded.
+            'document_type' => ['required_with:file_name', 'string', 'nullable', new \Illuminate\Validation\Rules\Enum(\App\Enums\DocumentTypeEnum::class)],
+            'document_title' => 'nullable|string|max:100',
+            'file_name' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
     }
 }
