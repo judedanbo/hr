@@ -202,17 +202,18 @@ function submit() {
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
 							<select
 								v-model="entry.document_type"
-								class="rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm py-1 px-2"
+								class="rounded border border-gray-300 bg-white text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 text-sm py-1 px-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400"
 								:class="{
 									'border-red-400 dark:border-red-500':
 										!entry.document_type,
 								}"
 							>
-								<option value="">Select type</option>
+								<option value="" class="text-gray-900 dark:bg-gray-900 dark:text-gray-100">Select type</option>
 								<option
 									v-for="t in documentTypes"
 									:key="t.value"
 									:value="t.value"
+									class="text-gray-900 dark:bg-gray-900 dark:text-gray-100"
 								>
 									{{ t.label }}
 								</option>
@@ -221,7 +222,7 @@ function submit() {
 								v-model.trim="entry.document_title"
 								type="text"
 								placeholder="Title"
-								class="rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm py-1 px-2"
+								class="rounded border border-gray-300 bg-white text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 text-sm py-1 px-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400"
 								:class="{
 									'border-red-400 dark:border-red-500':
 										!entry.document_title,
