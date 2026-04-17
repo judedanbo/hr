@@ -7,6 +7,8 @@ import AddContact from "@/Pages/Person/partials/AddContact.vue";
 import EditContact from "@/Pages/Person/partials/EditContact.vue";
 
 const CONTACT_TYPE_PHONE = 2;
+const CONTACT_TYPE_EMAIL = 1;
+const PROTECTED_EMAIL_DOMAIN = "audit.gov.gh";
 
 const props = defineProps({
 	personId: { type: Number, required: true },
@@ -37,6 +39,18 @@ function isLastActivePhone(c) {
 		(x) => x.id !== c.id && x.contact_type === CONTACT_TYPE_PHONE && !x.valid_end,
 	);
 	return otherActivePhones.length === 0;
+}
+
+function isProtectedOrgEmail(c) {
+	if (c.contact_type !== CONTACT_TYPE_EMAIL) {
+		return false;
+	}
+	const email = String(c.contact ?? "").toLowerCase();
+	const at = email.lastIndexOf("@");
+	if (at === -1) {
+		return false;
+	}
+	return email.slice(at + 1) === PROTECTED_EMAIL_DOMAIN;
 }
 
 function startEdit(contact) {
@@ -107,10 +121,10 @@ function onMutationSuccess() {
 				>
 					Edit
 				</button>
-				<template v-if="isLastActivePhone(c)">
-					<span class="text-[11px] italic text-gray-500 dark:text-gray-400"
-						>Required</span
-					>
+				<template v-if="isLastActivePhone(c) || isProtectedOrgEmail(c)">
+					<span class="text-[11px] italic text-gray-500 dark:text-gray-400">{{
+						isProtectedOrgEmail(c) ? "Org email" : "Required"
+					}}</span>
 				</template>
 				<button
 					v-else
