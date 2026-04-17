@@ -189,6 +189,100 @@ class MyProfileContactMutationTest extends TestCase
         $this->assertNull(Contact::find($email->id));
     }
 
+    public function test_cannot_delete_audit_gov_gh_email(): void
+    {
+        $user = $this->staffUser();
+        $email = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'me@audit.gov.gh',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $email->id,
+            ]))
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertNotNull(Contact::find($email->id));
+    }
+
+    public function test_can_delete_audit_gov_gh_email_with_case_differences(): void
+    {
+        $user = $this->staffUser();
+        $email = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'Me@AUDIT.GOV.GH',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $email->id,
+            ]))
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertNotNull(Contact::find($email->id));
+    }
+
+    public function test_can_delete_non_org_email(): void
+    {
+        $user = $this->staffUser();
+        $email = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'me@gmail.com',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $email->id,
+            ]))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertNull(Contact::find($email->id));
+    }
+
+    public function test_can_delete_email_whose_domain_contains_audit_gov_gh_substring(): void
+    {
+        $user = $this->staffUser();
+
+        // Subdomain — not a match
+        $subdomainEmail = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'me@sub.audit.gov.gh',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $subdomainEmail->id,
+            ]))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertNull(Contact::find($subdomainEmail->id));
+
+        // audit.gov.gh as local part — also not a match
+        $localPartEmail = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'audit.gov.gh@notreal.com',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('person.contact.delete', [
+                'person' => $user->person_id,
+                'contact' => $localPartEmail->id,
+            ]))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertNull(Contact::find($localPartEmail->id));
+    }
+
     private function staffUser(): User
     {
         $staff = InstitutionPerson::factory()->create();

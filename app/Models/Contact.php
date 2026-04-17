@@ -32,4 +32,24 @@ class Contact extends Model
     {
         return $this->belongsTo(Person::class);
     }
+
+    /**
+     * Returns true when this contact is an Audit Service organisational email
+     * (domain exactly equals audit.gov.gh, case-insensitive).
+     * These addresses must not be deletable by end users.
+     */
+    public function isProtectedOrgEmail(): bool
+    {
+        if ($this->contact_type !== ContactTypeEnum::EMAIL) {
+            return false;
+        }
+        $email = strtolower((string) $this->contact);
+        $atPos = strrpos($email, '@');
+        if ($atPos === false) {
+            return false;
+        }
+        $domain = substr($email, $atPos + 1);
+
+        return $domain === 'audit.gov.gh';
+    }
 }

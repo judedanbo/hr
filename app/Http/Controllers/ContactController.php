@@ -170,6 +170,12 @@ class ContactController extends Controller
             }
         }
 
+        if ($contact->isProtectedOrgEmail()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'contact' => 'This Audit Service email address cannot be deleted.',
+            ]);
+        }
+
         $this->logSuccess('deleted a contact', $contact);
 
         $contact->delete();

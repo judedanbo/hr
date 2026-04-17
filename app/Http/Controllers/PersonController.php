@@ -312,6 +312,12 @@ class PersonController extends Controller
             }
         }
 
+        if ($contactModel->isProtectedOrgEmail()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'contact' => 'This Audit Service email address cannot be deleted.',
+            ]);
+        }
+
         $person->contacts()->where('id', $contact)->forceDelete();
 
         return redirect()->back();

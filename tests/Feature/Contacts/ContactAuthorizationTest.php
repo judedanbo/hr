@@ -115,4 +115,22 @@ class ContactAuthorizationTest extends TestCase
 
         $this->assertNotSoftDeleted('contacts', ['id' => $contact->id]);
     }
+
+    public function test_contact_destroy_route_also_blocks_deleting_audit_gov_gh_email(): void
+    {
+        $person = Person::factory()->create();
+        $user = User::factory()->create(['person_id' => $person->id, 'password_change_at' => now()]);
+        $user->givePermissionTo('delete contacts');
+        $contact = Contact::factory()->create([
+            'person_id' => $person->id,
+            'contact_type' => ContactTypeEnum::EMAIL->value,
+            'contact' => 'staff@audit.gov.gh',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('contact.destroy', ['contact' => $contact->id]))
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertNotSoftDeleted('contacts', ['id' => $contact->id]);
+    }
 }
