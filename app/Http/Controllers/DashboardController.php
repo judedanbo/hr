@@ -92,11 +92,8 @@ class DashboardController extends Controller
 
     private function redirectToStaffLanding(User $user): RedirectResponse
     {
-        if ($user->person) {
-            return redirect()->route(
-                'staff.show',
-                [$user->person->institution->first()->staff->id]
-            );
+        if ($user->person_id) {
+            return redirect()->route('my-profile.show');
         }
 
         return redirect()->route('staff.index');
