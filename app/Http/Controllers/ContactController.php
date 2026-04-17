@@ -141,6 +141,12 @@ class ContactController extends Controller
     {
         $this->authorize('update', $contact);
 
+        if ($contact->isProtectedOrgEmail()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'contact' => 'This Audit Service email address cannot be edited.',
+            ]);
+        }
+
         $contact->update($request->validated());
 
         $this->logSuccess('updated a contact', $contact);

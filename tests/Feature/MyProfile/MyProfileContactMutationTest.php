@@ -283,6 +283,28 @@ class MyProfileContactMutationTest extends TestCase
         $this->assertNull(Contact::find($localPartEmail->id));
     }
 
+    public function test_cannot_update_audit_gov_gh_email(): void
+    {
+        $user = $this->staffUser();
+        $protected = Contact::create([
+            'person_id' => $user->person_id,
+            'contact_type' => ContactTypeEnum::EMAIL,
+            'contact' => 'me@audit.gov.gh',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('person.contact.update', [
+                'person' => $user->person_id,
+                'contact' => $protected->id,
+            ]), [
+                'contact_type' => ContactTypeEnum::EMAIL->value,
+                'contact' => 'me@gmail.com',
+            ])
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertSame('me@audit.gov.gh', $protected->fresh()->contact);
+    }
+
     private function staffUser(): User
     {
         $staff = InstitutionPerson::factory()->create();

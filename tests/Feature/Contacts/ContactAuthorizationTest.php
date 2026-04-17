@@ -133,4 +133,25 @@ class ContactAuthorizationTest extends TestCase
 
         $this->assertNotSoftDeleted('contacts', ['id' => $contact->id]);
     }
+
+    public function test_contact_update_route_also_blocks_updating_audit_gov_gh_email(): void
+    {
+        $person = Person::factory()->create();
+        $user = User::factory()->create(['person_id' => $person->id, 'password_change_at' => now()]);
+        $user->givePermissionTo('update contacts');
+        $contact = Contact::factory()->create([
+            'person_id' => $person->id,
+            'contact_type' => ContactTypeEnum::EMAIL->value,
+            'contact' => 'staff@audit.gov.gh',
+        ]);
+
+        $this->actingAs($user)
+            ->patch(route('contact.update', ['contact' => $contact->id]), [
+                'contact_type' => ContactTypeEnum::EMAIL->value,
+                'contact' => 'someone-else@gmail.com',
+            ])
+            ->assertSessionHasErrors(['contact']);
+
+        $this->assertSame('staff@audit.gov.gh', $contact->fresh()->contact);
+    }
 }

@@ -24,9 +24,16 @@ const toggleDelete = useToggle(openDelete);
 
 const current = ref(null);
 
-const activeContacts = computed(() =>
-	(props.contacts ?? []).filter((c) => !c.valid_end),
-);
+const activeContacts = computed(() => {
+	const active = (props.contacts ?? []).filter((c) => !c.valid_end);
+	// Pin protected org emails to the top. Stable sort preserves insertion
+	// order for every other contact.
+	return [...active].sort((a, b) => {
+		const ap = isProtectedOrgEmail(a) ? 0 : 1;
+		const bp = isProtectedOrgEmail(b) ? 0 : 1;
+		return ap - bp;
+	});
+});
 
 function isLastActivePhone(c) {
 	if (c.contact_type !== CONTACT_TYPE_PHONE) {
@@ -115,6 +122,7 @@ function onMutationSuccess() {
 					c.contact
 				}}</span>
 				<button
+					v-if="!isProtectedOrgEmail(c)"
 					type="button"
 					class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
 					@click="startEdit(c)"

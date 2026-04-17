@@ -283,6 +283,12 @@ class PersonController extends Controller
         $contactModel = Contact::findOrFail($contact);
         $this->authorize('update', $contactModel);
 
+        if ($contactModel->isProtectedOrgEmail()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'contact' => 'This Audit Service email address cannot be edited.',
+            ]);
+        }
+
         $attribute = $request->validate([
             'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:30',
