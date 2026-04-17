@@ -16,6 +16,8 @@ onMounted(async () => {
 		placeholder="Select one"
 		validation="required"
 		:options="contact_types"
+		outer-class="w-full"
+		input-class="w-full"
 	/>
 	<FormKit
 		id="contact"
@@ -24,5 +26,17 @@ onMounted(async () => {
 		label="Contact"
 		placeholder="Contact"
 		validation="required|length:2,100"
+		outer-class="w-full"
+		input-class="w-full"
 	/>
 </template>
+
+<style scoped>
+:deep(.formkit-outer) {
+	width: 100%;
+}
+:deep(.formkit-inner),
+:deep(.formkit-input) {
+	width: 100%;
+}
+</style>
