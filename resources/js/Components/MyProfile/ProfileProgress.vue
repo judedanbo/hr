@@ -7,17 +7,17 @@ const props = defineProps({
 	contacts: { type: Array, default: () => null },
 });
 
+// ContactTypeEnum: Email = 1, Phone = 2 (backed int enum serialized as integer).
+const CONTACT_TYPE_EMAIL = 1;
+const CONTACT_TYPE_PHONE = 2;
+
 const checkpoints = computed(() => {
 	const hasPhoto = Boolean(props.person?.image);
 	const hasQualification = props.qualifications.length > 0;
-	const emails = (props.contacts ?? []).filter(
-		(c) => String(c.contact_type).toLowerCase() === "email" && !c.valid_end,
-	);
-	const phones = (props.contacts ?? []).filter(
-		(c) => String(c.contact_type).toLowerCase() === "phone" && !c.valid_end,
-	);
-	const hasContacts = emails.length > 0 && phones.length > 0;
-	return [hasPhoto, hasQualification, hasContacts];
+	const active = (props.contacts ?? []).filter((c) => !c.valid_end);
+	const hasEmail = active.some((c) => c.contact_type === CONTACT_TYPE_EMAIL);
+	const hasPhone = active.some((c) => c.contact_type === CONTACT_TYPE_PHONE);
+	return [hasPhoto, hasQualification, hasEmail && hasPhone];
 });
 
 const percent = computed(() =>
