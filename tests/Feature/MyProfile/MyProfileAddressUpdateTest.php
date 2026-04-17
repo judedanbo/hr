@@ -66,6 +66,29 @@ class MyProfileAddressUpdateTest extends TestCase
         ]);
     }
 
+    public function test_address_update_requires_address_line_1_city_and_country(): void
+    {
+        $staff = $this->createActiveStaff();
+        $user = User::factory()->create(['person_id' => $staff->person_id]);
+        $user->givePermissionTo(Permission::firstOrCreate(['name' => 'update contacts']));
+
+        $address = $this->createAddressForPerson($staff->person);
+
+        $this->actingAs($user)
+            ->patch(route('person.address.update', ['person' => $staff->person_id, 'address' => $address->id]), [
+                'address_line_1' => '',
+                'city' => '',
+                'country' => '',
+            ])
+            ->assertSessionHasErrors(['address_line_1', 'city', 'country']);
+
+        // Row should remain unchanged
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'address_line_1' => '1 Original Road',
+        ]);
+    }
+
     public function test_unauthenticated_user_is_redirected_to_login(): void
     {
         $staff = $this->createActiveStaff();

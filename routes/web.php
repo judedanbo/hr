@@ -154,6 +154,7 @@ Route::controller(PersonController::class)->middleware(['auth', 'password_change
     Route::delete('/person/{person}/contact/{contact}', 'deleteContact')->name('person.contact.delete');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');
     Route::patch('/person/{person}/address/{address}', 'updateAddress')->middleware('can:update contacts')->name('person.address.update');
+    Route::post('/person/{person}/address/change', 'changeAddress')->middleware('can:update contacts')->name('person.address.change');
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
     // Route::get('/person/avatar', 'avatar')->name('person.ava');
 });

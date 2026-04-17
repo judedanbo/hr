@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ContactTypeEnum;
+use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\StoreIdentityRequest;
 use App\Http\Requests\UpdatePersonRequest;
 use App\Models\Address;
@@ -11,6 +12,7 @@ use App\Models\Person;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
@@ -300,26 +302,13 @@ class PersonController extends Controller
         return redirect()->back();
     }
 
-    public function addAddress(Request $request, Person $person)
+    public function addAddress(StoreAddressRequest $request, Person $person): RedirectResponse
     {
-        $attribute = $request->validate([
-            'address_line_1' => ['required'],
-            'address_line_2' => ['nullable'],
-            'city' => ['required'],
-            'region' => ['nullable'],
-            'country' => ['required'],
-            'post_code' => ['nullable'],
-        ]);
-
         $person->address()->where('valid_end', null)->update([
-            'valid_end' => now(),
+            'valid_end' => now()->toDateString(),
         ]);
 
-        // $staff->ranks()->wherePivot('end_date', null)->update([
-        //     'end_date' => Carbon::parse($request->start_date)->subDay(),
-        // ]);
-
-        $person->address()->create($attribute);
+        $person->address()->create($request->validated());
 
         return redirect()->back();
     }
@@ -355,18 +344,44 @@ class PersonController extends Controller
 
         $this->authorize('update', $address);
 
-        $attribute = $request->validate([
-            'address_line_1' => ['required'],
-            'address_line_2' => ['nullable'],
-            'city' => ['required'],
-            'region' => ['nullable'],
-            'country' => ['required'],
-            'post_code' => ['nullable'],
-        ]);
+        $attribute = $request->validate(
+            [
+                'address_line_1' => 'required|string|max:255',
+                'address_line_2' => 'nullable|string|max:255',
+                'city' => 'required|string|max:100',
+                'region' => 'nullable|string|max:100',
+                'country' => 'required|string|max:100',
+                'post_code' => 'nullable|string|max:20',
+            ],
+            [
+                'address_line_1.required' => 'Address line 1 is required.',
+                'city.required' => 'City is required.',
+                'country.required' => 'Country is required.',
+            ]
+        );
 
         $address->update($attribute);
 
         return redirect()->back()->with('success', 'Address updated successfully.');
+    }
+
+    public function changeAddress(StoreAddressRequest $request, Person $person): RedirectResponse
+    {
+        abort_unless(
+            $request->user()->person_id === $person->id
+                || $request->user()->can('update staff'),
+            403,
+        );
+
+        DB::transaction(function () use ($person, $request) {
+            $person->address()
+                ->whereNull('valid_end')
+                ->update(['valid_end' => now()->toDateString()]);
+
+            $person->address()->create($request->validated());
+        });
+
+        return redirect()->back()->with('success', 'Address updated. Previous address kept in history.');
     }
 
     public function deleteAddress(Person $person, $address)

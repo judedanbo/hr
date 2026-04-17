@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
-    use HasFactory, SoftDeletes, LogAllTraits;
+    use HasFactory, LogAllTraits, SoftDeletes;
 
     protected $fillable = [
         'address_line_1',
@@ -18,6 +18,7 @@ class Address extends Model
         'region',
         'country',
         'post_code',
+        'valid_end',
     ];
 
     public function addressable()
