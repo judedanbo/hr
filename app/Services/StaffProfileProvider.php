@@ -13,7 +13,7 @@ final class StaffProfileProvider
      * Build the profile payload consumed by both the admin Staff/NewShow page
      * and the self-service MyProfile page.
      *
-     * @return array{person: array, qualifications: array, contacts: array|null, address: array|null, staff: array}|null
+     * @return array{person: array, qualifications: array, contacts: array, address: array|null, staff: array}|null
      */
     public function forPerson(int $personId): ?array
     {
@@ -67,14 +67,12 @@ final class StaffProfileProvider
             'religion' => $staff->person->religion,
             'marital_status' => $staff->person->marital_status?->label(),
             'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-            'identities' => $staff->person->identities->count() > 0
-                ? $staff->person->identities->map(fn ($id) => [
-                    'id' => $id->id,
-                    'id_type' => $id->id_type,
-                    'id_type_display' => $id->id_type->label(),
-                    'id_number' => $id->id_number,
-                ])->all()
-                : null,
+            'identities' => $staff->person->identities->map(fn ($id) => [
+                'id' => $id->id,
+                'id_type' => $id->id_type,
+                'id_type_display' => $id->id_type->label(),
+                'id_number' => $id->id_number,
+            ])->all(),
         ];
     }
 
@@ -110,12 +108,8 @@ final class StaffProfileProvider
             ->all();
     }
 
-    private function mapContacts(InstitutionPerson $staff): ?array
+    private function mapContacts(InstitutionPerson $staff): array
     {
-        if ($staff->person->contacts->count() === 0) {
-            return null;
-        }
-
         return $staff->person->contacts->map(fn ($c) => [
             'id' => $c->id,
             'contact' => $c->contact,

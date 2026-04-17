@@ -15,7 +15,7 @@ const props = defineProps({
 	person: { type: Object, required: true },
 	staff: { type: Object, required: true },
 	qualifications: { type: Array, default: () => [] },
-	contacts: { type: Array, default: () => null },
+	contacts: { type: Array, default: () => [] },
 	address: { type: Object, default: () => null },
 });
 

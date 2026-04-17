@@ -15,10 +15,10 @@ const props = defineProps({
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth?.permissions ?? []);
-const canAdd = computed(
-	() =>
-		permissions.value.includes("create staff qualification") ||
-		permissions.value.includes("update staff"),
+// Route middleware on qualification.store is `can:create staff qualification`,
+// so that permission is the only one that actually lets this button succeed.
+const canAdd = computed(() =>
+	permissions.value.includes("create staff qualification"),
 );
 const canExport = computed(() =>
 	permissions.value.includes("qualifications.reports.export"),
