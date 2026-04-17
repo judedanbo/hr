@@ -3,9 +3,10 @@ import { useDark, useToggle } from "@vueuse/core";
 import { Link, usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { BellIcon, MoonIcon, SunIcon } from "@heroicons/vue/24/outline";
+import { MoonIcon, SunIcon } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 import ViewModeSwitcher from "@/Components/ViewModeSwitcher.vue";
+import NotificationBell from "@/Components/NotificationBell.vue";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -45,16 +46,7 @@ defineProps({
 			/>
 
 			<!-- Separator -->
-			<button
-				type="button"
-				class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-			>
-				<span class="sr-only">View notifications</span>
-				<BellIcon
-					class="h-6 w-6 text-gray-700 dark:text-gray-50"
-					aria-hidden="true"
-				/>
-			</button>
+			<NotificationBell />
 
 			<!-- Separator -->
 			<div

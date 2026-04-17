@@ -30,6 +30,7 @@ use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PersonAvatarController;
@@ -179,6 +180,15 @@ Route::middleware(['auth', 'password_changed'])->group(function () {
     Route::post('/staff-photo-approvals/{person}/reject', [PhotoApprovalController::class, 'reject'])
         ->middleware('can:approve staff photo')
         ->name('photo-approvals.reject');
+});
+
+// Notifications (in-app)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/api/notifications/recent', [NotificationController::class, 'recent'])->name('notifications.recent');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
 // Institution
