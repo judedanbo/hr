@@ -40,10 +40,10 @@ class StoreQualificationRequest extends FormRequest
             'pk' => 'string|max:6|nullable',
             'year' => 'string|max:4|nullable',
 
-            // Optional inline document — only validated when a file is uploaded.
-            'document_type' => ['required_with:file_name', 'string', 'nullable', new \Illuminate\Validation\Rules\Enum(\App\Enums\DocumentTypeEnum::class)],
-            'document_title' => 'nullable|string|max:100',
-            'file_name' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            // Optional inline documents — only validated when files are uploaded.
+            'document_type' => ['required_with:file_name', 'nullable', new \Illuminate\Validation\Rules\Enum(\App\Enums\DocumentTypeEnum::class)],
+            'file_name' => 'nullable|array',
+            'file_name.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
     }
 }
