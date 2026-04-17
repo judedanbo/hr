@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateQualificationDocumentRequest;
+use App\Models\Document;
 use App\Models\Qualification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class QualificationDocumentController extends Controller
@@ -44,5 +46,28 @@ class QualificationDocumentController extends Controller
         $qualification->documents()->delete();
 
         return back()->with('success', 'Qualification Document has been deleted.');
+    }
+
+    public function destroy(Request $request, Qualification $qualification, Document $document): mixed
+    {
+        abort_unless(
+            $document->documentable_id === $qualification->id
+                && $document->documentable_type === Qualification::class,
+            404,
+        );
+
+        abort_unless(
+            $qualification->canBeEditedBy($request->user())
+                || $request->user()?->can('approve staff qualification'),
+            403,
+        );
+
+        if ($document->file_name && Storage::disk('qualifications-documents')->exists($document->file_name)) {
+            Storage::disk('qualifications-documents')->delete($document->file_name);
+        }
+
+        $document->delete();
+
+        return back()->with('success', 'Document removed.');
     }
 }

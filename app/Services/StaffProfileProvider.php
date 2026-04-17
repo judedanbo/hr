@@ -97,6 +97,7 @@ final class StaffProfileProvider
                 'can_edit' => $q->canBeEditedBy(auth()->user()),
                 'can_delete' => $q->canBeDeletedBy(auth()->user()),
                 'documents' => $q->documents->count() > 0 ? $q->documents->map(fn ($d) => [
+                    'id' => $d->id,
                     'document_type' => $d->document_type,
                     'document_title' => $d->document_title,
                     'document_status' => $d->document_status,
