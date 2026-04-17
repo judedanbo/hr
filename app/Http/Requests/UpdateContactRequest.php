@@ -13,7 +13,8 @@ class UpdateContactRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Authorization handled by route middleware
+        // Authorization enforced by ContactPolicy via $this->authorize() in the controller.
+        return true;
     }
 
     /**
