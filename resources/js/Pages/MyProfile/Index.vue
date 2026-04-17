@@ -6,6 +6,7 @@ import PhotoCard from "@/Components/MyProfile/PhotoCard.vue";
 import QualificationsCard from "@/Components/MyProfile/QualificationsCard.vue";
 import ContactCard from "@/Components/MyProfile/ContactCard.vue";
 import ReadOnlyKvCard from "@/Components/MyProfile/ReadOnlyKvCard.vue";
+import PersonalDetailsCard from "@/Components/MyProfile/PersonalDetailsCard.vue";
 import { computed } from "vue";
 
 const props = defineProps({
@@ -68,7 +69,8 @@ const dependentRows = computed(() => {
 				/>
 			</div>
 
-			<div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+			<div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+				<PersonalDetailsCard :person="person" />
 				<ContactCard
 					:person-id="person.id"
 					:contacts="contacts"
