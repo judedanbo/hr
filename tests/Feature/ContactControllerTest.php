@@ -104,7 +104,11 @@ class ContactControllerTest extends TestCase
 
     public function test_contact_destroy_soft_deletes_contact(): void
     {
-        $contact = Contact::factory()->create(['person_id' => $this->person->id]);
+        $contact = Contact::factory()->create([
+            'person_id' => $this->person->id,
+            'contact_type' => ContactTypeEnum::ADDRESS->value,
+            'contact' => '123 Test Street',
+        ]);
 
         $response = $this->actingAs($this->superAdmin)->delete(route('contact.destroy', ['contact' => $contact->id]));
 
