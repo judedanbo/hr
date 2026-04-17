@@ -2,7 +2,12 @@
 
 namespace Tests\Unit\Services;
 
+use App\Enums\ContactTypeEnum;
 use App\Models\InstitutionPerson;
+use App\Models\Job;
+use App\Models\Person;
+use App\Models\Qualification;
+use App\Models\Unit;
 use App\Models\User;
 use App\Services\StaffProfileProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -76,5 +81,80 @@ class StaffProfileProviderTest extends TestCase
         $this->assertArrayHasKey('ranks', $payload['staff']);
         $this->assertArrayHasKey('units', $payload['staff']);
         $this->assertArrayHasKey('dependents', $payload['staff']);
+    }
+
+    public function test_payload_maps_nested_relations_when_populated(): void
+    {
+        $staff = $this->createActiveStaff();
+        $person = $staff->person;
+
+        // Contact
+        $contact = $person->contacts()->create([
+            'contact_type' => ContactTypeEnum::PHONE->value,
+            'contact' => '0241234567',
+        ]);
+
+        // Address (polymorphic)
+        $person->address()->create([
+            'address_line_1' => '123 Test Street',
+            'city' => 'Accra',
+            'country' => 'GH',
+        ]);
+
+        // Rank — attach via job_staff pivot
+        $job = Job::factory()->create(['name' => 'Senior Test Officer']);
+        $staff->ranks()->attach($job->id, [
+            'start_date' => now()->subYears(2)->toDateString(),
+        ]);
+
+        // Unit — attach via staff_unit pivot
+        $unit = Unit::factory()->create(['name' => 'Test Division Unit']);
+        $staff->units()->attach($unit->id, [
+            'start_date' => now()->subYear()->toDateString(),
+        ]);
+
+        // Qualification (belongs to person)
+        Qualification::factory()->approved()->create([
+            'person_id' => $person->id,
+            'qualification' => 'Bachelor of Science',
+        ]);
+
+        // Dependent — DependentFactory definition is empty, so we create inline.
+        // A dependent requires a linked Person for name mapping.
+        $depPerson = Person::factory()->create([
+            'first_name' => 'Jane',
+            'surname' => 'Doe',
+        ]);
+        $staff->dependents()->create([
+            'person_id' => $depPerson->id,
+            'relation' => 'Spouse',
+        ]);
+
+        $payload = (new StaffProfileProvider)->forPerson($person->id);
+
+        // Contacts
+        $this->assertNotNull($payload['contacts']);
+        $this->assertSame('0241234567', $payload['contacts'][0]['contact']);
+
+        // Address
+        $this->assertNotNull($payload['address']);
+        $this->assertSame('Accra', $payload['address']['city']);
+
+        // Ranks
+        $this->assertNotEmpty($payload['staff']['ranks']);
+        $this->assertSame('Senior Test Officer', $payload['staff']['ranks'][0]['name']);
+
+        // Units
+        $this->assertNotEmpty($payload['staff']['units']);
+        $this->assertSame('Test Division Unit', $payload['staff']['units'][0]['unit_name']);
+
+        // Qualifications
+        $this->assertNotEmpty($payload['qualifications']);
+        $this->assertSame('Bachelor of Science', $payload['qualifications'][0]['qualification']);
+
+        // Dependents
+        $this->assertNotEmpty($payload['staff']['dependents']);
+        $depFullName = $payload['staff']['dependents'][0]['name'];
+        $this->assertStringContainsString('Doe', $depFullName);
     }
 }

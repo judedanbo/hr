@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateStaffPositionRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Position;
+use App\Services\StaffProfileProvider;
 use App\Transformers\Staff\StaffDetailTransformer;
 use App\Transformers\Staff\StaffListTransformer;
 use Carbon\Carbon;
@@ -26,7 +27,8 @@ class InstitutionPersonController extends Controller
         protected StaffManagementServiceInterface $staffManagementService,
         protected PromotionServiceInterface $promotionService,
         protected StaffDetailTransformer $detailTransformer,
-        protected StaffListTransformer $listTransformer
+        protected StaffListTransformer $listTransformer,
+        protected StaffProfileProvider $staffProfileProvider,
     ) {}
 
     /**
@@ -173,12 +175,12 @@ class InstitutionPersonController extends Controller
             }
         }
 
-        $staff = \App\Models\InstitutionPerson::query()->active()->whereId($staffId)->first();
+        $staff = InstitutionPerson::query()->active()->whereId($staffId)->first();
         if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
 
-        $payload = app(\App\Services\StaffProfileProvider::class)->forPerson($staff->person_id);
+        $payload = $this->staffProfileProvider->forPerson($staff->person_id);
 
         return Inertia::render('Staff/NewShow', array_merge($payload, [
             'user' => [
