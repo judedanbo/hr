@@ -29,13 +29,21 @@ defineProps({
 			<div
 				v-for="row in rows"
 				:key="row.key"
-				class="flex justify-between py-1.5"
+				class="flex justify-between gap-2 py-1.5"
 			>
-				<dt class="text-gray-500 dark:text-gray-400">{{ row.key }}</dt>
+				<dt class="text-gray-500 dark:text-gray-400 shrink-0">
+					{{ row.key }}
+				</dt>
 				<dd
-					class="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[60%] text-right"
+					class="min-w-0 text-right font-medium text-gray-900 dark:text-gray-100"
 				>
-					{{ row.value }}
+					<div class="truncate">{{ row.value }}</div>
+					<div
+						v-if="row.sub"
+						class="mt-0.5 text-[11px] font-normal text-gray-500 dark:text-gray-400 truncate"
+					>
+						{{ row.sub }}
+					</div>
 				</dd>
 			</div>
 		</dl>
