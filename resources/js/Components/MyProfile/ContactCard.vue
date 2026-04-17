@@ -3,58 +3,56 @@ import { ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import NewModal from "@/Components/NewModal.vue";
-
-// ContactTypeEnum integer values (backed int enum in PHP)
-const CONTACT_TYPE_EMAIL = 1;
-const CONTACT_TYPE_PHONE = 2;
+import AddContact from "@/Pages/Person/partials/AddContact.vue";
+import EditContact from "@/Pages/Person/partials/EditContact.vue";
 
 const props = defineProps({
 	personId: { type: Number, required: true },
 	contacts: { type: Array, default: () => null },
 });
 
+const openAdd = ref(false);
 const openEdit = ref(false);
+const openDelete = ref(false);
+const toggleAdd = useToggle(openAdd);
 const toggleEdit = useToggle(openEdit);
+const toggleDelete = useToggle(openDelete);
+
+const current = ref(null);
 
 const activeContacts = computed(() =>
 	(props.contacts ?? []).filter((c) => !c.valid_end),
 );
 
-const primaryEmail = computed(
-	() =>
-		activeContacts.value.find((c) => c.contact_type === CONTACT_TYPE_EMAIL) ??
-		null,
-);
-const primaryPhone = computed(
-	() =>
-		activeContacts.value.find((c) => c.contact_type === CONTACT_TYPE_PHONE) ??
-		null,
-);
-
-// Local editable copies for the modal form
-const editableContacts = ref([]);
-
-function openEditModal() {
-	editableContacts.value = activeContacts.value.map((c) => ({ ...c }));
+function startEdit(contact) {
+	current.value = contact;
 	toggleEdit();
 }
 
-function saveContact(c) {
-	router.patch(
-		route("contact.update", { contact: c.id }),
-		{
-			contact_type: c.contact_type,
-			contact: c.contact,
-			valid_end: c.valid_end ?? null,
-		},
+function startDelete(contact) {
+	current.value = contact;
+	toggleDelete();
+}
+
+function confirmDelete() {
+	router.delete(
+		route("person.contact.delete", {
+			person: props.personId,
+			contact: current.value.id,
+		}),
 		{
 			preserveScroll: true,
 			onSuccess: () => {
-				toggleEdit();
+				current.value = null;
+				toggleDelete();
 				router.reload({ only: ["contacts"] });
 			},
 		},
 	);
+}
+
+function onMutationSuccess() {
+	router.reload({ only: ["contacts"] });
 }
 </script>
 
@@ -67,80 +65,71 @@ function saveContact(c) {
 			<button
 				type="button"
 				class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
-				@click="openEditModal()"
-			>
-				Edit
-			</button>
+				@click="toggleAdd()"
+			>+ Add</button>
 		</header>
 
-		<dl class="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
-			<div class="flex justify-between py-1.5">
-				<dt class="text-gray-500 dark:text-gray-400">Email</dt>
-				<dd
-					class="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[60%] text-right"
-				>
-					{{ primaryEmail?.contact ?? "—" }}
-				</dd>
-			</div>
-			<div class="flex justify-between py-1.5">
-				<dt class="text-gray-500 dark:text-gray-400">Phone</dt>
-				<dd
-					class="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[60%] text-right"
-				>
-					{{ primaryPhone?.contact ?? "—" }}
-				</dd>
-			</div>
-		</dl>
+		<ul v-if="activeContacts.length > 0" class="space-y-2">
+			<li
+				v-for="c in activeContacts"
+				:key="c.id"
+				class="flex items-center gap-2 text-sm"
+			>
+				<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 whitespace-nowrap">
+					{{ c.contact_type_dis }}
+				</span>
+				<span class="flex-1 truncate text-gray-900 dark:text-gray-100">{{ c.contact }}</span>
+				<button
+					type="button"
+					class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
+					@click="startEdit(c)"
+				>Edit</button>
+				<button
+					type="button"
+					class="text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline"
+					@click="startDelete(c)"
+				>Delete</button>
+			</li>
+		</ul>
+		<p v-else class="text-sm text-gray-500 dark:text-gray-400 py-2">
+			No contacts on file. Click <strong>Add</strong> to add one.
+		</p>
+
+		<NewModal :show="openAdd" @close="toggleAdd()">
+			<AddContact
+				:person="personId"
+				@form-submitted="() => { toggleAdd(); onMutationSuccess(); }"
+			/>
+		</NewModal>
 
 		<NewModal :show="openEdit" @close="toggleEdit()">
-			<div class="bg-gray-100 dark:bg-gray-700 px-6 py-6">
-				<h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-					Edit Contacts
+			<EditContact
+				v-if="current"
+				:person="personId"
+				:contact="current"
+				@form-submitted="() => { toggleEdit(); onMutationSuccess(); }"
+			/>
+		</NewModal>
+
+		<NewModal :show="openDelete" @close="toggleDelete()">
+			<div class="bg-gray-100 dark:bg-gray-700 px-8 py-8">
+				<h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+					Delete contact?
 				</h2>
-
-				<div
-					v-if="editableContacts.length === 0"
-					class="text-sm text-gray-500 dark:text-gray-400 py-4 text-center"
-				>
-					No contacts on record. Contact HR to add contact information.
-				</div>
-
-				<ul v-else class="space-y-4">
-					<li
-						v-for="c in editableContacts"
-						:key="c.id"
-						class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
-					>
-						<p
-							class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2"
-						>
-							{{ c.contact_type_dis }}
-						</p>
-						<div class="flex gap-2 items-center">
-							<input
-								v-model="c.contact"
-								type="text"
-								class="flex-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-							/>
-							<button
-								type="button"
-								class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline whitespace-nowrap"
-								@click="saveContact(c)"
-							>
-								Save
-							</button>
-						</div>
-					</li>
-				</ul>
-
-				<div class="mt-4 flex justify-end">
+				<p v-if="current" class="text-sm text-gray-600 dark:text-gray-300 mb-5">
+					Remove <strong>{{ current.contact }}</strong> ({{ current.contact_type_dis }}) from your profile. This cannot be undone.
+				</p>
+				<div class="flex justify-end gap-2">
 					<button
 						type="button"
-						class="text-sm text-gray-600 dark:text-gray-400 hover:underline"
-						@click="toggleEdit()"
-					>
-						Close
-					</button>
+						class="text-sm text-gray-600 dark:text-gray-400 hover:underline px-3 py-1.5"
+						@click="toggleDelete()"
+					>Cancel</button>
+					<button
+						type="button"
+						class="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg px-3 py-1.5"
+						@click="confirmDelete"
+					>Delete</button>
 				</div>
 			</div>
 		</NewModal>
