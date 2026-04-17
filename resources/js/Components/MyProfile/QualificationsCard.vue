@@ -4,9 +4,9 @@ import { router, usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import NewModal from "@/Components/NewModal.vue";
 import AddQualification from "@/Pages/Qualification/Add.vue";
-import EditQualification from "@/Pages/Qualification/Edit.vue";
 import DeleteQualification from "@/Pages/Qualification/Delete.vue";
 import AttachDocument from "@/Pages/Qualification/AttachDocument.vue";
+import ViewQualification from "@/Pages/Qualification/View.vue";
 
 const props = defineProps({
 	qualifications: { type: Array, default: () => [] },
@@ -25,19 +25,19 @@ const canExport = computed(() =>
 );
 
 const openAdd = ref(false);
-const openEdit = ref(false);
+const openView = ref(false);
 const openDelete = ref(false);
 const openAttach = ref(false);
 const toggleAdd = useToggle(openAdd);
-const toggleEdit = useToggle(openEdit);
+const toggleView = useToggle(openView);
 const toggleDelete = useToggle(openDelete);
 const toggleAttach = useToggle(openAttach);
 
 const current = ref(null);
 
-function startEdit(q) {
+function startView(q) {
 	current.value = q;
-	toggleEdit();
+	toggleView();
 }
 function startDelete(q) {
 	current.value = q;
@@ -183,20 +183,19 @@ function statusTag(status) {
 					class="flex items-center gap-2 text-[11px] text-emerald-700 dark:text-emerald-300 font-semibold"
 				>
 					<button
+						type="button"
+						class="hover:underline"
+						@click="startView(q)"
+					>
+						View
+					</button>
+					<button
 						v-if="q.can_edit"
 						type="button"
 						class="hover:underline"
 						@click="startAttach(q)"
 					>
 						Attach
-					</button>
-					<button
-						v-if="q.can_edit"
-						type="button"
-						class="hover:underline"
-						@click="startEdit(q)"
-					>
-						Edit
 					</button>
 					<button
 						v-if="q.can_delete"
@@ -233,17 +232,12 @@ function statusTag(status) {
 			/>
 		</NewModal>
 
-		<!-- Edit Qualification Modal -->
-		<NewModal :show="openEdit" @close="toggleEdit()">
-			<EditQualification
+		<!-- View Qualification Modal -->
+		<NewModal :show="openView" @close="toggleView()">
+			<ViewQualification
 				v-if="current"
 				:qualification="current"
-				@form-submitted="
-					() => {
-						toggleEdit();
-						router.reload({ only: ['qualifications'] });
-					}
-				"
+				@close="toggleView()"
 			/>
 		</NewModal>
 
