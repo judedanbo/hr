@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { useToggle } from "@vueuse/core";
 import NewModal from "@/Components/NewModal.vue";
@@ -34,6 +34,22 @@ const toggleDelete = useToggle(openDelete);
 const toggleAttach = useToggle(openAttach);
 
 const current = ref(null);
+
+// When the qualifications prop changes (e.g. after a document delete inside
+// the View modal triggers `router.reload({ only: ['qualifications'] })`),
+// re-sync `current` to the fresh version of the same qualification so the
+// nested View modal's props update. Drop the reference if it's gone.
+watch(
+	() => props.qualifications,
+	(list) => {
+		if (!current.value) {
+			return;
+		}
+		const fresh = (list ?? []).find((q) => q.id === current.value.id);
+		current.value = fresh ?? null;
+	},
+	{ deep: true },
+);
 
 function startView(q) {
 	current.value = q;
