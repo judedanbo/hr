@@ -33,18 +33,26 @@ class Person extends Model
         'country_of_birth',
         'nationality',
         'image',
+        'pending_image',
+        'pending_image_at',
+        'image_approved_by',
+        'image_approved_at',
         'ethnicity',
         'religion',
         'about',
-
     ];
 
-    protected $casts = [
-        'gender' => GenderEnum::class,
-        'date_of_birth' => 'date',
-        'marital_status' => MaritalStatusEnum::class,
-        'nationality' => CountryEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'gender' => GenderEnum::class,
+            'date_of_birth' => 'date',
+            'marital_status' => MaritalStatusEnum::class,
+            'nationality' => CountryEnum::class,
+            'pending_image_at' => 'datetime',
+            'image_approved_at' => 'datetime',
+        ];
+    }
 
     // / get full name of person
     public function getFullNameAttribute(): string
