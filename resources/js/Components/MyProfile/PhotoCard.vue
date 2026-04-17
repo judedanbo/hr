@@ -176,7 +176,7 @@ function remove() {
 
 		<NewModal :show="showDeleteModal" @close="showDeleteModal = false">
 			<DeleteAvatar
-				@deleteConfirmed="remove"
+				@delete-confirmed="remove"
 				@close="showDeleteModal = false"
 			/>
 		</NewModal>
