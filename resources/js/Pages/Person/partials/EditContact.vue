@@ -44,7 +44,7 @@ const submitHandler = (data, node) => {
 </script>
 
 <template>
-	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
+	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-800">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Edit Contacts</h1>
 		<FormKit
 			:value="props.contact"

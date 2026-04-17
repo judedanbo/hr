@@ -24,7 +24,7 @@ class ContactController extends Controller
 
         $contacts = Contact::query()
             ->with('person')
-            ->when($request->contact_type, fn($q, $type) => $q->where('contact_type', $type))
+            ->when($request->contact_type, fn ($q, $type) => $q->where('contact_type', $type))
             ->when($request->search, function ($q, $search) {
                 $q->where('contact', 'like', "%{$search}%")
                     ->orWhereHas('person', function ($query) use ($search) {
@@ -35,7 +35,7 @@ class ContactController extends Controller
             ->latest()
             ->paginate(20)
             ->withQueryString()
-            ->through(fn(Contact $contact) => [
+            ->through(fn (Contact $contact) => [
                 'id' => $contact->id,
                 'contact_type' => $contact->contact_type?->value,
                 'contact_type_label' => $contact->contact_type?->label(),
@@ -48,7 +48,7 @@ class ContactController extends Controller
             ]);
 
         // Get contact types for filters
-        $contactTypes = collect(ContactTypeEnum::cases())->map(fn($type) => [
+        $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
@@ -65,7 +65,7 @@ class ContactController extends Controller
      */
     public function create(): Response
     {
-        $contactTypes = collect(ContactTypeEnum::cases())->map(fn($type) => [
+        $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
@@ -117,7 +117,7 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact)
     {
-        $contactTypes = collect(ContactTypeEnum::cases())->map(fn($type) => [
+        $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
             'value' => $type->value,
             'label' => $type->label(),
         ]);
@@ -139,6 +139,14 @@ class ContactController extends Controller
      */
     public function update(UpdateContactRequest $request, Contact $contact)
     {
+        $this->authorize('update', $contact);
+
+        if ($contact->isProtectedOrgEmail()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'contact' => 'This Audit Service email address cannot be edited.',
+            ]);
+        }
+
         $contact->update($request->validated());
 
         $this->logSuccess('updated a contact', $contact);
@@ -151,6 +159,29 @@ class ContactController extends Controller
      */
     public function destroy(Contact $contact)
     {
+        $this->authorize('delete', $contact);
+
+        if ($contact->contact_type === ContactTypeEnum::PHONE) {
+            $remaining = Contact::query()
+                ->where('person_id', $contact->person_id)
+                ->where('contact_type', ContactTypeEnum::PHONE)
+                ->whereNull('valid_end')
+                ->where('id', '!=', $contact->id)
+                ->count();
+
+            if ($remaining === 0) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'contact' => 'You must keep at least one active phone number.',
+                ]);
+            }
+        }
+
+        if ($contact->isProtectedOrgEmail()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'contact' => 'This Audit Service email address cannot be deleted.',
+            ]);
+        }
+
         $this->logSuccess('deleted a contact', $contact);
 
         $contact->delete();

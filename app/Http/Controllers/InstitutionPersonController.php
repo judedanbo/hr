@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateStaffPositionRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\InstitutionPerson;
 use App\Models\Position;
+use App\Services\StaffProfileProvider;
 use App\Transformers\Staff\StaffDetailTransformer;
 use App\Transformers\Staff\StaffListTransformer;
 use Carbon\Carbon;
@@ -26,7 +27,8 @@ class InstitutionPersonController extends Controller
         protected StaffManagementServiceInterface $staffManagementService,
         protected PromotionServiceInterface $promotionService,
         protected StaffDetailTransformer $detailTransformer,
-        protected StaffListTransformer $listTransformer
+        protected StaffListTransformer $listTransformer,
+        protected StaffProfileProvider $staffProfileProvider,
     ) {}
 
     /**
@@ -166,238 +168,28 @@ class InstitutionPersonController extends Controller
         if (request()->user()->cannot('view staff')) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view staff details');
         }
+
         if (request()->user()->isStaff()) {
             if (request()->user()->person->institution->first()->staff->id != $staffId) {
                 return redirect()->route('dashboard')->with('error', 'You do not have permission to view details of this staff');
             }
         }
-        $staff = InstitutionPerson::query()
-            ->with(
-                [
-                    'person' => function ($query) {
-                        $query->with([
-                            'address' => function ($query) {
-                                $query->whereNull('valid_end');
-                            },
-                            'contacts',
-                            'identities' => function ($query) {
-                                $query->withTrashed();
-                            },
-                            'qualifications',
-                        ]);
-                    },
-                    // 'units.institution',
-                    // 'units.parent',
-                    'units' => function ($query) {
-                        $query->with(['institution', 'parent']);
-                    },
-                    'ranks',
-                    'dependents.person',
-                    'statuses',
-                    'notes.documents',
-                    'positions' => function ($query) {
-                        $query->withTrashed();
-                    },
-                ]
-            )
-            ->active()
-            ->whereId($staffId)
-            ->first();
+
+        $staff = InstitutionPerson::query()->active()->whereId($staffId)->first();
         if (! $staff) {
             return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
         }
 
-        // dd($request->session()->all());
-        // request()->session()->reflash();
-        return Inertia::render('Staff/NewShow', [
+        $payload = $this->staffProfileProvider->forPerson($staff->person_id);
+
+        return Inertia::render('Staff/NewShow', array_merge($payload, [
             'user' => [
                 'id' => auth()->user()->id,
                 'name' => auth()->user()->name,
                 'email' => auth()->user()->email,
                 'person_id' => auth()->user()->person_id,
             ],
-            'person' => [
-                'id' => $staff->person->id,
-                'name' => $staff->person->full_name,
-                'maiden_name' => $staff->person->maiden_name,
-                'dob-value' => $staff->person->date_of_birth,
-                'dob' => $staff->person->date_of_birth?->format('d M Y'),
-                'age' => $staff->person->age . ' years old',
-                'gender' => $staff->person->gender?->label(),
-                'ssn' => $staff->person->social_security_number,
-                'initials' => $staff->person->initials,
-                'nationality' => $staff->person->nationality?->nationality(),
-                'religion' => $staff->person->religion,
-                'marital_status' => $staff->person->marital_status?->label(),
-                'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
-                'identities' => $staff->person->identities->count() > 0 ? $staff->person->identities->map(fn ($id) => [
-                    'id' => $id->id,
-                    'id_type' => $id->id_type,
-                    'id_type_display' => $id->id_type->label(),
-                    'id_number' => $id->id_number,
-                ]) : null,
-            ],
-            'qualifications' => \App\Models\Qualification::query()
-                ->where('person_id', $staff->person->id)
-                ->visibleTo(auth()->user(), $staff->person->id)
-                ->with('documents')
-                ->get()
-                ->map(fn ($qualification) => [
-                    'id' => $qualification->id,
-                    'person_id' => $qualification->person_id,
-                    'course' => $qualification->course,
-                    'institution' => $qualification->institution,
-                    'qualification' => $qualification->qualification,
-                    'qualification_number' => $qualification->qualification_number,
-                    'level' => $qualification->level ? \App\Enums\QualificationLevelEnum::tryFrom($qualification->level)?->label() ?? $qualification->level : null,
-                    'year' => $qualification->year,
-                    'status' => $qualification->status?->label(),
-                    'status_color' => $qualification->status?->color(),
-                    'can_edit' => $qualification->canBeEditedBy(auth()->user()),
-                    'can_delete' => $qualification->canBeDeletedBy(auth()->user()),
-                    'documents' => $qualification->documents->count() > 0 ? $qualification->documents->map(fn ($document) => [
-                        'document_type' => $document->document_type,
-                        'document_title' => $document->document_title,
-                        'document_status' => $document->document_status,
-                        'document_number' => $document->document_number,
-                        'file_name' => $document->file_name,
-                        'file_type' => $document->file_type,
-                    ]) : null,
-                ]),
-            'contacts' => $staff->person->contacts->count() > 0 ? $staff->person->contacts->map(fn ($contact) => [
-                'id' => $contact->id,
-                'contact' => $contact->contact,
-                'contact_type' => $contact->contact_type,
-                'contact_type_dis' => $contact->contact_type->label(),
-                'valid_end' => $contact->valid_end,
-            ]) : null,
-
-            'address' => $staff->person->address->count() > 0 ? [
-                'id' => $staff->person->address->first()->id,
-                'address_line_1' => $staff->person->address->first()->address_line_1,
-                'address_line_2' => $staff->person->address->first()->address_line_2,
-                'city' => $staff->person->address->first()->city,
-                'region' => $staff->person->address->first()->region,
-                'country' => $staff->person->address->first()->country,
-                'post_code' => $staff->person->address->first()->post_code,
-                'valid_end' => $staff->person->address->first()->valid_end,
-            ] : null,
-            'staff' => [
-                'staff_id' => $staff->id,
-                'institution_id' => $staff->institution_id,
-                'staff_number' => $staff->staff_number,
-                'file_number' => $staff->file_number,
-                'old_staff_number' => $staff->old_staff_number,
-                'hire_date' => $staff->hire_date?->format('d M Y'),
-                'hire_date_display' => $staff->hire_date?->diffForHumans(),
-                'retirement_date' => $staff->retirement_date_formatted,
-                'retirement_date_display' => $staff->retirement_date_diff,
-                'start_date' => $staff->start_date?->format('d M Y'),
-                'statuses' => $staff->statuses?->map(fn ($status) => [
-                    'id' => $status->id,
-                    'status' => $status->status,
-                    'status_display' => $status->status?->name,
-                    'description' => $status->description,
-                    'start_date' => $status->start_date?->format('Y-m-d'),
-                    'start_date_display' => $status->start_date?->format('d M Y'),
-                    'end_date' => $status->end_date?->format('Y-m-d'),
-                    'end_date_display' => $status->end_date?->format('d M Y'),
-                ]),
-                'staff_type' => $staff->type?->map(fn ($type) => [
-                    'id' => $type->id,
-                    'type' => $type->staff_type,
-                    'type_label' => $type->staff_type->label(),
-                    'start_date' => $type->start_date?->format('Y-m-d'),
-                    'start_date_display' => $type->start_date?->format('d M Y'),
-                    'end_date' => $type->end_date?->format('Y-m-d'),
-                    'end_date_display' => $type->end_date?->format('d M Y'),
-                ]),
-                'positions' => $staff->positions?->map(fn ($position) => [
-                    'id' => $position->id,
-                    'name' => $position->name,
-                    'start_date' => $position->pivot->start_date,
-                    'end_date' => $position->pivot->end_date,
-                    'start_date_display' => $position->pivot->start_date ? Carbon::parse($position->pivot->start_date)->format('d M Y') : null,
-                    'end_date_display' => $position->pivot->end_date ? Carbon::parse($position->pivot->end_date)->format('d M Y') : null,
-                ]),
-                'ranks' => $staff->ranks->map(fn ($rank) => [
-                    'id' => $rank->id,
-                    'name' => $rank->name,
-                    'staff_name' => $staff->person->full_name,
-                    'staff_id' => $rank->pivot->staff_id,
-                    'rank_id' => $rank->pivot->job_id,
-                    'start_date' => $rank->pivot->start_date?->format('d M Y'),
-                    'start_date_unix' => $rank->pivot->start_date?->format('Y-m-d'),
-                    'end_date' => $rank->pivot->end_date?->format('d M Y'),
-                    'end_date_unix' => $rank->pivot->end_date?->format('Y-m-d'),
-                    'remarks' => $rank->pivot->remarks,
-                    'distance' => $rank->pivot->start_date?->diffForHumans(),
-                ]),
-                'notes' => $staff->notes->count() > 0 ? $staff->notes->map(fn ($note) => [
-                    'id' => $note->id,
-                    'note' => $note->note,
-                    'note_date' => $note->note_date->diffForHumans(),
-                    'note_date_time' => $note->note_date,
-                    'note_type' => $note->note_type,
-                    'created_by' => $note->created_by,
-                    'url' => $note->documents->count() > 0 ? $note->documents->map(fn ($doc) => [
-                        'document_type' => $doc->document_type,
-                        'document_title' => $doc->document_title,
-                        // 'document_status' => $doc->document_status,
-                        // 'document_number' => $doc->document_number,
-                        'file_name' => $doc->file_name,
-                        'file_type' => $doc->file_type,
-                    ]) : null,
-
-                ]) : null,
-                'units' => $staff->units->map(fn ($unit) => [
-                    // 'unit' => $unit,
-                    'unit_id' => $unit->id,
-                    'unit_name' => $unit->name,
-                    'status' => $unit->pivot->status?->label(),
-                    'status_color' => $unit->pivot->status?->color(),
-                    'department' => $unit->parent?->name,
-                    'department_short_name' => $unit->parent?->short_name,
-                    'staff_id' => $unit->pivot->staff_id,
-                    'start_date' => $unit->pivot->start_date?->format('d M Y'),
-                    'start_date_unix' => $unit->pivot->start_date?->format('Y-m-d'),
-                    'end_date' => $unit->pivot->end_date?->format('d M Y'),
-                    'end_date_unix' => $unit->pivot->end_date?->format('Y-m-d'),
-                    'distance' => $unit->pivot->start_date?->diffForHumans(),
-                    'remarks' => $unit->pivot->remarks,
-                    'old_data' => $unit->pivot->old_data,
-                ]),
-                'dependents' => $staff->dependents ? $staff->dependents->map(fn ($dep) => [
-                    'id' => $dep->id,
-                    'person_id' => $dep->person_id,
-                    'initials' => $dep->person->initials,
-                    'title' => $dep->person->title,
-                    'name' => $dep->person->full_name,
-                    'surname' => $dep->person->surname,
-                    'first_name' => $dep->person->first_name,
-                    'other_names' => $dep->person->other_names,
-                    'maiden_name' => $dep->person->maiden_name,
-                    'nationality' => $dep->person->nationality?->label(),
-                    'nationality_form' => $dep->person->nationality,
-                    'marital_status' => $dep->person->marital_status,
-                    'image' => $dep->person->image ? '/storage/' . $dep->person->image : null,
-                    'religion' => $dep->person->religion,
-                    'gender' => $dep->person->gender?->label(),
-                    'gender_form' => $dep->person->gender,
-                    'date_of_birth' => $dep->person->date_of_birth?->format('Y-m-d'),
-                    'age' => $dep->person->age . ' years old',
-                    'relation' => $dep->relation,
-                    'staff_id' => $staff->id,
-                    // $staff->person->image ? '/' . $staff->person->image :  null,
-                    'image' => $dep->person->image ? '/storage/' . $dep->person->image : null,
-                    'contacts' => $dep->person->contacts->map(fn ($contact) => [
-                        'id' => $contact->id,
-                        'type' => $contact->contact_type?->label(),
-                        'contact' => $contact->contact,
-                    ]),
-                ]) : null,
-            ],
-        ]);
+        ]));
     }
 
     public function promote(Request $request, InstitutionPerson $staff)

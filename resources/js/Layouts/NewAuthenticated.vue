@@ -23,6 +23,7 @@ import {
 	XMarkIcon,
 	UserGroupIcon,
 	ShieldCheckIcon,
+	PhotoIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -30,6 +31,13 @@ const page = usePage();
 const permissions = computed(() => page.props?.auth?.permissions);
 const alert = computed(() => page.props?.flash);
 const navigation = [
+	{
+		name: "My Profile",
+		href: route("my-profile.show"),
+		icon: UserGroupIcon,
+		current: route().current("my-profile.*"),
+		visible: Boolean(page.props?.auth?.user?.person_id),
+	},
 	{
 		name: "Dashboard",
 		href: route("dashboard"),
@@ -151,6 +159,13 @@ const navigation = [
 		icon: UsersIcon,
 		current: route().current("logs.*"),
 		visible: permissions.value?.includes("view all audit logs"),
+	},
+	{
+		name: "Photo Approvals",
+		href: route("photo-approvals.index"),
+		icon: PhotoIcon,
+		current: route().current("photo-approvals.*"),
+		visible: permissions.value?.includes("approve staff photo"),
 	},
 	{
 		name: "Data Integrity",

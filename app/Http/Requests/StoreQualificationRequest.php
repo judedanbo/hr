@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\DocumentTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreQualificationRequest extends FormRequest
 {
@@ -28,7 +30,7 @@ class StoreQualificationRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'person_id' => 'required|integer|exists:people,id',
@@ -39,6 +41,14 @@ class StoreQualificationRequest extends FormRequest
             'level' => 'string|max:50|nullable',
             'pk' => 'string|max:6|nullable',
             'year' => 'string|max:4|nullable',
+
+            // Per-file parallel arrays — all three are required together when any file is uploaded.
+            'file_name' => 'nullable|array',
+            'file_name.*' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'document_type' => 'nullable|array|required_with:file_name',
+            'document_type.*' => ['required', new Enum(DocumentTypeEnum::class)],
+            'document_title' => 'nullable|array|required_with:file_name',
+            'document_title.*' => 'required|string|max:100',
         ];
     }
 }

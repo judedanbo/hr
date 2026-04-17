@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use App\Models\User;
+use App\Notifications\PhotoPendingApprovalNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -37,19 +39,29 @@ class PersonAvatarController extends Controller
             ],
         ]);
 
-        $avatar = Storage::disk('public')->put('avatars', $request->image);
+        // Delete any existing pending file to avoid storage bloat.
+        if ($person->pending_image) {
+            Storage::disk('public')->delete($person->pending_image);
+        }
+
+        $pendingAvatar = Storage::disk('public')->put('avatars', $request->image);
 
         $person->update([
-            'image' => $avatar,
+            'pending_image' => $pendingAvatar,
+            'pending_image_at' => now(),
         ]);
+
+        // Notify all approvers.
+        $approvers = \App\Models\User::permission('approve staff photo')->get();
+        Notification::send($approvers, new PhotoPendingApprovalNotification($person));
 
         activity()
             ->performedOn($person)
             ->causedBy($request->user())
-            ->event('updated avatar')
-            ->log('Updated avatar');
+            ->event('uploaded pending avatar')
+            ->log('Uploaded photo pending approval');
 
-        return back()->with('success', 'Image uploaded successfully');
+        return back()->with('success', 'Photo uploaded and pending admin approval');
     }
 
     public function delete(Request $request, Person $person)

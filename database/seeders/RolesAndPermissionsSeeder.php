@@ -53,6 +53,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.view',
             'qualifications.reports.export',
             'qualifications.reports.view.all',
+            'approve staff photo',
         ],
 
         'aag-admin' => [
@@ -80,6 +81,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.view',
             'qualifications.reports.export',
             'qualifications.reports.view.all',
+            'approve staff photo',
         ],
 
         'personel-user' => [
@@ -127,8 +129,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'view staff',
             'upload avatar',
             'edit avatar',
-            'create staff qualification',
             'view staff qualification',
+            'create staff qualification',
+            'edit staff qualification',
+            'delete staff qualification',
+            'update contacts',
         ],
     ];
 

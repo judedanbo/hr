@@ -27,6 +27,7 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
+use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\OfficeController;
@@ -34,6 +35,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
+use App\Http\Controllers\PhotoApprovalController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PromoteAllStaffController;
 use App\Http\Controllers\PromoteStaffController;
@@ -152,6 +154,8 @@ Route::controller(PersonController::class)->middleware(['auth', 'password_change
     Route::post('/person/{person}/contact/{contact}', 'updateContact')->name('person.contact.update');
     Route::delete('/person/{person}/contact/{contact}', 'deleteContact')->name('person.contact.delete');
     Route::post('/person/{person}/address', 'addAddress')->name('person.address.create');
+    Route::patch('/person/{person}/address/{address}', 'updateAddress')->middleware('can:update contacts')->name('person.address.update');
+    Route::post('/person/{person}/address/change', 'changeAddress')->middleware('can:update contacts')->name('person.address.change');
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
     // Route::get('/person/avatar', 'avatar')->name('person.ava');
 });
@@ -160,6 +164,22 @@ Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->nam
 Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->name('person-roles.dependent');
 Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth', 'password_changed'])->name('person.avatar.update');
 Route::delete('person/{person}/avatar/delete', [PersonAvatarController::class, 'delete'])->middleware(['auth', 'password_changed'])->name('person.avatar.delete');
+
+Route::middleware(['auth', 'password_changed'])
+    ->get('/my-profile', [MyProfileController::class, 'show'])
+    ->name('my-profile.show');
+
+Route::middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/staff-photo-approvals', [PhotoApprovalController::class, 'index'])
+        ->middleware('can:approve staff photo')
+        ->name('photo-approvals.index');
+    Route::post('/staff-photo-approvals/{person}/approve', [PhotoApprovalController::class, 'approve'])
+        ->middleware('can:approve staff photo')
+        ->name('photo-approvals.approve');
+    Route::post('/staff-photo-approvals/{person}/reject', [PhotoApprovalController::class, 'reject'])
+        ->middleware('can:approve staff photo')
+        ->name('photo-approvals.reject');
+});
 
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth', 'password_changed'])->group(function () {
@@ -398,8 +418,10 @@ Route::get('/document-statuses', function () {
 })->middleware(['auth', 'password_changed'])->name('document-statuses');
 
 Route::controller(QualificationDocumentController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::post('/qualification/{qualification}/document/store', 'store')->name('qualification-document.store');
     Route::post('/qualification/{qualification}/document', 'update')->name('qualification-document.update');
     Route::delete('/qualification/{qualification}/document', 'delete')->name('qualification-document.delete');
+    Route::delete('/qualification/{qualification}/document/{document}', 'destroy')->name('qualification-document.destroy');
 });
 
 // report
