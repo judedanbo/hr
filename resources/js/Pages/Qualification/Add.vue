@@ -68,14 +68,26 @@ function formatSize(bytes) {
 // ── Step 1 → 2 ───────────────────────────────────────────────────────────────
 const step1FormRef = ref(null);
 
-async function goToStep2() {
+// FormKit only fires @submit after validation passes, so both "Next" and
+// "Save without document" route through this single handler. The button
+// sets `pendingAction` on click (before the submit fires) so we know which
+// path to take once validation is done.
+const pendingAction = ref("next");
+
+function onStep1Submit() {
 	step1Errors.value = {};
-	// Trigger FormKit validation
-	const valid = await step1FormRef.value.node.submit();
-	if (valid === false) {
-		return;
+	if (pendingAction.value === "save") {
+		selectedFiles.value = [];
+		submit();
+	} else {
+		currentStep.value = 2;
 	}
-	currentStep.value = 2;
+	pendingAction.value = "next";
+}
+
+function clickSaveWithoutDocuments() {
+	pendingAction.value = "save";
+	step1FormRef.value?.node?.submit();
 }
 
 function goBackToStep1() {
@@ -184,16 +196,6 @@ function submit() {
 	});
 }
 
-// "Skip — save without documents" from step 1 submits directly
-async function saveWithoutDocuments() {
-	step1Errors.value = {};
-	const valid = await step1FormRef.value.node.submit();
-	if (valid === false) {
-		return;
-	}
-	selectedFiles.value = [];
-	submit();
-}
 </script>
 
 <template>
@@ -291,7 +293,7 @@ async function saveWithoutDocuments() {
 				type="form"
 				:disabled="isSubmitting"
 				:actions="false"
-				@submit="goToStep2"
+				@submit="onStep1Submit"
 			>
 				<h3
 					class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3"
@@ -406,7 +408,7 @@ async function saveWithoutDocuments() {
 							type="button"
 							class="text-sm text-emerald-600 dark:text-emerald-400 hover:underline px-2 py-2 transition-colors"
 							:disabled="isSubmitting"
-							@click="saveWithoutDocuments"
+							@click="clickSaveWithoutDocuments"
 						>
 							Save without document
 						</button>
@@ -414,6 +416,7 @@ async function saveWithoutDocuments() {
 							type="submit"
 							:disabled="isSubmitting"
 							class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+							@click="pendingAction = 'next'"
 						>
 							Next: Add documents
 						</button>
