@@ -261,6 +261,12 @@ class PersonController extends Controller
 
     public function addContact(Request $request, Person $person)
     {
+        abort_unless(
+            $request->user()->person_id === $person->id
+                || $request->user()->can('update staff'),
+            403,
+        );
+
         $attribute = $request->validate([
             'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:100',
@@ -272,17 +278,23 @@ class PersonController extends Controller
 
     public function updateContact(Request $request, $person, $contact)
     {
+        $contactModel = Contact::findOrFail($contact);
+        $this->authorize('update', $contactModel);
+
         $attribute = $request->validate([
             'contact_type' => [new Enum(ContactTypeEnum::class)],
             'contact' => 'required|min:7|max:30',
         ]);
-        $contact = Contact::find($contact)->update($attribute);
+        $contactModel->update($attribute);
 
         return redirect()->back()->with('success', 'Contact updated');
     }
 
-    public function deleteContact(Person $person, $contact)
+    public function deleteContact(Request $request, Person $person, $contact)
     {
+        $contactModel = Contact::findOrFail($contact);
+        $this->authorize('delete', $contactModel);
+
         $person->contacts()->where('id', $contact)->forceDelete();
 
         return redirect()->back();
