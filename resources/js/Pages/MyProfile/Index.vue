@@ -7,6 +7,7 @@ import QualificationsCard from "@/Components/MyProfile/QualificationsCard.vue";
 import ContactCard from "@/Components/MyProfile/ContactCard.vue";
 import ReadOnlyKvCard from "@/Components/MyProfile/ReadOnlyKvCard.vue";
 import PersonalDetailsCard from "@/Components/MyProfile/PersonalDetailsCard.vue";
+import DependentsCard from "@/Components/MyProfile/DependentsCard.vue";
 import { computed } from "vue";
 
 const props = defineProps({
@@ -35,19 +36,6 @@ const employmentRows = computed(() => {
 	];
 });
 
-const dependentRows = computed(() => {
-	const deps = props.staff.dependents ?? [];
-	const spouse = deps.find(
-		(d) => (d.relation ?? "").toLowerCase() === "spouse",
-	);
-	const childrenCount = deps.filter(
-		(d) => (d.relation ?? "").toLowerCase() === "child",
-	).length;
-	return [
-		{ key: "Spouse", value: spouse?.name ?? "—" },
-		{ key: "Children", value: String(childrenCount) },
-	];
-});
 </script>
 
 <template>
@@ -81,12 +69,7 @@ const dependentRows = computed(() => {
 					lock-label="HR-managed"
 					:rows="employmentRows"
 				/>
-				<ReadOnlyKvCard
-					title="Dependents"
-					lock-label="View only"
-					:rows="dependentRows"
-					footer="Need changes? Contact HR."
-				/>
+				<DependentsCard :dependents="staff.dependents" />
 			</div>
 		</main>
 	</MainLayout>
