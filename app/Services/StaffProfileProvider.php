@@ -67,6 +67,8 @@ final class StaffProfileProvider
             'religion' => $staff->person->religion,
             'marital_status' => $staff->person->marital_status?->label(),
             'image' => $staff->person->image ? '/storage/' . $staff->person->image : null,
+            'pending_image' => $staff->person->pending_image ? '/storage/' . $staff->person->pending_image : null,
+            'pending_image_at' => $staff->person->pending_image_at?->diffForHumans(),
             'identities' => $staff->person->identities->map(fn ($id) => [
                 'id' => $id->id,
                 'id_type' => $id->id_type,

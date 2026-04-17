@@ -35,6 +35,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PersonAvatarController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
+use App\Http\Controllers\PhotoApprovalController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PromoteAllStaffController;
 use App\Http\Controllers\PromoteStaffController;
@@ -167,6 +168,18 @@ Route::delete('person/{person}/avatar/delete', [PersonAvatarController::class, '
 Route::middleware(['auth', 'password_changed'])
     ->get('/my-profile', [MyProfileController::class, 'show'])
     ->name('my-profile.show');
+
+Route::middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/staff-photo-approvals', [PhotoApprovalController::class, 'index'])
+        ->middleware('can:approve staff photo')
+        ->name('photo-approvals.index');
+    Route::post('/staff-photo-approvals/{person}/approve', [PhotoApprovalController::class, 'approve'])
+        ->middleware('can:approve staff photo')
+        ->name('photo-approvals.approve');
+    Route::post('/staff-photo-approvals/{person}/reject', [PhotoApprovalController::class, 'reject'])
+        ->middleware('can:approve staff photo')
+        ->name('photo-approvals.reject');
+});
 
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth', 'password_changed'])->group(function () {
