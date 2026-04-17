@@ -32,7 +32,7 @@ const imageChanged = () => {
 			id="profileImage"
 			name="image"
 			type="file"
-			accept="image/*"
+			accept="image/jpeg,image/png"
 			validation="image"
 			@input="imageChanged"
 		>
