@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Enums\ContactTypeEnum;
 use App\Http\Requests\StoreIdentityRequest;
 use App\Http\Requests\UpdatePersonRequest;
+use App\Models\Address;
 use App\Models\Contact;
 use App\Models\Person;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Enum;
@@ -330,6 +332,29 @@ class PersonController extends Controller
         $person->identities()->where('id', $identity)->forceDelete();
 
         return redirect()->back();
+    }
+
+    public function updateAddress(Request $request, Person $person, Address $address): RedirectResponse
+    {
+        abort_unless(
+            $address->addressable_type === $person->getMorphClass() && $address->addressable_id === $person->id,
+            404
+        );
+
+        $this->authorize('update', $address);
+
+        $attribute = $request->validate([
+            'address_line_1' => ['required'],
+            'address_line_2' => ['nullable'],
+            'city' => ['required'],
+            'region' => ['nullable'],
+            'country' => ['required'],
+            'post_code' => ['nullable'],
+        ]);
+
+        $address->update($attribute);
+
+        return redirect()->back()->with('success', 'Address updated successfully.');
     }
 
     public function deleteAddress(Person $person, $address)
