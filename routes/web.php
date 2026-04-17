@@ -27,6 +27,7 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
+use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\OfficeController;
@@ -160,6 +161,10 @@ Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->nam
 Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->name('person-roles.dependent');
 Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth', 'password_changed'])->name('person.avatar.update');
 Route::delete('person/{person}/avatar/delete', [PersonAvatarController::class, 'delete'])->middleware(['auth', 'password_changed'])->name('person.avatar.delete');
+
+Route::middleware(['auth', 'password_changed'])
+    ->get('/my-profile', [MyProfileController::class, 'show'])
+    ->name('my-profile.show');
 
 // Institution
 Route::controller(InstitutionController::class)->middleware(['auth', 'password_changed'])->group(function () {
