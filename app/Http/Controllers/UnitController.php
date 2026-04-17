@@ -13,6 +13,7 @@ use App\Models\Unit;
 use App\Services\UnitHierarchy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -310,13 +311,31 @@ class UnitController extends Controller
     {
         return Job::query()
             ->select('jobs.id', 'jobs.name')
-            ->selectRaw('COUNT(DISTINCT job_staff.id) as staff_count')
-            ->join('job_staff', 'jobs.id', '=', 'job_staff.job_id')
+            ->selectRaw('COUNT(DISTINCT institution_person.id) as staff_count')
+            ->join('job_staff', function ($join) {
+                $join->on('jobs.id', '=', 'job_staff.job_id')
+                    ->whereNull('job_staff.end_date')
+                    ->whereNull('job_staff.deleted_at');
+            })
+            ->join('institution_person', 'institution_person.id', '=', 'job_staff.staff_id')
+            ->join('staff_unit', function ($join) use ($allIds) {
+                $join->on('staff_unit.staff_id', '=', 'institution_person.id')
+                    ->whereIn('staff_unit.unit_id', $allIds)
+                    ->whereNull('staff_unit.end_date')
+                    ->whereNull('staff_unit.deleted_at');
+            })
             ->join('job_categories', 'jobs.job_category_id', '=', 'job_categories.id')
-            ->join('staff_unit', 'staff_unit.staff_id', '=', 'job_staff.staff_id')
-            ->whereIn('staff_unit.unit_id', $allIds)
-            ->whereNull('job_staff.end_date')
-            ->whereNull('staff_unit.end_date')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('status')
+                    ->whereColumn('status.staff_id', 'institution_person.id')
+                    ->whereNull('status.deleted_at')
+                    ->where('status.status', 'A')
+                    ->where(function ($inner) {
+                        $inner->whereNull('status.end_date')
+                            ->orWhere('status.end_date', '>', now());
+                    });
+            })
             ->groupBy('jobs.id', 'jobs.name', 'job_categories.level')
             ->orderBy('job_categories.level')
             ->get()
@@ -366,10 +385,14 @@ class UnitController extends Controller
             $query->search($filters['search']);
         }
         if (! empty($filters['job_category_id'])) {
-            $query->whereHas('ranks', fn ($q) => $q->where('job_category_id', $filters['job_category_id']));
+            $query->whereHas('ranks', fn ($q) => $q
+                ->where('job_category_id', $filters['job_category_id'])
+                ->whereNull('job_staff.end_date'));
         }
         if (! empty($filters['rank_id'])) {
-            $query->whereHas('ranks', fn ($q) => $q->where('jobs.id', $filters['rank_id']));
+            $query->whereHas('ranks', fn ($q) => $q
+                ->where('jobs.id', $filters['rank_id'])
+                ->whereNull('job_staff.end_date'));
         }
         if (! empty($filters['sub_unit_id'])) {
             $query->whereHas('units', fn ($q) => $q->where('units.id', $filters['sub_unit_id']));

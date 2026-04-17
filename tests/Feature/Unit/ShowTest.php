@@ -107,6 +107,53 @@ class ShowTest extends TestCase
         );
     }
 
+    public function test_rank_distribution_excludes_separated_staff(): void
+    {
+        $root = Unit::factory()->create(['unit_id' => null]);
+        $child = Unit::factory()->create(['unit_id' => $root->id, 'institution_id' => $root->institution_id]);
+        $rank = Job::factory()->create(['name' => 'Officer']);
+
+        $this->makeActiveStaff($root, 'M', $rank);
+        $this->makeActiveStaff($child, 'F', $rank);
+
+        $separated = $this->makeActiveStaff($child, 'M', $rank);
+        $separated->statuses()->update(['status' => 'S']);
+
+        $response = $this->actingAs($this->user)->get(route('unit.show', ['unit' => $root->id]));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('stats.total', 2)
+            ->has('rank_distribution', 1)
+            ->where('rank_distribution.0.count', 2)
+        );
+    }
+
+    public function test_rank_distribution_ignores_soft_deleted_rank_and_unit_assignments(): void
+    {
+        $root = Unit::factory()->create(['unit_id' => null]);
+        $child = Unit::factory()->create(['unit_id' => $root->id, 'institution_id' => $root->institution_id]);
+        $rank = Job::factory()->create(['name' => 'Officer']);
+
+        $this->makeActiveStaff($root, 'M', $rank);
+
+        $withDeletedRank = $this->makeActiveStaff($child, 'F', $rank);
+        $withDeletedRank->ranks()->newPivotQuery()
+            ->where('staff_id', $withDeletedRank->id)
+            ->update(['deleted_at' => now()]);
+
+        $withDeletedUnit = $this->makeActiveStaff($child, 'M', $rank);
+        $withDeletedUnit->units()->newPivotQuery()
+            ->where('staff_id', $withDeletedUnit->id)
+            ->update(['deleted_at' => now()]);
+
+        $response = $this->actingAs($this->user)->get(route('unit.show', ['unit' => $root->id]));
+
+        $response->assertInertia(fn ($page) => $page
+            ->has('rank_distribution', 1)
+            ->where('rank_distribution.0.count', 1)
+        );
+    }
+
     public function test_initial_staff_page_uses_paginator_shape(): void
     {
         $unit = Unit::factory()->create();

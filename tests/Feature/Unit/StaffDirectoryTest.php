@@ -117,6 +117,49 @@ class StaffDirectoryTest extends TestCase
         );
     }
 
+    public function test_rank_filter_matches_only_current_rank_holders(): void
+    {
+        $unit = Unit::factory()->create();
+        $pastRank = Job::factory()->create();
+        $currentRank = Job::factory()->create();
+
+        $promoted = $this->makeActiveStaff($unit, null, $currentRank);
+        $promoted->ranks()->updateExistingPivot($currentRank->id, [], false);
+        $promoted->ranks()->attach($pastRank->id, [
+            'start_date' => now()->subYears(3),
+            'end_date' => now()->subYear(),
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->get(route('unit.staff', ['unit' => $unit->id, 'rank_id' => $pastRank->id]));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('staff.meta.total', 0)
+        );
+    }
+
+    public function test_category_filter_matches_only_current_rank_category(): void
+    {
+        $unit = Unit::factory()->create();
+        $pastCategory = \App\Models\JobCategory::factory()->create();
+        $currentCategory = \App\Models\JobCategory::factory()->create();
+        $pastRank = Job::factory()->create(['job_category_id' => $pastCategory->id]);
+        $currentRank = Job::factory()->create(['job_category_id' => $currentCategory->id]);
+
+        $promoted = $this->makeActiveStaff($unit, null, $currentRank);
+        $promoted->ranks()->attach($pastRank->id, [
+            'start_date' => now()->subYears(3),
+            'end_date' => now()->subYear(),
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->get(route('unit.staff', ['unit' => $unit->id, 'job_category_id' => $pastCategory->id]));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('staff.meta.total', 0)
+        );
+    }
+
     public function test_filter_options_include_ranks_from_descendants(): void
     {
         $root = Unit::factory()->create(['unit_id' => null]);
@@ -130,6 +173,21 @@ class StaffDirectoryTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->has('filter_options.ranks', 1)
             ->where('filter_options.ranks.0.label', 'Director')
+        );
+    }
+
+    public function test_filters_prop_has_integer_types_for_id_fields(): void
+    {
+        $unit = Unit::factory()->create();
+        $rank = Job::factory()->create();
+
+        $response = $this->actingAs($this->user)->get(
+            route('unit.show', ['unit' => $unit->id, 'rank_id' => $rank->id, 'age_from' => 25])
+        );
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('filters.rank_id', $rank->id)
+            ->where('filters.age_from', 25)
         );
     }
 
