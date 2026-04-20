@@ -999,9 +999,14 @@ Have an idea to improve the system?
 | **Separation** | When a staff member leaves the organization (retirement, resignation, etc.) |
 | **Dependent** | A family member of a staff (spouse, child, parent) |
 | **Qualification** | Educational or professional credentials |
+| **Notification** | An in-app alert informing you of approvals, status changes, or system events |
+| **Photo Approval** | The HR review process for staff profile photo submissions |
+| **Data Integrity Check** | An automated validation that identifies data quality issues for administrator review |
+| **KPI (Key Performance Indicator)** | A summary metric displayed on report dashboards |
+| **Qualification Level** | The classification of a credential (e.g., Degree, Diploma, Certificate, Training) |
 
 ---
 
-*Last Updated: December 2024*
+*Last Updated: April 2026*
 
-*HR Management System - Version 2024.12*
+*HR Management System - Version 2026.04*
