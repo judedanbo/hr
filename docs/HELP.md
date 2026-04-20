@@ -67,7 +67,9 @@ The system has different user roles with varying levels of access. Here's what e
 ### Staff User
 Regular employees with basic access to:
 - View their own profile
-- Update their personal information
+- Update personal information, contacts, address, and qualifications via My Profile
+- Upload a profile photo (subject to HR approval)
+- View and manage their notifications
 - View organizational structure
 - Change their password
 
@@ -83,6 +85,7 @@ Human Resources specialists with access to:
 - Create and manage staff qualifications
 - Add staff notes (commendations, warnings, etc.)
 - Process staff transfers
+- Review and approve or reject staff photo submissions
 
 ### Admin User
 Administrative users who can:
@@ -91,6 +94,7 @@ Administrative users who can:
 - Download staff data exports
 - Process promotions and transfers
 - Manage staff notes
+- Access qualifications reports and exports
 
 ### Super Administrator
 Full system access including:
@@ -100,6 +104,7 @@ Full system access including:
 - Access data integrity tools
 - View audit logs
 - Manage system settings
+- All notification, profile, photo approval, and reporting capabilities
 
 ---
 
