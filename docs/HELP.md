@@ -163,6 +163,8 @@ A bell icon is always visible in the top-right area of the page header.
 - Click **Mark all as read** to clear all unread notifications at once
 - Click on a notification to navigate directly to the related item (e.g., a staff profile or approval)
 
+![Notification Bell](screenshots/notification-bell.png)
+
 ### Notifications Page
 
 For a full view of all your notifications:
@@ -180,6 +182,8 @@ For a full view of all your notifications:
    - Click on the notification title or body to mark it as read and navigate to the related content
 
 > **Note:** You can only see your own notifications. Each user's notification list is private.
+
+![Notifications Page](screenshots/notifications-page.png)
 
 ---
 
@@ -245,6 +249,8 @@ My Profile is your personal dashboard for viewing and managing your staff inform
 2. Select **My Profile**
 3. You'll see your profile organized into cards
 
+![My Profile](screenshots/my-profile.png)
+
 ### Profile Photo
 
 You can upload or change your profile photo from the photo card:
@@ -258,6 +264,8 @@ You can upload or change your profile photo from the photo card:
 7. To remove your current photo, click the **Remove** button
 
 > **Note:** Your photo won't change immediately after upload. It must be approved by HR first. You can see the pending status and timestamp on your photo card.
+
+![Profile Photo Card](screenshots/profile-photo-card.png)
 
 ### Contact Information
 
@@ -305,6 +313,8 @@ You can manage your own qualifications, which may require HR approval:
 4. To **attach documents** (certificates, transcripts), click the attach icon on a qualification
 5. To **view details**, click on the qualification name
 6. To **delete** a qualification (if permitted), use the delete button
+
+![Qualifications Card](screenshots/qualifications-card.png)
 
 ### HR-Managed Information (Read-Only)
 
@@ -447,6 +457,8 @@ The table shows one row per pending submission with:
 - **Current Photo** — their existing approved photo (or "None" if they don't have one)
 - **Pending Photo** — the new photo they uploaded (highlighted with an amber border)
 - **Submitted** — when the photo was uploaded (e.g., "2 hours ago")
+
+![Photo Approvals](screenshots/photo-approvals.png)
 
 For each submission you have two options:
 
@@ -623,6 +635,8 @@ At the top of the page, four summary cards give you an at-a-glance overview:
 3. **Pending** — qualifications awaiting approval, with the age of the oldest pending item
 4. **Staff Without Qualifications** — count and percentage of active staff with no qualifications (useful for identifying training needs)
 
+![Qualifications KPI Dashboard](screenshots/qualifications-kpi-dashboard.png)
+
 ### Filtering Reports
 
 Use any combination of filters to narrow your results (all are optional):
@@ -660,6 +674,8 @@ Six interactive charts are available below the KPI cards:
 
 Each chart can be **expanded to full screen** and supports toggling between count and percentage views.
 
+![Qualifications Charts](screenshots/qualifications-charts.png)
+
 ### Exporting Reports
 
 To export data as PDF or Excel:
@@ -670,6 +686,8 @@ To export data as PDF or Excel:
 4. The file downloads automatically
 
 > **Note:** Exporting requires the **qualifications.reports.export** permission in addition to the view permission.
+
+![Qualifications Export](screenshots/qualifications-export.png)
 
 ---
 
