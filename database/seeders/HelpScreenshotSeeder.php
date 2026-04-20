@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\InstitutionPerson;
 use App\Models\Person;
 use App\Models\Qualification;
+use App\Models\Status;
 use App\Models\User;
 use App\Notifications\PhotoApprovedNotification;
 use App\Notifications\PhotoPendingApprovalNotification;
@@ -22,6 +23,7 @@ class HelpScreenshotSeeder extends Seeder
         $user = $this->createScreenshotUser();
         $person = $user->person;
 
+        $this->seedActiveStatus($person);
         $this->seedQualifications($person);
         $this->seedNotifications($user, $person);
         $this->seedPendingPhoto($person);
@@ -151,6 +153,24 @@ class HelpScreenshotSeeder extends Seeder
                 'course' => 'Accounting',
                 'year' => '2022',
             ]);
+    }
+
+    private function seedActiveStatus(Person $person): void
+    {
+        $staff = InstitutionPerson::where('person_id', $person->id)->first();
+
+        if (! $staff || $staff->statuses()->where('status', 'A')->whereNull('end_date')->exists()) {
+            return;
+        }
+
+        Status::create([
+            'staff_id' => $staff->id,
+            'status' => 'A',
+            'description' => 'Active',
+            'start_date' => $staff->hire_date,
+            'end_date' => null,
+            'institution_id' => $staff->institution_id,
+        ]);
     }
 
     private function seedContacts(Person $person): void

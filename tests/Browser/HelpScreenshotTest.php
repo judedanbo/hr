@@ -23,7 +23,7 @@ class HelpScreenshotTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                ->waitForText('Log in')
+                ->waitForText('LOG IN')
                 ->screenshot('login-page');
         });
     }
@@ -136,8 +136,7 @@ class HelpScreenshotTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/staff/create')
-                ->waitForText('Create')
-                ->pause(500)
+                ->pause(2000)
                 ->screenshot('create-staff');
         });
     }
@@ -157,10 +156,13 @@ class HelpScreenshotTest extends DuskTestCase
     /** @test */
     public function testUnitDetails(): void
     {
-        $this->browse(function (Browser $browser) {
-            $unit = Unit::has('staff')->first()
-                ?? Unit::first();
+        $unit = Unit::has('staff')->first() ?? Unit::first();
 
+        if (! $unit) {
+            $this->markTestSkipped('No units in database');
+        }
+
+        $this->browse(function (Browser $browser) use ($unit) {
             $browser->loginAs($this->user)
                 ->visit('/units/' . $unit->id)
                 ->pause(2000)
@@ -212,6 +214,7 @@ class HelpScreenshotTest extends DuskTestCase
             '--window-size=1440,900',
             '--force-device-scale-factor=1',
             '--disable-gpu',
+            '--headless=new',
         ]);
 
         return \Facebook\WebDriver\Remote\RemoteWebDriver::create(
