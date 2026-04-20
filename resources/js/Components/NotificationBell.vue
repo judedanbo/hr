@@ -145,6 +145,7 @@ onBeforeUnmount(() => {
 <template>
 	<Popover as="div" class="relative">
 		<PopoverButton
+			dusk="notification-bell-button"
 			class="relative -m-2.5 flex items-center p-2.5 text-gray-700 hover:text-gray-500 focus:outline-none dark:text-gray-50 dark:hover:text-gray-200"
 		>
 			<span class="sr-only">View notifications</span>

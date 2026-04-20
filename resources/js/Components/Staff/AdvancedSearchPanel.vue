@@ -164,6 +164,7 @@ const resetFilters = () => {
 	<Disclosure v-slot="{ open }" as="div" class="mb-4">
 		<div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
 			<DisclosureButton
+				dusk="advanced-search-toggle"
 				class="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 			>
 				<div class="flex items-center gap-2">
