@@ -809,6 +809,8 @@ The Data Integrity module helps identify and fix data issues in the system.
 - **Multiple Active Units** - Staff assigned to multiple units simultaneously
 - **Staff Without Profile Pictures** - Staff records missing photos
 - **Staff Without Gender** - Staff records with missing gender data
+- **Expired Active Status** - Staff with expired active status dates that need review
+- **Pending Qualifications** - Qualifications submitted by staff that are awaiting HR review and approval
 
 ### Running Data Checks
 
