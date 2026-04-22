@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { Head } from "@inertiajs/vue3";
+import { useDark } from "@vueuse/core";
 import NewAuthenticated from "@/Layouts/NewAuthenticated.vue";
 import BreadCrump from "@/Components/BreadCrump.vue";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/vue/24/outline";
@@ -106,6 +107,22 @@ function updateHash() {
 
 watch(activeSlug, updateHash);
 
+// --- Dark/light screenshot swapping ---
+const isDark = useDark();
+
+function swapScreenshots() {
+    const container = document.querySelector("[data-help-content]");
+    if (!container) return;
+
+    const attr = isDark.value ? "data-dark-src" : "data-light-src";
+    container.querySelectorAll("img[data-light-src]").forEach((img) => {
+        img.src = img.getAttribute(attr);
+    });
+}
+
+watch(isDark, () => nextTick(swapScreenshots));
+watch(displayHtml, () => nextTick(swapScreenshots));
+
 onMounted(() => {
     const hash = window.location.hash.slice(1);
     if (hash && props.sections.find((s) => s.slug === hash)) {
@@ -118,6 +135,8 @@ onMounted(() => {
             activeSlug.value = h;
         }
     });
+
+    nextTick(swapScreenshots);
 });
 
 function selectTab(slug) {
@@ -215,6 +234,7 @@ function clearSearch() {
             >
                 <div class="p-6">
                     <article
+                        data-help-content
                         class="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-a:text-green-600 dark:prose-a:text-green-400 prose-code:text-green-600 dark:prose-code:text-green-400"
                         v-html="displayHtml"
                     ></article>
