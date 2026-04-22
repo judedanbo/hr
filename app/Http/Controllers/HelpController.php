@@ -46,8 +46,8 @@ class HelpController extends Controller
     private function transformScreenshotPaths(string $html): string
     {
         return preg_replace(
-            '#<img\s+src="/help-screenshots/([^"/]+\.png)"([^>]*)/?>#',
-            '<img src="/help-screenshots/light/$1"$2 data-light-src="/help-screenshots/light/$1" data-dark-src="/help-screenshots/dark/$1" />',
+            '#<img\s+src="/help-screenshots/([^"/]+\.png)"\s+alt="([^"]*)"\s*/?>#',
+            '<img src="/help-screenshots/light/$1" alt="$2" data-light-src="/help-screenshots/light/$1" data-dark-src="/help-screenshots/dark/$1" />',
             $html
         );
     }

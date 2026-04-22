@@ -10,7 +10,6 @@ class HelpControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
     public function test_help_page_transforms_screenshot_image_tags(): void
     {
         $user = User::factory()->create();
@@ -33,6 +32,7 @@ class HelpControllerTest extends TestCase
         $this->assertStringContainsString('data-light-src="/help-screenshots/light/', $html);
         $this->assertStringContainsString('data-dark-src="/help-screenshots/dark/', $html);
         $this->assertStringContainsString('src="/help-screenshots/light/', $html);
+        $this->assertStringNotContainsString('/ data-light-src', $html);
 
         // Verify no un-transformed help-screenshots references remain (root-level path)
         $this->assertDoesNotMatchRegularExpression(
@@ -42,8 +42,7 @@ class HelpControllerTest extends TestCase
         );
     }
 
-    /** @test */
-    public function test_help_page_does_not_transform_non_screenshot_images(): void
+    public function test_help_page_loads_successfully(): void
     {
         $user = User::factory()->create();
 
