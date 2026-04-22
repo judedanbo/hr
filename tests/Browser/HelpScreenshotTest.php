@@ -11,73 +11,82 @@ class HelpScreenshotTest extends DuskTestCase
 {
     protected User $user;
 
+    protected string $screenshotMode;
+
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->screenshotMode = env('SCREENSHOT_MODE', 'light');
+
+        Browser::$storeScreenshotsAt = base_path('tests/Browser/screenshots/' . $this->screenshotMode);
+
+        if (! is_dir(Browser::$storeScreenshotsAt)) {
+            mkdir(Browser::$storeScreenshotsAt, 0755, true);
+        }
+
         $this->user = User::where('email', 'screenshots@help.test')->firstOrFail();
     }
 
-    /** @test */
-    public function testLoginPage(): void
+    public function test_login_page(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                ->waitForText('LOG IN')
-                ->screenshot('login-page');
+                ->waitForText('LOG IN');
+            $this->applyMode($browser);
+            $browser->screenshot('login-page');
         });
     }
 
-    /** @test */
-    public function testDashboard(): void
+    public function test_dashboard(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/dashboard')
-                ->pause(2000)
-                ->screenshot('dashboard');
+                ->pause(2000);
+            $this->applyMode($browser);
+            $browser->screenshot('dashboard');
         });
     }
 
-    /** @test */
-    public function testNotificationBell(): void
+    public function test_notification_bell(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/dashboard')
                 ->pause(1000)
                 ->click('[dusk="notification-bell-button"]')
-                ->pause(1000)
-                ->screenshot('notification-bell');
+                ->pause(1000);
+            $this->applyMode($browser);
+            $browser->screenshot('notification-bell');
         });
     }
 
-    /** @test */
-    public function testNotificationsPage(): void
+    public function test_notifications_page(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/notifications')
                 ->waitForText('Notifications')
-                ->pause(500)
-                ->screenshot('notifications-page');
+                ->pause(500);
+            $this->applyMode($browser);
+            $browser->screenshot('notifications-page');
         });
     }
 
-    /** @test */
-    public function testStaffDirectory(): void
+    public function test_staff_directory(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/staff')
                 ->waitForText('Staff')
-                ->pause(1000)
-                ->screenshot('staff-directory');
+                ->pause(1000);
+            $this->applyMode($browser);
+            $browser->screenshot('staff-directory');
         });
     }
 
-    /** @test */
-    public function testAdvancedSearch(): void
+    public function test_advanced_search(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
@@ -85,25 +94,25 @@ class HelpScreenshotTest extends DuskTestCase
                 ->waitForText('Staff')
                 ->pause(500)
                 ->click('[dusk="advanced-search-toggle"]')
-                ->pause(500)
-                ->screenshot('advanced-search');
+                ->pause(500);
+            $this->applyMode($browser);
+            $browser->screenshot('advanced-search');
         });
     }
 
-    /** @test */
-    public function testMyProfile(): void
+    public function test_my_profile(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/my-profile')
                 ->waitForText('My Profile')
-                ->pause(1000)
-                ->screenshot('my-profile');
+                ->pause(1000);
+            $this->applyMode($browser);
+            $browser->screenshot('my-profile');
         });
     }
 
-    /** @test */
-    public function testProfilePhotoCard(): void
+    public function test_profile_photo_card(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
@@ -111,13 +120,13 @@ class HelpScreenshotTest extends DuskTestCase
                 ->waitForText('My Profile')
                 ->pause(500)
                 ->script('window.scrollTo(0, 200)');
-            $browser->pause(300)
-                ->screenshot('profile-photo-card');
+            $browser->pause(300);
+            $this->applyMode($browser);
+            $browser->screenshot('profile-photo-card');
         });
     }
 
-    /** @test */
-    public function testQualificationsCard(): void
+    public function test_qualifications_card(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
@@ -125,36 +134,36 @@ class HelpScreenshotTest extends DuskTestCase
                 ->waitForText('My Profile')
                 ->pause(500)
                 ->script('window.scrollTo(0, document.body.scrollHeight * 0.6)');
-            $browser->pause(300)
-                ->screenshot('qualifications-card');
+            $browser->pause(300);
+            $this->applyMode($browser);
+            $browser->screenshot('qualifications-card');
         });
     }
 
-    /** @test */
-    public function testCreateStaffForm(): void
+    public function test_create_staff_form(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/staff/create')
-                ->pause(2000)
-                ->screenshot('create-staff');
+                ->pause(2000);
+            $this->applyMode($browser);
+            $browser->screenshot('create-staff');
         });
     }
 
-    /** @test */
-    public function testPhotoApprovals(): void
+    public function test_photo_approvals(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/staff-photo-approvals')
                 ->waitForText('Photo Approvals')
-                ->pause(500)
-                ->screenshot('photo-approvals');
+                ->pause(500);
+            $this->applyMode($browser);
+            $browser->screenshot('photo-approvals');
         });
     }
 
-    /** @test */
-    public function testUnitDetails(): void
+    public function test_unit_details(): void
     {
         $unit = Unit::has('staff')->first() ?? Unit::first();
 
@@ -165,25 +174,25 @@ class HelpScreenshotTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($unit) {
             $browser->loginAs($this->user)
                 ->visit('/units/' . $unit->id)
-                ->pause(2000)
-                ->screenshot('unit-details');
+                ->pause(2000);
+            $this->applyMode($browser);
+            $browser->screenshot('unit-details');
         });
     }
 
-    /** @test */
-    public function testQualificationsKpiDashboard(): void
+    public function test_qualifications_kpi_dashboard(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/qualifications/reports')
                 ->waitForText('Qualifications')
-                ->pause(2000)
-                ->screenshot('qualifications-kpi-dashboard');
+                ->pause(2000);
+            $this->applyMode($browser);
+            $browser->screenshot('qualifications-kpi-dashboard');
         });
     }
 
-    /** @test */
-    public function testQualificationsCharts(): void
+    public function test_qualifications_charts(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
@@ -191,21 +200,32 @@ class HelpScreenshotTest extends DuskTestCase
                 ->waitForText('Qualifications')
                 ->pause(2000)
                 ->script('window.scrollTo(0, document.body.scrollHeight * 0.5)');
-            $browser->pause(1000)
-                ->screenshot('qualifications-charts');
+            $browser->pause(1000);
+            $this->applyMode($browser);
+            $browser->screenshot('qualifications-charts');
         });
     }
 
-    /** @test */
-    public function testQualificationsExport(): void
+    public function test_qualifications_export(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->user)
                 ->visit('/qualifications/reports')
                 ->waitForText('Qualifications')
-                ->pause(1000)
-                ->screenshot('qualifications-export');
+                ->pause(1000);
+            $this->applyMode($browser);
+            $browser->screenshot('qualifications-export');
         });
+    }
+
+    protected function applyMode(Browser $browser): Browser
+    {
+        if ($this->screenshotMode === 'dark') {
+            $browser->script("document.documentElement.classList.add('dark')");
+            $browser->pause(300);
+        }
+
+        return $browser;
     }
 
     protected function driver(): \Facebook\WebDriver\Remote\RemoteWebDriver
