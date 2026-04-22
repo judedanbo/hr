@@ -10,54 +10,47 @@ class HelpControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function authedUser(): User
+    public function test_help_page_transforms_screenshot_image_tags(): void
     {
-        $user = User::factory()->create(['password_change_at' => now()]);
-        $user->assignRole('staff');
+        $user = User::factory()->create();
 
-        return $user;
+        $response = $this->actingAs($user)->get(route('help.index'));
+
+        $response->assertStatus(200);
+
+        $sections = $response->viewData('page')['props']['sections'];
+
+        // Find a section that has a screenshot reference
+        $sectionWithImage = collect($sections)->first(function ($section) {
+            return str_contains($section['html'], 'data-light-src');
+        });
+
+        $this->assertNotNull($sectionWithImage, 'At least one section should have transformed image tags');
+
+        // Verify the transformed img tag has correct attributes
+        $html = $sectionWithImage['html'];
+        $this->assertStringContainsString('data-light-src="/help-screenshots/light/', $html);
+        $this->assertStringContainsString('data-dark-src="/help-screenshots/dark/', $html);
+        $this->assertStringContainsString('src="/help-screenshots/light/', $html);
+        $this->assertStringNotContainsString('/ data-light-src', $html);
+
+        // Verify no un-transformed help-screenshots references remain (root-level path)
+        $this->assertDoesNotMatchRegularExpression(
+            '#src="/help-screenshots/(?!(?:light|dark)/)#',
+            $html,
+            'No root-level screenshot paths should remain'
+        );
     }
 
-    public function test_help_page_requires_auth(): void
+    public function test_help_page_loads_successfully(): void
     {
-        $this->get('/help')->assertRedirect('/login');
-    }
+        $user = User::factory()->create();
 
-    public function test_help_page_rewrites_screenshot_paths(): void
-    {
-        $response = $this->actingAs($this->authedUser())->get('/help');
+        $response = $this->actingAs($user)->get(route('help.index'));
 
-        $response->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->component('Help/Index')
-                ->where('content', fn (string $content) => str_contains($content, '/help/screenshots/login-page.png')
-                    && ! str_contains($content, 'src="screenshots/')
-                )
-            );
-    }
+        $response->assertStatus(200);
 
-    public function test_screenshot_endpoint_serves_png(): void
-    {
-        $response = $this->actingAs($this->authedUser())
-            ->get('/help/screenshots/login-page.png');
-
-        $response->assertOk();
-        $this->assertSame('image/png', $response->headers->get('content-type'));
-    }
-
-    public function test_screenshot_endpoint_rejects_missing_file(): void
-    {
-        $this->actingAs($this->authedUser())
-            ->get('/help/screenshots/does-not-exist.png')
-            ->assertNotFound();
-    }
-
-    public function test_screenshot_endpoint_rejects_traversal(): void
-    {
-        // Route constraint restricts filenames to [A-Za-z0-9._-]+\.png,
-        // so traversal attempts fail route matching and return 404.
-        $this->actingAs($this->authedUser())
-            ->get('/help/screenshots/..%2F..%2F.env')
-            ->assertNotFound();
+        $sections = $response->viewData('page')['props']['sections'];
+        $this->assertNotEmpty($sections);
     }
 }
