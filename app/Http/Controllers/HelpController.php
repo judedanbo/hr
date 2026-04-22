@@ -10,14 +10,25 @@ class HelpController extends Controller
 {
     public function index(): Response
     {
-        $filePath = base_path('docs/HELP.md');
+        $files = glob(base_path('docs/help/*.md'));
+        sort($files);
 
-        $content = file_exists($filePath)
-            ? Str::markdown(file_get_contents($filePath))
-            : '<p>Help documentation not found.</p>';
+        $sections = collect($files)->map(function ($file) {
+            $markdown = file_get_contents($file);
+            $slug = preg_replace('/^\d+-/', '', pathinfo($file, PATHINFO_FILENAME));
+
+            preg_match('/^##\s+(.+)$/m', $markdown, $matches);
+            $title = $matches[1] ?? Str::headline($slug);
+
+            return [
+                'slug' => $slug,
+                'title' => $title,
+                'html' => Str::markdown($markdown),
+            ];
+        })->values()->all();
 
         return Inertia::render('Help/Index', [
-            'content' => $content,
+            'sections' => $sections,
         ]);
     }
 }
