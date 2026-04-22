@@ -12,6 +12,7 @@ The help documentation (`docs/HELP.md`) references 15 screenshots — 6 from the
 
 **Prerequisites:**
 - Dusk is NOT currently installed (needs `composer require laravel/dusk --dev`)
+- Dusk runs via Laravel Sail, using the bundled `selenium/standalone-chrome` service — no local Chrome/ChromeDriver install required
 - The development database has realistic demo data (seeded)
 - 16 model factories exist, including Qualification with `approved()`/`pending()` states
 - Notifications use Laravel's built-in database notification system
@@ -112,12 +113,19 @@ testQualificationsExport()→ loginAs, visit /qualifications/reports, click expo
 
 ### 4. Dusk Installation & Configuration
 
+Dusk runs through Laravel Sail's `selenium` service rather than a local ChromeDriver binary. This keeps the browser/driver versions reproducible across machines and avoids the need to install Chrome locally.
+
 **Steps:**
 1. `composer require laravel/dusk --dev`
 2. `php artisan dusk:install`
 3. Add `tests/Browser/screenshots/` to `.gitignore`
 4. Track `docs/screenshots/` in git (committed documentation images)
-5. Configure DuskTestCase if needed (viewport, Chrome options)
+5. Enable the `selenium` dependency in `docker-compose.yml` — under the `laravel.test` service, uncomment `- selenium` in `depends_on` so the app container waits for Selenium.
+6. Configure `.env.dusk.local` for Sail networking:
+   - `APP_URL=http://laravel.test` (the Sail app service hostname, reachable from the Selenium container)
+   - `DUSK_DRIVER_URL=http://selenium:4444/wd/hub` (Selenium's WebDriver endpoint on the `sail` bridge network)
+   - `DB_HOST=mysql` (the Sail MySQL service hostname)
+7. `HelpScreenshotTest` overrides `driver()` to set a fixed 1440x900 viewport for consistent screenshots. The overridden method must read `DUSK_DRIVER_URL` from the environment (not hardcode `localhost:9515`) so it targets the Selenium container when running under Sail.
 
 ## Workflow
 
@@ -126,10 +134,13 @@ testQualificationsExport()→ loginAs, visit /qualifications/reports, click expo
 composer require laravel/dusk --dev
 php artisan dusk:install
 
+# Bring up Sail (app + mysql + selenium)
+./vendor/bin/sail up -d
+
 # Capture screenshots (repeatable)
-php artisan db:seed --class=HelpScreenshotSeeder
-php artisan dusk --filter=HelpScreenshotTest
-php artisan help:copy-screenshots
+./vendor/bin/sail artisan db:seed --class=HelpScreenshotSeeder
+./vendor/bin/sail dusk tests/Browser/HelpScreenshotTest.php
+./vendor/bin/sail artisan help:copy-screenshots
 
 # Commit the screenshots
 git add docs/screenshots/

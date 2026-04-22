@@ -238,7 +238,7 @@ class HelpScreenshotTest extends DuskTestCase
         ]);
 
         return \Facebook\WebDriver\Remote\RemoteWebDriver::create(
-            'http://localhost:9515',
+            $_ENV['DUSK_DRIVER_URL'] ?? env('DUSK_DRIVER_URL') ?? 'http://localhost:9515',
             \Facebook\WebDriver\Remote\DesiredCapabilities::chrome()
                 ->setCapability(\Facebook\WebDriver\Chrome\ChromeOptions::CAPABILITY, $options)
         );
