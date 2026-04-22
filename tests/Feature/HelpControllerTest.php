@@ -36,7 +36,7 @@ class HelpControllerTest extends TestCase
 
         // Verify no un-transformed help-screenshots references remain (root-level path)
         $this->assertDoesNotMatchRegularExpression(
-            '#src="/help-screenshots/[^ld][^a-z]*\.png"#',
+            '#src="/help-screenshots/(?!(?:light|dark)/)#',
             $html,
             'No root-level screenshot paths should remain'
         );
