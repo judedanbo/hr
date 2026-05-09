@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\StaffSearchOptionsController;
+use App\Http\Controllers\StaffStatisticsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,3 +17,8 @@ Route::middleware('auth:sanctum')->prefix('staff-search')->group(function () {
     Route::get('/units', [StaffSearchOptionsController::class, 'units'])->name('api.staff-search.units');
     Route::get('/departments', [StaffSearchOptionsController::class, 'departments'])->name('api.staff-search.departments');
 });
+
+// Staff statistics
+Route::middleware('auth:sanctum')
+    ->get('/staff-statistics', [StaffStatisticsController::class, 'index'])
+    ->name('api.staff-statistics');
