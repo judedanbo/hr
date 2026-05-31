@@ -103,6 +103,9 @@ Route::controller(UserController::class)->middleware(['auth', 'password_changed'
     Route::get('/user/{user}/roles', 'roles')->middleware('can:view user roles')->name('user.roles');
     Route::get('/user/{user}/permissions', 'permissions')->middleware('can:view user permissions')->name('user.permissions');
     Route::get('/user/{user}/roles-permissions', 'rolesPermissions')->middleware('can:view user roles')->name('user.roles-permissions');
+    Route::get('/users/staff-options', 'staffOptions')->middleware('can:associate user staff')->name('users.staff-options');
+    Route::patch('/user/{user}/associate-staff', 'associateStaff')->middleware('can:associate user staff')->name('user.associate-staff');
+    Route::delete('/user/{user}/associate-staff', 'dissociateStaff')->middleware('can:associate user staff')->name('user.dissociate-staff');
 });
 Route::controller(RoleController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/role', 'index')->middleware('can:view roles')->name('role.index');

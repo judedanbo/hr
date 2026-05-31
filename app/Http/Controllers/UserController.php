@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Person;
 use App\Models\User;
 use App\Traits\LogsAuthorization;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -227,5 +229,36 @@ class UserController extends Controller
                 'roles_count' => $user->roles_count,
                 'permissions_count' => $user->permissions_count,
             ]);
+    }
+
+    /**
+     * Return staff people available to link to a user account.
+     *
+     * Only people who are staff (have an institution_person row) and are not
+     * already linked to another user account are returned.
+     */
+    public function staffOptions(): JsonResponse
+    {
+        $linkedPersonIds = User::query()->whereNotNull('person_id')->pluck('person_id');
+
+        $options = Person::query()
+            ->whereHas('institution')
+            ->whereNotIn('id', $linkedPersonIds)
+            ->with('institution')
+            ->orderBy('surname')
+            ->get()
+            ->map(function (Person $person): array {
+                $staffNumber = $person->institution->first()?->staff?->staff_number;
+
+                return [
+                    'value' => $person->id,
+                    'label' => $staffNumber
+                        ? "{$person->full_name} — {$staffNumber}"
+                        : $person->full_name,
+                ];
+            })
+            ->values();
+
+        return response()->json($options);
     }
 }
