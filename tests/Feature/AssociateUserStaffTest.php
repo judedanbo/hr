@@ -181,4 +181,54 @@ class AssociateUserStaffTest extends TestCase
         $response->assertForbidden();
         $this->assertEquals($person->id, $user->fresh()->person_id);
     }
+
+    /** A user permitted to assign roles. */
+    protected function roleAdmin(): User
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('assign roles to user');
+        $user->givePermissionTo('update user roles');
+
+        return $user;
+    }
+
+    public function test_cannot_assign_staff_role_to_unlinked_user(): void
+    {
+        $target = User::factory()->create(['person_id' => null]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('user.add.roles', ['user' => $target->id]), [
+                'roles' => ['staff'],
+            ]);
+
+        $response->assertSessionHasErrors('roles');
+        $this->assertFalse($target->fresh()->hasRole('staff'));
+    }
+
+    public function test_can_assign_staff_role_to_linked_user(): void
+    {
+        $person = $this->staffPerson();
+        $target = User::factory()->create(['person_id' => $person->id]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('user.add.roles', ['user' => $target->id]), [
+                'roles' => ['staff'],
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue($target->fresh()->hasRole('staff'));
+    }
+
+    public function test_can_assign_non_staff_role_to_unlinked_user(): void
+    {
+        $target = User::factory()->create(['person_id' => null]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('user.add.roles', ['user' => $target->id]), [
+                'roles' => ['admin-user'],
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue($target->fresh()->hasRole('admin-user'));
+    }
 }

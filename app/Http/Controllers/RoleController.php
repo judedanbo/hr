@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRolesRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -40,7 +41,7 @@ class RoleController extends Controller
         return Inertia::render('Role/Index', [
             'roles' => Role::withCount(['permissions', 'users'])
                 ->paginate()
-                ->through(fn($role) => [
+                ->through(fn ($role) => [
                     'id' => $role->id,
                     'name' => $role->name,
                     'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
@@ -88,7 +89,7 @@ class RoleController extends Controller
             ],
             'users' => $role->users()
                 ->paginate(10, ['*'], 'users_page')
-                ->through(fn(User $user) => [
+                ->through(fn (User $user) => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
@@ -100,7 +101,7 @@ class RoleController extends Controller
                     $query->where('name', 'like', "%{$search}%");
                 })
                 ->paginate(10, ['*'], 'permissions_page')
-                ->through(fn($permission) => [
+                ->through(fn ($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'displayName' => Str::of($permission->name)->replace('-', ' ')->title(),
@@ -274,7 +275,7 @@ class RoleController extends Controller
         return Role::get(['name as value', 'name as label']);
     }
 
-    public function addRole(Request $request, User $user)
+    public function addRole(UpdateUserRolesRequest $request, User $user)
     {
         if (Gate::denies('assign roles to user')) {
             activity()
