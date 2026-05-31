@@ -335,4 +335,38 @@ class AssociateUserStaffTest extends TestCase
             )
         );
     }
+
+    public function test_cannot_assign_staff_role_to_unlinked_user_case_insensitive(): void
+    {
+        $target = User::factory()->create(['person_id' => null]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('user.add.roles', ['user' => $target->id]), [
+                'roles' => ['Staff'],
+            ]);
+
+        $response->assertSessionHasErrors('roles');
+        $this->assertFalse($target->fresh()->hasRole('staff'));
+    }
+
+    public function test_cannot_create_new_user_with_staff_role_via_real_form_payload(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $creator = User::factory()->create();
+        $creator->givePermissionTo('create user');
+
+        // The real AddUserForm.vue multi-step posts roles nested under the step:
+        // userData.roles.roles = [...role names].
+        $response = $this->actingAs($creator)
+            ->post(route('user.store'), [
+                'userData' => [
+                    'bio' => ['name' => 'Nested Person', 'email' => 'nested@example.test'],
+                    'roles' => ['roles' => ['staff']],
+                ],
+            ]);
+
+        $response->assertSessionHasErrors('userData.roles');
+        $this->assertDatabaseMissing('users', ['email' => 'nested@example.test']);
+    }
 }

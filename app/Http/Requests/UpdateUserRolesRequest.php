@@ -29,9 +29,11 @@ class UpdateUserRolesRequest extends FormRequest
     {
         $validator->after(function (Validator $validator): void {
             $user = $this->route('user');
-            $roles = (array) $this->input('roles');
 
-            if (in_array('staff', $roles, true) && $user instanceof User && is_null($user->person_id)) {
+            if ($user instanceof User
+                && is_null($user->person_id)
+                && User::rolesIncludeStaff($this->input('roles'))
+            ) {
                 $validator->errors()->add(
                     'roles',
                     'Associate this user with a staff record before assigning the staff role.'
