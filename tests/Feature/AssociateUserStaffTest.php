@@ -278,4 +278,61 @@ class AssociateUserStaffTest extends TestCase
             ->where('user.staff.id', $person->id)
         );
     }
+
+    public function test_cannot_create_new_user_with_staff_role(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $creator = User::factory()->create();
+        $creator->givePermissionTo('create user');
+
+        $response = $this->actingAs($creator)
+            ->post(route('user.store'), [
+                'userData' => [
+                    'bio' => ['name' => 'New Person', 'email' => 'newperson@example.test'],
+                    'roles' => ['staff'],
+                ],
+            ]);
+
+        $response->assertSessionHasErrors('userData.roles');
+        $this->assertDatabaseMissing('users', ['email' => 'newperson@example.test']);
+    }
+
+    public function test_add_users_rejects_mixed_batch_when_one_is_unlinked(): void
+    {
+        $staffRole = \Spatie\Permission\Models\Role::findByName('staff');
+        $linked = User::factory()->create(['person_id' => $this->staffPerson()->id]);
+        $unlinked = User::factory()->create(['person_id' => null]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('role.add.users', ['role' => $staffRole->id]), [
+                'users' => [$linked->id, $unlinked->id],
+            ]);
+
+        $response->assertSessionHas('error');
+        $this->assertFalse($linked->fresh()->hasRole('staff'));
+        $this->assertFalse($unlinked->fresh()->hasRole('staff'));
+    }
+
+    public function test_user_index_payload_includes_link_status(): void
+    {
+        $person = $this->staffPerson();
+        $linkedUser = User::factory()->create(['person_id' => $person->id]);
+
+        $viewer = User::factory()->create();
+        $viewer->givePermissionTo('view all users');
+
+        $response = $this->actingAs($viewer)->get(route('user.index'));
+
+        $response->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('User/Index')
+            ->has('users.data', fn (\Inertia\Testing\AssertableInertia $rows) => $rows
+                ->each(fn (\Inertia\Testing\AssertableInertia $row) => $row
+                    ->has('person_id')
+                    ->has('staff_name')
+                    ->etc()
+                )
+            )
+        );
+    }
 }
