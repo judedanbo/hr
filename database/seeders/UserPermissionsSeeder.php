@@ -37,6 +37,7 @@ class UserPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'update user roles']);
         Permission::firstOrCreate(['name' => 'view user profile']);
         Permission::firstOrCreate(['name' => 'update user profile']);
+        Permission::firstOrCreate(['name' => 'associate user staff']);
         Role::findByName('staff')
             ->givePermissionTo([
                 'view user',
