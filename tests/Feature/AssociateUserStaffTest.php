@@ -188,6 +188,7 @@ class AssociateUserStaffTest extends TestCase
         $user = User::factory()->create();
         $user->givePermissionTo('assign roles to user');
         $user->givePermissionTo('update user roles');
+        $user->givePermissionTo('update role');
 
         return $user;
     }
@@ -230,5 +231,34 @@ class AssociateUserStaffTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $this->assertTrue($target->fresh()->hasRole('admin-user'));
+    }
+
+    public function test_add_users_rejects_unlinked_user_for_staff_role(): void
+    {
+        $staffRole = Role::findByName('staff');
+        $unlinked = User::factory()->create(['person_id' => null]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('role.add.users', ['role' => $staffRole->id]), [
+                'users' => [$unlinked->id],
+            ]);
+
+        $response->assertSessionHas('error');
+        $this->assertFalse($unlinked->fresh()->hasRole('staff'));
+    }
+
+    public function test_add_users_allows_linked_user_for_staff_role(): void
+    {
+        $staffRole = Role::findByName('staff');
+        $person = $this->staffPerson();
+        $linked = User::factory()->create(['person_id' => $person->id]);
+
+        $response = $this->actingAs($this->roleAdmin())
+            ->post(route('role.add.users', ['role' => $staffRole->id]), [
+                'users' => [$linked->id],
+            ]);
+
+        $response->assertSessionHas('success');
+        $this->assertTrue($linked->fresh()->hasRole('staff'));
     }
 }

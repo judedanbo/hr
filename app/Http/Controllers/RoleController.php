@@ -433,6 +433,20 @@ class RoleController extends Controller
             'users.*' => 'exists:users,id',
         ]);
 
+        if ($role->name === 'staff') {
+            $unlinked = User::query()
+                ->whereIn('id', $request->users)
+                ->whereNull('person_id')
+                ->pluck('name');
+
+            if ($unlinked->isNotEmpty()) {
+                return redirect()->back()->with(
+                    'error',
+                    'These users must be associated with a staff record before assigning the staff role: ' . $unlinked->implode(', ')
+                );
+            }
+        }
+
         activity()
             ->causedBy(auth()->user())
             ->performedOn($role)
