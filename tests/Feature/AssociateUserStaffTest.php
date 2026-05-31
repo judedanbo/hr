@@ -81,4 +81,77 @@ class AssociateUserStaffTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_admin_can_associate_user_with_staff_record(): void
+    {
+        $user = User::factory()->create(['person_id' => null]);
+        $person = $this->staffPerson();
+
+        $response = $this->actingAs($this->adminUser())
+            ->patch(route('user.associate-staff', ['user' => $user->id]), [
+                'person_id' => $person->id,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertEquals($person->id, $user->fresh()->person_id);
+    }
+
+    public function test_cannot_associate_a_non_staff_person(): void
+    {
+        $user = User::factory()->create(['person_id' => null]);
+        $nonStaff = Person::factory()->create();
+
+        $response = $this->actingAs($this->adminUser())
+            ->patch(route('user.associate-staff', ['user' => $user->id]), [
+                'person_id' => $nonStaff->id,
+            ]);
+
+        $response->assertSessionHasErrors('person_id');
+        $this->assertNull($user->fresh()->person_id);
+    }
+
+    public function test_cannot_associate_a_staff_already_linked_to_another_user(): void
+    {
+        $person = $this->staffPerson();
+        User::factory()->create(['person_id' => $person->id]);
+
+        $user = User::factory()->create(['person_id' => null]);
+
+        $response = $this->actingAs($this->adminUser())
+            ->patch(route('user.associate-staff', ['user' => $user->id]), [
+                'person_id' => $person->id,
+            ]);
+
+        $response->assertSessionHasErrors('person_id');
+        $this->assertNull($user->fresh()->person_id);
+    }
+
+    public function test_associate_requires_permission(): void
+    {
+        $user = User::factory()->create(['person_id' => null]);
+        $person = $this->staffPerson();
+
+        $response = $this->actingAs(User::factory()->create())
+            ->patch(route('user.associate-staff', ['user' => $user->id]), [
+                'person_id' => $person->id,
+            ]);
+
+        $response->assertForbidden();
+        $this->assertNull($user->fresh()->person_id);
+    }
+
+    public function test_can_reassociate_user_to_a_different_staff_record(): void
+    {
+        $firstPerson = $this->staffPerson();
+        $secondPerson = $this->staffPerson();
+        $user = User::factory()->create(['person_id' => $firstPerson->id]);
+
+        $response = $this->actingAs($this->adminUser())
+            ->patch(route('user.associate-staff', ['user' => $user->id]), [
+                'person_id' => $secondPerson->id,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertEquals($secondPerson->id, $user->fresh()->person_id);
+    }
 }

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\StoreUserStaffRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Person;
 use App\Models\User;
 use App\Traits\LogsAuthorization;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -229,6 +231,19 @@ class UserController extends Controller
                 'roles_count' => $user->roles_count,
                 'permissions_count' => $user->permissions_count,
             ]);
+    }
+
+    /**
+     * Associate a user account with an existing staff record.
+     */
+    public function associateStaff(StoreUserStaffRequest $request, User $user): RedirectResponse
+    {
+        $user->person_id = $request->validated()['person_id'];
+        $user->save();
+
+        $this->logSuccess('associated a user with a staff record', $user);
+
+        return redirect()->back()->with('success', 'User associated with staff record successfully');
     }
 
     /**
