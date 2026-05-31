@@ -261,4 +261,21 @@ class AssociateUserStaffTest extends TestCase
         $response->assertSessionHas('success');
         $this->assertTrue($linked->fresh()->hasRole('staff'));
     }
+
+    public function test_user_show_payload_includes_staff_link(): void
+    {
+        $person = $this->staffPerson();
+        $user = User::factory()->create(['person_id' => $person->id]);
+
+        $viewer = User::factory()->create();
+        $viewer->givePermissionTo('view user');
+
+        $response = $this->actingAs($viewer)->get(route('user.show', ['user' => $user->id]));
+
+        $response->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('User/Show')
+            ->where('user.person_id', $person->id)
+            ->where('user.staff.id', $person->id)
+        );
+    }
 }

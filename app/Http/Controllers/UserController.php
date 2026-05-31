@@ -30,7 +30,7 @@ class UserController extends Controller
         $this->logSuccess('viewed all users');
 
         $users = User::query()
-            ->with('roles', 'permissions')
+            ->with('roles', 'permissions', 'person.institution')
             ->withCount(['roles', 'permissions'])
             ->paginate(10)
             ->withQueryString()
@@ -39,6 +39,8 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'verified' => $user->email_verified_at ? 'Yes' : 'No',
+                'person_id' => $user->person_id,
+                'staff_name' => $user->person?->full_name,
                 'roles_count' => $user->roles_count,
                 'roles' => $user->roles->map(function ($role) {
                     return [
@@ -97,7 +99,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user->load(['roles', 'permissions']);
+        $user->load(['roles', 'permissions', 'person.institution']);
 
         $this->logSuccess('viewed a user', $user);
 
@@ -107,6 +109,12 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'verified' => $user->email_verified_at ? 'Yes' : 'No',
+                'person_id' => $user->person_id,
+                'staff' => $user->person ? [
+                    'id' => $user->person->id,
+                    'name' => $user->person->full_name,
+                    'staff_number' => $user->person->institution->first()?->staff?->staff_number,
+                ] : null,
                 'roles' => $user->roles->map(function ($role) {
                     return [
                         'id' => $role->id,
