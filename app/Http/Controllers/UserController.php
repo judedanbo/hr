@@ -247,6 +247,26 @@ class UserController extends Controller
     }
 
     /**
+     * Remove a user's association with a staff record.
+     *
+     * An unlinked user cannot be staff, so the staff role is removed as well to
+     * keep the invariant consistent.
+     */
+    public function dissociateStaff(User $user): RedirectResponse
+    {
+        $user->person_id = null;
+        $user->save();
+
+        if ($user->hasRole('staff')) {
+            $user->removeRole('staff');
+        }
+
+        $this->logSuccess('removed a user staff association', $user);
+
+        return redirect()->back()->with('success', 'Staff association removed successfully');
+    }
+
+    /**
      * Return staff people available to link to a user account.
      *
      * Only people who are staff (have an institution_person row) and are not

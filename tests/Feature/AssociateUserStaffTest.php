@@ -154,4 +154,31 @@ class AssociateUserStaffTest extends TestCase
         $response->assertRedirect();
         $this->assertEquals($secondPerson->id, $user->fresh()->person_id);
     }
+
+    public function test_dissociate_clears_person_and_removes_staff_role(): void
+    {
+        $person = $this->staffPerson();
+        $user = User::factory()->create(['person_id' => $person->id]);
+        $user->assignRole('staff');
+
+        $response = $this->actingAs($this->adminUser())
+            ->delete(route('user.dissociate-staff', ['user' => $user->id]));
+
+        $response->assertRedirect();
+        $user->refresh();
+        $this->assertNull($user->person_id);
+        $this->assertFalse($user->hasRole('staff'));
+    }
+
+    public function test_dissociate_requires_permission(): void
+    {
+        $person = $this->staffPerson();
+        $user = User::factory()->create(['person_id' => $person->id]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->delete(route('user.dissociate-staff', ['user' => $user->id]));
+
+        $response->assertForbidden();
+        $this->assertEquals($person->id, $user->fresh()->person_id);
+    }
 }
