@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\StoreUserStaffRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Person;
 use App\Models\User;
 use App\Traits\LogsAuthorization;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -26,7 +30,7 @@ class UserController extends Controller
         $this->logSuccess('viewed all users');
 
         $users = User::query()
-            ->with('roles', 'permissions')
+            ->with('roles', 'permissions', 'person.institution')
             ->withCount(['roles', 'permissions'])
             ->paginate(10)
             ->withQueryString()
@@ -35,6 +39,8 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'verified' => $user->email_verified_at ? 'Yes' : 'No',
+                'person_id' => $user->person_id,
+                'staff_name' => $user->person?->full_name,
                 'roles_count' => $user->roles_count,
                 'roles' => $user->roles->map(function ($role) {
                     return [
@@ -93,7 +99,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user->load(['roles', 'permissions']);
+        $user->load(['roles', 'permissions', 'person.institution']);
 
         $this->logSuccess('viewed a user', $user);
 
@@ -103,6 +109,12 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'verified' => $user->email_verified_at ? 'Yes' : 'No',
+                'person_id' => $user->person_id,
+                'staff' => $user->person ? [
+                    'id' => $user->person->id,
+                    'name' => $user->person->full_name,
+                    'staff_number' => $user->person->institution->first()?->staff?->staff_number,
+                ] : null,
                 'roles' => $user->roles->map(function ($role) {
                     return [
                         'id' => $role->id,
@@ -227,5 +239,69 @@ class UserController extends Controller
                 'roles_count' => $user->roles_count,
                 'permissions_count' => $user->permissions_count,
             ]);
+    }
+
+    /**
+     * Associate a user account with an existing staff record.
+     */
+    public function associateStaff(StoreUserStaffRequest $request, User $user): RedirectResponse
+    {
+        $user->person_id = $request->validated()['person_id'];
+        $user->save();
+
+        $this->logSuccess('associated a user with a staff record', $user);
+
+        return redirect()->back()->with('success', 'User associated with staff record successfully');
+    }
+
+    /**
+     * Remove a user's association with a staff record.
+     *
+     * An unlinked user cannot be staff, so the staff role is removed as well to
+     * keep the invariant consistent.
+     */
+    public function dissociateStaff(User $user): RedirectResponse
+    {
+        $user->person_id = null;
+        $user->save();
+
+        if ($user->hasRole('staff')) {
+            $user->removeRole('staff');
+        }
+
+        $this->logSuccess('removed a user staff association', $user);
+
+        return redirect()->back()->with('success', 'Staff association removed successfully');
+    }
+
+    /**
+     * Return staff people available to link to a user account.
+     *
+     * Only people who are staff (have an institution_person row) and are not
+     * already linked to another user account are returned.
+     */
+    public function staffOptions(): JsonResponse
+    {
+        $linkedPersonIds = User::query()->whereNotNull('person_id')->pluck('person_id');
+
+        $options = Person::query()
+            ->whereHas('institution')
+            ->whereNotIn('id', $linkedPersonIds)
+            ->with('institution')
+            ->orderBy('surname')
+            ->get()
+            ->map(function (Person $person): array {
+                $staffNumber = $person->institution->first()?->staff?->staff_number;
+
+                return [
+                    'value' => $person->id,
+                    'label' => $staffNumber
+                        ? "{$person->full_name} — {$staffNumber}"
+                        : $person->full_name,
+                ];
+            })
+            ->values();
+
+        return response()->json($options);
     }
 }

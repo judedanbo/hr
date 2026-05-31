@@ -23,6 +23,10 @@ let props = defineProps({
 		type: Boolean,
 		default: false,
 	},
+	hasStaffRecord: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const openAddRoleModal = ref(false);
@@ -84,7 +88,7 @@ const deleteRole = (user, role) => {
 		</div>
 
 		<Modal :show="openAddRoleModal" @close="toggleAddRoleModal()">
-			<AddUserRole :user="user" @form-submitted="toggleAddRoleModal()" />
+			<AddUserRole :user="user" :has-staff-record="props.hasStaffRecord" @form-submitted="toggleAddRoleModal()" />
 		</Modal>
 		<Modal :show="openEditPromoteModal" @close="toggleEditRoleModal()">
 			<Edit

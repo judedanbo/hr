@@ -7,7 +7,10 @@ use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Arr;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Contracts\Role as RoleContract;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -84,6 +87,32 @@ class User extends Authenticatable
     public function isMultiRoleStaff(): bool
     {
         return $this->hasRole('staff') && $this->roles->count() > 1;
+    }
+
+    /**
+     * Whether the given set of role identifiers includes the staff role.
+     *
+     * Resolves names, ids, and Role instances case-insensitively so the check
+     * cannot be bypassed by casing (the roles table uses a case-insensitive
+     * collation) or by a nested request payload shape.
+     *
+     * @param  mixed  $roles  role names/ids/instances, possibly nested
+     */
+    public static function rolesIncludeStaff($roles): bool
+    {
+        return collect(Arr::wrap($roles))
+            ->flatten()
+            ->contains(function ($role): bool {
+                if ($role instanceof RoleContract) {
+                    $name = $role->name;
+                } elseif (is_numeric($role)) {
+                    $name = Role::find($role)?->name;
+                } else {
+                    $name = (string) $role;
+                }
+
+                return $name !== null && strtolower($name) === 'staff';
+            });
     }
 
     public function canAccessAdminDashboard(): bool

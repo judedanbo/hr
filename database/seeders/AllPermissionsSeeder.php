@@ -36,7 +36,7 @@ class AllPermissionsSeeder extends Seeder
     {
         return [
             // ============================================
-            // User Management (17)
+            // User Management (18)
             // ============================================
             'view all users',
             'create user',
@@ -55,6 +55,7 @@ class AllPermissionsSeeder extends Seeder
             'upload avatar',
             'edit avatar',
             'reset user password',
+            'associate user staff',
 
             // ============================================
             // Roles & Permissions (17)

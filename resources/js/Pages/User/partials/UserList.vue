@@ -15,11 +15,16 @@ const emit = defineEmits([
 	"editUser",
 	"deleteUser",
 	"resetPassword",
+	"associateStaff",
 ]);
 const props = defineProps({
 	users: {
 		type: Array,
 		required: true,
+	},
+	canAssociateStaff: {
+		type: Boolean,
+		default: false,
 	},
 });
 const page = usePage();
@@ -81,7 +86,15 @@ const tableCols = [
 								<TableData>
 									{{ user.permissions_count }}
 								</TableData>
-								<TableData class="flex justify-end">
+								<TableData class="flex justify-end items-center gap-2">
+									<button
+										v-if="canAssociateStaff"
+										type="button"
+										class="text-xs font-medium text-green-700 dark:text-gray-100"
+										@click="emit('associateStaff', user.id)"
+									>
+										{{ user.person_id ? "Change staff" : "Associate staff" }}
+									</button>
 									<SubMenu
 										v-if="
 											permissions?.includes('update staff') ||
