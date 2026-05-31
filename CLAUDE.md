@@ -386,6 +386,18 @@ if (!Gate::allows('model.create')) {
 v-if="$page.props.can.model.create"
 ```
 
+#### D. Seeding Permissions on Deploy
+
+**IMPORTANT**: New permissions added to seeders do NOT reach existing databases automatically. After deploying a change that introduces a permission, run the permission seeders against the target database:
+
+```bash
+php artisan db:seed --class=UserPermissionsSeeder --force
+php artisan db:seed --class=AllPermissionsSeeder --force   # syncs all permissions to super-administrator
+```
+
+- Tests pass without this because the test database re-seeds before every test (`$seed = true`), masking the gap.
+- The `super-administrator` `Gate::before` override (`app/Providers/AuthServiceProvider.php`) makes `can()` return `true` for any ability, so backend checks can appear to work even when the permission row is missing. **UI that gates on `$page.props.auth.permissions` (the explicit assigned list) will still be hidden** until the permission is actually seeded and assigned — so the feature looks broken/invisible in the browser even for super admins.
+
 ### 5. Testing
 
 #### A. Create Tests
