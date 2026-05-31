@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head, usePage } from "@inertiajs/vue3";
+import { Head, usePage, router } from "@inertiajs/vue3";
 import Summary from "@/Pages/Person/Summary.vue";
 import UserRoles from "./partials/UserRoles.vue";
 import UserPermissions from "./partials/UserPermissions.vue";
@@ -16,6 +16,7 @@ import EditContactForm from "./EditContactForm.vue";
 import NoItem from "@/Components/NoItem.vue";
 import NoPermission from "@/Components/NoPermission.vue";
 import { url } from "@formkit/icons";
+import AssociateStaff from "./partials/AssociateStaff.vue";
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -45,6 +46,18 @@ const toggleEditContactModal = useToggle(openEditContact);
 
 const editContactModal = () => {
 	openEditContact.value = !openEditContact.value;
+};
+
+const openAssociateModal = ref(false);
+const toggleAssociateModal = useToggle(openAssociateModal);
+
+const unlinkStaff = () => {
+	if (!window.confirm("Unlink this user from their staff record? This also removes the staff role.")) {
+		return;
+	}
+	router.delete(route("user.dissociate-staff", { user: props.user.id }), {
+		preserveScroll: true,
+	});
 };
 </script>
 <template>
@@ -177,8 +190,37 @@ const editContactModal = () => {
 							:user="user.id"
 							class="flex-1"
 							:can-add="permissions?.includes('assign roles to user')"
+							:has-staff-record="!!user.person_id"
 							@close-form="toggleRolesForm()"
 						/>
+						<div
+							v-if="permissions?.includes('associate user staff')"
+							class="rounded-lg bg-green-200 dark:bg-gray-800 p-6 ring-1 ring-gray-900/5 dark:ring-gray-600/80 w-full md:w-2/5"
+						>
+							<h2 class="text-md font-semibold text-gray-900 dark:text-gray-100">
+								Staff record
+							</h2>
+							<p class="mt-2 text-sm text-gray-700 dark:text-gray-200">
+								{{ user.staff ? `${user.staff.name} — ${user.staff.staff_number ?? "—"}` : "Not linked" }}
+							</p>
+							<div class="mt-4 flex gap-3">
+								<button
+									type="button"
+									class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20"
+									@click="toggleAssociateModal()"
+								>
+									{{ user.person_id ? "Change" : "Associate" }}
+								</button>
+								<button
+									v-if="user.person_id"
+									type="button"
+									class="rounded-md px-2 py-1 text-xs font-medium text-red-600 ring-1 ring-inset ring-red-600/20 dark:ring-red-400/30"
+									@click="unlinkStaff"
+								>
+									Unlink
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -192,6 +234,9 @@ const editContactModal = () => {
 					:contact="staff.staff_id"
 					@form-submitted="(model) => editContactModal(model)"
 				/>
+			</NewModal>
+			<NewModal :show="openAssociateModal" @close="toggleAssociateModal()">
+				<AssociateStaff :user="user.id" @form-submitted="toggleAssociateModal()" />
 			</NewModal>
 		</main>
 		<NoPermission v-else />

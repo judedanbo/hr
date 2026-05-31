@@ -7,6 +7,7 @@ const emit = defineEmits(["formSubmitted"]);
 
 const props = defineProps({
 	user: { type: Number, required: true },
+	hasStaffRecord: { type: Boolean, default: false },
 });
 
 const roles = ref([]);
@@ -38,7 +39,7 @@ const submitHandler = (data, node) => {
 	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
 		<h1 class="text-2xl pb-4 dark:text-gray-100">Roles</h1>
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
-			<UserRoleForm :user-roles="userRoles.roles" />
+			<UserRoleForm :user-roles="userRoles.roles" :has-staff-record="props.hasStaffRecord" />
 		</FormKit>
 	</main>
 </template>

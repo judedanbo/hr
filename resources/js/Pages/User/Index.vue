@@ -14,6 +14,7 @@ import { useSearch } from "@/Composables/search";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import EditUserForm from "./partials/EditUserForm.vue";
 import Delete from "./partials/Delete.vue";
+import AssociateStaff from "./partials/AssociateStaff.vue";
 
 const navigation = computed(() => useNavigation(props.users));
 
@@ -74,6 +75,13 @@ const page = usePage();
 const permissions = computed(() => {
 	return page.props?.auth.permissions;
 });
+
+const associateUserId = ref(null);
+const openAssociateModal = ref(false);
+const openAssociate = (id) => {
+	associateUserId.value = id;
+	openAssociateModal.value = true;
+};
 </script>
 
 <template>
@@ -96,10 +104,12 @@ const permissions = computed(() => {
 
 				<UserList
 					:users="users.data"
+					:can-associate-staff="permissions?.includes('associate user staff')"
 					@open-user="(userId) => openUser(userId)"
 					@edit-user="(user) => editUser(user)"
 					@delete-user="(user) => deleteUser(user)"
 					@reset-password="(user) => resetPassword(user)"
+					@associate-staff="(id) => openAssociate(id)"
 				>
 					<template #pagination>
 						<Pagination :navigation="navigation" />
@@ -119,5 +129,8 @@ const permissions = computed(() => {
 			@close="toggleDeleteModal"
 			@delete-confirmed="deleteConfirmed()"
 		/>
+		<Modal v-if="associateUserId" :show="openAssociateModal" @close="openAssociateModal = false; associateUserId = null">
+			<AssociateStaff :user="associateUserId" @form-submitted="openAssociateModal = false" />
+		</Modal>
 	</MainLayout>
 </template>
