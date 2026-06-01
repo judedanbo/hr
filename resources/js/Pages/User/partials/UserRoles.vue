@@ -4,7 +4,6 @@ import { ref, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
 import AddUserRole from "./AddUserRole.vue";
-import Edit from "./Edit.vue";
 import Delete from "./Delete.vue";
 import RolesList from "./RolesList.vue";
 
@@ -32,10 +31,6 @@ let props = defineProps({
 const openAddRoleModal = ref(false);
 let toggleAddRoleModal = useToggle(openAddRoleModal);
 // emit("closeForm");
-
-const openEditPromoteModal = ref(false);
-const toggleEditRoleModal = useToggle(openEditPromoteModal);
-const editModel = ref(null);
 
 const openDeleteRoleModal = ref(false);
 const toggleDeleteRoleModal = useToggle(openDeleteRoleModal);
@@ -82,14 +77,6 @@ const deleteRole = (user, role) => {
 
 		<Modal :show="openAddRoleModal" @close="toggleAddRoleModal()">
 			<AddUserRole :user="user" :has-staff-record="props.hasStaffRecord" @form-submitted="toggleAddRoleModal()" />
-		</Modal>
-		<Modal :show="openEditPromoteModal" @close="toggleEditRoleModal()">
-			<Edit
-				:model="editModel"
-				:staff="staff"
-				:institution="institution"
-				@form-submitted="toggleEditRoleModal()"
-			/>
 		</Modal>
 
 		<Delete
