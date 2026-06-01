@@ -94,4 +94,22 @@ class AuditServiceApiAccessTest extends TestCase
             'user_id' => null,
         ]);
     }
+
+    public function test_request_with_real_token_logs_token_name_and_duration(): void
+    {
+        $user = User::factory()->create();
+        $plainTextToken = $user->createToken('Audit Service Website', ['staff-statistics:read'])->plainTextToken;
+
+        $this->getJson('/api/staff-statistics', ['Authorization' => "Bearer {$plainTextToken}"])
+            ->assertStatus(200);
+
+        $log = \App\Models\ApiLog::query()->latest('id')->first();
+
+        $this->assertNotNull($log);
+        $this->assertSame('Audit Service Website', $log->token_name);
+        $this->assertSame($user->id, $log->user_id);
+        $this->assertNotNull($log->duration_ms);
+        // The plaintext token must never be persisted anywhere on the row.
+        $this->assertStringNotContainsString($plainTextToken, json_encode($log->getAttributes()));
+    }
 }
