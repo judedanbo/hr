@@ -70,4 +70,29 @@ class UserShowTest extends TestCase
             $this->assertFalse($inherited->contains('shared.permission'));
         });
     }
+
+    public function test_inherited_permission_via_lists_all_granting_roles(): void
+    {
+        $permission = Permission::firstOrCreate(['name' => 'multi.role.granted']);
+
+        $roleA = Role::firstOrCreate(['name' => 'editor']);
+        $roleB = Role::firstOrCreate(['name' => 'publisher']);
+        $roleA->givePermissionTo($permission);
+        $roleB->givePermissionTo($permission);
+
+        $target = User::factory()->create();
+        $target->assignRole([$roleA->name, $roleB->name]);
+
+        $response = $this->actingAs($this->viewer())
+            ->get(route('user.show', ['user' => $target->id]));
+
+        $response->assertInertia(function (Assert $page) {
+            $inherited = collect($page->toArray()['props']['user']['inherited_permissions'])
+                ->firstWhere('name', 'multi.role.granted');
+
+            $this->assertNotNull($inherited);
+            $this->assertStringContainsString('editor', $inherited['via']);
+            $this->assertStringContainsString('publisher', $inherited['via']);
+        });
+    }
 }
