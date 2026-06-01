@@ -80,6 +80,7 @@ class SharedPropsTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('auth.has_photo', null)
                 ->where('auth.qualifications_count', null)
+                ->where('auth.photo_url', null)
             );
     }
 
