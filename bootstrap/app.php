@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // API middleware group
         $middleware->api(prepend: [
+            \App\Http\Middleware\LogApiRequests::class,
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
 
@@ -41,6 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'password_changed' => \App\Http\Middleware\PasswordChanged::class,
             'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
             'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+            'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
             'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
             'can' => \Illuminate\Auth\Middleware\Authorize::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
