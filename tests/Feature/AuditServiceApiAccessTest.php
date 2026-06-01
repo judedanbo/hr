@@ -112,4 +112,14 @@ class AuditServiceApiAccessTest extends TestCase
         // The plaintext token must never be persisted anywhere on the row.
         $this->assertStringNotContainsString($plainTextToken, json_encode($log->getAttributes()));
     }
+
+    public function test_statistics_token_cannot_reach_other_api_routes(): void
+    {
+        $user = User::factory()->create();
+
+        \Laravel\Sanctum\Sanctum::actingAs($user, ['staff-statistics:read']);
+
+        $this->getJson('/api/user')->assertStatus(403);
+        $this->getJson('/api/staff-search/options')->assertStatus(403);
+    }
 }
