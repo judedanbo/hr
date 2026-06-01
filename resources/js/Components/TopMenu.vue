@@ -12,6 +12,7 @@ const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const page = usePage();
 const user = computed(() => page.props?.auth.user);
+const photoUrl = computed(() => page.props?.auth?.photo_url);
 defineProps({
 	userNavigation: Array,
 });
@@ -62,8 +63,8 @@ defineProps({
 				<MenuButton class="-m-1.5 flex items-center p-1.5">
 					<span class="sr-only">Open user menu</span>
 					<img
-						class="h-8 w-8 rounded-full bg-gray-50"
-						src="/images/placeholder.webp"
+						class="h-8 w-8 rounded-full bg-gray-50 object-cover"
+						:src="photoUrl || '/images/placeholder.webp'"
 						alt=""
 					/>
 					<span class="hidden lg:flex lg:items-center">
