@@ -64,21 +64,41 @@ Route::middleware(['auth:sanctum', 'abilities:staff-statistics:read'])
     ->name('api.staff-statistics');
 ```
 
-Requires registering Sanctum's ability middleware aliases in
-`app/Http/Kernel.php` `$routeMiddleware` (this project uses the legacy Laravel 10
-array name, not `$middlewareAliases`):
+Requires registering Sanctum's ability middleware aliases in the **live**
+middleware config. **Correction (discovered during implementation):** this
+project actually uses the streamlined Laravel 11 structure — the live config is
+`bootstrap/app.php` (`$middleware->alias([...])`), NOT `app/Http/Kernel.php`,
+which is dead code in this repo. The aliases are:
 
 ```php
 'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
 'ability'   => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
 ```
 
-A token lacking `staff-statistics:read` receives **403**; the Audit token can
-reach **only** this endpoint.
+A token lacking `staff-statistics:read` receives **403** on this endpoint.
 
-> Note: the existing session-based SPA (guard `web`) is unaffected — session
-> tokens are granted all abilities (`*`) by Sanctum, so the in-app frontend
-> continues to pass the `abilities` check.
+**Least-privilege across the whole API surface.** Sanctum's `auth:sanctum`
+accepts *any* valid token regardless of abilities, so scoping only the
+statistics route would still leave the Audit token able to read the other
+token-authenticated API routes. To make "the Audit token can reach **only**
+`/api/staff-statistics`" actually true, every route in `routes/api.php` is given
+its own ability requirement:
+
+| Route | Required ability |
+|-------|------------------|
+| `GET /api/staff-statistics` | `staff-statistics:read` |
+| `GET /api/user` | `user:read` |
+| `GET /api/staff-search/*` | `staff-search:read` |
+
+The Audit token is issued with only `staff-statistics:read`, so it receives
+**403** from `/api/user` and `/api/staff-search/*`. A regression test asserts
+this.
+
+> Note: the existing session-based SPA (guard `web`) is unaffected — Sanctum
+> assigns web-guard requests a `TransientToken` whose `can()` always returns
+> `true`, so the in-app frontend passes every `abilities` check. (The SPA also
+> consumes the separate `web` route `/staff-search/options`, not the
+> `/api`-prefixed one.)
 
 ### 4. API request logging
 
