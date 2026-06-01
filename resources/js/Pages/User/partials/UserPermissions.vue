@@ -33,10 +33,11 @@ const confirmDeletePermission = (model) => {
 };
 
 const deletePermission = (user, permission) => {
-	router.patch(route("user.revoke.permissions", { user }), {
-		permission,
-		preserveScroll: true,
-	});
+	router.patch(
+		route("user.revoke.permissions", { user }),
+		{ permission },
+		{ preserveScroll: true },
+	);
 	toggleDeletePermissionModal();
 };
 </script>

@@ -43,10 +43,11 @@ const confirmDeleteRole = (model) => {
 };
 
 const deleteRole = (user, role) => {
-	router.patch(route("user.revoke.roles", { user: user }), {
-		role,
-		preserveScroll: true,
-	});
+	router.patch(
+		route("user.revoke.roles", { user: user }),
+		{ role },
+		{ preserveScroll: true },
+	);
 	toggleDeleteRoleModal();
 };
 </script>
