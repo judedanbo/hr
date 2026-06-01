@@ -1,6 +1,6 @@
 <script setup>
 import { CheckIcon } from "@heroicons/vue/20/solid";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 const props = defineProps({
 	userRoles: {
@@ -14,6 +14,13 @@ const props = defineProps({
 });
 let roles = ref([]);
 const localUserRoles = ref([...props.userRoles]);
+
+watch(
+	() => props.userRoles,
+	(newRoles) => {
+		localUserRoles.value = [...(newRoles ?? [])];
+	},
+);
 
 const roleOptions = computed(() =>
 	roles.value.map((role) =>

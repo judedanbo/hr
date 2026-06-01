@@ -99,9 +99,24 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $user->load(['roles', 'permissions', 'person.institution']);
+        $user->load(['roles.permissions', 'permissions', 'person.institution']);
 
         $this->logSuccess('viewed a user', $user);
+
+        $directIds = $user->getDirectPermissions()->pluck('id');
+        $roles = $user->roles;
+
+        $inherited = $user->getAllPermissions()
+            ->reject(fn ($permission) => $directIds->contains($permission->id))
+            ->map(fn ($permission) => [
+                'id' => $permission->id,
+                'name' => $permission->name,
+                'via' => $roles
+                    ->filter(fn ($role) => $role->permissions->contains('id', $permission->id))
+                    ->pluck('name')
+                    ->implode(', '),
+            ])
+            ->values();
 
         return Inertia::render('User/Show', [
             'user' => [
@@ -115,20 +130,17 @@ class UserController extends Controller
                     'name' => $user->person->full_name,
                     'staff_number' => $user->person->institution->first()?->staff?->staff_number,
                 ] : null,
-                'roles' => $user->roles->map(function ($role) {
-                    return [
-                        'id' => $role->id,
-                        'name' => $role->name,
-                        'start_date' => $role->created_at->format('d M Y'),
-                    ];
-                }),
-                'permissions' => $user->getAllPermissions()->map(function ($permission) {
-                    return [
-                        'id' => $permission->id,
-                        'name' => $permission->name,
-                        'start_date' => $permission->created_at->format('d M Y'),
-                    ];
-                }),
+                'roles' => $user->roles->map(fn ($role) => [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                    'start_date' => $role->created_at->format('d M Y'),
+                ]),
+                'direct_permissions' => $user->getDirectPermissions()->map(fn ($permission) => [
+                    'id' => $permission->id,
+                    'name' => $permission->name,
+                    'start_date' => $permission->created_at->format('d M Y'),
+                ])->values(),
+                'inherited_permissions' => $inherited,
             ],
         ]);
     }

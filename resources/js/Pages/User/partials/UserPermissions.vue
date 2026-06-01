@@ -1,116 +1,106 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
-import { ref, watch, computed } from "vue";
+import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
 import Modal from "@/Components/NewModal.vue";
 import AddUserPermission from "./AddUserPermission.vue";
-import Edit from "./Edit.vue";
 import Delete from "./Delete.vue";
 import PermissionsList from "./PermissionsList.vue";
 
-const emit = defineEmits(["closeForm"]);
+defineEmits(["closeForm"]);
 
-let props = defineProps({
-	user: {
-		type: Number,
-		required: true,
-	},
-	permissions: {
-		type: Array,
-		default: () => null,
-	},
-	canAdd: {
-		type: Boolean,
-		default: false,
-	},
+const props = defineProps({
+	user: { type: Number, required: true },
+	directPermissions: { type: Array, default: () => [] },
+	inheritedPermissions: { type: Array, default: () => [] },
+	canAdd: { type: Boolean, default: false },
 });
 
-const userPermissions = computed(() => {
-	return props.permissions.map((permission) => {
-		return permission.name;
-	});
-});
+const directNames = computed(() =>
+	props.directPermissions.map((permission) => permission.name),
+);
 
 const openAddPermissionModal = ref(false);
-let toggleAddPermissionModal = useToggle(openAddPermissionModal);
-// emit("closeForm");
-
-const openEditPromoteModal = ref(false);
-const toggleEditPermissionModal = useToggle(openEditPromoteModal);
-const editModel = ref(null);
+const toggleAddPermissionModal = useToggle(openAddPermissionModal);
 
 const openDeletePermissionModal = ref(false);
 const toggleDeletePermissionModal = useToggle(openDeletePermissionModal);
-
 const deleteModel = ref(null);
+
 const confirmDeletePermission = (model) => {
 	deleteModel.value = model;
 	toggleDeletePermissionModal();
-	// deletePermission(model.staff_id, model.rank_id);
 };
 
 const deletePermission = (user, permission) => {
-	router.patch(route("user.revoke.permissions", { user: user }), {
-		permission,
-		preserveScroll: true,
-	});
+	router.patch(
+		route("user.revoke.permissions", { user }),
+		{ permission },
+		{ preserveScroll: true },
+	);
 	toggleDeletePermissionModal();
 };
-
-// watch(
-// 	() => props.showPermissionForm,
-// 	(value) => {
-// 		if (value) {
-// 			openAddPermissionModal.value = true;
-// 		}
-// 	},
-// );
 </script>
+
 <template>
-	<!-- Permission History -->
 	<main>
 		<h2 class="sr-only">User Permissions</h2>
 		<div
-			class="rounded-lg bg-green-200 dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80"
+			class="rounded-2xl border border-green-200/60 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
 		>
-			<dl class="flex flex-wrap">
-				<div class="flex-auto pl-6 pt-6">
-					<dt
-						class="text-md tracking-wide font-semibold leading-6 text-green-900 dark:text-gray-100"
+			<div class="flex items-center justify-between px-5 pt-5 pb-3">
+				<h3 class="text-sm font-semibold text-green-900 dark:text-gray-100">
+					Permissions
+				</h3>
+				<button
+					v-if="canAdd"
+					class="inline-flex items-center gap-1 rounded-md bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-500 dark:bg-gray-600 dark:hover:bg-gray-500"
+					@click="toggleAddPermissionModal()"
+				>
+					Add Permission
+				</button>
+			</div>
+
+			<div class="px-5 pb-5 space-y-5">
+				<div>
+					<p
+						class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
 					>
-						User Permissions
-					</dt>
+						Direct
+					</p>
+					<PermissionsList
+						:permissions="directPermissions"
+						@delete-permission="(model) => confirmDeletePermission(model)"
+					/>
 				</div>
-				<div class="flex-none self-end px-6 pt-4">
-					<button
-						v-if="canAdd"
-						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
-						@click="toggleAddPermissionModal()"
+
+				<div v-if="inheritedPermissions.length > 0">
+					<p
+						class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
 					>
-						{{ "Add Permission" }}
-					</button>
+						Inherited from roles
+					</p>
+					<ul class="flex flex-wrap gap-2">
+						<li
+							v-for="permission in inheritedPermissions"
+							:key="permission.id"
+							class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 ring-1 ring-inset ring-gray-400/20"
+						>
+							{{ permission.name }}
+							<span class="text-xs text-gray-400 dark:text-gray-400"
+								>via {{ permission.via }}</span
+							>
+						</li>
+					</ul>
 				</div>
-				<PermissionsList
-					:permissions="permissions"
-					class="w-full max-h-64 overflow-y-scroll"
-					@delete-permission="(model) => confirmDeletePermission(model)"
-				/>
-			</dl>
+			</div>
 		</div>
 
 		<Modal :show="openAddPermissionModal" @close="toggleAddPermissionModal()">
 			<AddUserPermission
 				:user="user"
-				:user-permissions="userPermissions"
+				:user-permissions="directNames"
 				@form-submitted="toggleAddPermissionModal()"
-			/>
-		</Modal>
-		<Modal :show="openEditPromoteModal" @close="toggleEditPermissionModal()">
-			<Edit
-				:model="editModel"
-				:staff="staff"
-				:institution="institution"
-				@form-submitted="toggleEditPermissionModal()"
 			/>
 		</Modal>
 

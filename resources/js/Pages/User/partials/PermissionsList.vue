@@ -1,90 +1,44 @@
 <script setup>
-import SubMenu from "@/Components/SubMenu.vue";
-// import { usePage } from "@inertiajs/vue3";
-// import { computed } from "vue";
-defineProps({
-	permissions: { type: Array, default: () => null },
-});
+import { usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
+import { XMarkIcon } from "@heroicons/vue/16/solid";
 
-// const page = usePage();
-// const permissions = computed(() => page.props?.auth.permissions);
+defineProps({
+	permissions: { type: Array, default: () => [] },
+});
 
 const emit = defineEmits(["deletePermission"]);
 
-const clicked = (action, model) => {
-	if (action === "Revoke") {
-		emit("deletePermission", model);
-	}
-};
+const page = usePage();
+const authPermissions = computed(() => page.props?.auth.permissions);
+const canRevoke = computed(() =>
+	authPermissions.value?.includes("assign permissions to user"),
+);
 </script>
+
 <template>
-	<body
-		class="my-4 flow-root sm:mx-0 w-full px-4 bg-green-50 dark:bg-gray-500 rounded-b-lg"
-	>
-		<table v-if="permissions?.length > 0" class="min-w-full">
-			<colgroup></colgroup>
-			<thead
-				class="border-b border-gray-300 text-gray-900 dark:text-gray-100 dark:border-gray-200/50"
-			>
-				<tr>
-					<th
-						scope="col"
-						class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-green-900 dark:text-gray-100 sm:pl-0"
-					>
-						Permissions name
-					</th>
-					<th
-						scope="col"
-						class="hidden px-3 py-3.5 text-sm font-semibold text-green-900 dark:text-gray-100 sm:table-cell"
-					>
-						Date granted
-					</th>
-
-					<th
-						scope="col"
-						class="hidden px-3 text-sm font-semibold text-gray-900 dark:text-gray-100 sm:table-cell"
-					></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr
-					v-for="permission in permissions"
-					:key="permission"
-					class="border-b border-gray-200 dark:border-gray-400/30"
-				>
-					<td class="max-w-0 py-2 pl-2 pr-3 text-sm sm:pl-0 w-3/5">
-						<div class="font-medium text-green-900 dark:text-gray-100">
-							{{ permission.name }}
-						</div>
-						<!-- <div class="mt-1 truncate text-gray-500 text-xs dark:text-gray-100">
-							{{ permission.start_date }}
-						</div> -->
-					</td>
-					<td
-						class="hidden p-1 text-xs text-green-800 dark:text-gray-100 sm:table-cell text-center"
-					>
-						{{ permission.start_date }}
-					</td>
-
-					<td class="w-8 flex justify-end">
-						<SubMenu
-							v-if="
-								permissions?.includes('update permission') ||
-								permissions?.includes('delete permission')
-							"
-							:can-revoke="permissions?.includes('update permission')"
-							:items="['Revoke']"
-							@item-clicked="(value) => clicked(value, permission)"
-						/>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<div
-			v-else
-			class="px-4 py-6 text-sm font-bold text-gray-400 dark:text-gray-100 tracking-wider text-center"
+	<ul v-if="permissions?.length > 0" class="flex flex-wrap gap-2">
+		<li
+			v-for="permission in permissions"
+			:key="permission.id"
+			class="inline-flex items-center gap-1.5 rounded-full bg-green-50 dark:bg-gray-700 pl-3 pr-1.5 py-1 text-sm font-medium text-green-800 dark:text-green-200 ring-1 ring-inset ring-green-600/20"
 		>
-			No permissions found.
-		</div>
-	</body>
+			{{ permission.name }}
+			<button
+				v-if="canRevoke"
+				type="button"
+				class="rounded-full p-0.5 text-green-500 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-600"
+				:aria-label="`Revoke ${permission.name}`"
+				@click="emit('deletePermission', permission)"
+			>
+				<XMarkIcon class="h-4 w-4" />
+			</button>
+		</li>
+	</ul>
+	<p
+		v-else
+		class="py-4 text-sm font-medium text-gray-400 dark:text-gray-300"
+	>
+		No direct permissions.
+	</p>
 </template>
