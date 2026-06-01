@@ -56,8 +56,10 @@ const submitHandler = (data, node) => {
 </script>
 
 <template>
-	<main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
-		<h1 class="text-2xl pb-4 dark:text-gray-100">Permissions</h1>
+	<main class="px-8 py-8 bg-white dark:bg-gray-800">
+		<h1 class="text-xl font-semibold pb-4 text-green-900 dark:text-gray-100">
+			Permissions
+		</h1>
 		<div class="max-h-96">
 			<FormKit type="form" submit-label="Save" @submit="submitHandler">
 				<FormKit id="user" type="hidden" name="user" :value="user" />
