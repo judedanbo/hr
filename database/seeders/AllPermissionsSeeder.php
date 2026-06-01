@@ -282,6 +282,31 @@ class AllPermissionsSeeder extends Seeder
             'create documents',
             'update documents',
             'delete documents',
+
+            // ============================================
+            // Leave Management — Configuration (22)
+            // ============================================
+            'view all leave years',
+            'view leave year',
+            'create leave year',
+            'update leave year',
+            'delete leave year',
+            'clone leave year',
+            'view all leave types',
+            'view leave type',
+            'create leave type',
+            'update leave type',
+            'delete leave type',
+            'view all leave entitlements',
+            'view leave entitlement',
+            'create leave entitlement',
+            'update leave entitlement',
+            'delete leave entitlement',
+            'view all holidays',
+            'view holiday',
+            'create holiday',
+            'update holiday',
+            'delete holiday',
         ];
     }
 }

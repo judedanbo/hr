@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ContactPermissionSeeder::class);
         $this->call(DocumentPermissionSeeder::class);
         $this->call(PastPromotionSeeder::class);
+        $this->call(LeavePermissionSeeder::class);
         $this->call(AllPermissionsSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(SuperAdminSeeder::class);

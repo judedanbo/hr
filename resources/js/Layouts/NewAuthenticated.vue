@@ -84,6 +84,43 @@ const navigation = [
 		visible: permissions.value?.includes("view job category"),
 	},
 	{
+		name: "Leave Setup",
+		href: route("leave-year.index"),
+		icon: CalendarIcon,
+		current:
+			route().current("leave-year.*") ||
+			route().current("leave-type.*") ||
+			route().current("leave-entitlement.*") ||
+			route().current("holiday.*"),
+		children: [
+			{
+				name: "Leave Years",
+				href: route("leave-year.index"),
+				current: route().current("leave-year.*"),
+			},
+			{
+				name: "Leave Types",
+				href: route("leave-type.index"),
+				current: route().current("leave-type.*"),
+			},
+			{
+				name: "Entitlements",
+				href: route("leave-entitlement.index"),
+				current: route().current("leave-entitlement.*"),
+			},
+			{
+				name: "Holidays",
+				href: route("holiday.index"),
+				current: route().current("holiday.*"),
+			},
+		],
+		visible:
+			permissions.value?.includes("view all leave years") ||
+			permissions.value?.includes("view all leave types") ||
+			permissions.value?.includes("view all leave entitlements") ||
+			permissions.value?.includes("view all holidays"),
+	},
+	{
 		name: "Next Promotions",
 		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,

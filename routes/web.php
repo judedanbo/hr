@@ -19,6 +19,7 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
@@ -26,6 +27,9 @@ use App\Http\Controllers\InstitutionRankController;
 use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\LeaveEntitlementController;
+use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\LeaveYearController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
@@ -587,6 +591,37 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
     Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
+});
+
+Route::controller(LeaveYearController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-year', 'index')->middleware('can:view all leave years')->name('leave-year.index');
+    Route::post('/leave-year', 'store')->middleware('can:create leave year')->name('leave-year.store');
+    Route::patch('/leave-year/{leaveYear}', 'update')->middleware('can:update leave year')->name('leave-year.update');
+    Route::delete('/leave-year/{leaveYear}', 'delete')->middleware('can:delete leave year')->name('leave-year.delete');
+    Route::post('/leave-year/{leaveYear}/clone', 'cloneFromYear')->middleware('can:clone leave year')->name('leave-year.clone');
+    Route::get('/leave-year-list', 'list')->middleware('can:view all leave years')->name('leave-year.list');
+});
+
+Route::controller(LeaveTypeController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-type', 'index')->middleware('can:view all leave types')->name('leave-type.index');
+    Route::post('/leave-type', 'store')->middleware('can:create leave type')->name('leave-type.store');
+    Route::patch('/leave-type/{leaveType}', 'update')->middleware('can:update leave type')->name('leave-type.update');
+    Route::delete('/leave-type/{leaveType}', 'delete')->middleware('can:delete leave type')->name('leave-type.delete');
+    Route::get('/leave-type-list', 'list')->middleware('can:view all leave types')->name('leave-type.list');
+});
+
+Route::controller(LeaveEntitlementController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-entitlement', 'index')->middleware('can:view all leave entitlements')->name('leave-entitlement.index');
+    Route::post('/leave-entitlement', 'store')->middleware('can:create leave entitlement')->name('leave-entitlement.store');
+    Route::patch('/leave-entitlement/{leaveEntitlement}', 'update')->middleware('can:update leave entitlement')->name('leave-entitlement.update');
+    Route::delete('/leave-entitlement/{leaveEntitlement}', 'delete')->middleware('can:delete leave entitlement')->name('leave-entitlement.delete');
+});
+
+Route::controller(HolidayController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/holiday', 'index')->middleware('can:view all holidays')->name('holiday.index');
+    Route::post('/holiday', 'store')->middleware('can:create holiday')->name('holiday.store');
+    Route::patch('/holiday/{holiday}', 'update')->middleware('can:update holiday')->name('holiday.update');
+    Route::delete('/holiday/{holiday}', 'delete')->middleware('can:delete holiday')->name('holiday.delete');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
