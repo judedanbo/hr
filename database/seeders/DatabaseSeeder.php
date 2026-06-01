@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AllPermissionsSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(SuperAdminSeeder::class);
+        $this->call(AuditServiceUserSeeder::class);
 
         $user = \App\Models\User::where('email', 'admin@audit.gov.gh')->first();
         if ($user) {
