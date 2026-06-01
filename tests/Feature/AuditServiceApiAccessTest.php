@@ -67,4 +67,31 @@ class AuditServiceApiAccessTest extends TestCase
     {
         $this->getJson('/api/staff-statistics')->assertStatus(401);
     }
+
+    public function test_successful_request_is_logged(): void
+    {
+        $user = User::factory()->create();
+
+        \Laravel\Sanctum\Sanctum::actingAs($user, ['staff-statistics:read']);
+
+        $this->getJson('/api/staff-statistics')->assertStatus(200);
+
+        $this->assertDatabaseHas('api_logs', [
+            'method' => 'GET',
+            'path' => 'api/staff-statistics',
+            'status' => 200,
+            'user_id' => $user->id,
+        ]);
+    }
+
+    public function test_unauthenticated_request_is_logged_with_null_user(): void
+    {
+        $this->getJson('/api/staff-statistics')->assertStatus(401);
+
+        $this->assertDatabaseHas('api_logs', [
+            'path' => 'api/staff-statistics',
+            'status' => 401,
+            'user_id' => null,
+        ]);
+    }
 }
