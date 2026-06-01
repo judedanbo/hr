@@ -60,31 +60,24 @@ const deleteRole = (user, role) => {
 	<main>
 		<h2 class="sr-only">User Roles</h2>
 		<div
-			class="rounded-lg bg-green-200 dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-600/80 max-h-80"
+			class="rounded-2xl border border-green-200/60 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
 		>
-			<dl class="flex flex-wrap">
-				<div class="flex-auto pl-6 pt-6">
-					<dt
-						class="text-md tracking-wide font-semibold leading-6 text-gray-900 dark:text-gray-100"
-					>
-						User Roles
-					</dt>
-				</div>
-				<div class="flex-none self-end px-6 pt-4">
-					<button
-						v-if="canAdd"
-						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
-						@click="toggleAddRoleModal()"
-					>
-						{{ "Add Role" }}
-					</button>
-				</div>
-				<RolesList
-					class="w-full max-h-64 overflow-y-scroll"
-					:roles="props.roles"
-					@delete-role="(model) => confirmDeleteRole(model)"
-				/>
-			</dl>
+			<div class="flex items-center justify-between px-5 pt-5 pb-3">
+				<h3 class="text-sm font-semibold text-green-900 dark:text-gray-100">
+					Roles
+				</h3>
+				<button
+					v-if="canAdd"
+					class="inline-flex items-center gap-1 rounded-md bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-500 dark:bg-gray-600 dark:hover:bg-gray-500"
+					@click="toggleAddRoleModal()"
+				>
+					Add Role
+				</button>
+			</div>
+			<RolesList
+				:roles="props.roles"
+				@delete-role="(model) => confirmDeleteRole(model)"
+			/>
 		</div>
 
 		<Modal :show="openAddRoleModal" @close="toggleAddRoleModal()">
