@@ -48,6 +48,27 @@ class SharedPropsTest extends TestCase
             ->assertInertia(fn ($page) => $page->where('auth.qualifications_count', 3));
     }
 
+    public function test_photo_url_is_storage_path_when_person_image_is_set(): void
+    {
+        $staff = $this->createActiveStaff();
+        $staff->person->update(['image' => 'avatars/example.jpg']);
+        $user = User::factory()->create(['person_id' => $staff->person_id]);
+
+        $this->actingAs($user)
+            ->get(route('my-profile.show'))
+            ->assertInertia(fn ($page) => $page->where('auth.photo_url', '/storage/avatars/example.jpg'));
+    }
+
+    public function test_photo_url_is_null_when_person_has_no_image(): void
+    {
+        $staff = $this->createActiveStaff();
+        $user = User::factory()->create(['person_id' => $staff->person_id]);
+
+        $this->actingAs($user)
+            ->get(route('my-profile.show'))
+            ->assertInertia(fn ($page) => $page->where('auth.photo_url', null));
+    }
+
     public function test_props_are_null_for_users_without_person_id(): void
     {
         $user = User::factory()->create(['person_id' => null]);
@@ -59,6 +80,7 @@ class SharedPropsTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('auth.has_photo', null)
                 ->where('auth.qualifications_count', null)
+                ->where('auth.photo_url', null)
             );
     }
 

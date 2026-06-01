@@ -21,7 +21,7 @@ class HandleInertiaRequests extends Middleware
      * Laravel resolves middleware fresh per request, so this stays
      * request-scoped without leaking across users.
      *
-     * @var array{has_photo: bool, qualifications_count: int}|null|false
+     * @var array{has_photo: bool, qualifications_count: int, photo_url: ?string}|null|false
      */
     private array|false|null $profileFactsCache = false;
 
@@ -57,6 +57,7 @@ class HandleInertiaRequests extends Middleware
                 'isMultiRoleStaff' => fn () => $request->user()?->isMultiRoleStaff() ?? false,
                 'viewModeLabel' => fn () => $this->resolveViewModeLabel($request->user()),
                 'has_photo' => fn () => $this->profileFactsForCurrentUser($request)['has_photo'] ?? null,
+                'photo_url' => fn () => $this->profileFactsForCurrentUser($request)['photo_url'] ?? null,
                 'qualifications_count' => fn () => $this->profileFactsForCurrentUser($request)['qualifications_count'] ?? null,
             ],
             // 'permissions' => fn() => $request->user()?->getAllPermissions()->pluck('name'),
@@ -84,12 +85,12 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * Return the authenticated user's photo-presence and qualification-count
-     * facts as a single associative array, or null when the request has no
-     * authenticated user linked to a Person. The result is memoized for the
-     * life of this request; the underlying query is one eager-loaded count.
+     * Return the authenticated user's photo-presence, qualification-count, and
+     * photo URL facts as a single associative array, or null when the request
+     * has no authenticated user linked to a Person. The result is memoized for
+     * the life of this request; the underlying query is one eager-loaded count.
      *
-     * @return array{has_photo: bool, qualifications_count: int}|null
+     * @return array{has_photo: bool, qualifications_count: int, photo_url: ?string}|null
      */
     private function profileFactsForCurrentUser(Request $request): ?array
     {
@@ -111,12 +112,14 @@ class HandleInertiaRequests extends Middleware
             return $this->profileFactsCache = [
                 'has_photo' => false,
                 'qualifications_count' => 0,
+                'photo_url' => null,
             ];
         }
 
         return $this->profileFactsCache = [
             'has_photo' => (bool) $person->image,
             'qualifications_count' => (int) $person->qualifications_count,
+            'photo_url' => $person->image ? '/storage/' . $person->image : null,
         ];
     }
 }
