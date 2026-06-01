@@ -19,6 +19,6 @@ Route::middleware('auth:sanctum')->prefix('staff-search')->group(function () {
 });
 
 // Staff statistics
-Route::middleware('auth:sanctum')
+Route::middleware(['auth:sanctum', 'abilities:staff-statistics:read'])
     ->get('/staff-statistics', [StaffStatisticsController::class, 'index'])
     ->name('api.staff-statistics');
