@@ -227,6 +227,44 @@ class LeaveRequestControllerTest extends TestCase
         $this->assertSoftDeleted('leave_documents', ['id' => $document->id]);
     }
 
+    public function test_update_edits_a_pending_request(): void
+    {
+        $leaveRequest = LeaveRequest::factory()->create([
+            'staff_id' => $this->staff->id, 'leave_type_id' => $this->type->id, 'leave_year_id' => $this->year->id,
+            'start_date' => '2030-06-10', 'end_date' => '2030-06-14', 'requested_days' => 5,
+        ]);
+
+        $this->actingAs($this->staffUser)
+            ->patch(route('leave-request.update', $leaveRequest), $this->payload(['start_date' => '2030-06-10', 'end_date' => '2030-06-12']))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('leave_requests', ['id' => $leaveRequest->id, 'requested_days' => 3]);
+    }
+
+    public function test_store_blocked_under_min_service(): void
+    {
+        $this->staff->update(['hire_date' => now()->subMonths(3)]);
+        $type = LeaveType::factory()->calendarDays()->create(['is_active' => true]);
+        LeaveEntitlement::factory()->create([
+            'leave_year_id' => $this->year->id,
+            'leave_type_id' => $type->id,
+            'job_category_id' => null,
+            'days_allowed' => 20,
+            'min_service_months' => 24,
+        ]);
+
+        $this->actingAs($this->staffUser)
+            ->post(route('leave-request.store'), $this->payload(['leave_type_id' => $type->id]))
+            ->assertSessionHasErrors('leave_type_id');
+    }
+
+    public function test_relieving_officer_cannot_be_self(): void
+    {
+        $this->actingAs($this->staffUser)
+            ->post(route('leave-request.store'), $this->payload(['relieving_officer_id' => $this->staff->id]))
+            ->assertSessionHasErrors('relieving_officer_id');
+    }
+
     public function test_cancel_marks_request_cancelled(): void
     {
         $leaveRequest = LeaveRequest::factory()->create(['staff_id' => $this->staff->id, 'leave_type_id' => $this->type->id, 'leave_year_id' => $this->year->id]);

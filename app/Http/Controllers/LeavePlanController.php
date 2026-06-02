@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\LeavePlanStatusEnum;
 use App\Http\Requests\StoreLeavePlanItemRequest;
 use App\Http\Requests\UpdateLeavePlanItemRequest;
-use App\Models\Holiday;
 use App\Models\InstitutionPerson;
 use App\Models\LeavePlan;
 use App\Models\LeavePlanItem;
@@ -13,6 +12,7 @@ use App\Models\LeaveType;
 use App\Models\LeaveYear;
 use App\Models\User;
 use App\Notifications\LeavePlanSubmittedNotification;
+use App\Services\CurrentStaffResolver;
 use App\Services\LeaveBalanceService;
 use App\Services\LeaveDayCalculator;
 use App\Services\LeavePlanningWindowService;
@@ -31,6 +31,7 @@ class LeavePlanController extends Controller
         private LeavePlanningWindowService $windows,
         private LeaveBalanceService $balance,
         private LeaveDayCalculator $calculator,
+        private CurrentStaffResolver $staffResolver,
     ) {}
 
     public function index(): Response
@@ -208,17 +209,7 @@ class LeavePlanController extends Controller
 
     private function currentStaff(): InstitutionPerson
     {
-        $personId = request()->user()?->person_id;
-        abort_unless($personId, 403, 'Your account is not linked to a staff record.');
-
-        $staff = InstitutionPerson::query()
-            ->active()
-            ->where('person_id', $personId)
-            ->first();
-
-        abort_unless($staff, 403, 'No active staff record found for your account.');
-
-        return $staff;
+        return $this->staffResolver->resolveOrAbort(request()->user());
     }
 
     private function openWindowOrFail(): \App\Models\LeavePlanningWindow
@@ -239,25 +230,9 @@ class LeavePlanController extends Controller
         abort_unless($item->leavePlan->staff_id === $staff->id, 403);
     }
 
-    /**
-     * @return array<int, string>
-     */
-    private function holidayDates(?LeaveYear $year): array
-    {
-        if (! $year) {
-            return [];
-        }
-
-        return Holiday::query()
-            ->where('leave_year_id', $year->id)
-            ->pluck('date')
-            ->map(fn ($date): string => Carbon::parse($date)->toDateString())
-            ->all();
-    }
-
     private function computeDays(LeaveType $leaveType, ?LeaveYear $year, Carbon $start, Carbon $end): int
     {
-        return $this->calculator->calculateDays($leaveType, $start, $end, $this->holidayDates($year));
+        return $this->calculator->calculateDays($leaveType, $start, $end, $this->balance->holidayDates($year));
     }
 
     private function guardItem(InstitutionPerson $staff, LeaveYear $year, LeavePlan $plan, LeaveType $leaveType, Carbon $start, Carbon $end, int $proposedDays, ?int $ignoreItemId = null): void
@@ -286,6 +261,12 @@ class LeavePlanController extends Controller
             ]);
         }
 
+        if ($leaveType->gender_restriction && $staff->person?->gender !== $leaveType->gender_restriction) {
+            throw ValidationException::withMessages([
+                'leave_type_id' => $leaveType->name . ' is restricted to ' . $leaveType->gender_restriction->label() . ' staff.',
+            ]);
+        }
+
         $assigned = $this->balance->assignedDays($staff, $leaveType->id, $year);
 
         if ($assigned < 1) {
@@ -294,8 +275,10 @@ class LeavePlanController extends Controller
             ]);
         }
 
+        // Only subtract the edited item's days when it is the same leave type
+        // being validated (otherwise it is not part of this type's planned total).
         $alreadyPlanned = $this->balance->plannedDays($staff, $leaveType->id, $year)
-            - ($ignoreItemId ? (int) $plan->items()->whereKey($ignoreItemId)->value('proposed_days') : 0);
+            - ($ignoreItemId ? (int) $plan->items()->whereKey($ignoreItemId)->where('leave_type_id', $leaveType->id)->value('proposed_days') : 0);
 
         if ($alreadyPlanned + $proposedDays > $assigned) {
             throw ValidationException::withMessages([

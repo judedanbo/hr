@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\LeaveRequestStatusEnum;
 use App\Http\Requests\StoreLeaveRequestRequest;
 use App\Http\Requests\UpdateLeaveRequestRequest;
-use App\Models\Holiday;
 use App\Models\InstitutionPerson;
 use App\Models\LeaveDocument;
 use App\Models\LeavePlanItem;
@@ -310,21 +309,9 @@ class LeaveRequestController extends Controller
         return $item;
     }
 
-    /**
-     * @return array<int, string|null>
-     */
-    private function holidayDates(LeaveYear $year): array
-    {
-        return Holiday::query()
-            ->where('leave_year_id', $year->id)
-            ->pluck('date')
-            ->map(fn ($date): string => Carbon::parse($date)->toDateString())
-            ->all();
-    }
-
     private function computeDays(LeaveType $leaveType, ?LeaveYear $year, Carbon $start, Carbon $end): int
     {
-        return $this->calculator->calculateDays($leaveType, $start, $end, $year ? $this->holidayDates($year) : []);
+        return $this->calculator->calculateDays($leaveType, $start, $end, $this->balance->holidayDates($year));
     }
 
     private function guardRequest(InstitutionPerson $staff, LeaveType $leaveType, LeaveYear $year, Carbon $start, Carbon $end, int $requestedDays, bool $hasEvidence, mixed $relievingOfficerId, ?int $ignoreId = null): void

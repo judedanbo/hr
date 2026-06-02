@@ -151,6 +151,26 @@ class LeavePlanControllerTest extends TestCase
             ->assertSessionHasErrors('leave_type_id');
     }
 
+    public function test_add_item_blocked_for_wrong_gender(): void
+    {
+        $this->staff->person->update(['gender' => 'M']);
+        $type = LeaveType::factory()->calendarDays()->create(['is_active' => true, 'gender_restriction' => 'F']);
+        LeaveEntitlement::factory()->create([
+            'leave_year_id' => $this->year->id,
+            'leave_type_id' => $type->id,
+            'job_category_id' => null,
+            'days_allowed' => 20,
+        ]);
+
+        $this->actingAs($this->staffUser)
+            ->post(route('leave-plan.items.store'), [
+                'leave_type_id' => $type->id,
+                'start_date' => '2030-06-10',
+                'end_date' => '2030-06-14',
+            ])
+            ->assertSessionHasErrors('leave_type_id');
+    }
+
     public function test_preview_days_returns_count(): void
     {
         $this->actingAs($this->staffUser)

@@ -3,11 +3,13 @@
 namespace App\Services;
 
 use App\Enums\LeaveRequestStatusEnum;
+use App\Models\Holiday;
 use App\Models\InstitutionPerson;
 use App\Models\LeaveEntitlement;
 use App\Models\LeavePlanItem;
 use App\Models\LeaveRequest;
 use App\Models\LeaveYear;
+use Carbon\Carbon;
 
 class LeaveBalanceService
 {
@@ -73,6 +75,24 @@ class LeaveBalanceService
         return $staff->ranks()
             ->wherePivotNull('end_date')
             ->first()?->job_category_id;
+    }
+
+    /**
+     * The holiday dates (Y-m-d) configured for a leave year.
+     *
+     * @return array<int, string>
+     */
+    public function holidayDates(?LeaveYear $year): array
+    {
+        if (! $year) {
+            return [];
+        }
+
+        return Holiday::query()
+            ->where('leave_year_id', $year->id)
+            ->pluck('date')
+            ->map(fn ($date): string => Carbon::parse($date)->toDateString())
+            ->all();
     }
 
     /**
