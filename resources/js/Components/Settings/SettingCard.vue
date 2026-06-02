@@ -4,7 +4,7 @@ import { ChevronRightIcon } from "@heroicons/vue/16/solid";
 
 defineProps({
 	title: { type: String, required: true },
-	count: { type: [Number, String], required: true },
+	count: { type: [Number, String], default: null },
 	secondary: { type: String, default: null },
 	href: { type: String, required: true },
 	linkLabel: { type: String, default: "Manage" },
@@ -28,7 +28,10 @@ defineProps({
 			/>
 		</div>
 		<div class="mt-4">
-			<p class="text-2xl font-bold text-gray-900 dark:text-gray-50">
+			<p
+				v-if="count !== null"
+				class="text-2xl font-bold text-gray-900 dark:text-gray-50"
+			>
 				{{ count }}
 			</p>
 			<p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
