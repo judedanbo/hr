@@ -7,6 +7,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
+use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\CategoryRanksController;
@@ -592,6 +593,8 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
 Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');
+Route::get('/settings/app', [AppSettingsController::class, 'edit'])->middleware(['auth', 'password_changed', 'can:update app settings'])->name('app-settings.edit');
+Route::put('/settings/app', [AppSettingsController::class, 'update'])->middleware(['auth', 'password_changed', 'can:update app settings'])->name('app-settings.update');
 Route::get('/help', [HelpController::class, 'index'])->middleware(['auth', 'password_changed'])->name('help.index');
 
 Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'password_changed', 'can:create role'])->name('role.store');
