@@ -47,6 +47,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'leave-documents' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/leave-documents'),
+            'url' => env('APP_URL') . '/storage/leave-documents',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
 
         'public' => [
             'driver' => 'local',

@@ -31,6 +31,8 @@ use App\Http\Controllers\LeaveEntitlementController;
 use App\Http\Controllers\LeavePlanAdminController;
 use App\Http\Controllers\LeavePlanController;
 use App\Http\Controllers\LeavePlanningWindowController;
+use App\Http\Controllers\LeaveRequestAdminController;
+use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\LeaveYearController;
 use App\Http\Controllers\MaritalStatusController;
@@ -646,6 +648,25 @@ Route::controller(LeavePlanController::class)->middleware(['auth', 'password_cha
 Route::controller(LeavePlanAdminController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/leave-plans', 'index')->middleware('can:view all leave plans')->name('leave-plans.index');
     Route::get('/leave-plans/{plan}', 'show')->middleware('can:view all leave plans')->name('leave-plans.show');
+});
+
+Route::controller(LeaveRequestController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-request', 'index')->middleware('can:view leave requests')->name('leave-request.index');
+    Route::get('/leave-request/create', 'create')->middleware('can:create leave request')->name('leave-request.create');
+    Route::get('/leave-request/preview-days', 'previewDays')->middleware('can:create leave request')->name('leave-request.preview-days');
+    Route::get('/leave-request/relieving-officers', 'relievingOfficerOptions')->middleware('can:create leave request')->name('leave-request.relieving-officers');
+    Route::post('/leave-request', 'store')->middleware('can:create leave request')->name('leave-request.store');
+    Route::get('/leave-request/{leaveRequest}', 'show')->middleware('can:view leave requests')->name('leave-request.show');
+    Route::get('/leave-request/{leaveRequest}/edit', 'edit')->middleware('can:update leave request')->name('leave-request.edit');
+    Route::patch('/leave-request/{leaveRequest}', 'update')->middleware('can:update leave request')->name('leave-request.update');
+    Route::post('/leave-request/{leaveRequest}/cancel', 'cancel')->middleware('can:cancel leave request')->name('leave-request.cancel');
+    Route::get('/leave-request/{leaveRequest}/documents/{document}', 'downloadDocument')->middleware('can:view leave requests')->name('leave-request.documents.download');
+    Route::delete('/leave-request/{leaveRequest}/documents/{document}', 'destroyDocument')->middleware('can:update leave request')->name('leave-request.documents.destroy');
+});
+
+Route::controller(LeaveRequestAdminController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-requests', 'index')->middleware('can:view all leave requests')->name('leave-requests.index');
+    Route::get('/leave-requests/{leaveRequest}', 'show')->middleware('can:view all leave requests')->name('leave-requests.show');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

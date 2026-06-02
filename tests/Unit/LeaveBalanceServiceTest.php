@@ -8,6 +8,7 @@ use App\Models\JobCategory;
 use App\Models\LeaveEntitlement;
 use App\Models\LeavePlan;
 use App\Models\LeavePlanItem;
+use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\LeaveYear;
 use App\Services\LeaveBalanceService;
@@ -84,5 +85,28 @@ class LeaveBalanceServiceTest extends TestCase
 
         $this->assertSame(5, $this->service->plannedDays($staff, $type->id, $year));
         $this->assertSame(15, $this->service->unplanned($staff, $type->id, $year));
+    }
+
+    public function test_committed_request_days_excludes_cancelled_and_drives_remaining(): void
+    {
+        $staff = InstitutionPerson::factory()->create();
+        $year = LeaveYear::factory()->create();
+        $type = LeaveType::factory()->create();
+        LeaveEntitlement::factory()->create([
+            'leave_year_id' => $year->id,
+            'leave_type_id' => $type->id,
+            'job_category_id' => null,
+            'days_allowed' => 20,
+        ]);
+
+        LeaveRequest::factory()->create([
+            'staff_id' => $staff->id, 'leave_type_id' => $type->id, 'leave_year_id' => $year->id, 'requested_days' => 6,
+        ]);
+        LeaveRequest::factory()->cancelled()->create([
+            'staff_id' => $staff->id, 'leave_type_id' => $type->id, 'leave_year_id' => $year->id, 'requested_days' => 10,
+        ]);
+
+        $this->assertSame(6, $this->service->committedRequestDays($staff, $type->id, $year));
+        $this->assertSame(14, $this->service->remainingForRequest($staff, $type->id, $year));
     }
 }

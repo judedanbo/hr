@@ -40,4 +40,9 @@ class LeavePlanItem extends Model
     {
         return $this->belongsTo(LeaveType::class);
     }
+
+    public function convertedRequest(): BelongsTo
+    {
+        return $this->belongsTo(LeaveRequest::class, 'converted_request_id');
+    }
 }

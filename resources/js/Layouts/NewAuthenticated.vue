@@ -148,6 +148,20 @@ const navigation = [
 		visible: permissions.value?.includes("view all leave plans"),
 	},
 	{
+		name: "My Leave",
+		href: route("leave-request.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-request.*"),
+		visible: permissions.value?.includes("view leave requests"),
+	},
+	{
+		name: "All Leave Requests",
+		href: route("leave-requests.index"),
+		icon: DocumentDuplicateIcon,
+		current: route().current("leave-requests.*"),
+		visible: permissions.value?.includes("view all leave requests"),
+	},
+	{
 		name: "Next Promotions",
 		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,

@@ -83,6 +83,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'view leave plans',
             'submit leave plan',
             'view all leave plans',
+
+            // Leave requests
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'view all leave requests',
         ],
 
         'aag-admin' => [
@@ -117,6 +124,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'view leave plans',
             'submit leave plan',
             'view all leave plans',
+
+            // Leave requests
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'view all leave requests',
         ],
 
         'personel-user' => [
@@ -173,6 +187,12 @@ class RolesAndPermissionsSeeder extends Seeder
             // Annual leave planning (self-service)
             'view leave plans',
             'submit leave plan',
+
+            // Leave requests (self-service)
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
         ],
     ];
 

@@ -315,6 +315,15 @@ class AllPermissionsSeeder extends Seeder
             'view leave plans',
             'submit leave plan',
             'view all leave plans',
+
+            // ============================================
+            // Leave Management — Requests (5)
+            // ============================================
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'view all leave requests',
         ];
     }
 }

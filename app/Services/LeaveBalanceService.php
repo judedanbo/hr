@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\LeaveRequestStatusEnum;
 use App\Models\InstitutionPerson;
 use App\Models\LeaveEntitlement;
 use App\Models\LeavePlanItem;
+use App\Models\LeaveRequest;
 use App\Models\LeaveYear;
 
 class LeaveBalanceService
@@ -71,5 +73,29 @@ class LeaveBalanceService
         return $staff->ranks()
             ->wherePivotNull('end_date')
             ->first()?->job_category_id;
+    }
+
+    /**
+     * Days already committed to leave requests (excluding cancelled) for a leave
+     * type in a year, optionally ignoring one request (when editing).
+     */
+    public function committedRequestDays(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year, ?int $ignoreRequestId = null): int
+    {
+        return (int) LeaveRequest::query()
+            ->where('staff_id', $staff->id)
+            ->where('leave_type_id', $leaveTypeId)
+            ->where('leave_year_id', $year->id)
+            ->where('status', '!=', LeaveRequestStatusEnum::Cancelled)
+            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
+            ->sum('requested_days');
+    }
+
+    /**
+     * Days still available to request for a leave type in a year (never below zero).
+     */
+    public function remainingForRequest(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year, ?int $ignoreRequestId = null): int
+    {
+        return max(0, $this->assignedDays($staff, $leaveTypeId, $year)
+            - $this->committedRequestDays($staff, $leaveTypeId, $year, $ignoreRequestId));
     }
 }
