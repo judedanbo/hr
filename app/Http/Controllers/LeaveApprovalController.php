@@ -78,6 +78,14 @@ class LeaveApprovalController extends Controller
         }
 
         DB::transaction(function () use ($leaveRequest, $approvedDays, $request) {
+            // Lock the staff record first so concurrent approvals for the same
+            // person serialize on a shared row. Locking only the request being
+            // approved would let two separate pending requests for one staff
+            // member each pass the balance re-check and both commit, over-drawing
+            // the entitlement; the shared lock forces the second approval to read
+            // the first one's committed result.
+            InstitutionPerson::query()->whereKey($leaveRequest->staff_id)->lockForUpdate()->first();
+
             $locked = LeaveRequest::query()->whereKey($leaveRequest->id)->lockForUpdate()->first();
             $this->ensurePending($locked);
 

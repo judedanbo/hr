@@ -125,6 +125,27 @@ class LeaveApprovalControllerTest extends TestCase
             ->assertSessionHasErrors('approved_days');
     }
 
+    public function test_second_pending_request_blocked_once_first_approval_consumes_balance(): void
+    {
+        $this->year->entitlements()->delete();
+        $this->entitle(8);
+
+        $first = $this->pendingRequest(5);
+        $second = $this->pendingRequest(5);
+
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.approve', $first), ['approved_days' => 5])
+            ->assertRedirect();
+
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.approve', $second), ['approved_days' => 5])
+            ->assertSessionHasErrors('approved_days');
+
+        $this->assertDatabaseHas('leave_requests', [
+            'id' => $second->id, 'status' => LeaveRequestStatusEnum::Pending->value,
+        ]);
+    }
+
     public function test_approval_blocked_when_unit_coverage_cap_reached(): void
     {
         $unit = Unit::factory()->create();
