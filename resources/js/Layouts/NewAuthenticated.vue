@@ -270,7 +270,7 @@ const closeAlert = (index) => {
 						<h2
 							class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-50"
 						>
-							Audit Service
+							{{ $page.props.app?.org_name ?? "HRMIS" }}
 						</h2>
 					</div>
 				</Link>
