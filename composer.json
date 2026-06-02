@@ -23,6 +23,7 @@
 		"psr/simple-cache": "^2.0 || ^3.0",
 		"spatie/laravel-activitylog": "^4.5",
 		"spatie/laravel-permission": "^6.7",
+		"spatie/laravel-settings": "^3.9",
 		"tightenco/ziggy": "^1.0"
 	},
 	"require-dev": {
