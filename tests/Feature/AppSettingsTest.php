@@ -74,6 +74,23 @@ class AppSettingsTest extends TestCase
         $this->assertSame(30, app(\App\Settings\SecuritySettings::class)->password_change_interval_days);
     }
 
+    public function test_update_accepts_null_support_email(): void
+    {
+        $admin = User::factory()->create();
+        $admin->givePermissionTo('update app settings');
+
+        $response = $this->actingAs($admin)->put(route('app-settings.update'), [
+            'org_name' => 'New Org',
+            'support_email' => null,
+            'date_format' => 'Y-m-d',
+            'pagination_size' => 25,
+            'password_change_interval_days' => 30,
+        ]);
+
+        $response->assertRedirect(route('app-settings.edit'));
+        $this->assertNull(app(\App\Settings\GeneralSettings::class)->support_email);
+    }
+
     public function test_update_rejects_invalid_input(): void
     {
         $admin = User::factory()->create();

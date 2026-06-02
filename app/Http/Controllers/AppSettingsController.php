@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateAppSettingsRequest;
 use App\Settings\GeneralSettings;
 use App\Settings\SecuritySettings;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,7 +26,7 @@ class AppSettingsController extends Controller
         ]);
     }
 
-    public function update(UpdateAppSettingsRequest $request, GeneralSettings $general, SecuritySettings $security)
+    public function update(UpdateAppSettingsRequest $request, GeneralSettings $general, SecuritySettings $security): RedirectResponse
     {
         $data = $request->validated();
 
