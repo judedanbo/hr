@@ -210,4 +210,19 @@ class LeaveApprovalControllerTest extends TestCase
 
         $this->assertDatabaseHas('leave_requests', ['id' => $leaveRequest->id, 'approver_id' => $newApprover->id]);
     }
+
+    public function test_reassign_cannot_target_the_requester(): void
+    {
+        $admin = User::factory()->create(['password_change_at' => now()]);
+        $admin->assignRole('super-administrator');
+        $leaveRequest = $this->pendingRequest();
+
+        $this->actingAs($admin)
+            ->post(route('leave-approvals.reassign', $leaveRequest), ['approver_id' => $this->requester->id])
+            ->assertSessionHasErrors('approver_id');
+
+        $this->assertDatabaseMissing('leave_requests', [
+            'id' => $leaveRequest->id, 'approver_id' => $this->requester->id,
+        ]);
+    }
 }

@@ -146,6 +146,12 @@ class LeaveApprovalController extends Controller
             'approver_id' => ['required', 'integer', 'exists:institution_person,id'],
         ]);
 
+        if ((int) $data['approver_id'] === $leaveRequest->staff_id) {
+            throw ValidationException::withMessages([
+                'approver_id' => 'A request cannot be reassigned to its own requester.',
+            ]);
+        }
+
         $leaveRequest->update(['approver_id' => $data['approver_id']]);
 
         return redirect()->back()->with('success', 'Approver reassigned.');

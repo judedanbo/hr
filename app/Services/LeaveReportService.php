@@ -185,8 +185,9 @@ class LeaveReportService
     }
 
     /**
-     * Absence-pattern flags: per staff number of approved leave spells, total
-     * days, and a Bradford-style factor (spells² × days).
+     * Absence-pattern flags: per staff number of leave spells, total days, and a
+     * Bradford-style factor (spells² × days). Counts both Approved and Completed
+     * (early-returned) leave, using the days actually taken for Completed spells.
      *
      * @param  Collection<int, InstitutionPerson>  $staff
      * @return array<int, array{staff:?string, spells:int, days:int, bradford:int}>
@@ -198,9 +199,12 @@ class LeaveReportService
         }
 
         $stats = LeaveRequest::query()
-            ->selectRaw('staff_id, COUNT(*) as spells, COALESCE(SUM(approved_days),0) as days')
+            ->selectRaw(
+                'staff_id, COUNT(*) as spells, COALESCE(SUM(CASE WHEN status = ? THEN COALESCE(actual_days, approved_days, 0) ELSE COALESCE(approved_days, 0) END), 0) as days',
+                [LeaveRequestStatusEnum::Completed->value],
+            )
             ->where('leave_year_id', $year->id)
-            ->where('status', LeaveRequestStatusEnum::Approved)
+            ->whereIn('status', [LeaveRequestStatusEnum::Approved, LeaveRequestStatusEnum::Completed])
             ->whereIn('staff_id', $staff->pluck('id'))
             ->groupBy('staff_id')
             ->get()

@@ -61,6 +61,36 @@ class LeaveReportServiceTest extends TestCase
         $this->assertSame(5, $summary['absencePattern'][0]['bradford']);
     }
 
+    public function test_absence_pattern_counts_completed_leave_at_actual_days(): void
+    {
+        $unit = Unit::factory()->create();
+        $person = Person::factory()->create();
+        $staff = InstitutionPerson::factory()->create(['person_id' => $person->id]);
+        Status::factory()->active()->create(['staff_id' => $staff->id, 'institution_id' => $staff->institution_id]);
+        $staff->units()->attach($unit->id, ['start_date' => now()->toDateString(), 'end_date' => null]);
+
+        $year = LeaveYear::factory()->active()->create();
+        $type = LeaveType::factory()->create();
+        LeaveEntitlement::factory()->create([
+            'leave_year_id' => $year->id, 'leave_type_id' => $type->id, 'job_category_id' => null, 'days_allowed' => 20,
+        ]);
+        LeaveRequest::factory()->create([
+            'staff_id' => $staff->id, 'leave_type_id' => $type->id, 'leave_year_id' => $year->id,
+            'status' => LeaveRequestStatusEnum::Approved, 'requested_days' => 5, 'approved_days' => 5,
+        ]);
+        LeaveRequest::factory()->create([
+            'staff_id' => $staff->id, 'leave_type_id' => $type->id, 'leave_year_id' => $year->id,
+            'status' => LeaveRequestStatusEnum::Completed, 'requested_days' => 6, 'approved_days' => 6, 'actual_days' => 4,
+        ]);
+
+        $summary = $this->service->summary(new LeaveReportFilter(yearId: $year->id, unitId: $unit->id));
+
+        // Two spells (Approved + Completed); 5 approved + 4 actually-taken = 9 days.
+        $this->assertSame(2, $summary['absencePattern'][0]['spells']);
+        $this->assertSame(9, $summary['absencePattern'][0]['days']);
+        $this->assertSame(2 * 2 * 9, $summary['absencePattern'][0]['bradford']);
+    }
+
     public function test_staff_rows_returns_per_type_ledger_rows(): void
     {
         $unit = Unit::factory()->create();
