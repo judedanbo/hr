@@ -32,7 +32,7 @@ class UserController extends Controller
         $users = User::query()
             ->with('roles', 'permissions', 'person.institution')
             ->withCount(['roles', 'permissions'])
-            ->paginate(10)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn ($user) => [
                 'id' => $user->id,
@@ -243,7 +243,7 @@ class UserController extends Controller
     {
         return User::query()
             ->withCount(['roles', 'permissions'])
-            ->paginate(20)
+            ->paginate(per_page())
             ->through(fn ($user) => [
                 'id' => $user->id,
                 'name' => $user->name,

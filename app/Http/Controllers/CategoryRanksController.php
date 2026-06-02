@@ -14,7 +14,7 @@ class CategoryRanksController extends Controller
                 ->jobs()
                 ->withCount('staff')
                 ->when(request('search'), fn ($query, $search) => $query->where('name', 'like', '%' . $search . '%'))
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($job) => [
                     'id' => $job->id,

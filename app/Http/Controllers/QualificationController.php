@@ -34,7 +34,7 @@ class QualificationController extends Controller
                 ->whereHas('person', function ($query) {
                     $query->whereHas('institution');
                 })
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(function ($qualification) {
                     return [

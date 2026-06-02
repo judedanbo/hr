@@ -34,7 +34,7 @@ class AuditLogController extends Controller
                 });
             })
             ->latest()
-            ->paginate(20)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn (Activity $activity) => [
                 'id' => $activity->id,

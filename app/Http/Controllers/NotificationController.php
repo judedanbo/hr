@@ -35,7 +35,7 @@ class NotificationController extends Controller
             $query->where('type', $type);
         }
 
-        $paginator = $query->paginate(20)->withQueryString();
+        $paginator = $query->paginate(per_page())->withQueryString();
 
         $items = $paginator->through(fn (DatabaseNotification $notification) => $this->formatNotification($notification));
 

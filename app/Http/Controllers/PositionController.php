@@ -30,9 +30,9 @@ class PositionController extends Controller
                 }])
                 ->orderBy('name')
                 ->withTrashed()
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
-                ->through(fn($position) => [
+                ->through(fn ($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
                     'staff' => $position->staff->map(function ($staff) {

@@ -33,7 +33,7 @@ class NoteController extends Controller
                 $q->where('note', 'like', "%{$search}%");
             })
             ->latest('note_date')
-            ->paginate(20)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn (Note $note) => [
                 'id' => $note->id,

@@ -37,6 +37,7 @@ class PromotionController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted access to view all staff promotions');
+
             return redirect()->back()->with('error', 'You are not authorized to view past promotions');
         }
         activity()
@@ -75,11 +76,11 @@ class PromotionController extends Controller
             })
             ->orderBy('year', 'desc')
             ->orderBy('job_categories.level', 'asc')
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString();
 
         return Inertia::render('Promotion/Index', [
-            'promotions' => $promotions->through(fn($promotion) => [
+            'promotions' => $promotions->through(fn ($promotion) => [
                 'year' => $promotion->year,
                 'job_id' => $promotion->job_id,
                 'job_name' => $promotion->job_name,
@@ -102,6 +103,7 @@ class PromotionController extends Controller
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('attempted access to view staff promotion');
+
             return redirect()->back()->with('error', 'You are not authorized to view this page');
         }
         $rank = Job::find($request->rank)?->only('id', 'name');
@@ -163,7 +165,7 @@ class PromotionController extends Controller
             ->get()
             // ->paginate()
             // ->withQueryString()
-            ->map(fn($staff) => [
+            ->map(fn ($staff) => [
                 // 'staff' => $staff->ranks,
                 'id' => $staff->id,
                 'person_id' => $staff->person_id,
@@ -192,6 +194,7 @@ class PromotionController extends Controller
                 'user_agent' => request()->userAgent(),
             ])
             ->log('viewed staff promotion');
+
         return Inertia::render(
             'Promotion/Show',
             [

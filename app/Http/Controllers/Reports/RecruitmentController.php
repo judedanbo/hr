@@ -10,7 +10,7 @@ use App\Models\Job;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Maatwebsite\Excel\Excel as Excel;
+use Maatwebsite\Excel\Excel;
 
 class RecruitmentController extends Controller
 {
@@ -94,7 +94,7 @@ class RecruitmentController extends Controller
                     $query->orWhere('jobs.name', $rank);
                 }
             })
-            ->paginate(10)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn ($staff) => [
                 'staff_id' => $staff->id,

@@ -34,7 +34,7 @@ class InstitutionController extends Controller
                     'staff',
                 ])
                 ->whereNull('end_date')
-                ->paginate(10)
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($institution) => [
                     'id' => $institution->id,
@@ -185,7 +185,7 @@ class InstitutionController extends Controller
                             $q->orWhereIn('institution_person.person_id', $people);
 
                             $q->with(['units', 'person', 'ranks']);
-                            $q->paginate();
+                            $q->paginate(per_page());
                         },
                     ]
                 );
@@ -201,11 +201,11 @@ class InstitutionController extends Controller
                         },
                     ]
                 );
-                $query->paginate();
+                $query->paginate(per_page());
             }, function ($query) {
                 $query->with(['staff' => function ($q) {
                     $q->with(['person', 'units', 'ranks']);
-                    $q->paginate();
+                    $q->paginate(per_page());
                 }]);
                 $query->withCount('staff');
             })

@@ -7,7 +7,6 @@ use Inertia\Inertia;
 
 class RegionController extends Controller
 {
-
     public function index()
     {
         return Inertia::render('Regions/Index', [
@@ -25,25 +24,26 @@ class RegionController extends Controller
                 ->when(request()->search, function ($query) {
                     $query->where('name', 'like', '%' . request()->search . '%');
                 })
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
-                ->through(fn($region) => [
+                ->through(fn ($region) => [
                     'id' => $region->id,
                     'name' => $region->name,
                     'capital' => $region->capital,
                     'staff_count' => $region->districts
-                        ->map(fn($district) => $district->offices->map(fn($office) => $office->units->map(fn($unit) => $unit->staff_count)->sum())->sum())
+                        ->map(fn ($district) => $district->offices->map(fn ($office) => $office->units->map(fn ($unit) => $unit->staff_count)->sum())->sum())
                         ->sum(),
                     'offices_count' => $region->districts
-                        ->map(fn($district) => $district->offices_count)
+                        ->map(fn ($district) => $district->offices_count)
                         ->sum(),
                     'units_count' => $region->districts
-                        ->map(fn($district) => $district->offices->map(fn($office) => $office->units_count)->sum())
+                        ->map(fn ($district) => $district->offices->map(fn ($office) => $office->units_count)->sum())
                         ->sum(),
                 ]),
             'filters' => ['search' => request()->search],
         ]);
     }
+
     public function show(Region $region)
     {
         $region->load(['districts' => function ($query) {
@@ -55,6 +55,7 @@ class RegionController extends Controller
                 }]);
             }]);
         }]);
+
         return Inertia::render('Regions/Show', [
             'region_id' => $region,
             'region' => [
@@ -62,27 +63,27 @@ class RegionController extends Controller
                 'name' => $region->name,
                 'capital' => $region->capital,
                 'staff_count' => $region->districts
-                    ->flatMap(fn($district) => $district->offices)
-                    ->flatMap(fn($office) => $office->units)
-                    ->flatMap(fn($unit) => $unit->staff)
+                    ->flatMap(fn ($district) => $district->offices)
+                    ->flatMap(fn ($office) => $office->units)
+                    ->flatMap(fn ($unit) => $unit->staff)
                     ->count(),
                 'offices_count' => $region->districts
-                    ->flatMap(fn($district) => $district->offices)
+                    ->flatMap(fn ($district) => $district->offices)
                     ->count(),
                 'units_count' => $region->districts
-                    ->flatMap(fn($district) => $district->offices)
-                    ->flatMap(fn($office) => $office->units)
+                    ->flatMap(fn ($district) => $district->offices)
+                    ->flatMap(fn ($office) => $office->units)
                     ->count(),
             ],
-            'offices' =>  $region->districts
-                ->flatMap(fn($district) => $district->offices)
-                ->map(fn($office) => [
+            'offices' => $region->districts
+                ->flatMap(fn ($district) => $district->offices)
+                ->map(fn ($office) => [
                     'id' => $office->id,
                     'name' => $office->name,
                     'units_count' => $office->units_count,
                     'office' => $office,
                     'staff_count' => $office->units
-                        ->map(fn($unit) => $unit->staff_count)
+                        ->map(fn ($unit) => $unit->staff_count)
                         ->sum(),
                     // $office->staff
                     // ->map(fn($unit) => $unit->staff_count)

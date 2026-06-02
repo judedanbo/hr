@@ -63,7 +63,7 @@ class PersonUnitController extends Controller
                 // })
 
                 ->with(['person', 'jobs', 'units'])
-                ->paginate(10)
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($staff) => [
                     'id' => $staff->id,
@@ -230,7 +230,7 @@ class PersonUnitController extends Controller
             'surname' => 'required|max:30',
             'other_names' => 'required|max:60',
             'date_of_birth' => 'required|date|before_or_equal:now',
-            'gender' => 'required|max:10', //[new Enum(Gender::class)],
+            'gender' => 'required|max:10', // [new Enum(Gender::class)],
             'nationality' => 'nullable|max:40',
             'relation' => 'required|max:40',
         ]);

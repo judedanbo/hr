@@ -41,7 +41,7 @@ class SeparationController extends Controller
             // ->currentUnit()
             // ->currentRank()
             ->search(request()->search)
-            ->paginate(10)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(function ($staff) {
                 return [

@@ -40,7 +40,7 @@ class RoleController extends Controller
         // $roles = Role::with(['permissions', 'users'])->get();
         return Inertia::render('Role/Index', [
             'roles' => Role::withCount(['permissions', 'users'])
-                ->paginate()
+                ->paginate(per_page())
                 ->through(fn ($role) => [
                     'id' => $role->id,
                     'name' => $role->name,
@@ -88,7 +88,7 @@ class RoleController extends Controller
                 'display_name' => Str::of($role->name)->replace('-', ' ')->title(),
             ],
             'users' => $role->users()
-                ->paginate(10, ['*'], 'users_page')
+                ->paginate(per_page(), ['*'], 'users_page')
                 ->through(fn (User $user) => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -100,7 +100,7 @@ class RoleController extends Controller
                 ->when(request('permission_search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->paginate(10, ['*'], 'permissions_page')
+                ->paginate(per_page(), ['*'], 'permissions_page')
                 ->through(fn ($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
