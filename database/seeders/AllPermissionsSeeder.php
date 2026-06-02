@@ -307,6 +307,14 @@ class AllPermissionsSeeder extends Seeder
             'create holiday',
             'update holiday',
             'delete holiday',
+
+            // ============================================
+            // Leave Management — Annual Planning (4)
+            // ============================================
+            'manage leave planning windows',
+            'view leave plans',
+            'submit leave plan',
+            'view all leave plans',
         ];
     }
 }

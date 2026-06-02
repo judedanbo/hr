@@ -30,6 +30,7 @@ import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 const page = usePage();
 const permissions = computed(() => page.props?.auth?.permissions);
 const alert = computed(() => page.props?.flash);
+const leavePlanning = computed(() => page.props?.leavePlanning);
 const navigation = [
 	{
 		name: "My Profile",
@@ -91,7 +92,8 @@ const navigation = [
 			route().current("leave-year.*") ||
 			route().current("leave-type.*") ||
 			route().current("leave-entitlement.*") ||
-			route().current("holiday.*"),
+			route().current("holiday.*") ||
+			route().current("leave-planning-window.*"),
 		children: [
 			{
 				name: "Leave Years",
@@ -117,12 +119,33 @@ const navigation = [
 				current: route().current("holiday.*"),
 				visible: permissions.value?.includes("view all holidays"),
 			},
+			{
+				name: "Planning Windows",
+				href: route("leave-planning-window.index"),
+				current: route().current("leave-planning-window.*"),
+				visible: permissions.value?.includes("manage leave planning windows"),
+			},
 		],
 		visible:
 			permissions.value?.includes("view all leave years") ||
 			permissions.value?.includes("view all leave types") ||
 			permissions.value?.includes("view all leave entitlements") ||
-			permissions.value?.includes("view all holidays"),
+			permissions.value?.includes("view all holidays") ||
+			permissions.value?.includes("manage leave planning windows"),
+	},
+	{
+		name: "My Leave Plan",
+		href: route("leave-plan.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-plan.*"),
+		visible: permissions.value?.includes("view leave plans"),
+	},
+	{
+		name: "All Leave Plans",
+		href: route("leave-plans.index"),
+		icon: DocumentDuplicateIcon,
+		current: route().current("leave-plans.*"),
+		visible: permissions.value?.includes("view all leave plans"),
 	},
 	{
 		name: "Next Promotions",
@@ -343,6 +366,19 @@ const closeAlert = (index) => {
 			</div>
 
 			<main class="pb-6 bg-gray-100 dark:bg-gray-600 min-h-screen">
+				<div
+					v-if="leavePlanning?.open && !leavePlanning?.submitted"
+					class="bg-amber-50 border-b border-amber-200 px-6 py-3 text-sm text-amber-900"
+				>
+					<span class="font-semibold">Leave planning is open.</span>
+					Submit your leave plan by {{ leavePlanning.closes_at }}.
+					<Link
+						:href="route('leave-plan.index')"
+						class="font-semibold underline hover:text-amber-700"
+					>
+						Go to My Leave Plan
+					</Link>
+				</div>
 				<div class="">
 					<!-- permissions: {{ permissions }} -->
 					<slot />

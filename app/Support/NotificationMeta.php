@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Notifications\LeavePlanSubmittedNotification;
 use App\Notifications\PhotoApprovedNotification;
 use App\Notifications\PhotoPendingApprovalNotification;
 use App\Notifications\PhotoRejectedNotification;
@@ -34,6 +35,11 @@ class NotificationMeta
                 'label' => 'Qualification pending approval',
                 'icon' => 'academic-cap',
                 'url' => fn (array $data): string => route('qualification.index'),
+            ],
+            LeavePlanSubmittedNotification::class => [
+                'label' => 'Leave plan submitted',
+                'icon' => 'calendar',
+                'url' => fn (array $data): string => route('leave-plans.index'),
             ],
         ];
     }

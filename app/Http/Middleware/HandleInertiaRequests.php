@@ -72,7 +72,39 @@ class HandleInertiaRequests extends Middleware
                 'warning' => fn () => $request->session()->get('warning'),
                 'info' => fn () => $request->session()->get('info'),
             ],
+            'leavePlanning' => fn () => $this->leavePlanningBanner($request),
         ]);
+    }
+
+    /**
+     * Banner data for the open annual-leave planning window, or null when there
+     * is no open window or the user is not linked to a staff record.
+     *
+     * @return array{open: bool, closes_at: ?string, submitted: bool}|null
+     */
+    private function leavePlanningBanner(Request $request): ?array
+    {
+        $user = $request->user();
+        if (! $user || ! $user->person_id) {
+            return null;
+        }
+
+        $window = app(\App\Services\LeavePlanningWindowService::class)->openWindow();
+        if (! $window) {
+            return null;
+        }
+
+        $submitted = \App\Models\LeavePlan::query()
+            ->where('leave_year_id', $window->leave_year_id)
+            ->where('status', \App\Enums\LeavePlanStatusEnum::Submitted)
+            ->whereHas('staff', fn ($query) => $query->where('person_id', $user->person_id))
+            ->exists();
+
+        return [
+            'open' => true,
+            'closes_at' => $window->closes_at?->format('Y-m-d'),
+            'submitted' => $submitted,
+        ];
     }
 
     private function resolveViewModeLabel(?\App\Models\User $user): ?string

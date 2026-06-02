@@ -28,6 +28,9 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\LeaveEntitlementController;
+use App\Http\Controllers\LeavePlanAdminController;
+use App\Http\Controllers\LeavePlanController;
+use App\Http\Controllers\LeavePlanningWindowController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\LeaveYearController;
 use App\Http\Controllers\MaritalStatusController;
@@ -622,6 +625,27 @@ Route::controller(HolidayController::class)->middleware(['auth', 'password_chang
     Route::post('/holiday', 'store')->middleware('can:create holiday')->name('holiday.store');
     Route::patch('/holiday/{holiday}', 'update')->middleware('can:update holiday')->name('holiday.update');
     Route::delete('/holiday/{holiday}', 'delete')->middleware('can:delete holiday')->name('holiday.delete');
+});
+
+Route::controller(LeavePlanningWindowController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-planning-window', 'index')->middleware('can:manage leave planning windows')->name('leave-planning-window.index');
+    Route::post('/leave-planning-window', 'store')->middleware('can:manage leave planning windows')->name('leave-planning-window.store');
+    Route::patch('/leave-planning-window/{leavePlanningWindow}', 'update')->middleware('can:manage leave planning windows')->name('leave-planning-window.update');
+    Route::delete('/leave-planning-window/{leavePlanningWindow}', 'delete')->middleware('can:manage leave planning windows')->name('leave-planning-window.delete');
+});
+
+Route::controller(LeavePlanController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/my-leave-plan', 'index')->middleware('can:view leave plans')->name('leave-plan.index');
+    Route::get('/my-leave-plan/preview-days', 'previewDays')->middleware('can:submit leave plan')->name('leave-plan.preview-days');
+    Route::post('/my-leave-plan/items', 'storeItem')->middleware('can:submit leave plan')->name('leave-plan.items.store');
+    Route::patch('/my-leave-plan/items/{item}', 'updateItem')->middleware('can:submit leave plan')->name('leave-plan.items.update');
+    Route::delete('/my-leave-plan/items/{item}', 'destroyItem')->middleware('can:submit leave plan')->name('leave-plan.items.destroy');
+    Route::post('/my-leave-plan/submit', 'submit')->middleware('can:submit leave plan')->name('leave-plan.submit');
+});
+
+Route::controller(LeavePlanAdminController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-plans', 'index')->middleware('can:view all leave plans')->name('leave-plans.index');
+    Route::get('/leave-plans/{plan}', 'show')->middleware('can:view all leave plans')->name('leave-plans.show');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

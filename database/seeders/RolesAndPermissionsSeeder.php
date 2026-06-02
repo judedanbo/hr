@@ -77,6 +77,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'create holiday',
             'update holiday',
             'delete holiday',
+
+            // Annual leave planning
+            'manage leave planning windows',
+            'view leave plans',
+            'submit leave plan',
+            'view all leave plans',
         ],
 
         'aag-admin' => [
@@ -105,6 +111,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.export',
             'qualifications.reports.view.all',
             'approve staff photo',
+
+            // Annual leave planning
+            'manage leave planning windows',
+            'view leave plans',
+            'submit leave plan',
+            'view all leave plans',
         ],
 
         'personel-user' => [
@@ -157,6 +169,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit staff qualification',
             'delete staff qualification',
             'update contacts',
+
+            // Annual leave planning (self-service)
+            'view leave plans',
+            'submit leave plan',
         ],
     ];
 
