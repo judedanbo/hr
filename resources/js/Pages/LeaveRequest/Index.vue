@@ -17,6 +17,7 @@ import { useNavigation } from "@/Composables/navigation";
 const props = defineProps({
 	requests: { type: Object, required: true },
 	statuses: { type: Array, default: () => [] },
+	balance: { type: Array, default: () => [] },
 	filters: { type: Object, default: () => ({}) },
 });
 
@@ -46,14 +47,43 @@ const tableCols = ["Type", "Start", "End", "Days", "Status", "Action"];
 					<h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
 						My Leave Requests
 					</h1>
-					<Link
-						v-if="canCreate"
-						:href="route('leave-request.create')"
-						class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-500"
-					>
-						Request leave
-					</Link>
+					<div class="flex items-center gap-x-3">
+						<Link
+							:href="route('leave-balance.index')"
+							class="text-sm text-green-700 hover:underline"
+						>
+							View full balance
+						</Link>
+						<Link
+							v-if="canCreate"
+							:href="route('leave-request.create')"
+							class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-500"
+						>
+							Request leave
+						</Link>
+					</div>
 				</div>
+
+				<section
+					v-if="balance.length"
+					class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+				>
+					<div
+						v-for="row in balance"
+						:key="row.leave_type_id"
+						class="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white dark:bg-gray-800"
+					>
+						<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+							{{ row.leave_type }}
+						</p>
+						<p class="text-xs text-gray-500 dark:text-gray-300">
+							<span class="text-green-700 font-semibold">{{
+								row.remaining
+							}}</span>
+							of {{ row.assigned }} day(s) left
+						</p>
+					</div>
+				</section>
 				<section class="flex flex-col -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 					<div
 						class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"

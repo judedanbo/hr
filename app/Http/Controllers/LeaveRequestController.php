@@ -45,6 +45,7 @@ class LeaveRequestController extends Controller
     public function index(): Response
     {
         $staff = $this->currentStaff();
+        $activeYear = LeaveYear::query()->where('is_active', true)->first();
 
         return Inertia::render('LeaveRequest/Index', [
             'requests' => LeaveRequest::query()
@@ -57,6 +58,7 @@ class LeaveRequestController extends Controller
                 ->through(fn (LeaveRequest $leaveRequest): array => $this->summary($leaveRequest)),
             'statuses' => collect(LeaveRequestStatusEnum::cases())
                 ->map(fn (LeaveRequestStatusEnum $status): array => ['value' => $status->value, 'label' => $status->label()]),
+            'balance' => $activeYear ? $this->balance->ledger($staff, $activeYear) : [],
             'filters' => request()->only('status'),
         ]);
     }

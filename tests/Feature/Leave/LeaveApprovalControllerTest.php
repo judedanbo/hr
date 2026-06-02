@@ -9,6 +9,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\LeaveYear;
 use App\Models\Person;
+use App\Models\Unit;
 use App\Models\User;
 use App\Notifications\LeaveRequestDecidedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -122,6 +123,31 @@ class LeaveApprovalControllerTest extends TestCase
         $this->actingAs($this->headUser)
             ->post(route('leave-approvals.approve', $leaveRequest), ['approved_days' => 5])
             ->assertSessionHasErrors('approved_days');
+    }
+
+    public function test_approval_blocked_when_unit_coverage_cap_reached(): void
+    {
+        $unit = Unit::factory()->create();
+        $this->requester->units()->attach($unit->id, ['start_date' => now()->toDateString(), 'end_date' => null]);
+        $colleague = InstitutionPerson::factory()->create();
+        $colleague->units()->attach($unit->id, ['start_date' => now()->toDateString(), 'end_date' => null]);
+
+        $this->type->update(['max_concurrent_per_unit' => 1]);
+        LeaveRequest::factory()->create([
+            'staff_id' => $colleague->id, 'leave_type_id' => $this->type->id, 'leave_year_id' => $this->year->id,
+            'status' => LeaveRequestStatusEnum::Approved, 'approved_days' => 3,
+            'start_date' => '2030-06-10', 'end_date' => '2030-06-14',
+        ]);
+
+        $leaveRequest = LeaveRequest::factory()->create([
+            'staff_id' => $this->requester->id, 'leave_type_id' => $this->type->id, 'leave_year_id' => $this->year->id,
+            'requested_days' => 3, 'approver_id' => $this->head->id, 'status' => LeaveRequestStatusEnum::Pending,
+            'start_date' => '2030-06-12', 'end_date' => '2030-06-14',
+        ]);
+
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.approve', $leaveRequest), ['approved_days' => 3])
+            ->assertSessionHasErrors('coverage');
     }
 
     public function test_decline_requires_a_reason(): void

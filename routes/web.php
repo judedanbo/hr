@@ -28,6 +28,8 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\LeaveApprovalController;
+use App\Http\Controllers\LeaveBalanceController;
+use App\Http\Controllers\LeaveCalendarController;
 use App\Http\Controllers\LeaveDelegationController;
 use App\Http\Controllers\LeaveEntitlementController;
 use App\Http\Controllers\LeavePlanAdminController;
@@ -689,6 +691,14 @@ Route::controller(LeaveDelegationController::class)->middleware(['auth', 'passwo
 Route::controller(UnitHeadController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/unit-head', 'index')->middleware('can:manage leave approvers')->name('unit-head.index');
     Route::patch('/unit-head/{unit}', 'update')->middleware('can:manage leave approvers')->name('unit-head.update');
+});
+
+Route::controller(LeaveBalanceController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-balance', 'index')->middleware('can:view leave requests')->name('leave-balance.index');
+});
+
+Route::controller(LeaveCalendarController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-calendar', 'index')->middleware('can:view leave calendar')->name('leave-calendar.index');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

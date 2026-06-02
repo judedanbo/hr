@@ -129,4 +129,26 @@ class LeaveBalanceServiceTest extends TestCase
         // Declined excluded; only the approved request's requested_days counts as committed.
         $this->assertSame(8, $this->service->committedRequestDays($staff, $type->id, $year));
     }
+
+    public function test_remaining_and_ledger(): void
+    {
+        $staff = InstitutionPerson::factory()->create();
+        $year = LeaveYear::factory()->create();
+        $type = LeaveType::factory()->create();
+        LeaveEntitlement::factory()->create([
+            'leave_year_id' => $year->id, 'leave_type_id' => $type->id, 'job_category_id' => null, 'days_allowed' => 20,
+        ]);
+        LeaveRequest::factory()->create([
+            'staff_id' => $staff->id, 'leave_type_id' => $type->id, 'leave_year_id' => $year->id,
+            'status' => \App\Enums\LeaveRequestStatusEnum::Approved, 'requested_days' => 5, 'approved_days' => 5,
+        ]);
+
+        $this->assertSame(15, $this->service->remaining($staff, $type->id, $year));
+
+        $ledger = $this->service->ledger($staff, $year);
+        $this->assertCount(1, $ledger);
+        $this->assertSame(20, $ledger[0]['assigned']);
+        $this->assertSame(5, $ledger[0]['taken']);
+        $this->assertSame(15, $ledger[0]['remaining']);
+    }
 }

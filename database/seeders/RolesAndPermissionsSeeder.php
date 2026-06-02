@@ -96,6 +96,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'reassign leave approver',
             'manage leave delegations',
             'manage leave approvers',
+
+            // Leave visibility
+            'view leave calendar',
         ],
 
         'aag-admin' => [
@@ -143,6 +146,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'reassign leave approver',
             'manage leave delegations',
             'manage leave approvers',
+
+            // Leave visibility
+            'view leave calendar',
         ],
 
         'personel-user' => [

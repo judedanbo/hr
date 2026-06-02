@@ -185,6 +185,20 @@ const navigation = [
 		visible: Boolean(page.props?.auth?.user?.person_id),
 	},
 	{
+		name: "Leave Balance",
+		href: route("leave-balance.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-balance.*"),
+		visible: permissions.value?.includes("view leave requests"),
+	},
+	{
+		name: "Leave Calendar",
+		href: route("leave-calendar.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-calendar.*"),
+		visible: permissions.value?.includes("view leave calendar"),
+	},
+	{
 		name: "Next Promotions",
 		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,

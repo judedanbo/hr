@@ -332,6 +332,11 @@ class AllPermissionsSeeder extends Seeder
             'reassign leave approver',
             'manage leave delegations',
             'manage leave approvers',
+
+            // ============================================
+            // Leave Management — Visibility (1)
+            // ============================================
+            'view leave calendar',
         ];
     }
 }

@@ -133,4 +133,42 @@ class LeaveBalanceService
         return max(0, $this->assignedDays($staff, $leaveTypeId, $year)
             - $this->committedRequestDays($staff, $leaveTypeId, $year, $ignoreRequestId));
     }
+
+    /**
+     * Days left after what has actually been taken (Assigned − Taken).
+     */
+    public function remaining(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year): int
+    {
+        return max(0, $this->assignedDays($staff, $leaveTypeId, $year) - $this->takenDays($staff, $leaveTypeId, $year));
+    }
+
+    /**
+     * The annual ledger for a staff member: per active leave type with an
+     * entitlement, the Assigned / Planned / Taken / Remaining day counts.
+     *
+     * @return array<int, array{leave_type_id: int, leave_type: string, color: ?string, assigned: int, planned: int, taken: int, remaining: int}>
+     */
+    public function ledger(InstitutionPerson $staff, LeaveYear $year): array
+    {
+        return \App\Models\LeaveType::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(function (\App\Models\LeaveType $type) use ($staff, $year): array {
+                $assigned = $this->assignedDays($staff, $type->id, $year);
+
+                return [
+                    'leave_type_id' => $type->id,
+                    'leave_type' => $type->name,
+                    'color' => $type->color,
+                    'assigned' => $assigned,
+                    'planned' => $this->plannedDays($staff, $type->id, $year),
+                    'taken' => $this->takenDays($staff, $type->id, $year),
+                    'remaining' => $this->remaining($staff, $type->id, $year),
+                ];
+            })
+            ->filter(fn (array $row): bool => $row['assigned'] > 0)
+            ->values()
+            ->all();
+    }
 }

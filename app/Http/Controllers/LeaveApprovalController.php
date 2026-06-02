@@ -11,6 +11,7 @@ use App\Models\LeaveRequest;
 use App\Models\User;
 use App\Notifications\LeaveRequestDecidedNotification;
 use App\Services\LeaveBalanceService;
+use App\Services\LeaveCoverageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -25,6 +26,7 @@ class LeaveApprovalController extends Controller
 {
     public function __construct(
         private LeaveBalanceService $balance,
+        private LeaveCoverageService $coverage,
     ) {}
 
     public function index(Request $request): Response
@@ -85,6 +87,12 @@ class LeaveApprovalController extends Controller
             if ($taken + $approvedDays > $assigned) {
                 throw ValidationException::withMessages([
                     'approved_days' => 'Approving ' . $approvedDays . ' day(s) would exceed the ' . $assigned . '-day entitlement (' . $taken . ' already approved).',
+                ]);
+            }
+
+            if ($this->coverage->exceedsLimit($locked->staff, $locked->leaveType, $locked->start_date, $locked->end_date, $locked->id)) {
+                throw ValidationException::withMessages([
+                    'coverage' => 'The unit already has the maximum number of staff on ' . $locked->leaveType->name . ' leave for these dates.',
                 ]);
             }
 
