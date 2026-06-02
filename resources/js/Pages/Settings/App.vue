@@ -59,7 +59,12 @@ const errorClass = "mt-1 text-xs text-red-600 dark:text-red-400";
 					<div class="mt-4 space-y-4">
 						<div>
 							<label :class="labelClass">Organization name</label>
-							<input v-model="form.org_name" type="text" :class="fieldClass" />
+							<input
+								v-model="form.org_name"
+								type="text"
+								dusk="org_name"
+								:class="fieldClass"
+							/>
 							<p v-if="form.errors.org_name" :class="errorClass">
 								{{ form.errors.org_name }}
 							</p>
@@ -100,6 +105,7 @@ const errorClass = "mt-1 text-xs text-red-600 dark:text-red-400";
 								type="number"
 								min="5"
 								max="100"
+								dusk="pagination_size"
 								:class="fieldClass"
 							/>
 							<p v-if="form.errors.pagination_size" :class="errorClass">
@@ -139,6 +145,7 @@ const errorClass = "mt-1 text-xs text-red-600 dark:text-red-400";
 				<div class="flex justify-end">
 					<button
 						type="submit"
+						dusk="save"
 						:disabled="form.processing"
 						class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:opacity-50 dark:bg-gray-600 dark:hover:bg-gray-500"
 					>
