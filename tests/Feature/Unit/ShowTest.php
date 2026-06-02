@@ -164,9 +164,9 @@ class ShowTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('unit.show', ['unit' => $unit->id]));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('staff.meta.per_page', 15)
+            ->where('staff.meta.per_page', 10)
             ->where('staff.meta.total', 18)
-            ->has('staff.data', 15)
+            ->has('staff.data', 10)
             ->has('filter_options.genders', 2)
         );
     }

@@ -69,7 +69,7 @@ class StaffDirectoryTest extends TestCase
         );
     }
 
-    public function test_staff_endpoint_paginates_at_fifteen_per_page(): void
+    public function test_staff_endpoint_uses_configured_page_size(): void
     {
         $unit = Unit::factory()->create();
         for ($i = 0; $i < 20; $i++) {
@@ -79,9 +79,26 @@ class StaffDirectoryTest extends TestCase
         $response = $this->actingAs($this->user)->get(route('unit.staff', ['unit' => $unit->id]));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('staff.meta.per_page', 15)
+            ->where('staff.meta.per_page', 10)
             ->where('staff.meta.total', 20)
-            ->has('staff.data', 15)
+            ->has('staff.data', 10)
+        );
+    }
+
+    public function test_staff_endpoint_honors_per_page_override(): void
+    {
+        $unit = Unit::factory()->create();
+        for ($i = 0; $i < 20; $i++) {
+            $this->makeActiveStaff($unit);
+        }
+
+        $response = $this->actingAs($this->user)
+            ->get(route('unit.staff', ['unit' => $unit->id, 'per_page' => 5]));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('staff.meta.per_page', 5)
+            ->where('staff.meta.total', 20)
+            ->has('staff.data', 5)
         );
     }
 
