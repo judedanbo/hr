@@ -55,4 +55,16 @@ class PerPageHelperTest extends TestCase
         $this->withRequest('/?per_page=abc');
         $this->assertSame(10, per_page());
     }
+
+    public function test_clamps_negative_override_to_minimum(): void
+    {
+        $this->withRequest('/?per_page=-50');
+        $this->assertSame(5, per_page());
+    }
+
+    public function test_truncates_then_clamps_float_override(): void
+    {
+        $this->withRequest('/?per_page=10.5');
+        $this->assertSame(10, per_page());
+    }
 }
