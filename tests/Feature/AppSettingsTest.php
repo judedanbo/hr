@@ -67,11 +67,14 @@ class AppSettingsTest extends TestCase
         $response->assertRedirect(route('app-settings.edit'));
         $response->assertSessionHas('success');
 
-        $this->assertSame('New Org', app(\App\Settings\GeneralSettings::class)->org_name);
-        $this->assertSame('help@example.com', app(\App\Settings\GeneralSettings::class)->support_email);
-        $this->assertSame('Y-m-d', app(\App\Settings\GeneralSettings::class)->date_format);
-        $this->assertSame(25, app(\App\Settings\GeneralSettings::class)->pagination_size);
-        $this->assertSame(30, app(\App\Settings\SecuritySettings::class)->password_change_interval_days);
+        $general = app(GeneralSettings::class);
+        $security = app(SecuritySettings::class);
+
+        $this->assertSame('New Org', $general->org_name);
+        $this->assertSame('help@example.com', $general->support_email);
+        $this->assertSame('Y-m-d', $general->date_format);
+        $this->assertSame(25, $general->pagination_size);
+        $this->assertSame(30, $security->password_change_interval_days);
     }
 
     public function test_update_accepts_null_support_email(): void
@@ -129,5 +132,22 @@ class AppSettingsTest extends TestCase
                 ->where('app.org_name', 'HRMIS')
                 ->where('app.pagination_size', 10)
         );
+    }
+
+    public function test_guest_pages_do_not_crash_when_settings_rows_are_missing(): void
+    {
+        // Simulate a database where the settings data migration has not run
+        // (its rows are absent). The shared-props middleware resolves
+        // GeneralSettings on every Inertia response, including the guest
+        // login page, so the settings classes must fall back to their PHP
+        // defaults rather than throwing MissingSettings.
+        \Illuminate\Support\Facades\DB::table('settings')->delete();
+        app()->forgetInstance(GeneralSettings::class);
+        app()->forgetInstance(SecuritySettings::class);
+
+        $response = $this->get(route('login'));
+
+        $response->assertOk();
+        $this->assertSame('HRMIS', app(GeneralSettings::class)->org_name);
     }
 }

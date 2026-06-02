@@ -6,13 +6,13 @@ use Spatie\LaravelSettings\Settings;
 
 class GeneralSettings extends Settings
 {
-    public string $org_name;
+    public string $org_name = 'HRMIS';
 
-    public ?string $support_email;
+    public ?string $support_email = null;
 
-    public string $date_format;
+    public string $date_format = 'd M Y';
 
-    public int $pagination_size;
+    public int $pagination_size = 10;
 
     public static function group(): string
     {
