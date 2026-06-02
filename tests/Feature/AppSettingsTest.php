@@ -116,4 +116,18 @@ class AppSettingsTest extends TestCase
         $this->actingAs($user)->get(route('app-settings.edit'))->assertForbidden();
         $this->actingAs($user)->put(route('app-settings.update'), [])->assertForbidden();
     }
+
+    public function test_app_settings_are_shared_to_frontend(): void
+    {
+        $admin = User::factory()->create();
+        $admin->givePermissionTo('update app settings');
+
+        $response = $this->actingAs($admin)->get(route('app-settings.edit'));
+
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->where('app.org_name', 'HRMIS')
+                ->where('app.pagination_size', 10)
+        );
+    }
 }
