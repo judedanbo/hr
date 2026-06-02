@@ -199,6 +199,13 @@ const navigation = [
 		visible: permissions.value?.includes("view leave calendar"),
 	},
 	{
+		name: "Leave Reports",
+		href: route("leave-reports.index"),
+		icon: ChartPieIcon,
+		current: route().current("leave-reports.*"),
+		visible: permissions.value?.includes("view leave reports"),
+	},
+	{
 		name: "Next Promotions",
 		href: route("promotion.batch.index"),
 		icon: DocumentDuplicateIcon,

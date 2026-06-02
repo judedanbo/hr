@@ -35,6 +35,7 @@ use App\Http\Controllers\LeaveEntitlementController;
 use App\Http\Controllers\LeavePlanAdminController;
 use App\Http\Controllers\LeavePlanController;
 use App\Http\Controllers\LeavePlanningWindowController;
+use App\Http\Controllers\LeaveReportController;
 use App\Http\Controllers\LeaveRequestAdminController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\LeaveTypeController;
@@ -699,6 +700,12 @@ Route::controller(LeaveBalanceController::class)->middleware(['auth', 'password_
 
 Route::controller(LeaveCalendarController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/leave-calendar', 'index')->middleware('can:view leave calendar')->name('leave-calendar.index');
+});
+
+Route::controller(LeaveReportController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-reports', 'index')->middleware('can:view leave reports')->name('leave-reports.index');
+    Route::get('/leave-reports/export/excel', 'exportExcel')->middleware('can:export leave reports')->name('leave-reports.export.excel');
+    Route::get('/leave-reports/export/pdf', 'exportPdf')->middleware('can:export leave reports')->name('leave-reports.export.pdf');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

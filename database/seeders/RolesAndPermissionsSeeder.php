@@ -99,6 +99,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Leave visibility
             'view leave calendar',
+
+            // Leave reports
+            'view leave reports',
+            'view all leave reports',
+            'export leave reports',
         ],
 
         'aag-admin' => [
@@ -149,6 +154,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Leave visibility
             'view leave calendar',
+
+            // Leave reports
+            'view leave reports',
+            'view all leave reports',
+            'export leave reports',
         ],
 
         'personel-user' => [

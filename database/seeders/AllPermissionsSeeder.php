@@ -337,6 +337,13 @@ class AllPermissionsSeeder extends Seeder
             // Leave Management — Visibility (1)
             // ============================================
             'view leave calendar',
+
+            // ============================================
+            // Leave Management — Reports (3)
+            // ============================================
+            'view leave reports',
+            'view all leave reports',
+            'export leave reports',
         ];
     }
 }
