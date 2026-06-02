@@ -46,6 +46,7 @@ class AllPermissionsSeeder extends Seeder
             'restore user',
             'destroy user',
             'view user activity',
+            'view admin settings',
             'view user permissions',
             'update user permissions',
             'view user roles',
