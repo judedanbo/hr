@@ -133,6 +133,8 @@ class LeaveRequestController extends Controller
                 'relieving_officer' => $leaveRequest->relievingOfficer?->person?->full_name,
                 'approver' => $leaveRequest->approver?->person?->full_name,
                 'approved_days' => $leaveRequest->approved_days,
+                'actual_days' => $leaveRequest->actual_days,
+                'actual_return_date' => $leaveRequest->actual_return_date?->format('Y-m-d'),
                 'decline_reason' => $leaveRequest->decline_reason,
                 'documents' => $leaveRequest->documents->map(fn (LeaveDocument $document): array => [
                     'id' => $document->id,
@@ -147,6 +149,7 @@ class LeaveRequestController extends Controller
                     'at' => $history->created_at?->format('Y-m-d H:i'),
                 ]),
                 'can_edit' => $leaveRequest->status === LeaveRequestStatusEnum::Pending,
+                'is_approved' => $leaveRequest->status === LeaveRequestStatusEnum::Approved,
             ]),
         ]);
     }
@@ -206,15 +209,102 @@ class LeaveRequestController extends Controller
     {
         $this->authorize('cancel', $leaveRequest);
 
-        if ($leaveRequest->status === LeaveRequestStatusEnum::Cancelled) {
-            return redirect()->back()->with('info', 'Request already cancelled.');
+        if (in_array($leaveRequest->status, [LeaveRequestStatusEnum::Cancelled, LeaveRequestStatusEnum::Completed, LeaveRequestStatusEnum::Declined], true)) {
+            return redirect()->back()->with('info', 'This request can no longer be cancelled.');
+        }
+
+        // Owners may only cancel an approved request before it starts; HR/approvers may cancel anytime.
+        if ($leaveRequest->status === LeaveRequestStatusEnum::Approved
+            && ! request()->user()->can('approve staff leave')
+            && $leaveRequest->start_date->isPast()) {
+            return redirect()->back()->with('error', 'Approved leave that has already started cannot be cancelled here.');
         }
 
         $from = $leaveRequest->status;
         $leaveRequest->update(['status' => LeaveRequestStatusEnum::Cancelled]);
-        $this->logStatus($leaveRequest, $from, LeaveRequestStatusEnum::Cancelled, 'cancelled by staff');
+        $this->logStatus($leaveRequest, $from, LeaveRequestStatusEnum::Cancelled, 'cancelled');
 
         return redirect()->route('leave-request.index')->with('success', 'Leave request cancelled.');
+    }
+
+    public function resume(\App\Http\Requests\ResumeLeaveRequestRequest $request, LeaveRequest $leaveRequest): RedirectResponse
+    {
+        $this->authorize('resume', $leaveRequest);
+        abort_unless($leaveRequest->status === LeaveRequestStatusEnum::Approved, 403, 'Only approved leave can be resumed.');
+
+        $return = Carbon::parse($request->date('actual_return_date'));
+
+        if ($return->lessThan($leaveRequest->start_date) || $return->greaterThan($leaveRequest->end_date->copy()->addDay())) {
+            throw ValidationException::withMessages([
+                'actual_return_date' => 'The return date must fall within the approved leave period.',
+            ]);
+        }
+
+        // Days actually used = countable days from start to the day before return.
+        $actualDays = min(
+            $leaveRequest->approved_days,
+            $this->computeDays($leaveRequest->leaveType, $leaveRequest->leaveYear, $leaveRequest->start_date, $return->copy()->subDay()),
+        );
+        $actualDays = max(0, $actualDays);
+
+        $leaveRequest->update([
+            'status' => LeaveRequestStatusEnum::Completed,
+            'actual_return_date' => $return->toDateString(),
+            'actual_days' => $actualDays,
+        ]);
+        $this->logStatus($leaveRequest, LeaveRequestStatusEnum::Approved, LeaveRequestStatusEnum::Completed,
+            'resumed; ' . $actualDays . ' of ' . $leaveRequest->approved_days . ' day(s) used');
+
+        return redirect()->route('leave-request.show', $leaveRequest)->with('success', 'Return recorded.');
+    }
+
+    public function amend(\App\Http\Requests\AmendLeaveRequestRequest $request, LeaveRequest $leaveRequest): RedirectResponse
+    {
+        $this->authorize('amend', $leaveRequest);
+        abort_unless($leaveRequest->status === LeaveRequestStatusEnum::Approved, 403, 'Only approved leave can be amended.');
+
+        $staff = $leaveRequest->staff;
+        $leaveType = $leaveRequest->leaveType;
+        $start = Carbon::parse($request->date('start_date'));
+        $end = Carbon::parse($request->date('end_date'));
+        $year = $this->resolveYear($start, $end);
+        $requestedDays = $this->computeDays($leaveType, $year, $start, $end);
+
+        $approver = $this->approverResolver->resolve($staff);
+
+        $amended = DB::transaction(function () use ($leaveRequest, $staff, $leaveType, $year, $start, $end, $requestedDays, $request, $approver) {
+            // Free the original's days first so the replacement re-checks cleanly.
+            $leaveRequest->update(['status' => LeaveRequestStatusEnum::Cancelled]);
+            $this->logStatus($leaveRequest, LeaveRequestStatusEnum::Approved, LeaveRequestStatusEnum::Cancelled, 'amended');
+
+            $this->guardRequest($staff, $leaveType, $year, $start, $end, $requestedDays, true, $leaveRequest->relieving_officer_id);
+
+            $amended = LeaveRequest::create([
+                'staff_id' => $staff->id,
+                'leave_type_id' => $leaveType->id,
+                'leave_year_id' => $year->id,
+                'amended_from_id' => $leaveRequest->id,
+                'start_date' => $start->toDateString(),
+                'end_date' => $end->toDateString(),
+                'requested_days' => $requestedDays,
+                'reason' => $request->input('reason') ?: $leaveRequest->reason,
+                'address_during_leave' => $leaveRequest->address_during_leave,
+                'contact_during_leave' => $leaveRequest->contact_during_leave,
+                'relieving_officer_id' => $leaveRequest->relieving_officer_id,
+                'approver_id' => $approver?->id,
+                'status' => LeaveRequestStatusEnum::Pending,
+            ]);
+            $this->logStatus($amended, null, LeaveRequestStatusEnum::Pending, 'amendment of #' . $leaveRequest->id);
+
+            return $amended;
+        });
+
+        $recipients = $approver
+            ? User::where('person_id', $approver->person_id)->get()
+            : User::permission('approve staff leave')->get();
+        Notification::send($recipients, new LeaveRequestSubmittedNotification($amended));
+
+        return redirect()->route('leave-request.show', $amended)->with('success', 'Amendment submitted for approval.');
     }
 
     public function previewDays(Request $request): JsonResponse

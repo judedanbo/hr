@@ -9,6 +9,7 @@ enum LeaveRequestStatusEnum: string
     case Approved = 'Approved';
     case Declined = 'Declined';
     case Cancelled = 'Cancelled';
+    case Completed = 'Completed';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum LeaveRequestStatusEnum: string
             self::Approved => 'Approved',
             self::Declined => 'Declined',
             self::Cancelled => 'Cancelled',
+            self::Completed => 'Completed',
         };
     }
 }

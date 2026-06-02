@@ -104,6 +104,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'view leave reports',
             'view all leave reports',
             'export leave reports',
+
+            // Leave lifecycle
+            'resume leave request',
+            'amend leave request',
+            'adjust leave balance',
         ],
 
         'aag-admin' => [
@@ -159,6 +164,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'view leave reports',
             'view all leave reports',
             'export leave reports',
+
+            // Leave lifecycle
+            'resume leave request',
+            'amend leave request',
+            'adjust leave balance',
         ],
 
         'personel-user' => [
@@ -221,6 +231,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'create leave request',
             'update leave request',
             'cancel leave request',
+            'resume leave request',
+            'amend leave request',
         ],
     ];
 

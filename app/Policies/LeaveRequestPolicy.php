@@ -30,7 +30,19 @@ class LeaveRequestPolicy
 
     public function cancel(User $user, LeaveRequest $leaveRequest): bool
     {
-        return $this->owns($user, $leaveRequest) && $user->can('cancel leave request');
+        return ($this->owns($user, $leaveRequest) && $user->can('cancel leave request'))
+            || $user->can('approve staff leave');
+    }
+
+    public function resume(User $user, LeaveRequest $leaveRequest): bool
+    {
+        return ($this->owns($user, $leaveRequest) || $user->can('approve staff leave'))
+            && $user->can('resume leave request');
+    }
+
+    public function amend(User $user, LeaveRequest $leaveRequest): bool
+    {
+        return $this->owns($user, $leaveRequest) && $user->can('amend leave request');
     }
 
     /**

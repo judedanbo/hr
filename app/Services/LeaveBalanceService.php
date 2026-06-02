@@ -41,11 +41,26 @@ class LeaveBalanceService
     }
 
     /**
-     * The total days assigned to a staff member for a leave type in a year.
+     * The total days assigned to a staff member for a leave type in a year —
+     * the resolved entitlement plus any manual balance adjustments.
      */
     public function assignedDays(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year): int
     {
-        return $this->resolveEntitlement($staff, $leaveTypeId, $year)?->days_allowed ?? 0;
+        $base = $this->resolveEntitlement($staff, $leaveTypeId, $year)?->days_allowed ?? 0;
+
+        return max(0, $base + $this->adjustmentDays($staff, $leaveTypeId, $year));
+    }
+
+    /**
+     * The net manual balance adjustment (may be negative) for a staff member.
+     */
+    public function adjustmentDays(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year): int
+    {
+        return (int) \App\Models\LeaveBalanceAdjustment::query()
+            ->where('staff_id', $staff->id)
+            ->where('leave_type_id', $leaveTypeId)
+            ->where('leave_year_id', $year->id)
+            ->sum('days');
     }
 
     /**
@@ -111,18 +126,21 @@ class LeaveBalanceService
     }
 
     /**
-     * Days actually taken — the sum of approved_days across Approved requests for
-     * a leave type in a year, optionally ignoring one request (when re-deciding).
+     * Days actually taken — approved_days for still-Approved requests, plus the
+     * actual_days for Completed (early-returned) requests.
      */
     public function takenDays(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year, ?int $ignoreRequestId = null): int
     {
-        return (int) LeaveRequest::query()
+        $base = LeaveRequest::query()
             ->where('staff_id', $staff->id)
             ->where('leave_type_id', $leaveTypeId)
             ->where('leave_year_id', $year->id)
-            ->where('status', LeaveRequestStatusEnum::Approved)
-            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
-            ->sum('approved_days');
+            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId));
+
+        $approved = (int) (clone $base)->where('status', LeaveRequestStatusEnum::Approved)->sum('approved_days');
+        $completed = (int) (clone $base)->where('status', LeaveRequestStatusEnum::Completed)->sum('actual_days');
+
+        return $approved + $completed;
     }
 
     /**

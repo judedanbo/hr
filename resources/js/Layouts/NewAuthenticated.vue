@@ -139,6 +139,12 @@ const navigation = [
 				current: route().current("leave-delegation.*"),
 				visible: permissions.value?.includes("manage leave delegations"),
 			},
+			{
+				name: "Balance Adjustments",
+				href: route("leave-balance-adjustment.index"),
+				current: route().current("leave-balance-adjustment.*"),
+				visible: permissions.value?.includes("adjust leave balance"),
+			},
 		],
 		visible:
 			permissions.value?.includes("view all leave years") ||
@@ -147,7 +153,8 @@ const navigation = [
 			permissions.value?.includes("view all holidays") ||
 			permissions.value?.includes("manage leave planning windows") ||
 			permissions.value?.includes("manage leave approvers") ||
-			permissions.value?.includes("manage leave delegations"),
+			permissions.value?.includes("manage leave delegations") ||
+			permissions.value?.includes("adjust leave balance"),
 	},
 	{
 		name: "My Leave Plan",

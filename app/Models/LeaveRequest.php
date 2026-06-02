@@ -88,6 +88,11 @@ class LeaveRequest extends Model
         return $this->belongsTo(User::class, 'decided_by');
     }
 
+    public function amendedFrom(): BelongsTo
+    {
+        return $this->belongsTo(LeaveRequest::class, 'amended_from_id');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(LeaveDocument::class);

@@ -28,6 +28,7 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\LeaveApprovalController;
+use App\Http\Controllers\LeaveBalanceAdjustmentController;
 use App\Http\Controllers\LeaveBalanceController;
 use App\Http\Controllers\LeaveCalendarController;
 use App\Http\Controllers\LeaveDelegationController;
@@ -666,6 +667,8 @@ Route::controller(LeaveRequestController::class)->middleware(['auth', 'password_
     Route::get('/leave-request/{leaveRequest}/edit', 'edit')->middleware('can:update leave request')->name('leave-request.edit');
     Route::patch('/leave-request/{leaveRequest}', 'update')->middleware('can:update leave request')->name('leave-request.update');
     Route::post('/leave-request/{leaveRequest}/cancel', 'cancel')->middleware('can:cancel leave request')->name('leave-request.cancel');
+    Route::post('/leave-request/{leaveRequest}/resume', 'resume')->middleware('can:resume leave request')->name('leave-request.resume');
+    Route::post('/leave-request/{leaveRequest}/amend', 'amend')->middleware('can:amend leave request')->name('leave-request.amend');
     Route::get('/leave-request/{leaveRequest}/documents/{document}', 'downloadDocument')->middleware('can:view leave requests')->name('leave-request.documents.download');
     Route::delete('/leave-request/{leaveRequest}/documents/{document}', 'destroyDocument')->middleware('can:update leave request')->name('leave-request.documents.destroy');
 });
@@ -706,6 +709,12 @@ Route::controller(LeaveReportController::class)->middleware(['auth', 'password_c
     Route::get('/leave-reports', 'index')->middleware('can:view leave reports')->name('leave-reports.index');
     Route::get('/leave-reports/export/excel', 'exportExcel')->middleware('can:export leave reports')->name('leave-reports.export.excel');
     Route::get('/leave-reports/export/pdf', 'exportPdf')->middleware('can:export leave reports')->name('leave-reports.export.pdf');
+});
+
+Route::controller(LeaveBalanceAdjustmentController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-balance-adjustment', 'index')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.index');
+    Route::post('/leave-balance-adjustment', 'store')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.store');
+    Route::delete('/leave-balance-adjustment/{leaveBalanceAdjustment}', 'delete')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.delete');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

@@ -344,6 +344,13 @@ class AllPermissionsSeeder extends Seeder
             'view leave reports',
             'view all leave reports',
             'export leave reports',
+
+            // ============================================
+            // Leave Management — Lifecycle (3)
+            // ============================================
+            'resume leave request',
+            'amend leave request',
+            'adjust leave balance',
         ];
     }
 }

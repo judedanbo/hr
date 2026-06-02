@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
         $this->call(LeaveApprovalPermissionSeeder::class);
         $this->call(LeaveVisibilityPermissionSeeder::class);
         $this->call(LeaveReportPermissionSeeder::class);
+        $this->call(LeaveLifecyclePermissionSeeder::class);
         $this->call(AllPermissionsSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(SuperAdminSeeder::class);
