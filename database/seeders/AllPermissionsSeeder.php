@@ -324,6 +324,14 @@ class AllPermissionsSeeder extends Seeder
             'update leave request',
             'cancel leave request',
             'view all leave requests',
+
+            // ============================================
+            // Leave Management — Approvals (4)
+            // ============================================
+            'approve staff leave',
+            'reassign leave approver',
+            'manage leave delegations',
+            'manage leave approvers',
         ];
     }
 }

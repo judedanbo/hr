@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Notifications\LeavePlanSubmittedNotification;
+use App\Notifications\LeaveRequestDecidedNotification;
 use App\Notifications\LeaveRequestSubmittedNotification;
 use App\Notifications\PhotoApprovedNotification;
 use App\Notifications\PhotoPendingApprovalNotification;
@@ -45,7 +46,12 @@ class NotificationMeta
             LeaveRequestSubmittedNotification::class => [
                 'label' => 'Leave request submitted',
                 'icon' => 'calendar',
-                'url' => fn (array $data): string => route('leave-requests.index'),
+                'url' => fn (array $data): string => route('leave-approvals.index'),
+            ],
+            LeaveRequestDecidedNotification::class => [
+                'label' => 'Leave request decision',
+                'icon' => 'calendar',
+                'url' => fn (array $data): string => route('leave-request.show', ['leaveRequest' => $data['leave_request_id']]),
             ],
         ];
     }

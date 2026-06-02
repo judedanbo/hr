@@ -57,6 +57,18 @@ const links = [
 						<dt class="text-gray-400">Relieving officer</dt>
 						<dd>{{ request.relieving_officer || "—" }}</dd>
 					</div>
+					<div>
+						<dt class="text-gray-400">Approver</dt>
+						<dd>{{ request.approver || "Pending assignment" }}</dd>
+					</div>
+					<div v-if="request.approved_days">
+						<dt class="text-gray-400">Approved days</dt>
+						<dd>{{ request.approved_days }}</dd>
+					</div>
+					<div v-if="request.decline_reason" class="col-span-2">
+						<dt class="text-gray-400">Decline reason</dt>
+						<dd>{{ request.decline_reason }}</dd>
+					</div>
 					<div class="col-span-2">
 						<dt class="text-gray-400">Reason</dt>
 						<dd>{{ request.reason || "—" }}</dd>

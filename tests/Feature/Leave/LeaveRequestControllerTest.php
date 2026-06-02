@@ -110,11 +110,13 @@ class LeaveRequestControllerTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('LeaveRequest/Index')->has('requests.data', 1));
     }
 
-    public function test_store_creates_a_pending_request_and_notifies_hr(): void
+    public function test_store_creates_a_pending_request_and_notifies_approver_pool(): void
     {
         Notification::fake();
+        // No unit head is configured for this staff, so the request falls to the
+        // approver pool (holders of 'approve staff leave').
         $hr = User::factory()->create(['password_change_at' => now()]);
-        $hr->givePermissionTo('view all leave requests');
+        $hr->givePermissionTo('approve staff leave');
 
         $this->actingAs($this->staffUser)
             ->post(route('leave-request.store'), $this->payload())

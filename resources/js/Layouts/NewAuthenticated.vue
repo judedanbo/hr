@@ -93,7 +93,9 @@ const navigation = [
 			route().current("leave-type.*") ||
 			route().current("leave-entitlement.*") ||
 			route().current("holiday.*") ||
-			route().current("leave-planning-window.*"),
+			route().current("leave-planning-window.*") ||
+			route().current("unit-head.*") ||
+			route().current("leave-delegation.*"),
 		children: [
 			{
 				name: "Leave Years",
@@ -125,13 +127,27 @@ const navigation = [
 				current: route().current("leave-planning-window.*"),
 				visible: permissions.value?.includes("manage leave planning windows"),
 			},
+			{
+				name: "Unit Heads",
+				href: route("unit-head.index"),
+				current: route().current("unit-head.*"),
+				visible: permissions.value?.includes("manage leave approvers"),
+			},
+			{
+				name: "Delegations",
+				href: route("leave-delegation.index"),
+				current: route().current("leave-delegation.*"),
+				visible: permissions.value?.includes("manage leave delegations"),
+			},
 		],
 		visible:
 			permissions.value?.includes("view all leave years") ||
 			permissions.value?.includes("view all leave types") ||
 			permissions.value?.includes("view all leave entitlements") ||
 			permissions.value?.includes("view all holidays") ||
-			permissions.value?.includes("manage leave planning windows"),
+			permissions.value?.includes("manage leave planning windows") ||
+			permissions.value?.includes("manage leave approvers") ||
+			permissions.value?.includes("manage leave delegations"),
 	},
 	{
 		name: "My Leave Plan",
@@ -160,6 +176,13 @@ const navigation = [
 		icon: DocumentDuplicateIcon,
 		current: route().current("leave-requests.*"),
 		visible: permissions.value?.includes("view all leave requests"),
+	},
+	{
+		name: "Leave Approvals",
+		href: route("leave-approvals.index"),
+		icon: DocumentDuplicateIcon,
+		current: route().current("leave-approvals.*"),
+		visible: Boolean(page.props?.auth?.user?.person_id),
 	},
 	{
 		name: "Next Promotions",

@@ -27,11 +27,20 @@ class Unit extends Model
         'name',
         'type',
         'unit_id',
+        'head_staff_id',
         'institution_id',
         'start_date',
         'end_date',
         'region_id',
     ];
+
+    /**
+     * The staff member designated as this unit's approving head.
+     */
+    public function head(): BelongsTo
+    {
+        return $this->belongsTo(InstitutionPerson::class, 'head_staff_id');
+    }
 
     /**
      * Get the institution that owns the Unit

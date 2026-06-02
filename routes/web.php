@@ -27,6 +27,8 @@ use App\Http\Controllers\InstitutionRankController;
 use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\LeaveApprovalController;
+use App\Http\Controllers\LeaveDelegationController;
 use App\Http\Controllers\LeaveEntitlementController;
 use App\Http\Controllers\LeavePlanAdminController;
 use App\Http\Controllers\LeavePlanController;
@@ -70,6 +72,7 @@ use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitHeadController;
 use App\Http\Controllers\UnitOfficeController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
@@ -667,6 +670,25 @@ Route::controller(LeaveRequestController::class)->middleware(['auth', 'password_
 Route::controller(LeaveRequestAdminController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/leave-requests', 'index')->middleware('can:view all leave requests')->name('leave-requests.index');
     Route::get('/leave-requests/{leaveRequest}', 'show')->middleware('can:view all leave requests')->name('leave-requests.show');
+});
+
+Route::controller(LeaveApprovalController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-approvals', 'index')->name('leave-approvals.index');
+    Route::post('/leave-approvals/{leaveRequest}/approve', 'approve')->name('leave-approvals.approve');
+    Route::post('/leave-approvals/{leaveRequest}/decline', 'decline')->name('leave-approvals.decline');
+    Route::post('/leave-approvals/{leaveRequest}/reassign', 'reassign')->name('leave-approvals.reassign');
+});
+
+Route::controller(LeaveDelegationController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-delegation', 'index')->middleware('can:manage leave delegations')->name('leave-delegation.index');
+    Route::post('/leave-delegation', 'store')->middleware('can:manage leave delegations')->name('leave-delegation.store');
+    Route::patch('/leave-delegation/{leaveDelegation}', 'update')->middleware('can:manage leave delegations')->name('leave-delegation.update');
+    Route::delete('/leave-delegation/{leaveDelegation}', 'delete')->middleware('can:manage leave delegations')->name('leave-delegation.delete');
+});
+
+Route::controller(UnitHeadController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/unit-head', 'index')->middleware('can:manage leave approvers')->name('unit-head.index');
+    Route::patch('/unit-head/{unit}', 'update')->middleware('can:manage leave approvers')->name('unit-head.update');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

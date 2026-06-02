@@ -105,9 +105,24 @@ class LeaveBalanceService
             ->where('staff_id', $staff->id)
             ->where('leave_type_id', $leaveTypeId)
             ->where('leave_year_id', $year->id)
-            ->where('status', '!=', LeaveRequestStatusEnum::Cancelled)
+            ->whereNotIn('status', [LeaveRequestStatusEnum::Cancelled, LeaveRequestStatusEnum::Declined])
             ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
             ->sum('requested_days');
+    }
+
+    /**
+     * Days actually taken — the sum of approved_days across Approved requests for
+     * a leave type in a year, optionally ignoring one request (when re-deciding).
+     */
+    public function takenDays(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year, ?int $ignoreRequestId = null): int
+    {
+        return (int) LeaveRequest::query()
+            ->where('staff_id', $staff->id)
+            ->where('leave_type_id', $leaveTypeId)
+            ->where('leave_year_id', $year->id)
+            ->where('status', LeaveRequestStatusEnum::Approved)
+            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
+            ->sum('approved_days');
     }
 
     /**

@@ -90,6 +90,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'update leave request',
             'cancel leave request',
             'view all leave requests',
+
+            // Leave approvals
+            'approve staff leave',
+            'reassign leave approver',
+            'manage leave delegations',
+            'manage leave approvers',
         ],
 
         'aag-admin' => [
@@ -131,6 +137,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'update leave request',
             'cancel leave request',
             'view all leave requests',
+
+            // Leave approvals
+            'approve staff leave',
+            'reassign leave approver',
+            'manage leave delegations',
+            'manage leave approvers',
         ],
 
         'personel-user' => [

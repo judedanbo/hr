@@ -78,6 +78,16 @@ class LeaveRequest extends Model
         return $this->belongsTo(LeavePlanItem::class, 'leave_plan_item_id');
     }
 
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(InstitutionPerson::class, 'approver_id');
+    }
+
+    public function decidedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'decided_by');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(LeaveDocument::class);

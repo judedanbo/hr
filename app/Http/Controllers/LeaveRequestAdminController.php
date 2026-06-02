@@ -40,7 +40,7 @@ class LeaveRequestAdminController extends Controller
 
     public function show(LeaveRequest $leaveRequest): Response
     {
-        $leaveRequest->load(['staff.person', 'leaveType', 'leaveYear', 'relievingOfficer.person', 'documents', 'statusHistories.changedBy']);
+        $leaveRequest->load(['staff.person', 'leaveType', 'leaveYear', 'relievingOfficer.person', 'approver.person', 'documents', 'statusHistories.changedBy']);
 
         return Inertia::render('LeaveRequest/AdminShow', [
             'request' => [
@@ -51,6 +51,9 @@ class LeaveRequestAdminController extends Controller
                 'start_date' => $leaveRequest->start_date?->format('Y-m-d'),
                 'end_date' => $leaveRequest->end_date?->format('Y-m-d'),
                 'requested_days' => $leaveRequest->requested_days,
+                'approved_days' => $leaveRequest->approved_days,
+                'decline_reason' => $leaveRequest->decline_reason,
+                'approver' => $leaveRequest->approver?->person?->full_name,
                 'status' => $leaveRequest->status->value,
                 'reason' => $leaveRequest->reason,
                 'address_during_leave' => $leaveRequest->address_during_leave,

@@ -13,6 +13,7 @@ use App\Models\LeaveType;
 use App\Models\LeaveYear;
 use App\Models\User;
 use App\Notifications\LeaveRequestSubmittedNotification;
+use App\Services\ApproverResolver;
 use App\Services\CurrentStaffResolver;
 use App\Services\LeaveBalanceService;
 use App\Services\LeaveConflictService;
@@ -38,6 +39,7 @@ class LeaveRequestController extends Controller
         private LeaveEligibilityService $eligibility,
         private LeaveConflictService $conflicts,
         private LeaveDayCalculator $calculator,
+        private ApproverResolver $approverResolver,
     ) {}
 
     public function index(): Response
@@ -79,7 +81,9 @@ class LeaveRequestController extends Controller
 
         $this->guardRequest($staff, $leaveType, $year, $start, $end, $requestedDays, $request->hasFile('file_name'), $request->input('relieving_officer_id'));
 
-        $leaveRequest = DB::transaction(function () use ($request, $staff, $leaveType, $year, $start, $end, $requestedDays, $planItem) {
+        $approver = $this->approverResolver->resolve($staff);
+
+        $leaveRequest = DB::transaction(function () use ($request, $staff, $leaveType, $year, $start, $end, $requestedDays, $planItem, $approver) {
             $leaveRequest = LeaveRequest::create([
                 'staff_id' => $staff->id,
                 'leave_type_id' => $leaveType->id,
@@ -92,6 +96,7 @@ class LeaveRequestController extends Controller
                 'address_during_leave' => $request->input('address_during_leave'),
                 'contact_during_leave' => $request->input('contact_during_leave'),
                 'relieving_officer_id' => $request->input('relieving_officer_id'),
+                'approver_id' => $approver?->id,
                 'status' => LeaveRequestStatusEnum::Pending,
             ]);
 
@@ -105,10 +110,10 @@ class LeaveRequestController extends Controller
             return $leaveRequest;
         });
 
-        Notification::send(
-            User::permission('view all leave requests')->get(),
-            new LeaveRequestSubmittedNotification($leaveRequest),
-        );
+        $recipients = $approver
+            ? User::where('person_id', $approver->person_id)->get()
+            : User::permission('approve staff leave')->get();
+        Notification::send($recipients, new LeaveRequestSubmittedNotification($leaveRequest));
 
         return redirect()->route('leave-request.index')->with('success', 'Leave request submitted.');
     }
@@ -116,7 +121,7 @@ class LeaveRequestController extends Controller
     public function show(LeaveRequest $leaveRequest): Response
     {
         $this->authorize('view', $leaveRequest);
-        $leaveRequest->load(['leaveType', 'leaveYear', 'relievingOfficer.person', 'documents', 'statusHistories.changedBy']);
+        $leaveRequest->load(['leaveType', 'leaveYear', 'relievingOfficer.person', 'approver.person', 'documents', 'statusHistories.changedBy']);
 
         return Inertia::render('LeaveRequest/Show', [
             'request' => array_merge($this->summary($leaveRequest), [
@@ -124,6 +129,9 @@ class LeaveRequestController extends Controller
                 'address_during_leave' => $leaveRequest->address_during_leave,
                 'contact_during_leave' => $leaveRequest->contact_during_leave,
                 'relieving_officer' => $leaveRequest->relievingOfficer?->person?->full_name,
+                'approver' => $leaveRequest->approver?->person?->full_name,
+                'approved_days' => $leaveRequest->approved_days,
+                'decline_reason' => $leaveRequest->decline_reason,
                 'documents' => $leaveRequest->documents->map(fn (LeaveDocument $document): array => [
                     'id' => $document->id,
                     'title' => $document->title,
