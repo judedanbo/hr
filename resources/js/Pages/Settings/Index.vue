@@ -11,6 +11,7 @@ import {
 	KeyIcon,
 	ClipboardDocumentListIcon,
 	BuildingOffice2Icon,
+	Cog6ToothIcon,
 } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
@@ -69,6 +70,15 @@ const cards = computed(() =>
 			linkLabel: "Manage",
 			icon: BuildingOffice2Icon,
 			gate: "view admin settings",
+		},
+		{
+			title: "Application",
+			count: null,
+			secondary: "Name, email, display, security",
+			href: route("app-settings.edit"),
+			linkLabel: "Configure",
+			icon: Cog6ToothIcon,
+			gate: "update app settings",
 		},
 	].filter((card) => can(card.gate)),
 );

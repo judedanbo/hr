@@ -61,6 +61,16 @@ class HandleInertiaRequests extends Middleware
                 'qualifications_count' => fn () => $this->profileFactsForCurrentUser($request)['qualifications_count'] ?? null,
             ],
             // 'permissions' => fn() => $request->user()?->getAllPermissions()->pluck('name'),
+            'app' => function () {
+                $general = app(\App\Settings\GeneralSettings::class);
+
+                return [
+                    'org_name' => $general->org_name,
+                    'support_email' => $general->support_email,
+                    'date_format' => $general->date_format,
+                    'pagination_size' => $general->pagination_size,
+                ];
+            },
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

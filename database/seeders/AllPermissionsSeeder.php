@@ -47,6 +47,7 @@ class AllPermissionsSeeder extends Seeder
             'destroy user',
             'view user activity',
             'view admin settings',
+            'update app settings',
             'view user permissions',
             'update user permissions',
             'view user roles',
