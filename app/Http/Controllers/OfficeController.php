@@ -29,7 +29,7 @@ class OfficeController extends Controller
                     'district.region',
                     'units' => function ($query) {
                         $query->withCount('staff');
-                    },
+                    }
                 ])
                 ->withCount('units')
                 // ->withCount(['units as staff_count' => function ($query) {
@@ -40,13 +40,13 @@ class OfficeController extends Controller
                 })
                 ->paginate(per_page())
                 ->withQueryString()
-                ->through(fn ($office) => [
+                ->through(fn($office) => [
                     'id' => $office->id,
                     'name' => $office->name,
                     'district' => $office->district?->name,
                     'region' => $office->district?->region->name,
                     'units_count' => $office->units_count,
-                    'staff_count' => $office->units->sum(fn ($unit) => $unit->staff_count),
+                    'staff_count' => $office->units->sum(fn($unit) => $unit->staff_count),
                 ]),
             'filters' => [
                 'search' => request()->search,
@@ -85,23 +85,22 @@ class OfficeController extends Controller
             'district.region',
             'units' => function ($query) {
                 $query->withCount('staff');
-            },
+            }
         ]);
-
         return inertia('Offices/Show', [
             'office' => $office ? [
                 'id' => $office->id,
                 'name' => $office->name,
                 'district' => $office->district?->name,
                 'region' => $office->district?->region->name,
-                'units' => $office->units->map(fn ($unit) => [
+                'units' => $office->units->map(fn($unit) => [
                     'id' => $unit->id,
                     'name' => $unit->name,
                     'staff_count' => $unit->staff_count,
                 ]),
                 'units_count' => $office->units->count(),
-                'staff_count' => $office->units->sum(fn ($unit) => $unit->staff_count),
-            ] : null,
+                'staff_count' => $office->units->sum(fn($unit) => $unit->staff_count),
+            ] : null
         ]);
         // Logic to show a specific office by ID
     }
