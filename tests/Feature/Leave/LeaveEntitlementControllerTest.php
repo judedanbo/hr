@@ -47,6 +47,19 @@ class LeaveEntitlementControllerTest extends TestCase
                 ->has('jobCategories'));
     }
 
+    public function test_index_filters_by_leave_type_name(): void
+    {
+        $annual = LeaveType::factory()->create(['name' => 'Annual Leave']);
+        $sick = LeaveType::factory()->create(['name' => 'Sick Leave']);
+        LeaveEntitlement::factory()->create(['leave_type_id' => $annual->id]);
+        LeaveEntitlement::factory()->create(['leave_type_id' => $sick->id]);
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('leave-entitlement.index', ['search' => 'Annual']))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('LeaveEntitlement/Index')->has('entitlements.data', 1));
+    }
+
     public function test_store_creates_a_default_entitlement(): void
     {
         $year = LeaveYear::factory()->create();

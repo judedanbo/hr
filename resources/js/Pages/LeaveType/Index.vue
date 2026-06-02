@@ -10,6 +10,7 @@ import Delete from "@/Components/Delete.vue";
 import TableHeader from "@/Components/TableHeader.vue";
 import { useToggle } from "@vueuse/core";
 import { useNavigation } from "@/Composables/navigation";
+import { useSearch } from "@/Composables/search";
 import LeaveTypeList from "./partials/LeaveTypeList.vue";
 import AddLeaveTypeForm from "./partials/AddLeaveTypeForm.vue";
 import EditLeaveTypeForm from "./partials/EditLeaveTypeForm.vue";
@@ -17,7 +18,10 @@ import EditLeaveTypeForm from "./partials/EditLeaveTypeForm.vue";
 const props = defineProps({
 	leaveTypes: { type: Object, required: true },
 	genders: { type: Array, default: () => [] },
+	filters: { type: Object, default: () => ({}) },
 });
+
+const search = (value) => useSearch(value, route("leave-type.index"));
 
 const navigation = computed(() => useNavigation(props.leaveTypes));
 
@@ -58,8 +62,10 @@ const links = [{ name: "Leave Types", url: "" }];
 				<TableHeader
 					title="Leave Types"
 					:total="leaveTypes.total"
+					:search="filters.search"
 					action-text="Add Leave Type"
 					@action-clicked="toggle()"
+					@search-entered="(value) => search(value)"
 				/>
 				<LeaveTypeList
 					:leave-types="leaveTypes.data"

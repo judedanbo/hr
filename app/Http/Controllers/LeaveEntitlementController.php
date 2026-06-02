@@ -20,6 +20,13 @@ class LeaveEntitlementController extends Controller
             'entitlements' => LeaveEntitlement::query()
                 ->with(['leaveYear', 'leaveType', 'jobCategory'])
                 ->join('leave_years', 'leave_years.id', '=', 'leave_entitlements.leave_year_id')
+                ->when(request()->search, function ($query, $search): void {
+                    $query->where(function ($query) use ($search): void {
+                        $query->whereHas('leaveType', fn ($q) => $q->where('name', 'like', '%' . $search . '%'))
+                            ->orWhereHas('jobCategory', fn ($q) => $q->where('name', 'like', '%' . $search . '%'))
+                            ->orWhere('leave_years.year', 'like', '%' . $search . '%');
+                    });
+                })
                 ->orderByDesc('leave_years.year')
                 ->select('leave_entitlements.*')
                 ->paginate()
@@ -45,6 +52,7 @@ class LeaveEntitlementController extends Controller
             'jobCategories' => JobCategory::query()->orderBy('name')
                 ->get()
                 ->map(fn (JobCategory $category): array => ['value' => $category->id, 'label' => $category->name]),
+            'filters' => request()->only('search'),
         ]);
     }
 

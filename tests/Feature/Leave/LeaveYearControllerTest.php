@@ -48,6 +48,17 @@ class LeaveYearControllerTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('LeaveYear/Index')->has('leaveYears.data', 3));
     }
 
+    public function test_index_filters_by_search(): void
+    {
+        LeaveYear::factory()->create(['year' => 2040]);
+        LeaveYear::factory()->create(['year' => 2041]);
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('leave-year.index', ['search' => '2040']))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('LeaveYear/Index')->has('leaveYears.data', 1));
+    }
+
     public function test_store_creates_a_leave_year(): void
     {
         $response = $this->actingAs($this->superAdmin)->post(route('leave-year.store'), [

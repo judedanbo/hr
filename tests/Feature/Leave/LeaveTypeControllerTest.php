@@ -61,6 +61,17 @@ class LeaveTypeControllerTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('LeaveType/Index')->has('leaveTypes.data', 2)->has('genders'));
     }
 
+    public function test_index_filters_by_search(): void
+    {
+        LeaveType::factory()->create(['name' => 'Annual Leave', 'code' => 'ANN']);
+        LeaveType::factory()->create(['name' => 'Sick Leave', 'code' => 'SICK']);
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('leave-type.index', ['search' => 'Annual']))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('LeaveType/Index')->has('leaveTypes.data', 1));
+    }
+
     public function test_store_creates_a_leave_type(): void
     {
         $this->actingAs($this->superAdmin)

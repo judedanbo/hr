@@ -10,13 +10,18 @@ import Delete from "@/Components/Delete.vue";
 import TableHeader from "@/Components/TableHeader.vue";
 import { useToggle } from "@vueuse/core";
 import { useNavigation } from "@/Composables/navigation";
+import { useSearch } from "@/Composables/search";
 import LeaveYearList from "./partials/LeaveYearList.vue";
 import AddLeaveYearForm from "./partials/AddLeaveYearForm.vue";
 import EditLeaveYearForm from "./partials/EditLeaveYearForm.vue";
+import CloneLeaveYearForm from "./partials/CloneLeaveYearForm.vue";
 
 const props = defineProps({
 	leaveYears: { type: Object, required: true },
+	filters: { type: Object, default: () => ({}) },
 });
+
+const search = (value) => useSearch(value, route("leave-year.index"));
 
 const navigation = computed(() => useNavigation(props.leaveYears));
 
@@ -28,6 +33,9 @@ const toggleEdit = useToggle(openEditDialog);
 
 const openDeleteDialog = ref(false);
 const toggleDelete = useToggle(openDeleteDialog);
+
+const openCloneDialog = ref(false);
+const toggleClone = useToggle(openCloneDialog);
 
 const selected = ref(null);
 
@@ -42,15 +50,8 @@ const deleteYear = (model) => {
 };
 
 const cloneYear = (model) => {
-	const source = window.prompt(
-		`Enter the ID of the source year to clone configuration into ${model.year}:`,
-	);
-	if (!source) return;
-	router.post(
-		route("leave-year.clone", { leaveYear: model.id }),
-		{ source_leave_year_id: source },
-		{ preserveScroll: true },
-	);
+	selected.value = model;
+	toggleClone();
 };
 
 const deleteConfirmed = () => {
@@ -74,8 +75,10 @@ const links = [{ name: "Leave Years", url: "" }];
 				<TableHeader
 					title="Leave Years"
 					:total="leaveYears.total"
+					:search="filters.search"
 					action-text="Add Leave Year"
 					@action-clicked="toggle()"
+					@search-entered="(value) => search(value)"
 				/>
 				<LeaveYearList
 					:leave-years="leaveYears.data"
@@ -97,6 +100,12 @@ const links = [{ name: "Leave Years", url: "" }];
 			<EditLeaveYearForm
 				:leave-year="selected"
 				@form-submitted="toggleEdit()"
+			/>
+		</Modal>
+		<Modal :show="openCloneDialog" @close="toggleClone()">
+			<CloneLeaveYearForm
+				:leave-year="selected"
+				@form-submitted="toggleClone()"
 			/>
 		</Modal>
 		<Delete

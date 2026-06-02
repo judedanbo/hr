@@ -10,6 +10,7 @@ import Delete from "@/Components/Delete.vue";
 import TableHeader from "@/Components/TableHeader.vue";
 import { useToggle } from "@vueuse/core";
 import { useNavigation } from "@/Composables/navigation";
+import { useSearch } from "@/Composables/search";
 import HolidayList from "./partials/HolidayList.vue";
 import AddHolidayForm from "./partials/AddHolidayForm.vue";
 import EditHolidayForm from "./partials/EditHolidayForm.vue";
@@ -17,7 +18,10 @@ import EditHolidayForm from "./partials/EditHolidayForm.vue";
 const props = defineProps({
 	holidays: { type: Object, required: true },
 	leaveYears: { type: Array, default: () => [] },
+	filters: { type: Object, default: () => ({}) },
 });
+
+const search = (value) => useSearch(value, route("holiday.index"));
 
 const navigation = computed(() => useNavigation(props.holidays));
 
@@ -58,8 +62,10 @@ const links = [{ name: "Holidays", url: "" }];
 				<TableHeader
 					title="Holidays"
 					:total="holidays.total"
+					:search="filters.search"
 					action-text="Add Holiday"
 					@action-clicked="toggle()"
+					@search-entered="(value) => search(value)"
 				/>
 				<HolidayList
 					:holidays="holidays.data"

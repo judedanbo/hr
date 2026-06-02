@@ -17,6 +17,12 @@ class LeaveTypeController extends Controller
     {
         return Inertia::render('LeaveType/Index', [
             'leaveTypes' => LeaveType::query()
+                ->when(request()->search, function ($query, $search): void {
+                    $query->where(function ($query) use ($search): void {
+                        $query->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('code', 'like', '%' . $search . '%');
+                    });
+                })
                 ->orderBy('name')
                 ->paginate()
                 ->withQueryString()
@@ -40,6 +46,7 @@ class LeaveTypeController extends Controller
                     'value' => $gender->value,
                     'label' => $gender->label(),
                 ]),
+            'filters' => request()->only('search'),
         ]);
     }
 

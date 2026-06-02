@@ -10,6 +10,7 @@ import Delete from "@/Components/Delete.vue";
 import TableHeader from "@/Components/TableHeader.vue";
 import { useToggle } from "@vueuse/core";
 import { useNavigation } from "@/Composables/navigation";
+import { useSearch } from "@/Composables/search";
 import LeaveEntitlementList from "./partials/LeaveEntitlementList.vue";
 import AddLeaveEntitlementForm from "./partials/AddLeaveEntitlementForm.vue";
 import EditLeaveEntitlementForm from "./partials/EditLeaveEntitlementForm.vue";
@@ -19,7 +20,10 @@ const props = defineProps({
 	leaveYears: { type: Array, default: () => [] },
 	leaveTypes: { type: Array, default: () => [] },
 	jobCategories: { type: Array, default: () => [] },
+	filters: { type: Object, default: () => ({}) },
 });
+
+const search = (value) => useSearch(value, route("leave-entitlement.index"));
 
 const navigation = computed(() => useNavigation(props.entitlements));
 
@@ -63,8 +67,10 @@ const links = [{ name: "Leave Entitlements", url: "" }];
 				<TableHeader
 					title="Leave Entitlements"
 					:total="entitlements.total"
+					:search="filters.search"
 					action-text="Add Entitlement"
 					@action-clicked="toggle()"
+					@search-entered="(value) => search(value)"
 				/>
 				<LeaveEntitlementList
 					:entitlements="entitlements.data"

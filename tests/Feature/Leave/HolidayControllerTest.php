@@ -41,6 +41,18 @@ class HolidayControllerTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('Holiday/Index')->has('holidays.data', 2)->has('leaveYears'));
     }
 
+    public function test_index_filters_by_search(): void
+    {
+        $year = LeaveYear::factory()->create();
+        Holiday::factory()->create(['leave_year_id' => $year->id, 'name' => 'Christmas Day', 'date' => '2030-12-25']);
+        Holiday::factory()->create(['leave_year_id' => $year->id, 'name' => 'New Year', 'date' => '2030-01-01']);
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('holiday.index', ['search' => 'Christmas']))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Holiday/Index')->has('holidays.data', 1));
+    }
+
     public function test_store_creates_a_holiday(): void
     {
         $year = LeaveYear::factory()->create();

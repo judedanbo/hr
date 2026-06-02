@@ -17,6 +17,9 @@ class HolidayController extends Controller
         return Inertia::render('Holiday/Index', [
             'holidays' => Holiday::query()
                 ->with('leaveYear')
+                ->when(request()->search, function ($query, $search): void {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
                 ->orderByDesc('date')
                 ->paginate()
                 ->withQueryString()
@@ -31,6 +34,7 @@ class HolidayController extends Controller
             'leaveYears' => LeaveYear::query()->orderByDesc('year')
                 ->get()
                 ->map(fn (LeaveYear $year): array => ['value' => $year->id, 'label' => (string) $year->year]),
+            'filters' => request()->only('search'),
         ]);
     }
 

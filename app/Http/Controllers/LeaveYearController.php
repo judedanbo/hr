@@ -19,6 +19,9 @@ class LeaveYearController extends Controller
         return Inertia::render('LeaveYear/Index', [
             'leaveYears' => LeaveYear::query()
                 ->withCount(['entitlements', 'holidays'])
+                ->when(request()->search, function ($query, $search): void {
+                    $query->where('year', 'like', '%' . $search . '%');
+                })
                 ->orderByDesc('year')
                 ->paginate()
                 ->withQueryString()
@@ -31,6 +34,7 @@ class LeaveYearController extends Controller
                     'entitlements_count' => $leaveYear->entitlements_count,
                     'holidays_count' => $leaveYear->holidays_count,
                 ]),
+            'filters' => request()->only('search'),
         ]);
     }
 
