@@ -56,4 +56,17 @@ class LeaveConflictServiceTest extends TestCase
 
         $this->assertFalse($this->service->overlaps($staff, Carbon::parse('2030-06-12'), Carbon::parse('2030-06-16')));
     }
+
+    public function test_declined_requests_do_not_conflict(): void
+    {
+        $staff = InstitutionPerson::factory()->create();
+        LeaveRequest::factory()->create([
+            'staff_id' => $staff->id,
+            'status' => \App\Enums\LeaveRequestStatusEnum::Declined,
+            'start_date' => '2030-06-10',
+            'end_date' => '2030-06-14',
+        ]);
+
+        $this->assertFalse($this->service->overlaps($staff, Carbon::parse('2030-06-12'), Carbon::parse('2030-06-16')));
+    }
 }

@@ -130,6 +130,26 @@ class LeaveBalanceServiceTest extends TestCase
         $this->assertSame(8, $this->service->committedRequestDays($staff, $type->id, $year));
     }
 
+    public function test_completed_request_commits_only_the_days_actually_taken(): void
+    {
+        $staff = InstitutionPerson::factory()->create();
+        $year = LeaveYear::factory()->create();
+        $type = LeaveType::factory()->create();
+        LeaveEntitlement::factory()->create([
+            'leave_year_id' => $year->id, 'leave_type_id' => $type->id, 'job_category_id' => null, 'days_allowed' => 20,
+        ]);
+
+        LeaveRequest::factory()->create([
+            'staff_id' => $staff->id, 'leave_type_id' => $type->id, 'leave_year_id' => $year->id,
+            'status' => \App\Enums\LeaveRequestStatusEnum::Completed,
+            'requested_days' => 10, 'approved_days' => 10, 'actual_days' => 4,
+        ]);
+
+        // The 6 unused days are freed back for re-requesting.
+        $this->assertSame(4, $this->service->committedRequestDays($staff, $type->id, $year));
+        $this->assertSame(16, $this->service->remainingForRequest($staff, $type->id, $year));
+    }
+
     public function test_remaining_and_ledger(): void
     {
         $staff = InstitutionPerson::factory()->create();

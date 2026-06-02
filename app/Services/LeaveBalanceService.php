@@ -111,18 +111,28 @@ class LeaveBalanceService
     }
 
     /**
-     * Days already committed to leave requests (excluding cancelled) for a leave
-     * type in a year, optionally ignoring one request (when editing).
+     * Days already committed to leave requests for a leave type in a year,
+     * optionally ignoring one request (when editing). Cancelled and declined
+     * requests are excluded; completed (early-returned) requests are counted at
+     * the days actually taken so the unused balance is freed for re-requesting.
      */
     public function committedRequestDays(InstitutionPerson $staff, int $leaveTypeId, LeaveYear $year, ?int $ignoreRequestId = null): int
     {
-        return (int) LeaveRequest::query()
+        $base = LeaveRequest::query()
             ->where('staff_id', $staff->id)
             ->where('leave_type_id', $leaveTypeId)
             ->where('leave_year_id', $year->id)
-            ->whereNotIn('status', [LeaveRequestStatusEnum::Cancelled, LeaveRequestStatusEnum::Declined])
-            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
+            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId));
+
+        $open = (int) (clone $base)
+            ->whereNotIn('status', [LeaveRequestStatusEnum::Cancelled, LeaveRequestStatusEnum::Declined, LeaveRequestStatusEnum::Completed])
             ->sum('requested_days');
+
+        $completed = (int) (clone $base)
+            ->where('status', LeaveRequestStatusEnum::Completed)
+            ->sum('actual_days');
+
+        return $open + $completed;
     }
 
     /**
