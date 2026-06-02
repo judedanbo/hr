@@ -38,11 +38,11 @@ class RankStaffController extends Controller
                 'current_unit' => [
                     'id' => $staff->units->first()?->id,
                     'name' => $staff->units->first()?->name,
-                    'start_date' => $staff->units->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->units->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
                 'last_promotion' => [
-                    'start_date' => $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->ranks->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
 
@@ -105,11 +105,11 @@ class RankStaffController extends Controller
                 'current_unit' => [
                     'id' => $staff->units->first()?->id,
                     'name' => $staff->units->first()?->name,
-                    'start_date' => $staff->units->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->units->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
                 'last_promotion' => [
-                    'start_date' => $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->ranks->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
 
@@ -139,11 +139,11 @@ class RankStaffController extends Controller
                 'current_unit' => [
                     'id' => $staff->units->first()?->id,
                     'name' => $staff->units->first()?->name,
-                    'start_date' => $staff->units->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->units->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
                 'last_promotion' => [
-                    'start_date' => $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->ranks->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
 
@@ -183,13 +183,13 @@ class RankStaffController extends Controller
                 'current_unit' => [
                     'id' => $staff->units->first()?->id,
                     'name' => $staff->units->first()?->name,
-                    'start_date' => $staff->units->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->units->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->units->first()?->pivot->remarks,
                 ],
                 'last_promotion' => [
                     'id' => $staff->ranks->first()?->id,
                     'name' => $staff->ranks->first()?->name,
-                    'start_date' => $staff->ranks->first()?->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->ranks->first()?->pivot->start_date?->displayDate(),
                     'remarks' => $staff->ranks->first()?->pivot->remarks,
                 ],
 

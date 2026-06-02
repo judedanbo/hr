@@ -271,7 +271,7 @@ class DataIntegrityController extends Controller
                             'pivot_id' => $rank->pivot->id,
                             'name' => $rank->name,
                             'start_date' => $rank->pivot->start_date->format('Y-m-d'),
-                            'start_date_formatted' => $rank->pivot->start_date->format('d M Y'),
+                            'start_date_formatted' => $rank->pivot->start_date->displayDate(),
                             'end_date' => $rank->pivot->end_date,
                         ];
                     }),
@@ -494,7 +494,7 @@ class DataIntegrityController extends Controller
                     'file_number' => $staff->file_number,
                     'name' => $staff->person->full_name,
                     'hire_date' => $staff->hire_date?->format('Y-m-d'),
-                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'hire_date_formatted' => $staff->hire_date?->displayDate(),
                 ];
             });
 
@@ -544,7 +544,7 @@ class DataIntegrityController extends Controller
                     'file_number' => $staff->file_number,
                     'name' => $staff->person->full_name,
                     'hire_date' => $staff->hire_date?->format('Y-m-d'),
-                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'hire_date_formatted' => $staff->hire_date?->displayDate(),
                 ];
             });
 
@@ -610,8 +610,8 @@ class DataIntegrityController extends Controller
                         'name' => $rank->name,
                         'start_date' => $rank->pivot->start_date->format('Y-m-d'),
                         'end_date' => $rank->pivot->end_date->format('Y-m-d'),
-                        'start_date_formatted' => $rank->pivot->start_date->format('d M Y'),
-                        'end_date_formatted' => $rank->pivot->end_date->format('d M Y'),
+                        'start_date_formatted' => $rank->pivot->start_date->displayDate(),
+                        'end_date_formatted' => $rank->pivot->end_date->displayDate(),
                     ];
                 });
 
@@ -624,8 +624,8 @@ class DataIntegrityController extends Controller
                         'name' => $unit->name,
                         'start_date' => $unit->pivot->start_date->format('Y-m-d'),
                         'end_date' => $unit->pivot->end_date->format('Y-m-d'),
-                        'start_date_formatted' => $unit->pivot->start_date->format('d M Y'),
-                        'end_date_formatted' => $unit->pivot->end_date->format('d M Y'),
+                        'start_date_formatted' => $unit->pivot->start_date->displayDate(),
+                        'end_date_formatted' => $unit->pivot->end_date->displayDate(),
                     ];
                 });
 
@@ -807,7 +807,7 @@ class DataIntegrityController extends Controller
                     'name' => $staff->person->full_name,
                     'separation_status' => $staff->statuses->first()?->status,
                     'separation_date' => $staff->statuses->first()?->start_date?->format('Y-m-d'),
-                    'separation_date_formatted' => $staff->statuses->first()?->start_date?->format('d M Y'),
+                    'separation_date_formatted' => $staff->statuses->first()?->start_date?->displayDate(),
                 ];
             });
 
@@ -878,7 +878,7 @@ class DataIntegrityController extends Controller
                     'file_number' => $staff->file_number,
                     'name' => $staff->person->full_name,
                     'hire_date' => $staff->hire_date?->format('Y-m-d'),
-                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'hire_date_formatted' => $staff->hire_date?->displayDate(),
                     'unit' => $unit ? [
                         'id' => $unit->id,
                         'name' => $unit->name,
@@ -977,9 +977,9 @@ class DataIntegrityController extends Controller
                     'file_number' => $staff->file_number,
                     'name' => $staff->person->full_name,
                     'hire_date' => $staff->hire_date?->format('Y-m-d'),
-                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'hire_date_formatted' => $staff->hire_date?->displayDate(),
                     'status_end_date' => $staff->statuses->first()?->end_date?->format('Y-m-d'),
-                    'status_end_date_formatted' => $staff->statuses->first()?->end_date?->format('d M Y'),
+                    'status_end_date_formatted' => $staff->statuses->first()?->end_date?->displayDate(),
                     'current_rank' => $staff->currentRank?->job?->name,
                     'unit' => $unit ? [
                         'id' => $unit->id,
@@ -1065,7 +1065,7 @@ class DataIntegrityController extends Controller
                             'name' => $unit->name,
                             'type' => $unit->type,
                             'start_date' => $unit->pivot->start_date?->format('Y-m-d'),
-                            'start_date_formatted' => $unit->pivot->start_date?->format('d M Y'),
+                            'start_date_formatted' => $unit->pivot->start_date?->displayDate(),
                             'end_date' => $unit->pivot->end_date,
                         ];
                     }),
@@ -1122,7 +1122,7 @@ class DataIntegrityController extends Controller
                     'rank' => $staff->currentRank?->job?->name,
                     'unit' => $staff->currentUnit?->unit?->name,
                     'hire_date' => $staff->hire_date?->format('Y-m-d'),
-                    'hire_date_formatted' => $staff->hire_date?->format('d M Y'),
+                    'hire_date_formatted' => $staff->hire_date?->displayDate(),
                 ];
             });
 
@@ -1176,7 +1176,7 @@ class DataIntegrityController extends Controller
                     'qualification' => $qualification->qualification,
                     'level' => $qualification->level,
                     'year' => $qualification->year,
-                    'created_at' => $qualification->created_at->format('d M Y'),
+                    'created_at' => $qualification->created_at->displayDate(),
                     'documents' => $qualification->documents->map(fn ($doc) => [
                         'id' => $doc->id,
                         'document_title' => $doc->document_title,

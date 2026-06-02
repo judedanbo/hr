@@ -104,7 +104,7 @@ class PersonController extends Controller
                 'id' => $selectedPerson->id,
                 'name' => $selectedPerson->full_name,
                 'dob-value' => $selectedPerson->date_of_birth,
-                'dob' => $selectedPerson->date_of_birth?->format('d M Y'),
+                'dob' => $selectedPerson->date_of_birth?->displayDate(),
                 'age' => $selectedPerson->date_of_birth ? $selectedPerson->age . ' years old' : null,
                 'gender' => $selectedPerson->gender?->label(),
                 'ssn' => $selectedPerson->social_security_number,
@@ -143,9 +143,9 @@ class PersonController extends Controller
                         'status_display' => $status->status?->name,
                         'description' => $status->description,
                         'start_date' => $status->start_date?->format('Y-m-d'),
-                        'start_date_display' => $status->start_date?->format('d M Y'),
+                        'start_date_display' => $status->start_date?->displayDate(),
                         'end_date' => $status->end_date?->format('Y-m-d'),
-                        'end_date_display' => $status->end_date?->format('d M Y'),
+                        'end_date_display' => $status->end_date?->displayDate(),
 
                     ]),
                     'type' => $inst->staff->type->map(function ($type) {
@@ -155,8 +155,8 @@ class PersonController extends Controller
                             'type_label' => $type->staff_type->label(),
                             'start_date' => $type->start_date?->format('Y-m-d'),
                             'end_date' => $type->end_date?->format('Y-m-d'),
-                            'start_date_display' => $type->start_date?->format('d M Y'),
-                            'end_date_display' => $type->end_date?->format('d M Y'),
+                            'start_date_display' => $type->start_date?->displayDate(),
+                            'end_date_display' => $type->end_date?->displayDate(),
                         ];
                     }),
                     'units' => $inst->staff->units->count() > 1 ? $inst->staff->units->map(function ($unit) {
@@ -167,8 +167,8 @@ class PersonController extends Controller
                             'status_color' => $unit->pivot->status?->color(),
                             'department' => $unit->parent?->name,
                             'staff_id' => $unit->pivot->staff_id,
-                            'start_date' => $unit->pivot->start_date?->format('d M Y'),
-                            'end_date' => $unit->pivot->end_date?->format('d M Y'),
+                            'start_date' => $unit->pivot->start_date?->displayDate(),
+                            'end_date' => $unit->pivot->end_date?->displayDate(),
                             'remarks' => $unit->pivot->remarks,
                         ];
                     }) : null,
@@ -179,8 +179,8 @@ class PersonController extends Controller
                         'status_color' => $inst->staff->units?->first()->pivot->status?->color(),
                         'department' => $inst->staff->units?->first()->parent?->name,
                         'staff_id' => $inst->staff->units?->first()->pivot->staff_id,
-                        'start_date' => $inst->staff->units?->first()->pivot->start_date?->format('d M Y'),
-                        'end_date' => $inst->staff->units?->first()->pivot->end_date?->format('d M Y'),
+                        'start_date' => $inst->staff->units?->first()->pivot->start_date?->displayDate(),
+                        'end_date' => $inst->staff->units?->first()->pivot->end_date?->displayDate(),
                         'remarks' => $inst->staff->units?->first()->pivot->remarks,
                     ] : null,
 
@@ -188,9 +188,9 @@ class PersonController extends Controller
                         'id' => $inst->staff->ranks?->first()->id,
                         'name' => $inst->staff->ranks?->first()->name,
                         'job_id' => $inst->staff->ranks?->first()->id,
-                        'start_date' => $inst->staff->ranks?->first()->start_date?->format('d M Y'),
+                        'start_date' => $inst->staff->ranks?->first()->start_date?->displayDate(),
                         'start_date_distance' => $inst->staff->ranks?->first()->start_date?->diffForHumans(),
-                        'end_date' => $inst->staff->ranks?->first()->end_date?->format('d M Y'),
+                        'end_date' => $inst->staff->ranks?->first()->end_date?->displayDate(),
                         'remarks' => $inst->staff->ranks?->first()->remarks,
                     ] : null,
                     'ranks' => $inst->staff->ranks->count() > 0 ? $inst->staff->ranks->map(function ($rank) {
@@ -198,9 +198,9 @@ class PersonController extends Controller
                             'id' => $rank->id,
                             'name' => $rank->name,
                             'job_id' => $rank->id,
-                            'start_date' => $rank->pivot->start_date?->format('d M Y'),
+                            'start_date' => $rank->pivot->start_date?->displayDate(),
                             'start_date_distance' => $rank->pivot->start_date?->diffForHumans(),
-                            'end_date' => $rank->pivot->end_date?->format('d M Y'),
+                            'end_date' => $rank->pivot->end_date?->displayDate(),
                             'remarks' => $rank->remarks,
                         ];
                     }) : null,
@@ -210,7 +210,7 @@ class PersonController extends Controller
                     'staff_number' => $inst->staff->staff_number,
                     'file_number' => $inst->staff->file_number,
                     'hire_date' => $inst->staff->hire_date,
-                    'hire_date_dis' => $inst->staff->hire_date?->format('d M Y'),
+                    'hire_date_dis' => $inst->staff->hire_date?->displayDate(),
                     'end_date' => $inst->staff->end_date,
                     'age_at_end' => (int) $inst->staff->end_date?->diffInYears($selectedPerson->date_of_birth),
                 ];

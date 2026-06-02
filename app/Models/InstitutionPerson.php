@@ -695,7 +695,7 @@ class InstitutionPerson extends Pivot
             return null;
         }
 
-        return $this->retirement_date->format('d M Y');
+        return $this->retirement_date->displayDate();
     }
 
     public function getRetirementDateDiffAttribute(): ?string

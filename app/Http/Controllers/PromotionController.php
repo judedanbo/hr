@@ -176,7 +176,7 @@ class PromotionController extends Controller
                 // 'rank_name' => $staff->ranks->first()?->name,
                 // 'remarks' => $staff->ranks->first()?->pivot->remarks,
                 'status' => $staff->statuses->first()?->status->label(),
-                'start_date' => $staff->ranks->first()?->pivot->start_date->format('d F Y'),
+                'start_date' => $staff->ranks->first()?->pivot->start_date->displayDate(),
                 'now' => date('Y-m-d'),
                 // 'test_rank' => $staff->ranks,
             ]);

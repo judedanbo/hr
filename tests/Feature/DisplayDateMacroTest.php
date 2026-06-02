@@ -7,6 +7,7 @@ use App\Settings\GeneralSettings;
 use Carbon\Carbon as BaseCarbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class DisplayDateMacroTest extends TestCase
@@ -43,5 +44,27 @@ class DisplayDateMacroTest extends TestCase
     public function test_macro_resolves_on_base_carbon_parse(): void
     {
         $this->assertSame('28 Jun 2024', BaseCarbon::parse('2024-06-28')->displayDate());
+    }
+
+    public function test_controller_renders_dates_in_configured_format(): void
+    {
+        $settings = app(GeneralSettings::class);
+        $settings->date_format = 'Y-m-d';
+        $settings->save();
+
+        $viewer = User::factory()->create();
+        $viewer->givePermissionTo(['view user', 'view user roles', 'view user permissions']);
+
+        $target = User::factory()->create();
+        $role = Role::firstOrCreate(['name' => 'editor']);
+        $target->assignRole($role);
+
+        $response = $this->actingAs($viewer)->get(route('user.show', ['user' => $target->id]));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn (\Inertia\Testing\AssertableInertia $page) => $page
+                ->where('user.roles.0.start_date', now()->format('Y-m-d'))
+        );
     }
 }

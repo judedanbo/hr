@@ -47,7 +47,7 @@ class DocumentController extends Controller
                 'file_name' => $document->file_name,
                 'documentable_type' => $document->documentable_type ? class_basename($document->documentable_type) : null,
                 'documentable_id' => $document->documentable_id,
-                'created_at' => $document->created_at?->format('d M Y'),
+                'created_at' => $document->created_at?->displayDate(),
             ]);
 
         $documentTypes = collect(DocumentTypeEnum::cases())->map(fn($type) => [
@@ -136,8 +136,8 @@ class DocumentController extends Controller
                 'document_remarks' => $document->document_remarks,
                 'documentable_type' => $document->documentable_type,
                 'documentable_id' => $document->documentable_id,
-                'created_at' => $document->created_at?->format('d M Y H:i'),
-                'updated_at' => $document->updated_at?->format('d M Y H:i'),
+                'created_at' => $document->created_at?->displayDateTime(),
+                'updated_at' => $document->updated_at?->displayDateTime(),
             ],
         ]);
     }

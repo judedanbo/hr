@@ -438,10 +438,10 @@ class UnitController extends Controller
             'id' => $staff->person->id,
             'name' => $staff->person->full_name,
             'gender' => $staff->person->gender?->value,
-            'dob' => $staff->person->date_of_birth?->format('d M Y'),
+            'dob' => $staff->person->date_of_birth?->displayDate(),
             'dob_raw' => $staff->person->date_of_birth?->format('Y-m-d'),
             'initials' => $staff->person->initials,
-            'hire_date' => $staff->hire_date?->format('d M Y'),
+            'hire_date' => $staff->hire_date?->displayDate(),
             'hire_date_raw' => $staff->hire_date?->format('Y-m-d'),
             'staff_number' => $staff->staff_number,
             'file_number' => $staff->file_number,
@@ -449,7 +449,7 @@ class UnitController extends Controller
             'rank' => $rank ? [
                 'id' => $rank->id,
                 'name' => $rank->name,
-                'start_date' => $rank->pivot->start_date?->format('d M Y'),
+                'start_date' => $rank->pivot->start_date?->displayDate(),
                 'remarks' => $rank->pivot->remarks,
                 'cat' => $rank->category,
                 'category_id' => $rank->job_category_id,
@@ -457,7 +457,7 @@ class UnitController extends Controller
             'unit' => $unit ? [
                 'id' => $unit->id,
                 'name' => $unit->name,
-                'start_date' => $unit->pivot->start_date?->format('d M Y'),
+                'start_date' => $unit->pivot->start_date?->displayDate(),
                 'duration' => $unit->pivot->start_date?->diffForHumans(),
             ] : null,
         ];

@@ -39,7 +39,7 @@ class PositionController extends Controller
                         return [
                             'staff_id' => $staff->id,
                             'name' => $staff->person->full_name,
-                            'start_date' => $staff->pivot->start_date?->format('d M, Y'),
+                            'start_date' => $staff->pivot->start_date?->displayDate(),
                             'contacts' => $staff->person->contacts->map(function ($contact) {
                                 return [
                                     'id' => $contact->id,
@@ -126,14 +126,14 @@ class PositionController extends Controller
                                 ];
                             }),
                         ],
-                        'start_date' => $staff->pivot?->start_date ? Carbon::parse($staff->pivot->start_date)->format('d M, Y') : null,
-                        'end_date' => $staff->pivot?->end_date ? Carbon::parse($staff->pivot->end_date)->format('d M, Y') : null,
+                        'start_date' => $staff->pivot?->start_date ? Carbon::parse($staff->pivot->start_date)->displayDate() : null,
+                        'end_date' => $staff->pivot?->end_date ? Carbon::parse($staff->pivot->end_date)->displayDate() : null,
                         'current_rank' => $staff->ranks->first()?->name ?? 'no rank',
                         'current_rank_date' => $staff->ranks->first()?->pivot->start_date ?? 'no rank',
-                        'current_rank_date_display' => $staff->ranks->first()?->pivot?->start_date?->format('d M Y') ?? '',
+                        'current_rank_date_display' => $staff->ranks->first()?->pivot?->start_date?->displayDate() ?? '',
                         'current_unit' => $staff->units->first()?->name ?? 'no unit',
                         'current_unit_date' => $staff->units->first()?->pivot?->start_date ?? '',
-                        'current_unit_date_display' => $staff->units->first()?->pivot?->start_date?->format('d M Y') ?? '',
+                        'current_unit_date_display' => $staff->units->first()?->pivot?->start_date?->displayDate() ?? '',
                     ];
                 }),
 

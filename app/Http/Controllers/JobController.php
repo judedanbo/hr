@@ -219,7 +219,7 @@ class JobController extends Controller
                     // 'unit_id' => $staff->units?->first()?->id,
                     'rank' => $staff->ranks?->first()?->name,
                     'rank_start' => $staff->ranks?->first()?->pivot->start_date,
-                    'rank_start_text' => $staff->ranks?->first()?->pivot->start_date->format('d F Y'),
+                    'rank_start_text' => $staff->ranks?->first()?->pivot->start_date->displayDate(),
                     'rank_remark' => $staff->ranks?->first()?->pivot->remarks,
                 ]),
             ],
