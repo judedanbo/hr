@@ -135,6 +135,11 @@ class InstitutionPerson extends Pivot
         return $this->BelongsTo(StaffUnit::class);
     }
 
+    public function latestAppraisal(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Appraisal::class, 'staff_id')->latestOfMany();
+    }
+
     public function scopeCurrentUnit($query)
     {
         $query->addSelect([

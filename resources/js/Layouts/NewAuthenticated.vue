@@ -24,6 +24,7 @@ import {
 	UserGroupIcon,
 	ShieldCheckIcon,
 	PhotoIcon,
+	ClipboardDocumentCheckIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -36,6 +37,13 @@ const navigation = [
 		href: route("my-profile.show"),
 		icon: UserGroupIcon,
 		current: route().current("my-profile.*"),
+		visible: Boolean(page.props?.auth?.user?.person_id),
+	},
+	{
+		name: "My Appraisals",
+		href: route("my-appraisal.index"),
+		icon: ClipboardDocumentCheckIcon,
+		current: route().current("my-appraisal.*"),
 		visible: Boolean(page.props?.auth?.user?.person_id),
 	},
 	{
@@ -152,6 +160,16 @@ const navigation = [
 		icon: UserGroupIcon,
 		current: route().current("role.*"),
 		visible: permissions.value?.includes("view all roles"),
+	},
+	{
+		name: "Appraisals",
+		href: route("appraisal-cycle.index"),
+		icon: ClipboardDocumentCheckIcon,
+		current:
+			route().current("appraisal-cycle.*") ||
+			route().current("appraisal-competency.*") ||
+			route().current("appraisal-rating-level.*"),
+		visible: permissions.value?.includes("view all appraisal cycles"),
 	},
 	{
 		name: "Audit Logs",
