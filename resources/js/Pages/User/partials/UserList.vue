@@ -70,7 +70,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="user in users" :key="user.id">
-							<TableRow>
+							<TableRow @click="emit('openUser', user.id)">
 								<TableData>
 									{{ user.name }}
 								</TableData>
@@ -86,7 +86,7 @@ const tableCols = [
 								<TableData>
 									{{ user.permissions_count }}
 								</TableData>
-								<TableData class="flex justify-end items-center gap-2">
+								<TableData class="flex justify-end items-center gap-2" @click.stop>
 									<button
 										v-if="canAssociateStaff"
 										type="button"

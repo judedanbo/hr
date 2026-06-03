@@ -57,7 +57,7 @@ const getEventBadgeClass = (event) => {
 				</TableHead>
 				<TableBody>
 					<template v-for="activity in activities" :key="activity.id">
-						<TableRow>
+						<TableRow @click="emit('viewActivity', activity)">
 							<TableData>
 								<span class="text-sm text-gray-600 dark:text-gray-400">
 									{{ activity.created_at }}
@@ -93,7 +93,7 @@ const getEventBadgeClass = (event) => {
 								</span>
 								<span v-else class="text-sm text-gray-400">-</span>
 							</TableData>
-							<TableData>
+							<TableData @click.stop>
 								<SubMenu
 									:items="['View', 'Delete']"
 									:can-edit="permissions?.includes('view user activity')"
