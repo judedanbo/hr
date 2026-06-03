@@ -50,7 +50,7 @@ class StaffProfileProviderTest extends TestCase
 
         $this->assertIsArray($payload);
         $this->assertSame(
-            ['person', 'qualifications', 'contacts', 'address', 'staff'],
+            ['person', 'qualifications', 'contacts', 'address', 'staff', 'latest_appraisal'],
             array_keys($payload),
         );
     }
