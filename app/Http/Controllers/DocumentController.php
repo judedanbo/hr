@@ -34,7 +34,7 @@ class DocumentController extends Controller
                     ->orWhere('document_number', 'like', "%{$search}%");
             })
             ->latest()
-            ->paginate(20)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn(Document $document) => [
                 'id' => $document->id,

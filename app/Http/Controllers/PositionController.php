@@ -30,7 +30,7 @@ class PositionController extends Controller
                 }])
                 ->orderBy('name')
                 ->withTrashed()
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn($position) => [
                     'id' => $position->id,

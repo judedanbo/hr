@@ -65,7 +65,7 @@ class JobCategoryController extends Controller
                     $query->orWhere('short_name', 'like', "%$search%");
                 })
                 ->with(['parent', 'institution'])
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn($jobCategory) => [
                     'id' => $jobCategory->id,

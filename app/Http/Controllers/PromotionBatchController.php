@@ -50,7 +50,7 @@ class PromotionBatchController extends Controller
             })
             ->orderBy(JobCategory::select('level')
                 ->whereColumn('job_categories.id', 'jobs.job_category_id'))
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn ($promotion) => [
                 'job_id' => $promotion->id,
@@ -136,7 +136,7 @@ class PromotionBatchController extends Controller
                 });
             })
             ->with(['person', 'units', 'ranks'])
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn ($staff) => [
                 'staff_id' => $staff->id,

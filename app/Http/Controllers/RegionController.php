@@ -25,7 +25,7 @@ class RegionController extends Controller
                 ->when(request()->search, function ($query) {
                     $query->where('name', 'like', '%' . request()->search . '%');
                 })
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn($region) => [
                     'id' => $region->id,

@@ -94,7 +94,7 @@ class RecruitmentController extends Controller
                     $query->orWhere('jobs.name', $rank);
                 }
             })
-            ->paginate(10)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn ($staff) => [
                 'staff_id' => $staff->id,

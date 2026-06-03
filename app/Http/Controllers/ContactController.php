@@ -33,7 +33,7 @@ class ContactController extends Controller
                     });
             })
             ->latest()
-            ->paginate(20)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn (Contact $contact) => [
                 'id' => $contact->id,

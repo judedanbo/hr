@@ -63,7 +63,7 @@ class PersonUnitController extends Controller
                 // })
 
                 ->with(['person', 'jobs', 'units'])
-                ->paginate(10)
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($staff) => [
                     'id' => $staff->id,

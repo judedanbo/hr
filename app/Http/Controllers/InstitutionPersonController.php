@@ -97,7 +97,7 @@ class InstitutionPersonController extends Controller
                 fn ($q) => $q->filterByAgeTo($request->age_to)
             )
             ->search($request->search)
-            ->paginate(10)
+            ->paginate(per_page())
             ->withQueryString()
             ->through($this->listTransformer->transformForPagination());
 

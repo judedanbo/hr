@@ -84,7 +84,7 @@ class JobController extends Controller
                     $query->where('job_staff.end_date', null);
                 })
                 ->orderByRaw('job_category_id is null asc, job_category_id asc')
-                ->paginate(10)
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($job) => [
                     'id' => $job->id,

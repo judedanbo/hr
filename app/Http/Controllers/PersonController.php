@@ -30,7 +30,7 @@ class PersonController extends Controller
             'people' => Person::query()
                 ->search(request()->search)
                 ->with('institution', 'dependent', 'identities')
-                ->paginate(10)
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($person) => [
                     'id' => $person->id,

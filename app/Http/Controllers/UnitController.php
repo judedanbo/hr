@@ -135,7 +135,7 @@ class UnitController extends Controller
                     $query->where('institution_id', request()->institution);
                 })
                 ->searchUnit(request()->search)
-                ->paginate(10)
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(
                     fn ($unit) => [
@@ -417,7 +417,7 @@ class UnitController extends Controller
 
         $paginator = $query
             ->orderByRaw('(select coalesce(min(jc.level), 99) from jobs inner join job_categories jc on jc.id = jobs.job_category_id inner join job_staff on job_staff.job_id = jobs.id where job_staff.staff_id = institution_person.id and job_staff.end_date is null)')
-            ->paginate(15)
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn (InstitutionPerson $staff) => $this->shapeStaffRow($staff));
 

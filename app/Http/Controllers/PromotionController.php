@@ -75,7 +75,7 @@ class PromotionController extends Controller
             })
             ->orderBy('year', 'desc')
             ->orderBy('job_categories.level', 'asc')
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString();
 
         return Inertia::render('Promotion/Index', [

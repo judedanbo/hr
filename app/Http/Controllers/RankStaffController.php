@@ -28,7 +28,7 @@ class RankStaffController extends Controller
                 $query->where('job_staff.job_id', $rank);
             })
             ->with(['person', 'units', 'ranks'])
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn($staff) => [
                 'id' => $staff->id,
@@ -95,7 +95,7 @@ class RankStaffController extends Controller
                 });
             })
             ->with(['person', 'units', 'ranks'])
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn($staff) => [
                 'id' => $staff->id,
@@ -128,7 +128,7 @@ class RankStaffController extends Controller
                 $query->whereNull('job_staff.end_date');
             })
             ->with(['person', 'units', 'ranks'])
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn($staff) => [
                 'id' => $staff->id,
@@ -166,7 +166,7 @@ class RankStaffController extends Controller
                 $query->where('job_staff.job_id', $rank);
             })
             ->with(['person', 'units', 'ranks'])
-            ->paginate()
+            ->paginate(per_page())
             ->withQueryString()
             ->through(fn($staff) => [
                 'id' => $staff->id,

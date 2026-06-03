@@ -38,7 +38,7 @@ class OfficeController extends Controller
                 ->when(request()->search, function ($query) {
                     $query->where('name', 'like', '%' . request()->search . '%');
                 })
-                ->paginate()
+                ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn($office) => [
                     'id' => $office->id,

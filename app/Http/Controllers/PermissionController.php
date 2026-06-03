@@ -44,7 +44,7 @@ class PermissionController extends Controller
                 ->when(request('search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->paginate()
+                ->paginate(per_page())
                 ->through(fn ($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
@@ -86,7 +86,7 @@ class PermissionController extends Controller
 
         $permission->load(['roles' => function (Builder $query) {
             $query->withCount('users');
-            $query->paginate(5);
+            $query->paginate(per_page());
         }, 'users']);
 
         return Inertia::render('Permission/Show', [
@@ -97,10 +97,10 @@ class PermissionController extends Controller
             ],
             'roles' => $permission->roles()
                 ->withCount('users')
-                ->paginate(10),
+                ->paginate(per_page()),
             'users' => $permission->users()
                 ->withCount('roles')
-                ->paginate(10, ['*'], 'users_page'),
+                ->paginate(per_page(), ['*'], 'users_page'),
         ]);
     }
 

@@ -17,7 +17,7 @@ class PromotionsController extends Controller
             // ->havingRaw("year <= " . $this->year - 3 )
                 ->where('remarks', '<>', '1st Appointment')
             // ->whereYear('start_date','<=', $this->year - 3)
-                ->paginate()
+                ->paginate(per_page())
                 ->through(fn ($promotion) => [
                     'year' => $promotion->year,
                     'job_id' => $promotion->job_id,
