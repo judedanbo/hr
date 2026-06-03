@@ -73,6 +73,30 @@ class LeaveCoverageServiceTest extends TestCase
         $this->assertFalse($this->service->exceedsLimit($requester->fresh(), $type->fresh(), Carbon::parse('2030-06-12'), Carbon::parse('2030-06-16')));
     }
 
+    public function test_detects_a_breach_in_any_of_the_requesters_units(): void
+    {
+        $quietUnit = Unit::factory()->create();
+        $busyUnit = Unit::factory()->create();
+        $requester = InstitutionPerson::factory()->create();
+        $colleague = InstitutionPerson::factory()->create();
+        $this->assign($requester, $quietUnit);
+        $this->assign($requester, $busyUnit);
+        $this->assign($colleague, $busyUnit);
+
+        $type = LeaveType::factory()->create(['max_concurrent_per_unit' => 1]);
+        LeaveRequest::factory()->create([
+            'staff_id' => $colleague->id,
+            'leave_type_id' => $type->id,
+            'status' => LeaveRequestStatusEnum::Approved,
+            'start_date' => '2030-06-10',
+            'end_date' => '2030-06-14',
+        ]);
+
+        // The colleague is only in the second (busy) unit; the cap must still trip.
+        $this->assertSame(1, $this->service->concurrentCount($requester, $type, Carbon::parse('2030-06-12'), Carbon::parse('2030-06-16')));
+        $this->assertTrue($this->service->exceedsLimit($requester, $type, Carbon::parse('2030-06-12'), Carbon::parse('2030-06-16')));
+    }
+
     public function test_no_cap_never_exceeds(): void
     {
         $unit = Unit::factory()->create();

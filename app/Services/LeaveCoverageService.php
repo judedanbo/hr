@@ -11,33 +11,38 @@ use Carbon\CarbonInterface;
 class LeaveCoverageService
 {
     /**
-     * Count distinct OTHER staff in the requester's current unit who already have
-     * an Approved leave request of the same leave type overlapping the range.
+     * The highest number of distinct OTHER staff on an Approved leave request of
+     * the same leave type overlapping the range, across any of the requester's
+     * current units. The cap is per-unit, so the busiest unit decides.
      */
     public function concurrentCount(InstitutionPerson $staff, LeaveType $leaveType, CarbonInterface $start, CarbonInterface $end, ?int $ignoreRequestId = null): int
     {
-        $unit = $staff->units()->wherePivotNull('end_date')->first();
+        $units = $staff->units()->wherePivotNull('end_date')->get();
 
-        if (! $unit) {
-            return 0;
+        $max = 0;
+
+        foreach ($units as $unit) {
+            $unitStaffIds = $unit->staff()->pluck('institution_person.id')
+                ->reject(fn ($id): bool => $id === $staff->id);
+
+            if ($unitStaffIds->isEmpty()) {
+                continue;
+            }
+
+            $count = LeaveRequest::query()
+                ->whereIn('staff_id', $unitStaffIds)
+                ->where('leave_type_id', $leaveType->id)
+                ->where('status', LeaveRequestStatusEnum::Approved)
+                ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
+                ->whereDate('start_date', '<=', $end->toDateString())
+                ->whereDate('end_date', '>=', $start->toDateString())
+                ->distinct()
+                ->count('staff_id');
+
+            $max = max($max, $count);
         }
 
-        $unitStaffIds = $unit->staff()->pluck('institution_person.id')
-            ->reject(fn ($id): bool => $id === $staff->id);
-
-        if ($unitStaffIds->isEmpty()) {
-            return 0;
-        }
-
-        return LeaveRequest::query()
-            ->whereIn('staff_id', $unitStaffIds)
-            ->where('leave_type_id', $leaveType->id)
-            ->where('status', LeaveRequestStatusEnum::Approved)
-            ->when($ignoreRequestId, fn ($query) => $query->where('id', '!=', $ignoreRequestId))
-            ->whereDate('start_date', '<=', $end->toDateString())
-            ->whereDate('end_date', '>=', $start->toDateString())
-            ->distinct()
-            ->count('staff_id');
+        return $max;
     }
 
     /**
