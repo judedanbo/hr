@@ -1,14 +1,13 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 defineProps({
 	jobs: Object,
 });
 
-const formattedDate = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
+const formattedDate = (dateString) => formatDate(dateString);
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);

@@ -1,16 +1,15 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head } from "@inertiajs/vue3";
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 import PersonContacts from "./PersonContacts.vue";
 import PersonAddresses from "./PersonAddresses.vue";
 import Avatar from "./partials/Avatar.vue";
 import Summary from "./Summary.vue";
 
-const formattedDob = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
+const formattedDob = (dateString) => formatDate(dateString);
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);

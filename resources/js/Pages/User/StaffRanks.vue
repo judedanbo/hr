@@ -1,12 +1,10 @@
 <script setup>
-import { format } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 
 const getDate = (dateString) => {
 	return new Date(dateString);
 };
-const formatDate = (date) => {
-	return format(date, "dd MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
 defineProps({
 	ranks: Array,
 });

@@ -1,5 +1,6 @@
 <script setup>
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 import { Link } from "@inertiajs/vue3";
 // import AddQualification  from "./partials/AddQualification.vue";
 import Modal from "@/Components/NewModal.vue";
@@ -14,14 +15,8 @@ defineProps({
 let openQualificationModal = ref(false);
 let toggleQualificationModal = useToggle(openQualificationModal);
 
-const formattedDob = (dob) => {
-	if (!dob) return "";
-	return new Date(dob).toLocaleDateString("en-GB", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
-};
+const { formatDate } = useDateFormat();
+const formattedDob = (dob) => formatDate(dob);
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);

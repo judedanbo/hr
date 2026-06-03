@@ -5,7 +5,7 @@ import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { router } from "@inertiajs/vue3";
-import { format } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import Modal from "@/Components/NewModal.vue";
@@ -39,11 +39,7 @@ let openStaff = (staff) => {
 	router.visit(route("staff.show", { staff: staff }));
 };
 
-let formatDate = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-	// return new Intl.DateTimeFormat("en-GB", { dateStyle: "full" }).format(date);
-};
+const { formatDate } = useDateFormat();
 
 let BreadCrumpLinks = [
 	{

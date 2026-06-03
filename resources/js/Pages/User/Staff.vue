@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 import {
 	BriefcaseIcon,
 	BuildingOffice2Icon,
@@ -13,10 +14,8 @@ defineProps({
 	staff: Object,
 });
 
-const formattedDob = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "d MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
+const formattedDob = (dateString) => formatDate(dateString);
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);

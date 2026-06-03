@@ -4,7 +4,8 @@ import { Head, Link } from "@inertiajs/vue3";
 import Tab from "@/Components/Tab.vue";
 import StaffRanks from "./StaffRanks.vue";
 import StaffUnits from "./StaffUnits.vue";
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import StaffPersonalInfo from "@/Components/StaffPersonalInfo.vue";
 import StaffDates from "@/Pages/Staff/StaffDates.vue";
@@ -12,10 +13,8 @@ import StaffDependents from "@/Components/StaffDependents.vue";
 
 // import { PaperClipIcon } from '@heroicons/vue/20/solid'
 
-const formattedDob = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
+const formattedDob = (dateString) => formatDate(dateString);
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);
