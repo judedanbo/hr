@@ -96,7 +96,7 @@ const openAssociate = (id) => {
 					title="Users"
 					:total="users.total"
 					:search="filters.search"
-					class="w-4/6"
+					class="w-full lg:w-4/6"
 					action-text="Create User"
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchUser(value)"

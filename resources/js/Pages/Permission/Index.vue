@@ -52,7 +52,7 @@ let BreadCrumpLinks = [
 					title="Permissions"
 					:total="permissions.total"
 					:search="filters.search"
-					class="w-4/6"
+					class="w-full lg:w-4/6"
 					action-text="Create Permission"
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchPermission(value)"

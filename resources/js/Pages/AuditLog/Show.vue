@@ -149,7 +149,7 @@ const BreadCrumpLinks = [
                     </div>
 
                     <!-- Timestamps -->
-                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">
                                 Created At

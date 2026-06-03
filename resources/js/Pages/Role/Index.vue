@@ -55,7 +55,7 @@ let BreadCrumpLinks = [
 					title="Roles"
 					:total="roles.total"
 					:search="filters.search"
-					class="w-4/6"
+					class="w-full lg:w-4/6"
 					action-text="Crate Role"
 					@action-clicked="toggle()"
 					@search-entered="(value) => searchRole(value)"
