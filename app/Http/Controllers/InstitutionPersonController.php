@@ -169,7 +169,7 @@ class InstitutionPersonController extends Controller
             return redirect()->route('dashboard')->with('error', 'You do not have permission to view staff details');
         }
 
-        if (request()->user()->isStaff()) {
+        if (request()->user()->isStaff() && Gate::denies('view all staff')) {
             if (request()->user()->person->institution->first()->staff->id != $staffId) {
                 return redirect()->route('dashboard')->with('error', 'You do not have permission to view details of this staff');
             }
