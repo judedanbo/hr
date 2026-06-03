@@ -6,7 +6,10 @@ use App\DataTransferObjects\LeaveReportFilter;
 use App\Enums\LeavePlanStatusEnum;
 use App\Enums\LeaveRequestStatusEnum;
 use App\Models\InstitutionPerson;
+use App\Models\LeaveBalanceAdjustment;
+use App\Models\LeaveEntitlement;
 use App\Models\LeavePlan;
+use App\Models\LeavePlanItem;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\LeaveYear;
@@ -15,10 +18,6 @@ use Illuminate\Support\Collection;
 
 class LeaveReportService
 {
-    public function __construct(
-        private LeaveBalanceService $balance,
-    ) {}
-
     public function resolveYear(LeaveReportFilter $filter): ?LeaveYear
     {
         return $filter->yearId
@@ -78,29 +77,159 @@ class LeaveReportService
             ->orderBy('name')
             ->get();
 
+        $staff = $this->staffInScope($filter);
+        if ($staff->isEmpty() || $types->isEmpty()) {
+            return [];
+        }
+
+        $staff->load([
+            'units' => fn ($q) => $q->wherePivotNull('end_date'),
+            'ranks' => fn ($q) => $q->wherePivotNull('end_date'),
+        ]);
+
+        $staffIds = $staff->pluck('id');
+        $typeIds = $types->pluck('id');
+
+        $entitlements = $this->entitlementIndex($year, $typeIds);
+        $adjustments = $this->adjustmentIndex($year, $staffIds, $typeIds);
+        $planned = $this->plannedIndex($year, $staffIds, $typeIds);
+        $taken = $this->takenIndex($year, $staffIds, $typeIds);
+
         $rows = [];
-        foreach ($this->staffInScope($filter) as $staff) {
-            $unitName = $staff->units()->wherePivotNull('end_date')->first()?->name;
+        foreach ($staff as $member) {
+            $categoryId = $member->ranks->first()?->job_category_id;
+            $unitName = $member->units->first()?->name;
+
             foreach ($types as $type) {
-                $assigned = $this->balance->assignedDays($staff, $type->id, $year);
+                $base = $entitlements[$type->id][$categoryId !== null ? (string) $categoryId : 'default']
+                    ?? $entitlements[$type->id]['default']
+                    ?? 0;
+                $assigned = max(0, $base + ($adjustments[$member->id][$type->id] ?? 0));
+
                 if ($assigned < 1) {
                     continue;
                 }
+
+                $takenDays = $taken[$member->id][$type->id] ?? 0;
                 $rows[] = [
-                    'staff_id' => $staff->id,
-                    'staff' => $staff->person?->full_name,
+                    'staff_id' => $member->id,
+                    'staff' => $member->person?->full_name,
                     'unit' => $unitName,
                     'leave_type_id' => $type->id,
                     'leave_type' => $type->name,
                     'assigned' => $assigned,
-                    'planned' => $this->balance->plannedDays($staff, $type->id, $year),
-                    'taken' => $this->balance->takenDays($staff, $type->id, $year),
-                    'remaining' => $this->balance->remaining($staff, $type->id, $year),
+                    'planned' => $planned[$member->id][$type->id] ?? 0,
+                    'taken' => $takenDays,
+                    'remaining' => max(0, $assigned - $takenDays),
                 ];
             }
         }
 
         return $rows;
+    }
+
+    /**
+     * Entitlement days_allowed for the year, indexed [leave_type_id][job_category_id|'default'].
+     *
+     * @param  Collection<int, int>  $typeIds
+     * @return array<int, array<string, int>>
+     */
+    private function entitlementIndex(LeaveYear $year, Collection $typeIds): array
+    {
+        $index = [];
+
+        LeaveEntitlement::query()
+            ->where('leave_year_id', $year->id)
+            ->whereIn('leave_type_id', $typeIds)
+            ->get(['leave_type_id', 'job_category_id', 'days_allowed'])
+            ->each(function (LeaveEntitlement $entitlement) use (&$index): void {
+                $key = $entitlement->job_category_id !== null ? (string) $entitlement->job_category_id : 'default';
+                $index[$entitlement->leave_type_id][$key] = (int) $entitlement->days_allowed;
+            });
+
+        return $index;
+    }
+
+    /**
+     * Net manual adjustment days, indexed [staff_id][leave_type_id].
+     *
+     * @param  Collection<int, int>  $staffIds
+     * @param  Collection<int, int>  $typeIds
+     * @return array<int, array<int, int>>
+     */
+    private function adjustmentIndex(LeaveYear $year, Collection $staffIds, Collection $typeIds): array
+    {
+        $index = [];
+
+        LeaveBalanceAdjustment::query()
+            ->where('leave_year_id', $year->id)
+            ->whereIn('staff_id', $staffIds)
+            ->whereIn('leave_type_id', $typeIds)
+            ->groupBy('staff_id', 'leave_type_id')
+            ->selectRaw('staff_id, leave_type_id, COALESCE(SUM(days), 0) as days')
+            ->get()
+            ->each(function ($row) use (&$index): void {
+                $index[$row->staff_id][$row->leave_type_id] = (int) $row->days;
+            });
+
+        return $index;
+    }
+
+    /**
+     * Planned (proposed) days, indexed [staff_id][leave_type_id].
+     *
+     * @param  Collection<int, int>  $staffIds
+     * @param  Collection<int, int>  $typeIds
+     * @return array<int, array<int, int>>
+     */
+    private function plannedIndex(LeaveYear $year, Collection $staffIds, Collection $typeIds): array
+    {
+        $index = [];
+
+        LeavePlanItem::query()
+            ->join('leave_plans', 'leave_plan_items.leave_plan_id', '=', 'leave_plans.id')
+            ->whereNull('leave_plans.deleted_at')
+            ->where('leave_plans.leave_year_id', $year->id)
+            ->whereIn('leave_plans.staff_id', $staffIds)
+            ->whereIn('leave_plan_items.leave_type_id', $typeIds)
+            ->groupBy('leave_plans.staff_id', 'leave_plan_items.leave_type_id')
+            ->selectRaw('leave_plans.staff_id as staff_id, leave_plan_items.leave_type_id as leave_type_id, COALESCE(SUM(leave_plan_items.proposed_days), 0) as days')
+            ->get()
+            ->each(function ($row) use (&$index): void {
+                $index[$row->staff_id][$row->leave_type_id] = (int) $row->days;
+            });
+
+        return $index;
+    }
+
+    /**
+     * Days taken — approved_days for Approved plus actual_days for Completed —
+     * indexed [staff_id][leave_type_id].
+     *
+     * @param  Collection<int, int>  $staffIds
+     * @param  Collection<int, int>  $typeIds
+     * @return array<int, array<int, int>>
+     */
+    private function takenIndex(LeaveYear $year, Collection $staffIds, Collection $typeIds): array
+    {
+        $index = [];
+
+        LeaveRequest::query()
+            ->where('leave_year_id', $year->id)
+            ->whereIn('staff_id', $staffIds)
+            ->whereIn('leave_type_id', $typeIds)
+            ->whereIn('status', [LeaveRequestStatusEnum::Approved, LeaveRequestStatusEnum::Completed])
+            ->groupBy('staff_id', 'leave_type_id')
+            ->selectRaw(
+                'staff_id, leave_type_id, COALESCE(SUM(CASE WHEN status = ? THEN COALESCE(actual_days, 0) ELSE COALESCE(approved_days, 0) END), 0) as days',
+                [LeaveRequestStatusEnum::Completed->value],
+            )
+            ->get()
+            ->each(function ($row) use (&$index): void {
+                $index[$row->staff_id][$row->leave_type_id] = (int) $row->days;
+            });
+
+        return $index;
     }
 
     /**
