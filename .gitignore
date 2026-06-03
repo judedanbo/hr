@@ -15,7 +15,6 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
-/database/seeders
 /kube
 *.sql
 ray.php

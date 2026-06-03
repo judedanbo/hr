@@ -56,7 +56,11 @@
 									/>
 								</DisclosureButton>
 								<DisclosurePanel as="ul" class="mt-1 px-2">
-									<li v-for="subItem in item.children" :key="subItem.name">
+									<li
+										v-for="subItem in item.children"
+										v-show="subItem.visible !== false"
+										:key="subItem.name"
+									>
 										<!-- 44px -->
 										<DisclosureButton
 											as="a"
@@ -109,7 +113,10 @@ import { Link, usePage } from "@inertiajs/vue3";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { computed } from "vue";
-import { Cog6ToothIcon, QuestionMarkCircleIcon } from "@heroicons/vue/24/outline";
+import {
+	Cog6ToothIcon,
+	QuestionMarkCircleIcon,
+} from "@heroicons/vue/24/outline";
 
 defineProps({
 	navigation: {

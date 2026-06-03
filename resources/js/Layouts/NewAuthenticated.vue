@@ -30,6 +30,7 @@ import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 const page = usePage();
 const permissions = computed(() => page.props?.auth?.permissions);
 const alert = computed(() => page.props?.flash);
+const leavePlanning = computed(() => page.props?.leavePlanning);
 const navigation = [
 	{
 		name: "My Profile",
@@ -82,6 +83,134 @@ const navigation = [
 		current:
 			route().current("job-category.*") || route().current("job-category.*"),
 		visible: permissions.value?.includes("view job category"),
+	},
+	{
+		name: "Leave Setup",
+		href: route("leave-year.index"),
+		icon: CalendarIcon,
+		current:
+			route().current("leave-year.*") ||
+			route().current("leave-type.*") ||
+			route().current("leave-entitlement.*") ||
+			route().current("holiday.*") ||
+			route().current("leave-planning-window.*") ||
+			route().current("unit-head.*") ||
+			route().current("leave-delegation.*"),
+		children: [
+			{
+				name: "Leave Years",
+				href: route("leave-year.index"),
+				current: route().current("leave-year.*"),
+				visible: permissions.value?.includes("view all leave years"),
+			},
+			{
+				name: "Leave Types",
+				href: route("leave-type.index"),
+				current: route().current("leave-type.*"),
+				visible: permissions.value?.includes("view all leave types"),
+			},
+			{
+				name: "Entitlements",
+				href: route("leave-entitlement.index"),
+				current: route().current("leave-entitlement.*"),
+				visible: permissions.value?.includes("view all leave entitlements"),
+			},
+			{
+				name: "Holidays",
+				href: route("holiday.index"),
+				current: route().current("holiday.*"),
+				visible: permissions.value?.includes("view all holidays"),
+			},
+			{
+				name: "Planning Windows",
+				href: route("leave-planning-window.index"),
+				current: route().current("leave-planning-window.*"),
+				visible: permissions.value?.includes("manage leave planning windows"),
+			},
+			{
+				name: "Unit Heads",
+				href: route("unit-head.index"),
+				current: route().current("unit-head.*"),
+				visible: permissions.value?.includes("manage leave approvers"),
+			},
+			{
+				name: "Delegations",
+				href: route("leave-delegation.index"),
+				current: route().current("leave-delegation.*"),
+				visible: permissions.value?.includes("manage leave delegations"),
+			},
+			{
+				name: "Balance Adjustments",
+				href: route("leave-balance-adjustment.index"),
+				current: route().current("leave-balance-adjustment.*"),
+				visible: permissions.value?.includes("adjust leave balance"),
+			},
+		],
+		visible:
+			permissions.value?.includes("view all leave years") ||
+			permissions.value?.includes("view all leave types") ||
+			permissions.value?.includes("view all leave entitlements") ||
+			permissions.value?.includes("view all holidays") ||
+			permissions.value?.includes("manage leave planning windows") ||
+			permissions.value?.includes("manage leave approvers") ||
+			permissions.value?.includes("manage leave delegations") ||
+			permissions.value?.includes("adjust leave balance"),
+	},
+	{
+		name: "My Leave Plan",
+		href: route("leave-plan.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-plan.*"),
+		visible: permissions.value?.includes("view leave plans"),
+	},
+	{
+		name: "All Leave Plans",
+		href: route("leave-plans.index"),
+		icon: DocumentDuplicateIcon,
+		current: route().current("leave-plans.*"),
+		visible: permissions.value?.includes("view all leave plans"),
+	},
+	{
+		name: "My Leave",
+		href: route("leave-request.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-request.*"),
+		visible: permissions.value?.includes("view leave requests"),
+	},
+	{
+		name: "All Leave Requests",
+		href: route("leave-requests.index"),
+		icon: DocumentDuplicateIcon,
+		current: route().current("leave-requests.*"),
+		visible: permissions.value?.includes("view all leave requests"),
+	},
+	{
+		name: "Leave Approvals",
+		href: route("leave-approvals.index"),
+		icon: DocumentDuplicateIcon,
+		current: route().current("leave-approvals.*"),
+		visible: Boolean(page.props?.auth?.user?.person_id),
+	},
+	{
+		name: "Leave Balance",
+		href: route("leave-balance.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-balance.*"),
+		visible: permissions.value?.includes("view leave requests"),
+	},
+	{
+		name: "Leave Calendar",
+		href: route("leave-calendar.index"),
+		icon: CalendarIcon,
+		current: route().current("leave-calendar.*"),
+		visible: permissions.value?.includes("view leave calendar"),
+	},
+	{
+		name: "Leave Reports",
+		href: route("leave-reports.index"),
+		icon: ChartPieIcon,
+		current: route().current("leave-reports.*"),
+		visible: permissions.value?.includes("view leave reports"),
 	},
 	{
 		name: "Next Promotions",
@@ -264,7 +393,10 @@ const closeAlert = (index) => {
 			<div
 				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-900 dark:bg-gray-800"
 			>
-				<Link :href="route('dashboard')" class="flex h-16 shrink-0 items-center pl-2">
+				<Link
+					:href="route('dashboard')"
+					class="flex h-16 shrink-0 items-center pl-2"
+				>
 					<BreezeApplicationLogo class="block h-9 w-auto" />
 					<div class="mx-2">
 						<h2
@@ -299,6 +431,19 @@ const closeAlert = (index) => {
 			</div>
 
 			<main class="pb-6 bg-gray-100 dark:bg-gray-600 min-h-screen">
+				<div
+					v-if="leavePlanning?.open && !leavePlanning?.submitted"
+					class="bg-amber-50 border-b border-amber-200 px-6 py-3 text-sm text-amber-900"
+				>
+					<span class="font-semibold">Leave planning is open.</span>
+					Submit your leave plan by {{ leavePlanning.closes_at }}.
+					<Link
+						:href="route('leave-plan.index')"
+						class="font-semibold underline hover:text-amber-700"
+					>
+						Go to My Leave Plan
+					</Link>
+				</div>
 				<div class="">
 					<!-- permissions: {{ permissions }} -->
 					<slot />

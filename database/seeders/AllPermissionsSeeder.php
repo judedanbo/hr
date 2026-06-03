@@ -284,6 +284,75 @@ class AllPermissionsSeeder extends Seeder
             'create documents',
             'update documents',
             'delete documents',
+
+            // ============================================
+            // Leave Management — Configuration (22)
+            // ============================================
+            'view all leave years',
+            'view leave year',
+            'create leave year',
+            'update leave year',
+            'delete leave year',
+            'clone leave year',
+            'view all leave types',
+            'view leave type',
+            'create leave type',
+            'update leave type',
+            'delete leave type',
+            'view all leave entitlements',
+            'view leave entitlement',
+            'create leave entitlement',
+            'update leave entitlement',
+            'delete leave entitlement',
+            'view all holidays',
+            'view holiday',
+            'create holiday',
+            'update holiday',
+            'delete holiday',
+
+            // ============================================
+            // Leave Management — Annual Planning (4)
+            // ============================================
+            'manage leave planning windows',
+            'view leave plans',
+            'submit leave plan',
+            'view all leave plans',
+
+            // ============================================
+            // Leave Management — Requests (5)
+            // ============================================
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'view all leave requests',
+
+            // ============================================
+            // Leave Management — Approvals (4)
+            // ============================================
+            'approve staff leave',
+            'reassign leave approver',
+            'manage leave delegations',
+            'manage leave approvers',
+
+            // ============================================
+            // Leave Management — Visibility (1)
+            // ============================================
+            'view leave calendar',
+
+            // ============================================
+            // Leave Management — Reports (3)
+            // ============================================
+            'view leave reports',
+            'view all leave reports',
+            'export leave reports',
+
+            // ============================================
+            // Leave Management — Lifecycle (3)
+            // ============================================
+            'resume leave request',
+            'amend leave request',
+            'adjust leave balance',
         ];
     }
 }
