@@ -680,9 +680,9 @@ Route::controller(LeaveRequestAdminController::class)->middleware(['auth', 'pass
 
 Route::controller(LeaveApprovalController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/leave-approvals', 'index')->name('leave-approvals.index');
-    Route::post('/leave-approvals/{leaveRequest}/approve', 'approve')->name('leave-approvals.approve');
-    Route::post('/leave-approvals/{leaveRequest}/decline', 'decline')->name('leave-approvals.decline');
-    Route::post('/leave-approvals/{leaveRequest}/reassign', 'reassign')->name('leave-approvals.reassign');
+    Route::post('/leave-approvals/{leaveRequest}/approve', 'approve')->middleware('can:decide,leaveRequest')->name('leave-approvals.approve');
+    Route::post('/leave-approvals/{leaveRequest}/decline', 'decline')->middleware('can:decide,leaveRequest')->name('leave-approvals.decline');
+    Route::post('/leave-approvals/{leaveRequest}/reassign', 'reassign')->middleware('can:reassign leave approver')->name('leave-approvals.reassign');
 });
 
 Route::controller(LeaveDelegationController::class)->middleware(['auth', 'password_changed'])->group(function () {
