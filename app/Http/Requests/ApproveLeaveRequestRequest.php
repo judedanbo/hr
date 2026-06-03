@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\LeaveRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ApproveLeaveRequestRequest extends FormRequest
@@ -17,8 +18,15 @@ class ApproveLeaveRequestRequest extends FormRequest
      */
     public function rules(): array
     {
+        $leaveRequest = $this->route('leaveRequest');
+
         return [
-            'approved_days' => ['nullable', 'integer', 'min:1'],
+            'approved_days' => array_filter([
+                'nullable',
+                'integer',
+                'min:1',
+                $leaveRequest instanceof LeaveRequest ? 'max:' . $leaveRequest->requested_days : null,
+            ]),
         ];
     }
 }
