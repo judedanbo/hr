@@ -12,6 +12,7 @@ use App\Http\Controllers\AppraisalController;
 use App\Http\Controllers\AppraisalCycleController;
 use App\Http\Controllers\AppraisalObjectiveController;
 use App\Http\Controllers\AppraisalRatingLevelController;
+use App\Http\Controllers\AppraisalReportController;
 use App\Http\Controllers\AppraisalWorkflowController;
 use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\AuditLogController;
@@ -654,6 +655,10 @@ Route::middleware(['auth', 'password_changed'])->group(function () {
         Route::post('/appraisal/{appraisal}/acknowledge', 'acknowledge')->name('appraisal.acknowledge');
         Route::patch('/appraisal/{appraisal}/reassign', 'reassign')->name('appraisal.reassign');
     });
+
+    Route::get('/appraisal-report', [AppraisalReportController::class, 'index'])->middleware('can:view all appraisals')->name('appraisal.report.index');
+    Route::get('/appraisal-report/export', [AppraisalReportController::class, 'export'])->middleware('can:export appraisals')->name('appraisal.report.export');
+    Route::get('/appraisal/{appraisal}/pdf', [AppraisalReportController::class, 'pdf'])->middleware('can:view appraisal')->name('appraisal.pdf');
 
     Route::get('/my-appraisal', [MyAppraisalController::class, 'index'])->name('my-appraisal.index');
 });

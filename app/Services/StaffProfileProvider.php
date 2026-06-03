@@ -33,6 +33,7 @@ final class StaffProfileProvider
                 'statuses',
                 'notes.documents',
                 'positions' => fn ($query) => $query->withTrashed(),
+                'latestAppraisal.cycle',
             ])
             ->active()
             ->where('person_id', $personId)
@@ -48,6 +49,27 @@ final class StaffProfileProvider
             'contacts' => $this->mapContacts($staff),
             'address' => $this->mapAddress($staff),
             'staff' => $this->mapStaff($staff),
+            'latest_appraisal' => $this->mapLatestAppraisal($staff),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function mapLatestAppraisal(InstitutionPerson $staff): ?array
+    {
+        $appraisal = $staff->latestAppraisal;
+
+        if (! $appraisal) {
+            return null;
+        }
+
+        return [
+            'id' => $appraisal->id,
+            'cycle' => $appraisal->cycle?->name,
+            'status_label' => $appraisal->status->label(),
+            'overall_score' => $appraisal->overall_score !== null ? (float) $appraisal->overall_score : null,
+            'overall_band' => $appraisal->overall_band,
         ];
     }
 

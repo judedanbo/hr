@@ -39,10 +39,13 @@ const links = [{ name: "Appraisals", url: "" }];
 			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200">
 				<div class="flex items-center justify-between my-4">
 					<h1 class="text-xl font-semibold dark:text-gray-100">Appraisals</h1>
-					<select v-model="cycleFilter" class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-gray-100" @change="applyFilter">
-						<option value="">All cycles</option>
-						<option v-for="cycle in cycles" :key="cycle.value" :value="cycle.value">{{ cycle.label }}</option>
-					</select>
+					<div class="flex items-center gap-3">
+						<a :href="route('appraisal.report.index')" class="rounded-md bg-indigo-600 px-3 py-2 text-sm text-white hover:bg-indigo-500">Reports</a>
+						<select v-model="cycleFilter" class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-gray-100" @change="applyFilter">
+							<option value="">All cycles</option>
+							<option v-for="cycle in cycles" :key="cycle.value" :value="cycle.value">{{ cycle.label }}</option>
+						</select>
+					</div>
 				</div>
 				<section class="flex flex-col -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 					<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">

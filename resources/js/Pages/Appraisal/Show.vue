@@ -65,7 +65,10 @@ const links = [
 						<h1 class="text-2xl font-semibold dark:text-gray-100">{{ a.staff_name }}</h1>
 						<p class="text-gray-500 dark:text-gray-300">{{ a.cycle }} · {{ a.unit ?? "No unit" }}</p>
 					</div>
-					<span :class="a.status_color" class="font-semibold">{{ a.status_label }}</span>
+					<div class="flex items-center gap-3">
+						<span :class="a.status_color" class="font-semibold">{{ a.status_label }}</span>
+						<a :href="route('appraisal.pdf', { appraisal: a.id })" class="rounded-md bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500">PDF</a>
+					</div>
 				</div>
 				<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm dark:text-gray-200">
 					<div><span class="text-gray-500 dark:text-gray-400">Appraiser:</span> {{ a.appraiser_name }}</div>
