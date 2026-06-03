@@ -284,6 +284,33 @@ class AllPermissionsSeeder extends Seeder
             'create documents',
             'update documents',
             'delete documents',
+
+            // ============================================
+            // Performance Appraisals / SPMS (23)
+            // ============================================
+            'view all appraisal cycles',
+            'view appraisal cycle',
+            'create appraisal cycle',
+            'edit appraisal cycle',
+            'delete appraisal cycle',
+            'view all appraisal competencies',
+            'view appraisal competency',
+            'create appraisal competency',
+            'edit appraisal competency',
+            'delete appraisal competency',
+            'view all appraisal rating levels',
+            'create appraisal rating level',
+            'edit appraisal rating level',
+            'delete appraisal rating level',
+            'view all appraisals',
+            'view appraisal',
+            'create appraisal',
+            'edit appraisal',
+            'review appraisal',
+            'countersign appraisal',
+            'export appraisals',
+            'submit self appraisal',
+            'acknowledge appraisal',
         ];
     }
 }

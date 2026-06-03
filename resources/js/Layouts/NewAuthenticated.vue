@@ -24,6 +24,7 @@ import {
 	UserGroupIcon,
 	ShieldCheckIcon,
 	PhotoIcon,
+	ClipboardDocumentCheckIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -152,6 +153,16 @@ const navigation = [
 		icon: UserGroupIcon,
 		current: route().current("role.*"),
 		visible: permissions.value?.includes("view all roles"),
+	},
+	{
+		name: "Appraisals",
+		href: route("appraisal-cycle.index"),
+		icon: ClipboardDocumentCheckIcon,
+		current:
+			route().current("appraisal-cycle.*") ||
+			route().current("appraisal-competency.*") ||
+			route().current("appraisal-rating-level.*"),
+		visible: permissions.value?.includes("view all appraisal cycles"),
 	},
 	{
 		name: "Audit Logs",

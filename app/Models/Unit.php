@@ -28,6 +28,7 @@ class Unit extends Model
         'type',
         'unit_id',
         'institution_id',
+        'head_staff_id',
         'start_date',
         'end_date',
         'region_id',
@@ -49,6 +50,14 @@ class Unit extends Model
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Unit::class, 'unit_id');
+    }
+
+    /**
+     * The staff member who heads this Unit (used for appraisal routing).
+     */
+    public function head(): BelongsTo
+    {
+        return $this->belongsTo(InstitutionPerson::class, 'head_staff_id');
     }
 
     public function region(): BelongsToMany

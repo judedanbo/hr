@@ -7,6 +7,9 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
+use App\Http\Controllers\AppraisalCompetencyController;
+use App\Http\Controllers\AppraisalCycleController;
+use App\Http\Controllers\AppraisalRatingLevelController;
 use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
@@ -588,6 +591,33 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
     Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Performance Appraisal (SPMS) — Configuration
+|--------------------------------------------------------------------------
+*/
+Route::controller(AppraisalCycleController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal-cycle', 'index')->middleware('can:view all appraisal cycles')->name('appraisal-cycle.index');
+    Route::post('/appraisal-cycle', 'store')->middleware('can:create appraisal cycle')->name('appraisal-cycle.store');
+    Route::get('/appraisal-cycle/{appraisalCycle}', 'show')->middleware('can:view appraisal cycle')->name('appraisal-cycle.show');
+    Route::patch('/appraisal-cycle/{appraisalCycle}', 'update')->middleware('can:edit appraisal cycle')->name('appraisal-cycle.update');
+    Route::delete('/appraisal-cycle/{appraisalCycle}', 'delete')->middleware('can:delete appraisal cycle')->name('appraisal-cycle.delete');
+});
+
+Route::controller(AppraisalCompetencyController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal-competency', 'index')->middleware('can:view all appraisal competencies')->name('appraisal-competency.index');
+    Route::post('/appraisal-competency', 'store')->middleware('can:create appraisal competency')->name('appraisal-competency.store');
+    Route::patch('/appraisal-competency/{appraisalCompetency}', 'update')->middleware('can:edit appraisal competency')->name('appraisal-competency.update');
+    Route::delete('/appraisal-competency/{appraisalCompetency}', 'delete')->middleware('can:delete appraisal competency')->name('appraisal-competency.delete');
+});
+
+Route::controller(AppraisalRatingLevelController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal-rating-level', 'index')->middleware('can:view all appraisal rating levels')->name('appraisal-rating-level.index');
+    Route::post('/appraisal-rating-level', 'store')->middleware('can:create appraisal rating level')->name('appraisal-rating-level.store');
+    Route::patch('/appraisal-rating-level/{appraisalRatingLevel}', 'update')->middleware('can:edit appraisal rating level')->name('appraisal-rating-level.update');
+    Route::delete('/appraisal-rating-level/{appraisalRatingLevel}', 'delete')->middleware('can:delete appraisal rating level')->name('appraisal-rating-level.delete');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
