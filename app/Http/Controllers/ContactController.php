@@ -40,11 +40,11 @@ class ContactController extends Controller
                 'contact_type' => $contact->contact_type?->value,
                 'contact_type_label' => $contact->contact_type?->label(),
                 'contact' => $contact->contact,
-                'valid_end' => $contact->valid_end?->format('d M Y'),
+                'valid_end' => $contact->valid_end?->displayDate(),
                 'person_id' => $contact->person_id,
                 'person_name' => $contact->person?->full_name,
                 'is_active' => $contact->valid_end === null || $contact->valid_end->isFuture(),
-                'created_at' => $contact->created_at?->format('d M Y'),
+                'created_at' => $contact->created_at?->displayDate(),
             ]);
 
         // Get contact types for filters
@@ -102,12 +102,12 @@ class ContactController extends Controller
                 'contact_type' => $contact->contact_type?->value,
                 'contact_type_label' => $contact->contact_type?->label(),
                 'contact' => $contact->contact,
-                'valid_end' => $contact->valid_end?->format('d M Y'),
+                'valid_end' => $contact->valid_end?->displayDate(),
                 'person_id' => $contact->person_id,
                 'person_name' => $contact->person?->full_name,
                 'is_active' => $contact->valid_end === null || $contact->valid_end->isFuture(),
-                'created_at' => $contact->created_at?->format('d M Y H:i'),
-                'updated_at' => $contact->updated_at?->format('d M Y H:i'),
+                'created_at' => $contact->created_at?->displayDateTime(),
+                'updated_at' => $contact->updated_at?->displayDateTime(),
             ],
         ]);
     }

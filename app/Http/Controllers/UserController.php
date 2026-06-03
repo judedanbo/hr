@@ -133,12 +133,12 @@ class UserController extends Controller
                 'roles' => $user->roles->map(fn ($role) => [
                     'id' => $role->id,
                     'name' => $role->name,
-                    'start_date' => $role->created_at->format('d M Y'),
+                    'start_date' => $role->created_at->displayDate(),
                 ]),
                 'direct_permissions' => $user->getDirectPermissions()->map(fn ($permission) => [
                     'id' => $permission->id,
                     'name' => $permission->name,
-                    'start_date' => $permission->created_at->format('d M Y'),
+                    'start_date' => $permission->created_at->displayDate(),
                 ])->values(),
                 'inherited_permissions' => $inherited,
             ],

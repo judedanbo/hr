@@ -227,14 +227,14 @@ class InstitutionPersonController extends Controller
             'staff_number' => $staff->staff_number,
             'file_number' => $staff->file_number,
             'old_staff_number' => $staff->old_staff_number,
-            'hire_date' => $staff->hire_date?->format('d M Y'),
+            'hire_date' => $staff->hire_date?->displayDate(),
             'retirement_date' => $staff->retirement_date_formatted,
             'start_date' => $staff->start_date,
             'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
                 'id' => $rank->id,
                 'name' => $rank->name,
-                'start_date' => $rank->pivot->start_date?->format('d M Y'),
-                'end_date' => $rank->pivot->end_date?->format('d M Y'),
+                'start_date' => $rank->pivot->start_date?->displayDate(),
+                'end_date' => $rank->pivot->end_date?->displayDate(),
                 'remarks' => $rank->pivot->remarks,
                 'distance' => (int) $rank->pivot->start_date->diffInYears(),
             ])

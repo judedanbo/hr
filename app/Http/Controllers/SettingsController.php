@@ -47,7 +47,7 @@ class SettingsController extends Controller
                     'id' => $activity->id,
                     'description' => $activity->description,
                     'causer_name' => $activity->causer?->name ?? 'System',
-                    'created_at' => $activity->created_at->format('d M Y H:i'),
+                    'created_at' => $activity->created_at->displayDateTime(),
                 ])
                 ->all()
             : [];

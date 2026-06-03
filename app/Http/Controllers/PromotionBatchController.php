@@ -149,13 +149,13 @@ class PromotionBatchController extends Controller
                 'unit' => $staff->units->count() > 0 ? [
                     'id' => $staff->units->first()->id,
                     'name' => $staff->units->first()->name,
-                    'start_date' => $staff->units->first()->pivot->start_date?->format('d M, Y'),
+                    'start_date' => $staff->units->first()->pivot->start_date?->displayDate(),
                     'start_date_diff' => $staff->units->first()->pivot->start_date?->diffForHumans(),
                 ] : [],
                 'rank_id' => $staff->ranks->first()->id,
                 'rank_name' => $staff->ranks->first()->name,
                 'remarks' => $staff->ranks->first()->pivot->remarks,
-                'start_date' => $staff->ranks->first()->pivot->start_date->format('d M, Y'),
+                'start_date' => $staff->ranks->first()->pivot->start_date->displayDate(),
                 'start_date_diff' => $staff->ranks->first()->pivot->start_date->diffForHumans(),
                 'now' => date('Y-m-d'),
             ]);

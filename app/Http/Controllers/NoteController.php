@@ -40,13 +40,13 @@ class NoteController extends Controller
                 'note' => $note->note,
                 'note_type' => $note->note_type?->value,
                 'note_type_label' => $note->note_type?->label(),
-                'note_date' => $note->note_date?->format('d M Y'),
+                'note_date' => $note->note_date?->displayDate(),
                 'url' => $note->url,
                 'notable_type' => $note->notable_type ? class_basename($note->notable_type) : null,
                 'notable_id' => $note->notable_id,
                 'notable_name' => $this->getNotableName($note),
                 'documents_count' => $note->documents->count(),
-                'created_at' => $note->created_at->format('d M Y H:i'),
+                'created_at' => $note->created_at->displayDateTime(),
             ]);
 
         // Get note types for filters
@@ -108,7 +108,7 @@ class NoteController extends Controller
                 'note' => $note->note,
                 'note_type' => $note->note_type?->value,
                 'note_type_label' => $note->note_type?->label(),
-                'note_date' => $note->note_date?->format('d M Y'),
+                'note_date' => $note->note_date?->displayDate(),
                 'url' => $note->url,
                 'notable_type' => $note->notable_type,
                 'notable_id' => $note->notable_id,
@@ -120,8 +120,8 @@ class NoteController extends Controller
                     'document_type' => $doc->document_type,
                     'file_name' => $doc->file_name,
                 ]),
-                'created_at' => $note->created_at->format('d M Y H:i'),
-                'updated_at' => $note->updated_at->format('d M Y H:i'),
+                'created_at' => $note->created_at->displayDateTime(),
+                'updated_at' => $note->updated_at->displayDateTime(),
             ],
         ]);
     }

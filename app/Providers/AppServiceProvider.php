@@ -47,5 +47,17 @@ class AppServiceProvider extends ServiceProvider
         // Gate::policy('App\Models\Institution', 'App\Policies\InstitutionPolicy');
 
         \App\Models\Qualification::observe(\App\Observers\QualificationObserver::class);
+
+        foreach ([\Illuminate\Support\Carbon::class, \Carbon\Carbon::class, \Carbon\CarbonImmutable::class] as $carbonClass) {
+            $carbonClass::macro('displayDate', function () {
+                /** @var \Carbon\CarbonInterface $this */
+                return $this->format(app(\App\Settings\GeneralSettings::class)->date_format);
+            });
+
+            $carbonClass::macro('displayDateTime', function () {
+                /** @var \Carbon\CarbonInterface $this */
+                return $this->format(app(\App\Settings\GeneralSettings::class)->date_format . ' H:i');
+            });
+        }
     }
 }
