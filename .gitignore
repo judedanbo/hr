@@ -25,3 +25,7 @@ ray.php
 tests/Browser/screenshots/
 tests/Browser/console/
 tests/Browser/source/
+
+# Local tooling artifacts
+cookies.txt
+.playwright-mcp/
