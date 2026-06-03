@@ -14,15 +14,23 @@ const options = ref([]);
 const selected = ref(null);
 const error = ref("");
 const loading = ref(false);
+const loadingOptions = ref(false);
 
-onMounted(async () => {
+const fetchOptions = async (search = "") => {
+	loadingOptions.value = true;
 	try {
-		const response = await axios.get(route("users.staff-options"));
+		const response = await axios.get(route("users.staff-options"), {
+			params: { search },
+		});
 		options.value = response.data;
 	} catch (e) {
 		error.value = "Could not load staff records.";
+	} finally {
+		loadingOptions.value = false;
 	}
-});
+};
+
+onMounted(() => fetchOptions());
 
 const submit = () => {
 	error.value = "";
@@ -45,7 +53,7 @@ const submit = () => {
 </script>
 
 <template>
-	<main class="px-8 py-8 bg-white dark:bg-gray-800">
+	<main class="px-8 py-8 bg-white dark:bg-gray-800 min-h-96">
 		<h1 class="text-xl font-semibold pb-4 text-green-900 dark:text-gray-100">
 			Associate Staff Record
 		</h1>
@@ -53,9 +61,13 @@ const submit = () => {
 			v-model="selected"
 			:options="options"
 			:searchable="true"
+			remote
+			:loading="loadingOptions"
+			max-height="max-h-96"
 			label="Staff record"
 			placeholder="Search staff by name or staff number"
 			:error="error"
+			@search="fetchOptions"
 		/>
 		<div class="flex justify-end pt-6">
 			<button

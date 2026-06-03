@@ -74,6 +74,76 @@ class AssociateUserStaffTest extends TestCase
         $this->assertStringContainsString($linkable->fresh()->institution->first()->staff->staff_number, $option['label']);
     }
 
+    public function test_staff_options_limits_results(): void
+    {
+        for ($i = 0; $i < 30; $i++) {
+            $this->staffPerson();
+        }
+
+        $response = $this->actingAs($this->adminUser())
+            ->getJson(route('users.staff-options'));
+
+        $response->assertOk();
+        $this->assertLessThanOrEqual(25, count($response->json()));
+    }
+
+    public function test_staff_options_filters_by_name(): void
+    {
+        $match = $this->staffPerson();
+        $match->update(['surname' => 'Zephyrson']);
+
+        $other = $this->staffPerson();
+        $other->update(['surname' => 'Aldridge']);
+
+        $response = $this->actingAs($this->adminUser())
+            ->getJson(route('users.staff-options', ['search' => 'Zephyr']));
+
+        $response->assertOk();
+        $values = collect($response->json())->pluck('value');
+
+        $this->assertTrue($values->contains($match->id));
+        $this->assertFalse($values->contains($other->id));
+    }
+
+    public function test_staff_options_filters_by_staff_number(): void
+    {
+        $person = Person::factory()->create();
+        $person->institution()->attach(Institution::factory()->create()->id, [
+            'staff_number' => 'STAFFUNIQ123',
+            'hire_date' => now()->subYears(2),
+        ]);
+
+        $other = $this->staffPerson();
+
+        $response = $this->actingAs($this->adminUser())
+            ->getJson(route('users.staff-options', ['search' => 'UNIQ123']));
+
+        $response->assertOk();
+        $values = collect($response->json())->pluck('value');
+
+        $this->assertTrue($values->contains($person->id));
+        $this->assertFalse($values->contains($other->id));
+    }
+
+    public function test_staff_options_cache_invalidated_on_associate(): void
+    {
+        $person = $this->staffPerson();
+        $admin = $this->adminUser();
+
+        // Populate the default (no-search) cache while the person is still unlinked.
+        $first = $this->actingAs($admin)->getJson(route('users.staff-options'));
+        $this->assertTrue(collect($first->json())->pluck('value')->contains($person->id));
+
+        $target = User::factory()->create(['person_id' => null]);
+        $this->actingAs($admin)->patch(route('user.associate-staff', ['user' => $target->id]), [
+            'person_id' => $person->id,
+        ]);
+
+        // After association the cache must be invalidated, so the now-linked person is gone.
+        $second = $this->actingAs($admin)->getJson(route('users.staff-options'));
+        $this->assertFalse(collect($second->json())->pluck('value')->contains($person->id));
+    }
+
     public function test_staff_options_requires_permission(): void
     {
         $response = $this->actingAs(User::factory()->create())
