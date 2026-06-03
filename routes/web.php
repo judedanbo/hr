@@ -8,7 +8,9 @@ use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
 use App\Http\Controllers\AppraisalCompetencyController;
+use App\Http\Controllers\AppraisalController;
 use App\Http\Controllers\AppraisalCycleController;
+use App\Http\Controllers\AppraisalObjectiveController;
 use App\Http\Controllers\AppraisalRatingLevelController;
 use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\AuditLogController;
@@ -31,6 +33,7 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
+use App\Http\Controllers\MyAppraisalController;
 use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
@@ -618,6 +621,27 @@ Route::controller(AppraisalRatingLevelController::class)->middleware(['auth', 'p
     Route::post('/appraisal-rating-level', 'store')->middleware('can:create appraisal rating level')->name('appraisal-rating-level.store');
     Route::patch('/appraisal-rating-level/{appraisalRatingLevel}', 'update')->middleware('can:edit appraisal rating level')->name('appraisal-rating-level.update');
     Route::delete('/appraisal-rating-level/{appraisalRatingLevel}', 'delete')->middleware('can:delete appraisal rating level')->name('appraisal-rating-level.delete');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Performance Appraisal (SPMS) — Appraisals & objectives
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal', [AppraisalController::class, 'index'])->middleware('can:view all appraisals')->name('appraisal.index');
+    Route::post('/appraisal-cycle/{appraisalCycle}/initiate', [AppraisalController::class, 'initiate'])->middleware('can:create appraisal')->name('appraisal-cycle.initiate');
+    Route::get('/appraisal/{appraisal}', [AppraisalController::class, 'show'])->middleware('can:view appraisal')->name('appraisal.show');
+
+    Route::controller(AppraisalObjectiveController::class)->group(function () {
+        Route::post('/appraisal/{appraisal}/objectives', 'store')->name('appraisal.objective.store');
+        Route::patch('/appraisal/{appraisal}/objectives/{objective}', 'update')->name('appraisal.objective.update');
+        Route::delete('/appraisal/{appraisal}/objectives/{objective}', 'delete')->name('appraisal.objective.delete');
+        Route::post('/appraisal/{appraisal}/objectives-submit', 'submit')->name('appraisal.objectives.submit');
+        Route::post('/appraisal/{appraisal}/objectives-agree', 'agree')->name('appraisal.objectives.agree');
+    });
+
+    Route::get('/my-appraisal', [MyAppraisalController::class, 'index'])->name('my-appraisal.index');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

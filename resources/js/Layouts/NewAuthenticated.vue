@@ -40,6 +40,13 @@ const navigation = [
 		visible: Boolean(page.props?.auth?.user?.person_id),
 	},
 	{
+		name: "My Appraisals",
+		href: route("my-appraisal.index"),
+		icon: ClipboardDocumentCheckIcon,
+		current: route().current("my-appraisal.*"),
+		visible: Boolean(page.props?.auth?.user?.person_id),
+	},
+	{
 		name: "Dashboard",
 		href: route("dashboard"),
 		icon: HomeIcon,

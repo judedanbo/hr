@@ -74,6 +74,20 @@ class User extends Authenticatable
         return $this->person?->isStaff() ?? false;
     }
 
+    /**
+     * The InstitutionPerson (staff record) ids that belong to this user's person.
+     *
+     * @return array<int, int>
+     */
+    public function staffIds(): array
+    {
+        if (! $this->person_id) {
+            return [];
+        }
+
+        return InstitutionPerson::where('person_id', $this->person_id)->pluck('id')->all();
+    }
+
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');

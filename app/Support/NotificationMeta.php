@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Notifications\AppraisalActionRequiredNotification;
 use App\Notifications\PhotoApprovedNotification;
 use App\Notifications\PhotoPendingApprovalNotification;
 use App\Notifications\PhotoRejectedNotification;
@@ -34,6 +35,13 @@ class NotificationMeta
                 'label' => 'Qualification pending approval',
                 'icon' => 'academic-cap',
                 'url' => fn (array $data): string => route('qualification.index'),
+            ],
+            AppraisalActionRequiredNotification::class => [
+                'label' => 'Appraisal action required',
+                'icon' => 'clipboard-document-check',
+                'url' => fn (array $data): string => isset($data['appraisal_id'])
+                    ? route('appraisal.show', ['appraisal' => $data['appraisal_id']])
+                    : route('my-appraisal.index'),
             ],
         ];
     }

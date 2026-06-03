@@ -1,11 +1,18 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, router, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 
 const props = defineProps({
 	cycle: { type: Object, required: true },
 });
+
+const permissions = computed(() => usePage().props?.auth.permissions);
+
+const initiate = () => {
+	router.post(route("appraisal-cycle.initiate", { appraisalCycle: props.cycle.id }), {}, { preserveScroll: true });
+};
 
 const links = [
 	{ name: "Appraisal Cycles", url: route("appraisal-cycle.index") },
@@ -27,7 +34,16 @@ const windows = [
 			<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mt-4">
 				<div class="flex items-center justify-between">
 					<h1 class="text-2xl font-semibold dark:text-gray-100">{{ cycle.name }}</h1>
-					<span :class="cycle.status_color" class="font-semibold">{{ cycle.status_label }}</span>
+					<div class="flex items-center gap-3">
+						<span :class="cycle.status_color" class="font-semibold">{{ cycle.status_label }}</span>
+						<button
+							v-if="permissions?.includes('create appraisal')"
+							class="rounded-md bg-green-600 px-3 py-1.5 text-sm text-white hover:bg-green-500"
+							@click="initiate()"
+						>
+							Initiate appraisals
+						</button>
+					</div>
 				</div>
 				<p class="text-gray-500 dark:text-gray-300 mt-1">Year {{ cycle.year }}</p>
 

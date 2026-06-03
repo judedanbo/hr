@@ -79,4 +79,19 @@ class Appraisal extends Model
     {
         return $this->hasMany(AppraisalStatusHistory::class)->latest();
     }
+
+    public function isOwnedBy(User $user): bool
+    {
+        return in_array($this->staff_id, $user->staffIds(), true);
+    }
+
+    public function isAppraiserUser(User $user): bool
+    {
+        return $this->appraiser_id !== null && in_array($this->appraiser_id, $user->staffIds(), true);
+    }
+
+    public function isReviewerUser(User $user): bool
+    {
+        return $this->reviewer_id !== null && in_array($this->reviewer_id, $user->staffIds(), true);
+    }
 }
