@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LeaveRequestStatusEnum;
+use App\Models\InstitutionPerson;
 use App\Models\LeaveRequest;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,17 +19,34 @@ class LeaveCalendarController extends Controller
         $month = $this->resolveMonth($request->input('month'));
         $start = $month->copy()->startOfMonth();
         $end = $month->copy()->endOfMonth();
-        $unitId = $request->integer('unit_id') ?: null;
 
-        $unitStaffIds = $unitId
-            ? Unit::query()->whereKey($unitId)->first()?->staff()->pluck('institution_person.id')
-            : null;
+        $user = $request->user();
+        $canSeeAll = $user->can('view all leave reports');
+
+        if ($canSeeAll) {
+            $unitId = $request->integer('unit_id') ?: null;
+            $unitStaffIds = $unitId
+                ? Unit::query()->whereKey($unitId)->first()?->staff()->pluck('institution_person.id')
+                : null;
+            $unitOptions = Unit::query()->orderBy('name')->get();
+        } else {
+            // Non-privileged users only see approved leave within their own current
+            // unit; a user with no current unit sees nothing.
+            $ownUnit = InstitutionPerson::query()
+                ->where('person_id', $user->person_id)
+                ->first()?->units()->wherePivotNull('end_date')->first();
+            $unitId = $ownUnit?->id;
+            $unitStaffIds = $ownUnit
+                ? $ownUnit->staff()->pluck('institution_person.id')
+                : new Collection;
+            $unitOptions = $ownUnit ? collect([$ownUnit]) : collect();
+        }
 
         $entries = LeaveRequest::query()
             ->where('status', LeaveRequestStatusEnum::Approved)
             ->whereDate('start_date', '<=', $end->toDateString())
             ->whereDate('end_date', '>=', $start->toDateString())
-            ->when($unitStaffIds, fn ($query) => $query->whereIn('staff_id', $unitStaffIds))
+            ->when($unitStaffIds !== null, fn ($query) => $query->whereIn('staff_id', $unitStaffIds))
             ->with(['staff.person', 'leaveType'])
             ->get()
             ->map(fn (LeaveRequest $leaveRequest): array => [
@@ -49,9 +68,9 @@ class LeaveCalendarController extends Controller
             'month' => $month->format('Y-m'),
             'entries' => $entries,
             'onLeaveToday' => $onLeaveToday,
-            'unitOptions' => Unit::query()->orderBy('name')
-                ->get()
-                ->map(fn (Unit $unit): array => ['value' => $unit->id, 'label' => $unit->name]),
+            'unitOptions' => $unitOptions
+                ->map(fn (Unit $unit): array => ['value' => $unit->id, 'label' => $unit->name])
+                ->values(),
             'filters' => ['unit_id' => $unitId],
         ]);
     }
