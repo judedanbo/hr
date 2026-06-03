@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/20/solid'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDate } = useDateFormat()
 
 const props = defineProps({
     filters: {
@@ -157,16 +160,6 @@ const activeFilters = computed(() => {
 })
 
 const hasActiveFilters = computed(() => activeFilters.value.length > 0)
-
-const formatDate = (dateString) => {
-    if (!dateString) return ''
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    })
-}
 
 const removeFilter = (filter) => {
     const keysToRemove = filter.removeKeys || [filter.key]

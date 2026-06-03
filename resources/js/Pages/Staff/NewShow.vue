@@ -26,6 +26,9 @@ import EditContactForm from "./EditContactForm.vue";
 import EditAvatarForm from "./EditAvatarForm.vue";
 import DeleteAvatar from "./DeleteAvatar.vue";
 import { router } from "@inertiajs/vue3";
+import { useDateFormat } from "@/composables/useDateFormat";
+
+const { formatDate } = useDateFormat();
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
@@ -58,14 +61,7 @@ const toggleDeleteAvatarModal = useToggle(openDeleteAvatarModel);
 
 let togglePromotionForm = useToggle(showPromotionForm);
 let toggleTransferForm = useToggle(showTransferForm);
-const formattedDob = (dob) => {
-	if (!dob) return "";
-	return new Date(dob).toLocaleDateString("en-GB", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
-};
+const formattedDob = (dob) => formatDate(dob);
 
 let props = defineProps({
 	user: { type: Object, default: () => null },

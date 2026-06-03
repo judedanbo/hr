@@ -2,7 +2,8 @@
 import { Link } from "@inertiajs/vue3";
 import DeleteAddressModal from "./DeleteAddressModal.vue";
 import AddAddressModal from "./AddAddressModal.vue";
-import { format, differenceInYears } from "date-fns";
+import { differenceInYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 
 import {
 	MagnifyingGlassIcon,
@@ -29,10 +30,8 @@ let deleteAddress = (id) => {
 };
 let editAddress = (id) => {};
 
-const formattedDob = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
+const formattedDob = (dateString) => formatDate(dateString);
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);

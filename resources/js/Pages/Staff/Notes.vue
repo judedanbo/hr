@@ -5,6 +5,9 @@ import NotesDetails from "./NotesDetails.vue";
 import { ref, computed } from "vue";
 import { useToggle } from "@vueuse/core";
 import NewNote from "./NewNote.vue";
+import { useDateFormat } from "@/composables/useDateFormat";
+
+const { formatDate } = useDateFormat();
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
@@ -19,14 +22,7 @@ defineProps({
 let openQualificationModal = ref(false);
 let toggleQualificationModal = useToggle(openQualificationModal);
 
-const formattedDob = (dob) => {
-	if (!dob) return "";
-	return new Date(dob).toLocaleDateString("en-GB", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
-};
+const formattedDob = (dob) => formatDate(dob);
 </script>
 <template>
 	<!-- Notes on staff -->

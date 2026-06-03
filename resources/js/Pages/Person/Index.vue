@@ -6,8 +6,8 @@ import { ref, watch, computed } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
-import format from "date-fns/format";
 import differenceInYears from "date-fns/differenceInYears";
+import { useDateFormat } from "@/composables/useDateFormat";
 import BreadCrumpVue from "@/Components/BreadCrump.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
@@ -37,11 +37,7 @@ debouncedWatch(
 	{ debounce: 300 },
 );
 
-let formatDate = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "EEEE dd MMMM, yyyy");
-	// return new Intl.DateTimeFormat("en-GB", { dateStyle: "full" }).format(date);
-};
+const { formatDate } = useDateFormat();
 
 let getAge = (dateString) => {
 	const date = new Date(dateString);

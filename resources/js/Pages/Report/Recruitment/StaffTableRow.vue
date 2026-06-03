@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
-import { format, differenceInYears, addYears } from "date-fns";
+import { differenceInYears, addYears } from "date-fns";
+import { useDateFormat } from "@/composables/useDateFormat";
 import StaffTableData from "./StaffTableData.vue";
 
 let props = defineProps({
@@ -14,10 +15,7 @@ let hireDate = computed(() => {
 	return formatDate(props.staff.hire_date);
 });
 
-let formatDate = (dateString) => {
-	const date = new Date(dateString);
-	return format(date, "dd MMMM, yyyy");
-};
+const { formatDate } = useDateFormat();
 
 let getAge = (dateString, now = new Date()) => {
 	const date = new Date(dateString);
