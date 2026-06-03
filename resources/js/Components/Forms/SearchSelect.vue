@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
     Listbox,
     ListboxButton,
@@ -33,19 +33,45 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    remote: {
+        type: Boolean,
+        default: false,
+    },
+    loading: {
+        type: Boolean,
+        default: false,
+    },
+    maxHeight: {
+        type: String,
+        default: 'max-h-60',
+    },
+    renderLimit: {
+        type: Number,
+        default: 50,
+    },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'search'])
 
 const searchQuery = ref('')
+
+let searchDebounce
+watch(searchQuery, (value) => {
+    if (!props.remote) {
+        return
+    }
+    clearTimeout(searchDebounce)
+    searchDebounce = setTimeout(() => emit('search', value), 250)
+})
 
 const selectedOption = computed(() => {
     return props.options.find((option) => option.value === props.modelValue)
 })
 
 const filteredOptions = computed(() => {
-    if (!props.searchable || !searchQuery.value) {
-        return props.options
+    // In remote mode the server already filtered; render options as-is.
+    if (props.remote || !props.searchable || !searchQuery.value) {
+        return props.options.slice(0, props.renderLimit)
     }
 
     const query = searchQuery.value.toLowerCase()
@@ -54,7 +80,7 @@ const filteredOptions = computed(() => {
                option.short_name?.toLowerCase().includes(query) ||
                option.category?.toLowerCase().includes(query) ||
                option.department?.toLowerCase().includes(query)
-    })
+    }).slice(0, props.renderLimit)
 })
 
 const updateValue = (option) => {
@@ -106,7 +132,10 @@ const clearSearch = () => {
                     leave-to-class="opacity-0"
                 >
                     <ListboxOptions
-                        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                        :class="[
+                            maxHeight,
+                            'absolute z-10 mt-1 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
+                        ]"
                     >
                         <!-- Search Input (if searchable) -->
                         <div
@@ -128,6 +157,14 @@ const clearSearch = () => {
                                 />
                             </div>
                         </div>
+
+                        <!-- Loading indicator (remote mode) -->
+                        <li
+                            v-if="remote && loading"
+                            class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-500 dark:text-gray-400"
+                        >
+                            Searching…
+                        </li>
 
                         <ListboxOption
                             v-slot="{ active, selected }"

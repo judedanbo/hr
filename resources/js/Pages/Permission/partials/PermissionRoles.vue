@@ -28,7 +28,7 @@ const openRole = (roleId) => {
 		<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 			<div
 				v-if="roles.total > 0"
-				class="overflow-hidden border-b border-gray-200 rounded-md shadow-md"
+				class="overflow-x-auto border-b border-gray-200 rounded-md shadow-md"
 			>
 				<MainTable>
 					<TableHead>

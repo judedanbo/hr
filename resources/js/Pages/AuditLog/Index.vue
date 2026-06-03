@@ -95,14 +95,14 @@ const BreadCrumpLinks = [{ name: "Audit Log", url: "" }];
                     title="Audit Log"
                     :total="activities.total"
                     :search="filters.search"
-                    class="w-4/6"
+                    class="w-full lg:w-4/6"
                     :show-action="false"
                     @search-entered="(value) => searchActivity(value)"
                 />
 
                 <!-- Filters -->
                 <div
-                    class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
                 >
                     <div>
                         <label

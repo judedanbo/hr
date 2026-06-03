@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Traits\LogsAuthorization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -261,6 +263,8 @@ class UserController extends Controller
         $user->person_id = $request->validated()['person_id'];
         $user->save();
 
+        Cache::forget('user_staff_options_default');
+
         $this->logSuccess('associated a user with a staff record', $user);
 
         return redirect()->back()->with('success', 'User associated with staff record successfully');
@@ -281,6 +285,8 @@ class UserController extends Controller
             $user->removeRole('staff');
         }
 
+        Cache::forget('user_staff_options_default');
+
         $this->logSuccess('removed a user staff association', $user);
 
         return redirect()->back()->with('success', 'Staff association removed successfully');
@@ -292,27 +298,45 @@ class UserController extends Controller
      * Only people who are staff (have an institution_person row) and are not
      * already linked to another user account are returned.
      */
-    public function staffOptions(): JsonResponse
+    public function staffOptions(Request $request): JsonResponse
     {
-        $linkedPersonIds = User::query()->whereNotNull('person_id')->pluck('person_id');
+        $search = trim((string) $request->query('search', ''));
 
-        $options = Person::query()
-            ->whereHas('institution')
-            ->whereNotIn('id', $linkedPersonIds)
-            ->with('institution')
-            ->orderBy('surname')
-            ->get()
-            ->map(function (Person $person): array {
-                $staffNumber = $person->institution->first()?->staff?->staff_number;
+        $build = function () use ($search): array {
+            $linkedPersonIds = User::query()->whereNotNull('person_id')->pluck('person_id');
 
-                return [
-                    'value' => $person->id,
-                    'label' => $staffNumber
-                        ? "{$person->full_name} — {$staffNumber}"
-                        : $person->full_name,
-                ];
-            })
-            ->values();
+            return Person::query()
+                ->whereHas('institution')
+                ->whereNotIn('id', $linkedPersonIds)
+                ->when($search !== '', function ($query) use ($search): void {
+                    $query->where(function ($q) use ($search): void {
+                        $q->where('surname', 'like', "%{$search}%")
+                            ->orWhere('first_name', 'like', "%{$search}%")
+                            ->orWhere('other_names', 'like', "%{$search}%")
+                            ->orWhereHas('institution', fn ($iq) => $iq->where('institution_person.staff_number', 'like', "%{$search}%"));
+                    });
+                })
+                ->with('institution')
+                ->orderBy('surname')
+                ->limit(25)
+                ->get()
+                ->map(function (Person $person): array {
+                    $staffNumber = $person->institution->first()?->staff?->staff_number;
+
+                    return [
+                        'value' => $person->id,
+                        'label' => $staffNumber
+                            ? "{$person->full_name} — {$staffNumber}"
+                            : $person->full_name,
+                    ];
+                })
+                ->values()
+                ->all();
+        };
+
+        $options = $search === ''
+            ? Cache::remember('user_staff_options_default', 3600, $build)
+            : $build();
 
         return response()->json($options);
     }

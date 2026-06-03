@@ -134,7 +134,7 @@ const tableCols = computed(() => {
 			</div>
 			<div
 				v-if="permissions?.total > 0"
-				class="overflow-hidden border-b border-gray-200 rounded-md shadow-md"
+				class="overflow-x-auto border-b border-gray-200 rounded-md shadow-md"
 			>
 				<MainTable>
 					<TableHead>
