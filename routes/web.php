@@ -12,6 +12,7 @@ use App\Http\Controllers\AppraisalController;
 use App\Http\Controllers\AppraisalCycleController;
 use App\Http\Controllers\AppraisalObjectiveController;
 use App\Http\Controllers\AppraisalRatingLevelController;
+use App\Http\Controllers\AppraisalWorkflowController;
 use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
@@ -639,6 +640,19 @@ Route::middleware(['auth', 'password_changed'])->group(function () {
         Route::delete('/appraisal/{appraisal}/objectives/{objective}', 'delete')->name('appraisal.objective.delete');
         Route::post('/appraisal/{appraisal}/objectives-submit', 'submit')->name('appraisal.objectives.submit');
         Route::post('/appraisal/{appraisal}/objectives-agree', 'agree')->name('appraisal.objectives.agree');
+    });
+
+    Route::controller(AppraisalWorkflowController::class)->group(function () {
+        Route::post('/appraisal/{appraisal}/midyear-start', 'midyearStart')->name('appraisal.midyear.start');
+        Route::post('/appraisal/{appraisal}/midyear-save', 'midyearSave')->name('appraisal.midyear.save');
+        Route::post('/appraisal/{appraisal}/midyear-complete', 'midyearComplete')->name('appraisal.midyear.complete');
+        Route::post('/appraisal/{appraisal}/open-self', 'openSelfAppraisal')->name('appraisal.self.open');
+        Route::post('/appraisal/{appraisal}/submit-self', 'submitSelf')->name('appraisal.self.submit');
+        Route::post('/appraisal/{appraisal}/submit-review', 'submitReview')->name('appraisal.review.submit');
+        Route::post('/appraisal/{appraisal}/countersign', 'countersign')->name('appraisal.countersign');
+        Route::post('/appraisal/{appraisal}/return', 'returnToSupervisor')->name('appraisal.return');
+        Route::post('/appraisal/{appraisal}/acknowledge', 'acknowledge')->name('appraisal.acknowledge');
+        Route::patch('/appraisal/{appraisal}/reassign', 'reassign')->name('appraisal.reassign');
     });
 
     Route::get('/my-appraisal', [MyAppraisalController::class, 'index'])->name('my-appraisal.index');

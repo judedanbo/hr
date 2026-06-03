@@ -4,6 +4,7 @@ namespace App\Services\Appraisal;
 
 use App\Enums\AppraisalStatusEnum;
 use App\Models\Appraisal;
+use App\Models\AppraisalCompetency;
 use App\Models\AppraisalCycle;
 use App\Models\InstitutionPerson;
 use App\Models\Unit;
@@ -107,6 +108,37 @@ class AppraisalService
 
             return $appraisal->refresh();
         });
+    }
+
+    /**
+     * Populate competency rating rows from the active competency library for a
+     * staff member (global competencies plus those matching their current job
+     * category). No-op if ratings already exist.
+     */
+    public function ensureCompetencyRatings(Appraisal $appraisal): void
+    {
+        if ($appraisal->competencyRatings()->exists()) {
+            return;
+        }
+
+        $categoryId = optional($appraisal->staff?->ranks()->wherePivotNull('end_date')->first())->job_category_id;
+
+        $competencies = AppraisalCompetency::query()
+            ->active()
+            ->where(function ($query) use ($categoryId) {
+                $query->whereNull('job_category_id');
+                if ($categoryId) {
+                    $query->orWhere('job_category_id', $categoryId);
+                }
+            })
+            ->get();
+
+        foreach ($competencies as $competency) {
+            $appraisal->competencyRatings()->create([
+                'appraisal_competency_id' => $competency->id,
+                'weight' => $competency->default_weight,
+            ]);
+        }
     }
 
     /**
