@@ -686,3 +686,17 @@ GET /api/staff-statistics
 Authorization: Bearer <token>
 Accept: application/json
 ```
+
+To audit or revoke tokens later:
+
+```bash
+# List issued tokens (no secrets shown); ID column is the revoke handle
+php artisan app:list-api-tokens
+php artisan app:list-api-tokens audit-service@audit.gov.gh   # filter to one user
+
+# Revoke a leaked/retired token — effective immediately (next request gets 401)
+php artisan app:revoke-api-token <id>                        # prompts to confirm
+php artisan app:revoke-api-token --all-for=audit-service@audit.gov.gh --force
+```
+
+There is no rotation endpoint: rotate by revoking the old token and issuing a new one.

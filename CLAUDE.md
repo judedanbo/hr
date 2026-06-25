@@ -398,6 +398,26 @@ php artisan db:seed --class=AllPermissionsSeeder --force   # syncs all permissio
 - Tests pass without this because the test database re-seeds before every test (`$seed = true`), masking the gap.
 - The `super-administrator` `Gate::before` override (`app/Providers/AuthServiceProvider.php`) makes `can()` return `true` for any ability, so backend checks can appear to work even when the permission row is missing. **UI that gates on `$page.props.auth.permissions` (the explicit assigned list) will still be hidden** until the permission is actually seeded and assigned — so the feature looks broken/invisible in the browser even for super admins.
 
+#### E. External API Access Tokens (Sanctum)
+
+External apps reach the `/api/*` endpoints (e.g. `GET /api/staff-statistics`) with **Sanctum personal access tokens** scoped by ability — `auth:sanctum` validates the token, `abilities:<name>` enforces the scope (a token lacking it gets 403). Tokens are issued manually by an operator, never seeded or committed. The token lifecycle is managed entirely by three auto-discovered artisan commands:
+
+```bash
+# Issue — prints the plaintext token ONCE (not recoverable afterward)
+php artisan app:issue-api-token user@example.test --name="Audit Service" --ability=staff-statistics:read
+
+# List — audit issued tokens (ID, owner, name, abilities, last used); secrets never shown
+php artisan app:list-api-tokens
+php artisan app:list-api-tokens user@example.test   # filter to one user
+
+# Revoke — by id (ID from the list) or all for a user; effective immediately (next request 401)
+php artisan app:revoke-api-token <id>                       # prompts to confirm
+php artisan app:revoke-api-token --all-for=user@example.test --force
+```
+
+- The `personal_access_tokens.token` column stores only a SHA-256 hash, so a token can be listed/revoked but never re-displayed. Rotate by revoking + re-issuing (there is no rotation endpoint).
+- Design/operational details: `docs/superpowers/specs/2026-06-01-audit-service-api-access-design.md`.
+
 ### 5. Testing
 
 #### A. Create Tests
