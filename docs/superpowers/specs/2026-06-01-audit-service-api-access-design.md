@@ -36,9 +36,14 @@ attached — access is governed entirely by the token ability. This is acceptabl
 because `StaffStatisticsController::index` performs no `Gate` check; the ability
 is the sole authorization gate, which gives least privilege.
 
-### 2. Token issuance command
+### 2. Token management commands
 
-New command `App\Console\Commands\IssueApiToken`, signature:
+The token lifecycle (issue → list → revoke) is operated entirely from artisan;
+all three commands are auto-discovered from `app/Console/Commands`.
+
+#### 2.1 Issue — `App\Console\Commands\IssueApiToken`
+
+Signature:
 
 ```
 app:issue-api-token {email} {--name=Audit Service Website} {--ability=staff-statistics:read}
@@ -53,6 +58,45 @@ Behavior:
 
 Tokens are issued manually by an operator and handed to the Audit team
 out-of-band. **Tokens are never seeded or committed.**
+
+#### 2.2 List — `App\Console\Commands\ListApiTokens`
+
+Signature:
+
+```
+app:list-api-tokens {email? : optional user email to filter by}
+```
+
+Behavior:
+- Renders a table of issued tokens: **ID, Owner, Name, Abilities, Last used, Created**.
+- Optional `email` argument scopes the list to one user's tokens; an unknown
+  email fails with a clear message and a non-zero exit.
+- Eager-loads `tokenable` to avoid N+1 when resolving owner emails.
+- **Never selects or prints the token hash** — only metadata is shown, so the
+  output is safe to read for auditing. The `ID` column is the handle passed to
+  the revoke command.
+
+#### 2.3 Revoke — `App\Console\Commands\RevokeApiToken`
+
+Signature:
+
+```
+app:revoke-api-token {id? : token id to revoke} {--all-for= : revoke ALL tokens for this user email} {--force}
+```
+
+Behavior:
+- Targets **exactly one** of: a single token by `id`, or every token for a user
+  via `--all-for=email`. Supplying both or neither fails with a non-zero exit.
+- Before deleting, prints a one-line summary of what will be revoked and prompts
+  for confirmation. `--force` skips the prompt for non-interactive use (CI/scripts).
+- Declining the prompt aborts cleanly (exit 0, nothing deleted).
+- Deletes the row(s) from `personal_access_tokens` (`$token->delete()` /
+  `$user->tokens()->delete()`); revocation takes effect immediately on the next
+  request, which then receives **401**.
+
+Revocation is the supported way to disable a leaked or retired token. Because the
+table stores only a SHA-256 hash of the secret, a token can be revoked but never
+re-displayed.
 
 ### 3. Ability enforcement on the route
 
@@ -181,11 +225,27 @@ External Audit app
 6. Command creates a token with the requested ability for the user.
 7. Command with an unknown email fails gracefully (non-zero exit, no token created).
 
+`tests/Feature/ListApiTokensCommandTest.php`:
+8. Lists issued tokens (name + abilities visible); filters by email; empty state;
+   unknown email fails (non-zero exit).
+
+`tests/Feature/RevokeApiTokenCommandTest.php`:
+9. Revokes by id (with `--force` and via confirmation); declining keeps the token;
+   `--all-for` revokes one user's tokens without touching another's; unknown id /
+   unknown email / ambiguous (both) / missing (neither) target all fail.
+
 Tests rely on the existing per-test reseed and model factories.
+
+> Note: content assertions on the `app:list-api-tokens` table use
+> `Artisan::call()` + `Artisan::output()` rather than
+> `$this->artisan()->expectsOutputToContain()`. The latter buffers the table at an
+> 80-column width and wraps the rightmost cells, splitting ability strings and
+> producing false negatives; `Artisan::call()` renders at the table's natural width.
 
 ## Out of scope (YAGNI)
 
-- Login/token-rotation endpoint.
+- Login/token-rotation **endpoint** (HTTP). CLI revocation is provided by
+  `app:revoke-api-token`; rotation is revoke + re-issue.
 - Broad (unrestricted) tokens.
 - Log pruning command / scheduled cleanup.
 - In-app UI for viewing `api_logs`.
