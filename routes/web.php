@@ -7,6 +7,13 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\NoteTypeEnum;
 use App\Enums\StaffTypeEnum;
 use App\Http\Controllers\AgeController;
+use App\Http\Controllers\AppraisalCompetencyController;
+use App\Http\Controllers\AppraisalController;
+use App\Http\Controllers\AppraisalCycleController;
+use App\Http\Controllers\AppraisalObjectiveController;
+use App\Http\Controllers\AppraisalRatingLevelController;
+use App\Http\Controllers\AppraisalReportController;
+use App\Http\Controllers\AppraisalWorkflowController;
 use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\ChangePasswordController;
@@ -28,6 +35,7 @@ use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaritalStatusController;
+use App\Http\Controllers\MyAppraisalController;
 use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\NoteController;
@@ -588,6 +596,71 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
     Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Performance Appraisal (SPMS) — Configuration
+|--------------------------------------------------------------------------
+*/
+Route::controller(AppraisalCycleController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal-cycle', 'index')->middleware('can:view all appraisal cycles')->name('appraisal-cycle.index');
+    Route::post('/appraisal-cycle', 'store')->middleware('can:create appraisal cycle')->name('appraisal-cycle.store');
+    Route::get('/appraisal-cycle/{appraisalCycle}', 'show')->middleware('can:view appraisal cycle')->name('appraisal-cycle.show');
+    Route::patch('/appraisal-cycle/{appraisalCycle}', 'update')->middleware('can:edit appraisal cycle')->name('appraisal-cycle.update');
+    Route::delete('/appraisal-cycle/{appraisalCycle}', 'delete')->middleware('can:delete appraisal cycle')->name('appraisal-cycle.delete');
+});
+
+Route::controller(AppraisalCompetencyController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal-competency', 'index')->middleware('can:view all appraisal competencies')->name('appraisal-competency.index');
+    Route::post('/appraisal-competency', 'store')->middleware('can:create appraisal competency')->name('appraisal-competency.store');
+    Route::patch('/appraisal-competency/{appraisalCompetency}', 'update')->middleware('can:edit appraisal competency')->name('appraisal-competency.update');
+    Route::delete('/appraisal-competency/{appraisalCompetency}', 'delete')->middleware('can:delete appraisal competency')->name('appraisal-competency.delete');
+});
+
+Route::controller(AppraisalRatingLevelController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal-rating-level', 'index')->middleware('can:view all appraisal rating levels')->name('appraisal-rating-level.index');
+    Route::post('/appraisal-rating-level', 'store')->middleware('can:create appraisal rating level')->name('appraisal-rating-level.store');
+    Route::patch('/appraisal-rating-level/{appraisalRatingLevel}', 'update')->middleware('can:edit appraisal rating level')->name('appraisal-rating-level.update');
+    Route::delete('/appraisal-rating-level/{appraisalRatingLevel}', 'delete')->middleware('can:delete appraisal rating level')->name('appraisal-rating-level.delete');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Performance Appraisal (SPMS) — Appraisals & objectives
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/appraisal', [AppraisalController::class, 'index'])->middleware('can:view all appraisals')->name('appraisal.index');
+    Route::post('/appraisal-cycle/{appraisalCycle}/initiate', [AppraisalController::class, 'initiate'])->middleware('can:create appraisal')->name('appraisal-cycle.initiate');
+    Route::get('/appraisal/{appraisal}', [AppraisalController::class, 'show'])->middleware('can:view appraisal')->name('appraisal.show');
+
+    Route::controller(AppraisalObjectiveController::class)->group(function () {
+        Route::post('/appraisal/{appraisal}/objectives', 'store')->name('appraisal.objective.store');
+        Route::patch('/appraisal/{appraisal}/objectives/{objective}', 'update')->name('appraisal.objective.update');
+        Route::delete('/appraisal/{appraisal}/objectives/{objective}', 'delete')->name('appraisal.objective.delete');
+        Route::post('/appraisal/{appraisal}/objectives-submit', 'submit')->name('appraisal.objectives.submit');
+        Route::post('/appraisal/{appraisal}/objectives-agree', 'agree')->name('appraisal.objectives.agree');
+    });
+
+    Route::controller(AppraisalWorkflowController::class)->group(function () {
+        Route::post('/appraisal/{appraisal}/midyear-start', 'midyearStart')->name('appraisal.midyear.start');
+        Route::post('/appraisal/{appraisal}/midyear-save', 'midyearSave')->name('appraisal.midyear.save');
+        Route::post('/appraisal/{appraisal}/midyear-complete', 'midyearComplete')->name('appraisal.midyear.complete');
+        Route::post('/appraisal/{appraisal}/open-self', 'openSelfAppraisal')->name('appraisal.self.open');
+        Route::post('/appraisal/{appraisal}/submit-self', 'submitSelf')->name('appraisal.self.submit');
+        Route::post('/appraisal/{appraisal}/submit-review', 'submitReview')->name('appraisal.review.submit');
+        Route::post('/appraisal/{appraisal}/countersign', 'countersign')->name('appraisal.countersign');
+        Route::post('/appraisal/{appraisal}/return', 'returnToSupervisor')->name('appraisal.return');
+        Route::post('/appraisal/{appraisal}/acknowledge', 'acknowledge')->name('appraisal.acknowledge');
+        Route::patch('/appraisal/{appraisal}/reassign', 'reassign')->name('appraisal.reassign');
+    });
+
+    Route::get('/appraisal-report', [AppraisalReportController::class, 'index'])->middleware('can:view all appraisals')->name('appraisal.report.index');
+    Route::get('/appraisal-report/export', [AppraisalReportController::class, 'export'])->middleware('can:export appraisals')->name('appraisal.report.export');
+    Route::get('/appraisal/{appraisal}/pdf', [AppraisalReportController::class, 'pdf'])->middleware('can:view appraisal')->name('appraisal.pdf');
+
+    Route::get('/my-appraisal', [MyAppraisalController::class, 'index'])->name('my-appraisal.index');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');

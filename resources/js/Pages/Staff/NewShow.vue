@@ -71,6 +71,7 @@ let props = defineProps({
 	contacts: { type: Array, default: () => null },
 	qualifications: { type: Array, default: () => null },
 	filters: { type: Object, default: () => null },
+	latest_appraisal: { type: Object, default: () => null },
 	// permissions: { type: Object, default: () => null },
 });
 
@@ -142,6 +143,14 @@ const editContactModal = () => {
 										class="mt-2 text-xl text-center font-semibold leading-6 text-gray-900 dark:text-white"
 									>
 										{{ person.name }}
+									</div>
+									<div
+										v-if="latest_appraisal"
+										class="mt-1 text-center text-xs text-gray-500 dark:text-gray-300"
+									>
+										Latest appraisal: {{ latest_appraisal.cycle }} —
+										<span class="font-semibold">{{ latest_appraisal.overall_score ?? latest_appraisal.status_label }}</span>
+										<span v-if="latest_appraisal.overall_band"> ({{ latest_appraisal.overall_band }})</span>
 									</div>
 									<div class="flex justify-between mt-2">
 										<Roles :person="person.id" class="" />
