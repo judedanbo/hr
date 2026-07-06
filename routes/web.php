@@ -256,6 +256,9 @@ Route::controller(UnitController::class)->middleware(['auth', 'password_changed'
     Route::get('/unit/{unit}/details', 'details')->middleware('can:view unit')->name('unit.details');
     Route::post('/unit/{unit}/details', 'addSub')->middleware('can:create unit')->name('unit.add-sub');
     Route::get('/unit/{unit}/download', 'download')->middleware('can:download unit staff')->name('export.unit.staff');
+    Route::get('/unit/{unit}/rank-distribution/download', 'downloadRankDistribution')->middleware('can:download unit staff')->name('export.unit.rank-distribution');
+    Route::get('/units/rank-distribution/departments/download', 'downloadDepartmentsRankDistribution')->middleware('can:download unit staff')->name('export.units.rank-distribution.departments');
+    Route::get('/units/rank-distribution/service/download', 'downloadServiceRankDistribution')->middleware('can:download unit staff')->name('export.units.rank-distribution.service');
 });
 
 // Unit Office Management

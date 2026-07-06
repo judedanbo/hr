@@ -108,6 +108,8 @@ const handleUnitDeleted = () => {
 				<RankDistributionSection
 					v-if="props.rank_distribution?.length > 0"
 					:distribution="props.rank_distribution"
+					:unit-id="props.unit?.id"
+					:can-download="permissions?.includes('download unit staff')"
 				/>
 
 				<!-- Staff Directory -->
