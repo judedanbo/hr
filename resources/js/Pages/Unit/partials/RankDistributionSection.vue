@@ -10,6 +10,7 @@ import RankDistributionChart from "@/Components/Charts/RankDistributionChart.vue
 import {
 	ChevronDownIcon,
 	ArrowsPointingOutIcon,
+	ArrowDownTrayIcon,
 	XMarkIcon,
 } from "@heroicons/vue/24/outline";
 
@@ -17,6 +18,14 @@ const props = defineProps({
 	distribution: {
 		type: Array,
 		required: true,
+	},
+	unitId: {
+		type: Number,
+		default: null,
+	},
+	canDownload: {
+		type: Boolean,
+		default: false,
 	},
 });
 
@@ -42,22 +51,32 @@ const closeFullScreen = () => {
 <template>
 	<section v-if="distribution && distribution.length > 0">
 		<!-- Collapsible Header -->
-		<button
-			type="button"
-			class="flex items-center justify-between w-full mb-4 group"
-			@click="toggleCollapse"
-		>
-			<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-				Rank Distribution
-				<span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-					({{ distribution.length }} ranks)
-				</span>
-			</h2>
-			<ChevronDownIcon
-				class="h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-				:class="{ '-rotate-180': !isCollapsed }"
-			/>
-		</button>
+		<div class="flex items-center justify-between gap-4 mb-4">
+			<button
+				type="button"
+				class="flex items-center justify-between flex-1 group"
+				@click="toggleCollapse"
+			>
+				<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+					Rank Distribution
+					<span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+						({{ distribution.length }} ranks)
+					</span>
+				</h2>
+				<ChevronDownIcon
+					class="h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+					:class="{ '-rotate-180': !isCollapsed }"
+				/>
+			</button>
+			<a
+				v-if="canDownload && unitId"
+				class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 whitespace-nowrap"
+				:href="route('export.unit.rank-distribution', { unit: unitId })"
+			>
+				<ArrowDownTrayIcon class="-ml-0.5 h-5 w-5 text-gray-400" />
+				Export to Excel
+			</a>
+		</div>
 
 		<!-- Collapsible Content -->
 		<transition

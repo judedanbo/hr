@@ -1,6 +1,6 @@
 <script setup>
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import Pagination from "../../Components/Pagination.vue";
@@ -13,6 +13,7 @@ import UnitsList from "./partials/UnitsList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
 import {
+	ArrowDownTrayIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	PlusIcon,
@@ -72,16 +73,37 @@ const breadCrumbLinks = [
 				: "/institution",
 	},
 ];
-const pageActions = [
-	{
+const canDownload = computed(() =>
+	usePage().props?.auth.permissions?.includes("download unit staff"),
+);
+const pageActions = computed(() => {
+	const actions = [];
+	if (canDownload.value) {
+		actions.push(
+			{
+				name: "Export by Department",
+				icon: ArrowDownTrayIcon,
+			},
+			{
+				name: "Export Service Ranks",
+				icon: ArrowDownTrayIcon,
+			},
+		);
+	}
+	actions.push({
 		name: "Add Unit",
 		color: "primary",
 		icon: PlusIcon,
-	},
-];
+	});
+	return actions;
+});
 const buttonClicked = (text) => {
 	if (text === "Add Unit") {
 		toggle();
+	} else if (text === "Export by Department") {
+		window.location = route("export.units.rank-distribution.departments");
+	} else if (text === "Export Service Ranks") {
+		window.location = route("export.units.rank-distribution.service");
 	}
 };
 const stats = ref([]);
