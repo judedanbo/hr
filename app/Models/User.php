@@ -31,6 +31,7 @@ class User extends Authenticatable
         'email',
         'password',
         'password_change_at',
+        'is_service',
         'deleted_at',
     ];
 
@@ -51,6 +52,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_service' => 'boolean',
     ];
 
     /**
