@@ -141,6 +141,10 @@ class RolesAndPermissionsSeeder extends Seeder
             // Leave Management configuration
             'view all leave years',
             'view leave year',
+            'view all leave types',
+            'view leave type',
+            'view all holidays',
+            'view holiday',
 
             // Annual leave planning
             'manage leave planning windows',
