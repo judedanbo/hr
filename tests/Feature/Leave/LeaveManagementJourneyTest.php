@@ -19,6 +19,7 @@ use App\Notifications\LeaveRequestSubmittedNotification;
 use App\Services\LeaveBalanceService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class LeaveManagementJourneyTest extends TestCase
@@ -117,6 +118,23 @@ class LeaveManagementJourneyTest extends TestCase
             'job_category_id' => null,
             'days_allowed' => $days,
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
+    private function storeRequest(LeaveType $type, array $overrides = []): LeaveRequest
+    {
+        $this->actingAs($this->requesterUser)->post(route('leave-request.store'), array_merge([
+            'leave_type_id' => $type->id,
+            'start_date' => '2030-07-08',
+            'end_date' => '2030-07-12',
+            'address_during_leave' => 'Home',
+            'contact_during_leave' => '0200000000',
+            'relieving_officer_id' => $this->colleague->id,
+        ], $overrides))->assertRedirect()->assertSessionHasNoErrors();
+
+        return LeaveRequest::latest('id')->firstOrFail();
     }
 
     public function test_seeded_roles_grant_the_journey_permissions(): void
@@ -279,5 +297,46 @@ class LeaveManagementJourneyTest extends TestCase
                 ->where('kpis.total_taken', 2)
                 ->has('utilisationByType')
                 ->has('compliance'));
+    }
+
+    public function test_decline_and_rerequest_journey(): void
+    {
+        Notification::fake();
+        $this->activeYear2030();
+        $type = $this->makeWorkingDayType();
+        $this->entitle($type, 20);
+        $balance = app(LeaveBalanceService::class);
+
+        $first = $this->storeRequest($type);
+        $this->assertSame(5, $first->requested_days);
+        $this->assertSame(5, $balance->committedRequestDays($this->requester, $type->id, $this->year));
+
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.decline', $first), ['decline_reason' => 'Peak period, resubmit later'])
+            ->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('leave_requests', [
+            'id' => $first->id,
+            'status' => LeaveRequestStatusEnum::Declined->value,
+            'decline_reason' => 'Peak period, resubmit later',
+        ]);
+        Notification::assertSentTo($this->requesterUser, LeaveRequestDecidedNotification::class);
+
+        // Declined days are freed — the same window can be re-requested without overlap error.
+        $this->requester->refresh();
+        $this->assertSame(0, $balance->committedRequestDays($this->requester, $type->id, $this->year));
+
+        $second = $this->storeRequest($type);
+        $this->assertNotSame($first->id, $second->id);
+
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.approve', $second))
+            ->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('leave_requests', [
+            'id' => $second->id,
+            'status' => LeaveRequestStatusEnum::Approved->value,
+            'approved_days' => 5,
+        ]);
     }
 }
