@@ -49,14 +49,24 @@ Staff identities follow the repo pattern: `Person` → `InstitutionPerson` (+ ac
 | **Unit head** | `staff` only | Own InstitutionPerson set as Unit A's `head_staff_id`. Approves via `LeaveRequestPolicy::decide()`'s resolved-approver path — deliberately **without** the `approve staff leave` pool permission. |
 | **Colleague** | `staff` | Second staff in Unit A; relieving officer + coverage-cap subject. |
 
+> **Note (post-implementation):** during Task 2, `hr-user` turned out to lack
+> `create leave year`/`create leave type`/`create leave entitlement`/`create holiday`
+> in `database/seeders/RolesAndPermissionsSeeder.php` — only `admin-user` holds them.
+> This was reported, not fixed (per the plan's report-don't-fix rule for new gaps),
+> so the golden path uses a fifth, locally-created `admin-user`-role actor for those
+> four config-creation POSTs only; `hrUser` still performs the planning-window,
+> calendar, and reports steps it does hold permission for.
+
 ## Chapters (test methods)
 
 ### 1. `test_golden_path_journey`
-The only chapter that does configuration **through HTTP** as HR:
+The only chapter that does configuration **through HTTP**, using HR where it holds
+the permission and a locally-created `admin-user` actor for the four structural
+config creates it currently doesn't (see note above):
 
-1. HR creates a leave year (2030, active), a leave type, an entitlement
-   (null job category default), a holiday inside the planned leave range, and opens
-   a planning window — each via the real POST routes.
+1. An admin-user config actor creates a leave year (2030, active), a leave type, an
+   entitlement (null job category default), a holiday inside the planned leave
+   range; HR opens the planning window — each via the real POST routes.
 2. Requester submits an annual plan item (assert HR receives the database
    notification; assert planned days in the ledger).
 3. Requester creates a leave request linked to the plan item, colleague as relieving
