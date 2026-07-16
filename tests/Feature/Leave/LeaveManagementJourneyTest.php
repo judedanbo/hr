@@ -19,7 +19,9 @@ use App\Notifications\LeaveRequestSubmittedNotification;
 use App\Services\LeaveBalanceService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class LeaveManagementJourneyTest extends TestCase
@@ -381,5 +383,65 @@ class LeaveManagementJourneyTest extends TestCase
         $this->assertSame(LeaveRequestStatusEnum::Pending, $amended->status);
         $this->assertSame(3, $amended->requested_days);
         $this->assertSame($this->head->id, $amended->approver_id);
+    }
+
+    public function test_guard_rails_hold(): void
+    {
+        Notification::fake();
+        $this->activeYear2030();
+        $type = $this->makeWorkingDayType();
+        $this->entitle($type, 5);
+
+        $post = fn (array $payload) => $this->actingAs($this->requesterUser)
+            ->post(route('leave-request.store'), array_merge([
+                'leave_type_id' => $type->id,
+                'address_during_leave' => 'Home',
+                'contact_during_leave' => '0200000000',
+                'relieving_officer_id' => $this->colleague->id,
+            ], $payload));
+
+        // Overdraw: 10 working days against a 5-day entitlement.
+        $post(['start_date' => '2030-07-08', 'end_date' => '2030-07-19'])
+            ->assertSessionHasErrors('leave_type_id');
+
+        // Min notice: type requires 3 days' notice; start is only 2 days out (today = 2030-06-01).
+        $post(['start_date' => '2030-06-03', 'end_date' => '2030-06-04'])
+            ->assertSessionHasErrors('start_date');
+
+        // Missing evidence.
+        Storage::fake('leave-documents');
+        $sick = $this->makeWorkingDayType(['requires_evidence' => true, 'min_notice_days' => 0]);
+        $this->entitle($sick, 10);
+        $post(['leave_type_id' => $sick->id, 'start_date' => '2030-06-10', 'end_date' => '2030-06-11'])
+            ->assertSessionHasErrors('file_name');
+        // ...and with evidence it passes.
+        $post([
+            'leave_type_id' => $sick->id, 'start_date' => '2030-06-10', 'end_date' => '2030-06-11',
+            'file_name' => [UploadedFile::fake()->create('evidence.pdf', 100, 'application/pdf')],
+        ])->assertSessionHasNoErrors();
+
+        // Overlap with the now-pending sick request.
+        $post(['leave_type_id' => $sick->id, 'start_date' => '2030-06-11', 'end_date' => '2030-06-12'])
+            ->assertSessionHasErrors('start_date');
+
+        $this->assertSame(1, LeaveRequest::count());
+
+        // Coverage cap: max 1 concurrent per unit; colleague already approved for the window.
+        $capped = $this->makeWorkingDayType(['max_concurrent_per_unit' => 1, 'min_notice_days' => 0]);
+        $this->entitle($capped, 20);
+        LeaveRequest::factory()->create([
+            'staff_id' => $this->colleague->id, 'leave_type_id' => $capped->id,
+            'leave_year_id' => $this->year->id, 'status' => LeaveRequestStatusEnum::Approved,
+            'requested_days' => 5, 'approved_days' => 5,
+            'start_date' => '2030-08-05', 'end_date' => '2030-08-09',
+        ]);
+        $overlapping = $this->storeRequest($capped, ['start_date' => '2030-08-05', 'end_date' => '2030-08-09']);
+
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.approve', $overlapping))
+            ->assertSessionHasErrors('coverage');
+        $this->assertDatabaseHas('leave_requests', [
+            'id' => $overlapping->id, 'status' => LeaveRequestStatusEnum::Pending->value,
+        ]);
     }
 }
