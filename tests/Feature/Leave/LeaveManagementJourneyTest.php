@@ -339,4 +339,47 @@ class LeaveManagementJourneyTest extends TestCase
             'approved_days' => 5,
         ]);
     }
+
+    public function test_cancel_and_amend_journey(): void
+    {
+        Notification::fake();
+        $this->activeYear2030();
+        $type = $this->makeWorkingDayType();
+        $this->entitle($type, 20);
+        $balance = app(LeaveBalanceService::class);
+
+        // Two approved requests: Aug 5-9 (Mon-Fri) and Sep 2-6 (Mon-Fri), 5 days each.
+        $august = $this->storeRequest($type, ['start_date' => '2030-08-05', 'end_date' => '2030-08-09']);
+        $september = $this->storeRequest($type, ['start_date' => '2030-09-02', 'end_date' => '2030-09-06']);
+        foreach ([$august, $september] as $leaveRequest) {
+            $this->actingAs($this->headUser)
+                ->post(route('leave-approvals.approve', $leaveRequest))
+                ->assertRedirect()->assertSessionHasNoErrors();
+        }
+        $this->requester->refresh();
+        $this->assertSame(10, $balance->takenDays($this->requester, $type->id, $this->year));
+
+        // Cancel August before it starts (today is frozen at 2030-06-01) — days re-credited.
+        $this->actingAs($this->requesterUser)
+            ->post(route('leave-request.cancel', $august))
+            ->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('leave_requests', [
+            'id' => $august->id, 'status' => LeaveRequestStatusEnum::Cancelled->value,
+        ]);
+        $this->requester->refresh();
+        $this->assertSame(5, $balance->takenDays($this->requester, $type->id, $this->year));
+
+        // Amend September to Sep 9-11 (Mon-Wed, 3 days): original cancelled, new Pending linked.
+        $this->actingAs($this->requesterUser)
+            ->post(route('leave-request.amend', $september), ['start_date' => '2030-09-09', 'end_date' => '2030-09-11'])
+            ->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('leave_requests', [
+            'id' => $september->id, 'status' => LeaveRequestStatusEnum::Cancelled->value,
+        ]);
+        $amended = LeaveRequest::where('amended_from_id', $september->id)->firstOrFail();
+        $this->assertSame(LeaveRequestStatusEnum::Pending, $amended->status);
+        $this->assertSame(3, $amended->requested_days);
+        $this->assertSame($this->head->id, $amended->approver_id);
+    }
 }
