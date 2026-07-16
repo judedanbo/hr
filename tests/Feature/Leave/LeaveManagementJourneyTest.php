@@ -385,6 +385,59 @@ class LeaveManagementJourneyTest extends TestCase
         $this->assertSame($this->head->id, $amended->approver_id);
     }
 
+    public function test_adjustment_reconciles_in_reports(): void
+    {
+        Notification::fake();
+        $this->activeYear2030();
+        $type = $this->makeWorkingDayType();
+        $this->entitle($type, 10);
+        $balance = app(LeaveBalanceService::class);
+
+        // HR credits 5 extra days via HTTP.
+        $this->actingAs($this->hrUser)->post(route('leave-balance-adjustment.store'), [
+            'staff_id' => $this->requester->id, 'leave_type_id' => $type->id,
+            'leave_year_id' => $this->year->id, 'days' => 5, 'reason' => 'Carry-over from 2029',
+        ])->assertRedirect()->assertSessionHasNoErrors();
+        $this->requester->refresh();
+        $this->assertSame(15, $balance->assignedDays($this->requester, $type->id, $this->year));
+
+        // A debit larger than the balance floors assigned at 0.
+        $this->actingAs($this->hrUser)->post(route('leave-balance-adjustment.store'), [
+            'staff_id' => $this->requester->id, 'leave_type_id' => $type->id,
+            'leave_year_id' => $this->year->id, 'days' => -30, 'reason' => 'Correction',
+        ])->assertRedirect()->assertSessionHasNoErrors();
+        $this->requester->refresh();
+        $this->assertSame(0, $balance->assignedDays($this->requester, $type->id, $this->year));
+
+        // Restore to 15 assigned, then consume 5 via an approved request.
+        $this->actingAs($this->hrUser)->post(route('leave-balance-adjustment.store'), [
+            'staff_id' => $this->requester->id, 'leave_type_id' => $type->id,
+            'leave_year_id' => $this->year->id, 'days' => 30, 'reason' => 'Reinstate',
+        ])->assertRedirect();
+        $this->requester->refresh();
+        $this->assertSame(15, $balance->assignedDays($this->requester, $type->id, $this->year));
+
+        $leaveRequest = $this->storeRequest($type);
+        $this->actingAs($this->headUser)
+            ->post(route('leave-approvals.approve', $leaveRequest))
+            ->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->requester->refresh();
+        $this->assertSame(5, $balance->takenDays($this->requester, $type->id, $this->year));
+        $this->assertSame(10, $balance->remaining($this->requester, $type->id, $this->year));
+
+        $ledgerRow = collect($balance->ledger($this->requester, $this->year))
+            ->firstWhere('leave_type_id', $type->id);
+        $this->assertSame(15, $ledgerRow['assigned']);
+        $this->assertSame(10, $ledgerRow['remaining']);
+
+        $this->actingAs($this->hrUser)->get(route('leave-reports.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Leave/Reports/Index')
+                ->where('kpis.total_taken', 5)
+                ->has('utilisationByType'));
+    }
+
     public function test_guard_rails_hold(): void
     {
         Notification::fake();
