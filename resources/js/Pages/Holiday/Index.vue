@@ -1,0 +1,99 @@
+<script setup>
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
+import { Head } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
+import { router } from "@inertiajs/vue3";
+import Pagination from "@/Components/Pagination.vue";
+import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import Modal from "@/Components/NewModal.vue";
+import Delete from "@/Components/Delete.vue";
+import TableHeader from "@/Components/TableHeader.vue";
+import { useToggle } from "@vueuse/core";
+import { useNavigation } from "@/Composables/navigation";
+import { useSearch } from "@/Composables/search";
+import HolidayList from "./partials/HolidayList.vue";
+import AddHolidayForm from "./partials/AddHolidayForm.vue";
+import EditHolidayForm from "./partials/EditHolidayForm.vue";
+
+const props = defineProps({
+	holidays: { type: Object, required: true },
+	leaveYears: { type: Array, default: () => [] },
+	filters: { type: Object, default: () => ({}) },
+});
+
+const search = (value) => useSearch(value, route("holiday.index"));
+
+const navigation = computed(() => useNavigation(props.holidays));
+
+const openDialog = ref(false);
+const toggle = useToggle(openDialog);
+const openEditDialog = ref(false);
+const toggleEdit = useToggle(openEditDialog);
+const openDeleteDialog = ref(false);
+const toggleDelete = useToggle(openDeleteDialog);
+const selected = ref(null);
+
+const editRow = (model) => {
+	selected.value = model;
+	toggleEdit();
+};
+const deleteRow = (model) => {
+	selected.value = model;
+	toggleDelete();
+};
+const deleteConfirmed = () => {
+	router.delete(route("holiday.delete", { holiday: selected.value.id }), {
+		preserveScroll: true,
+		onSuccess: () => toggleDelete(),
+	});
+};
+
+const links = [{ name: "Holidays", url: "" }];
+</script>
+
+<template>
+	<MainLayout>
+		<Head title="Holidays" />
+		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<BreadCrumpVue :links="links" />
+			<div
+				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
+			>
+				<TableHeader
+					title="Holidays"
+					:total="holidays.total"
+					:search="filters.search"
+					action-text="Add Holiday"
+					@action-clicked="toggle()"
+					@search-entered="(value) => search(value)"
+				/>
+				<HolidayList
+					:holidays="holidays.data"
+					@edit-row="(model) => editRow(model)"
+					@delete-row="(model) => deleteRow(model)"
+				>
+					<template #pagination>
+						<Pagination :navigation="navigation" />
+					</template>
+				</HolidayList>
+			</div>
+		</main>
+
+		<Modal :show="openDialog" @close="toggle()">
+			<AddHolidayForm :leave-years="leaveYears" @form-submitted="toggle()" />
+		</Modal>
+		<Modal :show="openEditDialog" @close="toggleEdit()">
+			<EditHolidayForm
+				:holiday="selected"
+				:leave-years="leaveYears"
+				@form-submitted="toggleEdit()"
+			/>
+		</Modal>
+		<Delete
+			:show="openDeleteDialog"
+			model-name="holiday"
+			@close="toggleDelete()"
+			@delete-confirmed="deleteConfirmed()"
+		/>
+	</MainLayout>
+</template>

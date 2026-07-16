@@ -54,6 +54,61 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.export',
             'qualifications.reports.view.all',
             'approve staff photo',
+
+            // Leave Management configuration
+            'view all leave years',
+            'view leave year',
+            'create leave year',
+            'update leave year',
+            'delete leave year',
+            'clone leave year',
+            'view all leave types',
+            'view leave type',
+            'create leave type',
+            'update leave type',
+            'delete leave type',
+            'view all leave entitlements',
+            'view leave entitlement',
+            'create leave entitlement',
+            'update leave entitlement',
+            'delete leave entitlement',
+            'view all holidays',
+            'view holiday',
+            'create holiday',
+            'update holiday',
+            'delete holiday',
+
+            // Annual leave planning
+            'manage leave planning windows',
+            'view leave plans',
+            'submit leave plan',
+            'view all leave plans',
+
+            // Leave requests
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'view all leave requests',
+
+            // Leave approvals
+            'approve staff leave',
+            'reassign leave approver',
+            'manage leave delegations',
+            'manage leave approvers',
+
+            // Leave visibility
+            'view leave calendar',
+
+            // Leave reports
+            'view leave reports',
+            'view all leave reports',
+            'export leave reports',
+
+            // Leave lifecycle
+            'resume leave request',
+            'amend leave request',
+            'adjust leave balance',
         ],
 
         'aag-admin' => [
@@ -82,6 +137,46 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.export',
             'qualifications.reports.view.all',
             'approve staff photo',
+
+            // Leave Management configuration
+            'view all leave years',
+            'view leave year',
+            'view all leave types',
+            'view leave type',
+            'view all holidays',
+            'view holiday',
+
+            // Annual leave planning
+            'manage leave planning windows',
+            'view leave plans',
+            'submit leave plan',
+            'view all leave plans',
+
+            // Leave requests
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'view all leave requests',
+
+            // Leave approvals
+            'approve staff leave',
+            'reassign leave approver',
+            'manage leave delegations',
+            'manage leave approvers',
+
+            // Leave visibility
+            'view leave calendar',
+
+            // Leave reports
+            'view leave reports',
+            'view all leave reports',
+            'export leave reports',
+
+            // Leave lifecycle
+            'resume leave request',
+            'amend leave request',
+            'adjust leave balance',
         ],
 
         'personel-user' => [
@@ -134,6 +229,18 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit staff qualification',
             'delete staff qualification',
             'update contacts',
+
+            // Annual leave planning (self-service)
+            'view leave plans',
+            'submit leave plan',
+
+            // Leave requests (self-service)
+            'view leave requests',
+            'create leave request',
+            'update leave request',
+            'cancel leave request',
+            'resume leave request',
+            'amend leave request',
         ],
     ];
 

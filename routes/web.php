@@ -20,6 +20,7 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\InstitutionPersonController;
@@ -27,6 +28,20 @@ use App\Http\Controllers\InstitutionRankController;
 use App\Http\Controllers\InstitutionStatusController;
 use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\LeaveApprovalController;
+use App\Http\Controllers\LeaveBalanceAdjustmentController;
+use App\Http\Controllers\LeaveBalanceController;
+use App\Http\Controllers\LeaveCalendarController;
+use App\Http\Controllers\LeaveDelegationController;
+use App\Http\Controllers\LeaveEntitlementController;
+use App\Http\Controllers\LeavePlanAdminController;
+use App\Http\Controllers\LeavePlanController;
+use App\Http\Controllers\LeavePlanningWindowController;
+use App\Http\Controllers\LeaveReportController;
+use App\Http\Controllers\LeaveRequestAdminController;
+use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\LeaveYearController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\MyProfileController;
 use App\Http\Controllers\NationalityController;
@@ -62,6 +77,7 @@ use App\Http\Controllers\StaffStatusController;
 use App\Http\Controllers\StaffTypeController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitHeadController;
 use App\Http\Controllers\UnitOfficeController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserController;
@@ -591,6 +607,118 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
     Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
+});
+
+Route::controller(LeaveYearController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-year', 'index')->middleware('can:view all leave years')->name('leave-year.index');
+    Route::post('/leave-year', 'store')->middleware('can:create leave year')->name('leave-year.store');
+    Route::patch('/leave-year/{leaveYear}', 'update')->middleware('can:update leave year')->name('leave-year.update');
+    Route::delete('/leave-year/{leaveYear}', 'delete')->middleware('can:delete leave year')->name('leave-year.delete');
+    Route::post('/leave-year/{leaveYear}/clone', 'cloneFromYear')->middleware('can:clone leave year')->name('leave-year.clone');
+    Route::get('/leave-year-list', 'list')->middleware('can:view all leave years')->name('leave-year.list');
+});
+
+Route::controller(LeaveTypeController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-type', 'index')->middleware('can:view all leave types')->name('leave-type.index');
+    Route::post('/leave-type', 'store')->middleware('can:create leave type')->name('leave-type.store');
+    Route::patch('/leave-type/{leaveType}', 'update')->middleware('can:update leave type')->name('leave-type.update');
+    Route::delete('/leave-type/{leaveType}', 'delete')->middleware('can:delete leave type')->name('leave-type.delete');
+    Route::get('/leave-type-list', 'list')->middleware('can:view all leave types')->name('leave-type.list');
+});
+
+Route::controller(LeaveEntitlementController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-entitlement', 'index')->middleware('can:view all leave entitlements')->name('leave-entitlement.index');
+    Route::post('/leave-entitlement', 'store')->middleware('can:create leave entitlement')->name('leave-entitlement.store');
+    Route::patch('/leave-entitlement/{leaveEntitlement}', 'update')->middleware('can:update leave entitlement')->name('leave-entitlement.update');
+    Route::delete('/leave-entitlement/{leaveEntitlement}', 'delete')->middleware('can:delete leave entitlement')->name('leave-entitlement.delete');
+});
+
+Route::controller(HolidayController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/holiday', 'index')->middleware('can:view all holidays')->name('holiday.index');
+    Route::post('/holiday', 'store')->middleware('can:create holiday')->name('holiday.store');
+    Route::patch('/holiday/{holiday}', 'update')->middleware('can:update holiday')->name('holiday.update');
+    Route::delete('/holiday/{holiday}', 'delete')->middleware('can:delete holiday')->name('holiday.delete');
+});
+
+Route::controller(LeavePlanningWindowController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-planning-window', 'index')->middleware('can:manage leave planning windows')->name('leave-planning-window.index');
+    Route::post('/leave-planning-window', 'store')->middleware('can:manage leave planning windows')->name('leave-planning-window.store');
+    Route::patch('/leave-planning-window/{leavePlanningWindow}', 'update')->middleware('can:manage leave planning windows')->name('leave-planning-window.update');
+    Route::delete('/leave-planning-window/{leavePlanningWindow}', 'delete')->middleware('can:manage leave planning windows')->name('leave-planning-window.delete');
+});
+
+Route::controller(LeavePlanController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/my-leave-plan', 'index')->middleware('can:view leave plans')->name('leave-plan.index');
+    Route::get('/my-leave-plan/preview-days', 'previewDays')->middleware('can:submit leave plan')->name('leave-plan.preview-days');
+    Route::post('/my-leave-plan/items', 'storeItem')->middleware('can:submit leave plan')->name('leave-plan.items.store');
+    Route::patch('/my-leave-plan/items/{item}', 'updateItem')->middleware('can:submit leave plan')->name('leave-plan.items.update');
+    Route::delete('/my-leave-plan/items/{item}', 'destroyItem')->middleware('can:submit leave plan')->name('leave-plan.items.destroy');
+    Route::post('/my-leave-plan/submit', 'submit')->middleware('can:submit leave plan')->name('leave-plan.submit');
+});
+
+Route::controller(LeavePlanAdminController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-plans', 'index')->middleware('can:view all leave plans')->name('leave-plans.index');
+    Route::get('/leave-plans/{plan}', 'show')->middleware('can:view all leave plans')->name('leave-plans.show');
+});
+
+Route::controller(LeaveRequestController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-request', 'index')->middleware('can:view leave requests')->name('leave-request.index');
+    Route::get('/leave-request/create', 'create')->middleware('can:create leave request')->name('leave-request.create');
+    Route::get('/leave-request/preview-days', 'previewDays')->middleware('can:create leave request')->name('leave-request.preview-days');
+    Route::get('/leave-request/relieving-officers', 'relievingOfficerOptions')->middleware('can:create leave request')->name('leave-request.relieving-officers');
+    Route::post('/leave-request', 'store')->middleware('can:create leave request')->name('leave-request.store');
+    Route::get('/leave-request/{leaveRequest}', 'show')->middleware('can:view leave requests')->name('leave-request.show');
+    Route::get('/leave-request/{leaveRequest}/edit', 'edit')->middleware('can:update leave request')->name('leave-request.edit');
+    Route::patch('/leave-request/{leaveRequest}', 'update')->middleware('can:update leave request')->name('leave-request.update');
+    Route::post('/leave-request/{leaveRequest}/cancel', 'cancel')->middleware('can:cancel leave request')->name('leave-request.cancel');
+    Route::post('/leave-request/{leaveRequest}/resume', 'resume')->middleware('can:resume leave request')->name('leave-request.resume');
+    Route::post('/leave-request/{leaveRequest}/amend', 'amend')->middleware('can:amend leave request')->name('leave-request.amend');
+    Route::get('/leave-request/{leaveRequest}/documents/{document}', 'downloadDocument')->middleware('can:view leave requests')->name('leave-request.documents.download');
+    Route::delete('/leave-request/{leaveRequest}/documents/{document}', 'destroyDocument')->middleware('can:update leave request')->name('leave-request.documents.destroy');
+});
+
+Route::controller(LeaveRequestAdminController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-requests', 'index')->middleware('can:view all leave requests')->name('leave-requests.index');
+    Route::get('/leave-requests/{leaveRequest}', 'show')->middleware('can:view all leave requests')->name('leave-requests.show');
+});
+
+Route::controller(LeaveApprovalController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-approvals', 'index')->name('leave-approvals.index');
+    Route::post('/leave-approvals/{leaveRequest}/approve', 'approve')->middleware('can:decide,leaveRequest')->name('leave-approvals.approve');
+    Route::post('/leave-approvals/{leaveRequest}/decline', 'decline')->middleware('can:decide,leaveRequest')->name('leave-approvals.decline');
+    Route::post('/leave-approvals/{leaveRequest}/reassign', 'reassign')->middleware('can:reassign leave approver')->name('leave-approvals.reassign');
+});
+
+Route::controller(LeaveDelegationController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-delegation', 'index')->middleware('can:manage leave delegations')->name('leave-delegation.index');
+    Route::post('/leave-delegation', 'store')->middleware('can:manage leave delegations')->name('leave-delegation.store');
+    Route::patch('/leave-delegation/{leaveDelegation}', 'update')->middleware('can:manage leave delegations')->name('leave-delegation.update');
+    Route::delete('/leave-delegation/{leaveDelegation}', 'delete')->middleware('can:manage leave delegations')->name('leave-delegation.delete');
+});
+
+Route::controller(UnitHeadController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/unit-head', 'index')->middleware('can:manage leave approvers')->name('unit-head.index');
+    Route::patch('/unit-head/{unit}', 'update')->middleware('can:manage leave approvers')->name('unit-head.update');
+});
+
+Route::controller(LeaveBalanceController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-balance', 'index')->middleware('can:view leave requests')->name('leave-balance.index');
+});
+
+Route::controller(LeaveCalendarController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-calendar', 'index')->middleware('can:view leave calendar')->name('leave-calendar.index');
+});
+
+Route::controller(LeaveReportController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-reports', 'index')->middleware('can:view leave reports')->name('leave-reports.index');
+    Route::get('/leave-reports/export/excel', 'exportExcel')->middleware('can:export leave reports')->name('leave-reports.export.excel');
+    Route::get('/leave-reports/export/pdf', 'exportPdf')->middleware('can:export leave reports')->name('leave-reports.export.pdf');
+});
+
+Route::controller(LeaveBalanceAdjustmentController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/leave-balance-adjustment', 'index')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.index');
+    Route::post('/leave-balance-adjustment', 'store')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.store');
+    Route::delete('/leave-balance-adjustment/{leaveBalanceAdjustment}', 'delete')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.delete');
 });
 
 Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
