@@ -138,6 +138,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.view.all',
             'approve staff photo',
 
+            // Leave Management configuration
+            'view all leave years',
+            'view leave year',
+
             // Annual leave planning
             'manage leave planning windows',
             'view leave plans',
