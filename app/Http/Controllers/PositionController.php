@@ -28,8 +28,16 @@ class PositionController extends Controller
                     }]);
                     $query->wherePivotNull('end_date');
                 }])
+                ->when(
+                    request('search'),
+                    fn ($query, $search) => $query->where('name', 'like', '%' . $search . '%')
+                )
+                ->when(
+                    request('trashed') === 'only',
+                    fn ($query) => $query->onlyTrashed(),
+                    fn ($query) => $query->when(request('trashed') === 'with', fn ($query) => $query->withTrashed())
+                )
                 ->orderBy('name')
-                ->withTrashed()
                 ->paginate(per_page())
                 ->withQueryString()
                 ->through(fn ($position) => [
@@ -175,9 +183,14 @@ class PositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Soft-delete only. A force delete cascades through the position_staff
+     * foreign key and would destroy the employment history of everyone who
+     * ever held the position.
+     */
     public function delete(Position $position)
     {
-        $position->forceDelete();
+        $position->delete();
 
         return redirect()->back()->with('success', 'Position deleted.');
     }
