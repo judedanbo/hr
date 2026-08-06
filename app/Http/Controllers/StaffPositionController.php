@@ -29,7 +29,7 @@ class StaffPositionController extends Controller
 
     public function update(UpdateStaffPositionRequest $request, InstitutionPerson $staff, PositionStaff $staffPosition): RedirectResponse
     {
-        abort_unless($staffPosition->staff_id === $staff->id, 404);
+        abort_unless((int) $staffPosition->staff_id === (int) $staff->id, 404);
 
         $result = $this->staffPositionService->update($staffPosition, $request->validated());
 
@@ -38,7 +38,7 @@ class StaffPositionController extends Controller
 
     public function destroy(InstitutionPerson $staff, PositionStaff $staffPosition): RedirectResponse
     {
-        abort_unless($staffPosition->staff_id === $staff->id, 404);
+        abort_unless((int) $staffPosition->staff_id === (int) $staff->id, 404);
 
         $this->staffPositionService->delete($staffPosition);
 
