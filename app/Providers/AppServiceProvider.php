@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Contracts\Services\PromotionServiceInterface;
 use App\Contracts\Services\SeparationServiceInterface;
 use App\Contracts\Services\StaffManagementServiceInterface;
+use App\Contracts\Services\StaffPositionServiceInterface;
 use App\Contracts\Services\TransferServiceInterface;
 use App\Services\Staff\PromotionService;
 use App\Services\Staff\SeparationService;
 use App\Services\Staff\StaffManagementService;
+use App\Services\Staff\StaffPositionService;
 use App\Services\Staff\TransferService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PromotionServiceInterface::class, PromotionService::class);
         $this->app->bind(TransferServiceInterface::class, TransferService::class);
         $this->app->bind(SeparationServiceInterface::class, SeparationService::class);
+        $this->app->bind(StaffPositionServiceInterface::class, StaffPositionService::class);
     }
 
     /**

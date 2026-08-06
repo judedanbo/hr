@@ -6,7 +6,7 @@ import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 import EditStaffPosition from "./Edit.vue";
 import DeleteStaffPosition from "./Delete.vue";
-import { router } from "@inertiajs/vue3";
+import { router, Link } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -20,6 +20,9 @@ const canUpdate = computed(() =>
 );
 const canDelete = computed(() =>
 	permissions.value?.includes("delete staff position"),
+);
+const canViewPosition = computed(() =>
+	permissions.value?.includes("view position"),
 );
 const subMenuItems = computed(() =>
 	[canUpdate.value ? "Edit" : null, canDelete.value ? "Delete" : null].filter(
@@ -138,7 +141,16 @@ const deleteStaffPosition = () => {
 									<div
 										class="font-medium text-gray-900 dark:text-gray-50 w-3/5"
 									>
-										{{ position.name }}
+										<Link
+											v-if="canViewPosition"
+											:href="
+												route('position.show', { position: position.position_id })
+											"
+											class="hover:text-green-600 dark:hover:text-green-300 hover:underline"
+										>
+											{{ position.name }}
+										</Link>
+										<template v-else>{{ position.name }}</template>
 									</div>
 									<div
 										class="mt-1 truncate text-gray-500 dark:text-gray-100 text-xs"
