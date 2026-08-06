@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\LogAllTraits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -43,6 +44,11 @@ class PositionStaff extends Pivot
     public function staff(): BelongsTo
     {
         return $this->belongsTo(InstitutionPerson::class, 'staff_id');
+    }
+
+    public function roleGrants(): HasMany
+    {
+        return $this->hasMany(PositionRoleGrant::class, 'position_staff_id');
     }
 
     /**
