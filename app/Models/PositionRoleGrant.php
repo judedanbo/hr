@@ -61,8 +61,6 @@ class PositionRoleGrant extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->whereNull('revoked_at')
-            ->whereHas('assignment', function (Builder $query) {
-                $query->whereNull('end_date')->whereNull('deleted_at');
-            });
+            ->whereHas('assignment', fn (Builder $query) => $query->inEffect());
     }
 }

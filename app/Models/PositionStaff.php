@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\LogAllTraits;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -57,5 +58,23 @@ class PositionStaff extends Pivot
     public function scopeOpen(Builder $query): Builder
     {
         return $query->whereNull('end_date');
+    }
+
+    /**
+     * Assignments still in effect: never ended, or ending on a future date.
+     * Only these confer the roles mapped to their position.
+     */
+    public function scopeInEffect(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query) {
+            $query->whereNull('end_date')
+                ->orWhereDate('end_date', '>=', Carbon::today());
+        });
+    }
+
+    public function isInEffect(): bool
+    {
+        return $this->deleted_at === null
+            && ($this->end_date === null || $this->end_date->gte(Carbon::today()));
     }
 }

@@ -36,4 +36,19 @@ interface StaffPositionServiceInterface
      * Soft-delete an assignment row.
      */
     public function delete(PositionStaff $assignment): void;
+
+    /**
+     * Grant the roles mapped to the assignment's position to its holder.
+     *
+     * @return array{0: array<int, string>, 1: string|null} granted role names, warning
+     */
+    public function syncGrantsForAssignment(PositionStaff $assignment): array;
+
+    /**
+     * Withdraw the roles an assignment conferred, leaving hand-assigned roles
+     * and roles still conferred by another assignment in place.
+     *
+     * @param  array<int, int>|null  $onlyRoleIds
+     */
+    public function revokeGrantsFor(PositionStaff $assignment, ?array $onlyRoleIds = null): void;
 }
