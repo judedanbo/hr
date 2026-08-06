@@ -5,10 +5,12 @@ namespace App\Services\Staff;
 use App\Contracts\Services\StaffPositionServiceInterface;
 use App\DataTransferObjects\PositionAssignmentResult;
 use App\Models\InstitutionPerson;
+use App\Models\Position;
 use App\Models\PositionRoleGrant;
 use App\Models\PositionStaff;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class StaffPositionService implements StaffPositionServiceInterface
 {
@@ -83,6 +85,50 @@ class StaffPositionService implements StaffPositionServiceInterface
         DB::transaction(function () use ($assignment) {
             $this->revokeGrantsFor($assignment);
             $assignment->delete();
+        });
+    }
+
+    /**
+     * Replace a position's role mapping and bring current holders into line.
+     *
+     * Holders are reconciled immediately rather than on their next
+     * reassignment. Leaving a sitting holder without the newly mapped role
+     * invites an administrator to assign it by hand, and a hand-assigned role
+     * can never be revoked automatically — so deferring would corrupt the
+     * provenance model rather than merely postpone the grant. Closed
+     * assignments are left alone; their grants were revoked when they ended.
+     *
+     * @param  array<int, string>  $roleNames
+     * @return array{reconciled: int, warnings: array<int, string>}
+     */
+    public function syncPositionRoles(Position $position, array $roleNames): array
+    {
+        return DB::transaction(function () use ($position, $roleNames) {
+            $roles = Role::whereIn('name', $roleNames)->get();
+            $removed = $position->roles->pluck('id')->diff($roles->pluck('id'))->all();
+
+            $position->roles()->sync($roles->pluck('id')->all());
+            $position->unsetRelation('roles');
+
+            $warnings = [];
+            $holders = PositionStaff::query()
+                ->where('position_id', $position->id)
+                ->inEffect()
+                ->get();
+
+            foreach ($holders as $holder) {
+                if ($removed !== []) {
+                    $this->revokeGrantsFor($holder, $removed);
+                }
+
+                [, $warning] = $this->syncGrantsForAssignment($holder);
+
+                if ($warning) {
+                    $warnings[] = $warning;
+                }
+            }
+
+            return ['reconciled' => $holders->count(), 'warnings' => $warnings];
         });
     }
 

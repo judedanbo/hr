@@ -30,7 +30,13 @@ const subMenuClicked = (action, model) => {
 	}
 };
 
-const tableCols = ["Name", "current occupants", "Contact", "Action"];
+const tableCols = [
+	"Name",
+	"current occupants",
+	"Contact",
+	"Roles granted",
+	"Action",
+];
 </script>
 
 <template>
@@ -63,6 +69,20 @@ const tableCols = ["Name", "current occupants", "Contact", "Action"];
 									>
 										{{ contact.contact }}
 									</div>
+								</TableData>
+								<TableData>
+									<div v-if="position.roles?.length" class="flex flex-wrap gap-1">
+										<span
+											v-for="role in position.roles"
+											:key="role"
+											class="rounded bg-green-50 dark:bg-gray-700 px-1.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20"
+										>
+											{{ role }}
+										</span>
+									</div>
+									<span v-else class="text-xs text-gray-400 dark:text-gray-300">
+										—
+									</span>
 								</TableData>
 								<TableData>
 									<td class="flex justify-end">

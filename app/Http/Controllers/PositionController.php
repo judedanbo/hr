@@ -20,7 +20,7 @@ class PositionController extends Controller
     {
         return Inertia::render('Positions/Index', [
             'positions' => Position::query()
-                ->with(['staff' => function ($query) {
+                ->with(['roles', 'staff' => function ($query) {
                     $query->with(['person' => function ($query) {
                         $query->with(['contacts' => function ($query) {
                             $query->where('contact_type', ContactTypeEnum::PHONE);
@@ -32,9 +32,10 @@ class PositionController extends Controller
                 ->withTrashed()
                 ->paginate(per_page())
                 ->withQueryString()
-                ->through(fn($position) => [
+                ->through(fn ($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
+                    'roles' => $position->roles->pluck('name')->values(),
                     'staff' => $position->staff->map(function ($staff) {
                         return [
                             'staff_id' => $staff->id,
@@ -90,7 +91,7 @@ class PositionController extends Controller
      */
     public function show(Position $position)
     {
-        $position = $position->load(['staff' => function ($query) {
+        $position = $position->load(['roles', 'staff' => function ($query) {
             $query->with([
                 'ranks' => function ($query) {
                     $query->wherePivotNull('end_date');
@@ -111,6 +112,11 @@ class PositionController extends Controller
             'position' => [
                 'id' => $position->id,
                 'name' => $position->name,
+                'roles' => $position->roles->map(fn ($role) => [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ])->values(),
+                'role_names' => $position->roles->pluck('name')->values(),
                 'staff' => $position->staff->map(function ($staff) {
                     return [
                         'id' => $staff->id,

@@ -54,6 +54,7 @@ use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
 use App\Http\Controllers\PhotoApprovalController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\PositionRoleController;
 use App\Http\Controllers\PromoteAllStaffController;
 use App\Http\Controllers\PromoteStaffController;
 use App\Http\Controllers\PromotionBatchController;
@@ -612,6 +613,12 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
     Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
+});
+
+// roles conferred by a position
+Route::controller(PositionRoleController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/position/{position}/roles', 'index')->middleware('can:view position roles')->name('position.roles.index');
+    Route::put('/position/{position}/roles', 'sync')->middleware('can:manage position roles')->name('position.roles.sync');
 });
 
 Route::controller(LeaveYearController::class)->middleware(['auth', 'password_changed'])->group(function () {

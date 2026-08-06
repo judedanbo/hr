@@ -140,7 +140,7 @@ class AllPermissionsSeeder extends Seeder
             'destroy staff position',
 
             // ============================================
-            // Positions (7)
+            // Positions (9)
             // ============================================
             'view all positions',
             'view position',
@@ -149,6 +149,8 @@ class AllPermissionsSeeder extends Seeder
             'delete position',
             'restore position',
             'destroy position',
+            'view position roles',
+            'manage position roles',
 
             // ============================================
             // Staff Status (7)

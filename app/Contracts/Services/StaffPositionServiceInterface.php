@@ -4,6 +4,7 @@ namespace App\Contracts\Services;
 
 use App\DataTransferObjects\PositionAssignmentResult;
 use App\Models\InstitutionPerson;
+use App\Models\Position;
 use App\Models\PositionStaff;
 use Carbon\Carbon;
 
@@ -36,6 +37,14 @@ interface StaffPositionServiceInterface
      * Soft-delete an assignment row.
      */
     public function delete(PositionStaff $assignment): void;
+
+    /**
+     * Replace a position's role mapping, reconciling current holders.
+     *
+     * @param  array<int, string>  $roleNames
+     * @return array{reconciled: int, warnings: array<int, string>}
+     */
+    public function syncPositionRoles(Position $position, array $roleNames): array;
 
     /**
      * Grant the roles mapped to the assignment's position to its holder.
