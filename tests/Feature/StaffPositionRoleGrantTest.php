@@ -283,6 +283,27 @@ class StaffPositionRoleGrantTest extends TestCase
     // HISTORICAL ROWS
     // ===================
 
+    /**
+     * Ending an assignment revokes its roles immediately, so a mapping change
+     * made the same day must not hand them straight back.
+     */
+    public function test_a_holder_whose_assignment_just_ended_is_not_regranted(): void
+    {
+        [$staff, $user] = $this->makeLinkedStaff('STF001');
+        $position = $this->positionGranting('hr-user');
+
+        $assignment = $this->service->assign($staff, $position->id, [])->assignment;
+        $this->service->end($assignment);
+        $this->assertFalse($user->fresh()->hasRole('hr-user'));
+
+        $this->service->syncPositionRoles($position, ['hr-user']);
+
+        $this->assertFalse(
+            $user->fresh()->hasRole('hr-user'),
+            'An assignment that has ended must not be reconciled as a current holder.'
+        );
+    }
+
     public function test_an_assignment_that_already_ended_grants_nothing(): void
     {
         [$staff, $user] = $this->makeLinkedStaff('STF001');

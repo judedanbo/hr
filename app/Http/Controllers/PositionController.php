@@ -192,7 +192,9 @@ class PositionController extends Controller
     {
         $position->delete();
 
-        return redirect()->back()->with('success', 'Position deleted.');
+        // Not back(): deleting from the position's own page would return to a
+        // URL whose binding no longer resolves.
+        return redirect()->route('position.index')->with('success', 'Position deleted.');
     }
 
     public function list()

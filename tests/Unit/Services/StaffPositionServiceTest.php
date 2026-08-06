@@ -125,6 +125,65 @@ class StaffPositionServiceTest extends TestCase
         $this->assertSame(2, $staff->positionAssignments()->count());
     }
 
+    /**
+     * A backdated assignment must not close the previous row before the day it
+     * started.
+     */
+    public function test_assign_never_ends_a_previous_row_before_it_began(): void
+    {
+        $staff = $this->staff();
+        $previous = $staff->positionAssignments()->create([
+            'position_id' => Position::factory()->create()->id,
+            'start_date' => '2024-06-01',
+        ]);
+
+        $this->service->assign($staff, Position::factory()->create()->id, ['start_date' => '2024-01-01']);
+
+        $previous->refresh();
+        $this->assertTrue(
+            $previous->end_date->gte($previous->start_date),
+            'An assignment may not end before it starts.'
+        );
+        $this->assertSame('2024-06-01', $previous->end_date->format('Y-m-d'));
+    }
+
+    /**
+     * `update()` must distinguish "not mentioned" from "cleared"; using isset()
+     * silently wiped dates the caller never sent.
+     */
+    public function test_update_leaves_dates_the_caller_did_not_mention(): void
+    {
+        $staff = $this->staff();
+        $newPosition = Position::factory()->create();
+
+        $assignment = $staff->positionAssignments()->create([
+            'position_id' => Position::factory()->create()->id,
+            'start_date' => '2024-01-01',
+            'end_date' => '2024-12-31',
+        ]);
+
+        $this->service->update($assignment, ['position_id' => $newPosition->id]);
+
+        $assignment->refresh();
+        $this->assertSame($newPosition->id, $assignment->position_id);
+        $this->assertSame('2024-01-01', $assignment->start_date->format('Y-m-d'));
+        $this->assertSame('2024-12-31', $assignment->end_date->format('Y-m-d'));
+    }
+
+    public function test_update_clears_a_date_that_is_explicitly_null(): void
+    {
+        $staff = $this->staff();
+        $assignment = $staff->positionAssignments()->create([
+            'position_id' => Position::factory()->create()->id,
+            'start_date' => '2024-01-01',
+            'end_date' => '2024-12-31',
+        ]);
+
+        $this->service->update($assignment, ['end_date' => null]);
+
+        $this->assertNull($assignment->fresh()->end_date);
+    }
+
     public function test_end_closes_the_assignment_without_removing_it(): void
     {
         $staff = $this->staff();

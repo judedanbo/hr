@@ -6,7 +6,7 @@ import PositionOverview from "./partials/PositionOverview.vue";
 // import RankStaff from "./partials/RankStaff.vue";
 // import RankPromote from "./partials/RankPromote.vue";
 // import AllStaff from "./partials/AllStaff.vue";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import PageTitle from "@/Components/PageTitle.vue";
 import PageHeading from "@/Components/PageHeading.vue";
@@ -16,7 +16,7 @@ import PositionRolesForm from "./partials/PositionRolesForm.vue";
 import { useToggle } from "@vueuse/core";
 import DeletePosition from "./Delete.vue";
 import { usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
+
 let props = defineProps({
 	position: Object,
 	filters: Object,

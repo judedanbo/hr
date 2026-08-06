@@ -166,6 +166,20 @@ class PositionControllerTest extends TestCase
         ]);
     }
 
+    /**
+     * Deleting from the position's own page must not bounce back to a URL
+     * whose route binding no longer resolves.
+     */
+    public function test_deleting_redirects_to_the_index_not_back_to_the_deleted_page(): void
+    {
+        $position = Position::factory()->create();
+
+        $this->actingAs($this->admin)
+            ->from(route('position.show', ['position' => $position->id]))
+            ->delete(route('position.delete', ['position' => $position->id]))
+            ->assertRedirect(route('position.index'));
+    }
+
     // ===================
     // FILTERS
     // ===================

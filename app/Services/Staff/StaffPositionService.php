@@ -55,11 +55,22 @@ class StaffPositionService implements StaffPositionServiceInterface
     public function update(PositionStaff $assignment, array $data): PositionAssignmentResult
     {
         return DB::transaction(function () use ($assignment, $data) {
-            $assignment->update([
-                'position_id' => $data['position_id'] ?? $assignment->position_id,
-                'start_date' => isset($data['start_date']) ? Carbon::parse($data['start_date']) : null,
-                'end_date' => isset($data['end_date']) ? Carbon::parse($data['end_date']) : null,
-            ]);
+            // array_key_exists, not isset: a key that is present and null means
+            // "clear this date", whereas an absent key means "leave it alone".
+            // Using isset() here silently wiped dates the caller never mentioned.
+            $changes = [];
+
+            if (array_key_exists('position_id', $data)) {
+                $changes['position_id'] = $data['position_id'];
+            }
+
+            foreach (['start_date', 'end_date'] as $field) {
+                if (array_key_exists($field, $data)) {
+                    $changes[$field] = $data[$field] === null ? null : Carbon::parse($data[$field]);
+                }
+            }
+
+            $assignment->update($changes);
 
             $assignment->refresh();
 
@@ -240,10 +251,7 @@ class StaffPositionService implements StaffPositionServiceInterface
         $staff->positionAssignments()
             ->whereNull('end_date')
             ->get()
-            ->each(function (PositionStaff $open) use ($closedOn) {
-                $open->update(['end_date' => $closedOn]);
-                $this->revokeGrantsFor($open);
-            });
+            ->each(fn (PositionStaff $open) => $this->close($open, $closedOn));
     }
 
     /**
@@ -256,9 +264,23 @@ class StaffPositionService implements StaffPositionServiceInterface
             ->whereNull('end_date')
             ->where('staff_id', '!=', $staff->id)
             ->get()
-            ->each(function (PositionStaff $held) use ($closedOn) {
-                $held->update(['end_date' => $closedOn]);
-                $this->revokeGrantsFor($held);
-            });
+            ->each(fn (PositionStaff $held) => $this->close($held, $closedOn));
+    }
+
+    /**
+     * Close an assignment and withdraw what it conferred.
+     *
+     * The end date is never allowed to precede the row's own start date, which
+     * a backdated assignment would otherwise cause.
+     */
+    protected function close(PositionStaff $assignment, Carbon $closedOn): void
+    {
+        $startDate = $assignment->start_date;
+
+        $assignment->update([
+            'end_date' => $startDate && $startDate->gt($closedOn) ? $startDate : $closedOn,
+        ]);
+
+        $this->revokeGrantsFor($assignment);
     }
 }

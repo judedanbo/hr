@@ -61,20 +61,28 @@ class PositionStaff extends Pivot
     }
 
     /**
-     * Assignments still in effect: never ended, or ending on a future date.
-     * Only these confer the roles mapped to their position.
+     * Assignments still in effect: never ended, or ending after today. Only
+     * these confer the roles mapped to their position.
+     *
+     * The end date is exclusive for role purposes — an assignment stops
+     * conferring on the day it ends. That is a day earlier than the history
+     * semantics elsewhere (where end_date is the last day held), and it is
+     * deliberate: ending an assignment revokes its roles immediately, so an
+     * inclusive boundary would let the same-day mapping change hand them
+     * straight back. Erring towards withdrawing access early is the safe
+     * direction.
      */
     public function scopeInEffect(Builder $query): Builder
     {
         return $query->where(function (Builder $query) {
             $query->whereNull('end_date')
-                ->orWhereDate('end_date', '>=', Carbon::today());
+                ->orWhereDate('end_date', '>', Carbon::today());
         });
     }
 
     public function isInEffect(): bool
     {
         return $this->deleted_at === null
-            && ($this->end_date === null || $this->end_date->gte(Carbon::today()));
+            && ($this->end_date === null || $this->end_date->gt(Carbon::today()));
     }
 }
