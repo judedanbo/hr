@@ -20,7 +20,7 @@ export const formKitTheme = {
 		messages: "list-none p-0 mt-1 mb-0",
 		outer: "mb-4 formkit-disabled:opacity-50",
 		prefixIcon:
-			"w-10 p-2 flex self-stretch grow-0 shrink-0 rounded-tl rounded-bl border-l border-y border-gray-400 dark:border-gray-600 dark:text-white bg-gray-100 dark:bg-gray-600 bg-gradient-to-b from-transparent to-gray-200 [&>svg]:w-full [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
+			"flex self-stretch shrink-0 grow-0 items-center pl-3 text-gray-400 dark:text-gray-500 [&>svg]:w-4 [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
 		suffixIcon:
 			"w-7 pr-3 flex self-stretch grow-0 shrink-0 [&>svg]:w-full [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
 	},

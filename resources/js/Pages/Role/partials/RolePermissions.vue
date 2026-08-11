@@ -3,9 +3,7 @@ import { router, usePage } from "@inertiajs/vue3";
 import { computed, ref } from "vue";
 import { debouncedWatch } from "@vueuse/core";
 import NoItem from "@/Components/NoItem.vue";
-import MainTable from "@/Components/MainTable.vue";
-import TableHead from "@/Components/TableHead.vue";
-import TableBody from "@/Components/TableBody.vue";
+import DataTable from "@/Components/UI/DataTable.vue";
 import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
@@ -102,83 +100,66 @@ const tableCols = computed(() => {
 </script>
 
 <template>
-	<section
-		v-bind="$attrs"
-		class="flex flex-col mt-6 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"
-	>
-		<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-			<div class="mb-3 relative">
-				<div
-					class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-				>
-					<MagnifyingGlassIcon
-						class="h-5 w-5 text-gray-400"
-						aria-hidden="true"
-					/>
-				</div>
-				<input
-					v-model="search"
-					type="text"
-					placeholder="Search permissions..."
-					class="block w-full rounded-md border-0 py-2 pl-10 pr-10 text-gray-900 dark:text-gray-100 dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm"
-				/>
-				<button
-					v-if="search"
-					type="button"
-					class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-					title="Clear search"
-					@click="clearSearch"
-				>
-					<XMarkIcon class="h-5 w-5" />
-				</button>
-			</div>
+	<section v-bind="$attrs" class="space-y-3">
+		<div class="relative">
 			<div
-				v-if="permissions?.total > 0"
-				class="overflow-x-auto border-b border-gray-200 rounded-md shadow-md"
+				class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
 			>
-				<MainTable>
-					<TableHead>
-						<template v-for="(column, id) in tableCols" :key="id">
-							<RowHeader>{{ column }}</RowHeader>
-						</template>
-					</TableHead>
-					<TableBody>
-						<template
-							v-for="permission in permissions.data"
-							:key="permission.id"
-						>
-							<TableRow>
-								<TableData>
-									{{ permission.name }}
-								</TableData>
-								<TableData>
-									{{ permission.users_count }}
-								</TableData>
-								<TableData v-if="canManagePermissions" class="text-right">
-									<button
-										type="button"
-										class="inline-flex items-center gap-x-1 rounded-md px-2 py-1 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
-										title="Remove permission"
-										@click.stop="confirmRemove(permission.name)"
-									>
-										<XMarkIcon class="h-4 w-4" />
-										Remove
-									</button>
-								</TableData>
-							</TableRow>
-						</template>
-					</TableBody>
-				</MainTable>
-				<slot name="pagination" />
+				<MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
 			</div>
-			<div
-				v-else-if="search"
-				class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-600"
+			<input
+				v-model="search"
+				type="text"
+				placeholder="Search permissions..."
+				class="block w-full rounded-lg border-0 py-2 pl-10 pr-10 text-gray-900 dark:text-gray-100 dark:bg-gray-900 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm"
+			/>
+			<button
+				v-if="search"
+				type="button"
+				class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+				title="Clear search"
+				@click="clearSearch"
 			>
-				No permissions match "{{ search }}"
-			</div>
-			<NoItem v-else name="Permission" />
+				<XMarkIcon class="h-5 w-5" />
+			</button>
 		</div>
+
+		<DataTable :has-items="permissions?.total > 0" name="Permissions">
+			<template #head>
+				<RowHeader v-for="(column, id) in tableCols" :key="id">
+					{{ column }}
+				</RowHeader>
+			</template>
+			<template #body>
+				<TableRow v-for="permission in permissions.data" :key="permission.id">
+					<TableData primary>{{ permission.name }}</TableData>
+					<TableData>{{ permission.users_count }}</TableData>
+					<TableData v-if="canManagePermissions" align="right">
+						<button
+							type="button"
+							class="inline-flex items-center gap-x-1 rounded-md px-2 py-1 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
+							title="Remove permission"
+							@click.stop="confirmRemove(permission.name)"
+						>
+							<XMarkIcon class="h-4 w-4" />
+							Remove
+						</button>
+					</TableData>
+				</TableRow>
+			</template>
+			<template #empty>
+				<div
+					v-if="search"
+					class="py-8 text-center text-sm text-gray-500 dark:text-gray-400"
+				>
+					No permissions match "{{ search }}"
+				</div>
+				<NoItem v-else name="Permissions" />
+			</template>
+			<template #footer>
+				<slot name="pagination" />
+			</template>
+		</DataTable>
 	</section>
 
 	<NewModal :show="showConfirmModal" @close="cancelRemove">

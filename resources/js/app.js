@@ -9,6 +9,7 @@ import { plugin as formKitPlugin, defaultConfig } from "@formkit/vue";
 import { createMultiStepPlugin } from "@formkit/addons";
 import "@formkit/addons/css/multistep";
 import { generateClasses } from "@formkit/themes";
+import { search } from "@formkit/icons";
 import { formKitTheme } from "./formkit/theme";
 
 const appName =
@@ -28,8 +29,10 @@ createInertiaApp({
 			.use(
 				formKitPlugin,
 				defaultConfig({
-					//   theme: "genesis",
 					plugins: [createMultiStepPlugin()],
+					// Registered globally so `prefix-icon="search"` resolves; without
+					// this the prop is accepted and silently renders nothing.
+					icons: { search },
 					config: {
 						classes: generateClasses(formKitTheme),
 					},
