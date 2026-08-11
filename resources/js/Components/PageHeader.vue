@@ -1,73 +1,28 @@
 <script setup>
-import { debouncedWatch } from "@vueuse/core";
-
-import { ref, watch, computed } from "vue";
-import { PlusIcon } from "@heroicons/vue/24/outline";
+/**
+ * Retained as a thin wrapper so its existing consumers keep working.
+ * New pages should use Components/UI/ListToolbar.vue directly, alongside
+ * Components/UI/PageHeader.vue for the title block.
+ */
+import { computed } from "vue";
+import ListToolbar from "@/Components/UI/ListToolbar.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 
 const emit = defineEmits(["actionClicked", "searchEntered"]);
 
 const props = defineProps({
-	title: {
-		type: String,
-		required: true,
-	},
-	total: {
-		type: Number,
-		default: 0,
-	},
-	stats: {
-		type: Array,
-		default: null,
-	},
-	actionText: {
-		type: String,
-		default: "Add",
-	},
-	search: {
-		type: String,
-		default: "",
-	},
-	addPermission: {
-		type: Boolean,
-		default: true, // TODO: Change this to false
-	},
+	title: { type: String, required: true },
+	total: { type: Number, default: 0 },
+	stats: { type: Array, default: null },
+	actionText: { type: String, default: "Add" },
+	search: { type: String, default: "" },
+	addPermission: { type: Boolean, default: true },
 });
 
 const hasStats = computed(() => props.stats && props.stats.length > 0);
-
-const search = ref(props.search);
-debouncedWatch(
-	search,
-	() => {
-		emit("searchEntered", search.value);
-	},
-	{ debounce: 300 },
-);
 </script>
 <template>
-	<section class="my-2">
-		<div class="sm:flex items-center justify-between mb-4">
-			<FormKit
-				v-model="search"
-				prefix-icon="search"
-				type="search"
-				:placeholder="`Search ${title}...`"
-				autofocus
-			/>
-
-			<a
-				v-if="addPermission"
-				class="btn btn-primary ml-auto shrink-0"
-				href="#"
-				@click.prevent="emit('actionClicked')"
-			>
-				<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-				{{ actionText }}
-			</a>
-		</div>
-
-		<!-- Statistics Grid -->
+	<section class="my-2 flex flex-col gap-4">
 		<div
 			v-if="hasStats"
 			class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
@@ -81,5 +36,14 @@ debouncedWatch(
 			/>
 		</div>
 		<InfoCard v-else :title="title" :value="total" link="#" />
+
+		<ListToolbar
+			:title="title"
+			:action-text="actionText"
+			:search="search"
+			:show-action="addPermission"
+			@action-clicked="emit('actionClicked')"
+			@search-entered="(value) => emit('searchEntered', value)"
+		/>
 	</section>
 </template>

@@ -1,62 +1,31 @@
 <script setup>
-import { debouncedWatch } from "@vueuse/core";
-
-import { ref, watch } from "vue";
-import { PlusIcon } from "@heroicons/vue/24/outline";
+/**
+ * Retained as a thin wrapper so Staff/Index keeps working.
+ * New pages should use Components/UI/ListToolbar.vue directly.
+ */
+import ListToolbar from "@/Components/UI/ListToolbar.vue";
 import InfoCard from "@/Components/InfoCard.vue";
 
 const emit = defineEmits(["actionClicked", "searchEntered"]);
 
-const props = defineProps({
-	title: {
-		type: String,
-		required: true,
-	},
-	total: {
-		type: Number,
-		default: 0,
-	},
-	actionText: {
-		type: String,
-		default: "Add",
-	},
-	actionPermission: {
-		type: Boolean,
-		default: false,
-	},
-	search: {
-		type: String,
-		default: "",
-	},
+defineProps({
+	title: { type: String, required: true },
+	total: { type: Number, default: 0 },
+	actionText: { type: String, default: "Add" },
+	actionPermission: { type: Boolean, default: false },
+	search: { type: String, default: "" },
 });
-const search = ref(props.search);
-debouncedWatch(
-	search,
-	() => {
-		emit("searchEntered", search.value);
-	},
-	{ debounce: 300 },
-);
 </script>
 <template>
-	<section class="sm:flex items-center justify-between my-2">
-		<FormKit
-			v-model="search"
-			prefix-icon="search"
-			type="search"
-			:placeholder="`Search ${title}...`"
-			autofocus
-		/>
+	<section class="my-2 flex flex-col gap-4">
 		<InfoCard :title="title" :value="total" link="#" />
-
-		<a
-			v-if="actionPermission"
-			class="btn btn-primary ml-auto shrink-0"
-			href="#"
-			@click.prevent="emit('actionClicked')"
-		>
-			<PlusIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-			{{ actionText }}
-		</a>
+		<ListToolbar
+			:title="title"
+			:action-text="actionText"
+			:search="search"
+			:show-action="actionPermission"
+			@action-clicked="emit('actionClicked')"
+			@search-entered="(value) => emit('searchEntered', value)"
+		/>
 	</section>
 </template>
