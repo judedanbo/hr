@@ -10,17 +10,17 @@
 								:href="item.href"
 								:class="[
 									item.current
-										? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
-										: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
-									'group flex gap-x-3 py-2 px-8  text-sm leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
+										? 'bg-green-50 text-green-800 border-green-700 dark:bg-green-500/10 dark:text-green-300 dark:border-green-400'
+										: 'border-transparent text-gray-700 hover:bg-gray-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white',
+									'group flex gap-x-3 border-l-4 py-2 px-6 text-sm leading-6 font-medium transition-colors',
 								]"
 							>
 								<component
 									:is="item.icon"
 									:class="[
 										item.current
-											? 'text-green-800 dark:text-gray-800'
-											: 'text-gray-800 dark:text-gray-50 group-hover:text-green-600 dark:group-hover:text-gray-600',
+											? 'text-green-700 dark:text-green-300'
+											: 'text-gray-400 group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-gray-200',
 										'h-6 w-6 shrink-0',
 									]"
 									aria-hidden="true"
@@ -33,7 +33,7 @@
 										item.current
 											? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
 											: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
-										'flex w-full gap-x-3 py-2 px-8  text-sm leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
+										'group flex w-full gap-x-3 border-l-4 py-2 px-6 text-sm leading-6 font-medium transition-colors',
 									]"
 								>
 									<component
@@ -49,7 +49,9 @@
 									{{ item.name }}
 									<ChevronRightIcon
 										:class="[
-											open ? 'rotate-90 text-gray-800' : 'text-gray-400',
+											open
+												? 'rotate-90 text-gray-500 dark:text-gray-300'
+												: 'text-gray-400 dark:text-gray-500',
 											'ml-auto h-5 w-5 shrink-0',
 										]"
 										aria-hidden="true"
@@ -69,7 +71,7 @@
 												subItem.current
 													? 'bg-green-50 text-green-800 font-bold tracking-wider dark:text-gray-800 border-l-4 border-solid border-green-800'
 													: 'text-gray-800 dark:text-gray-50 dark:hover:text-gray-600',
-												'block rounded-md py-2 pl-9 px-8 text-xs leading-6 font-semibold tracking-wider hover:bg-green-100 hover:text-green-800',
+												'block border-l-4 py-2 pl-12 pr-6 text-xs leading-6 font-medium transition-colors',
 											]"
 											>{{ subItem.name }}</DisclosureButton
 										>
@@ -83,10 +85,10 @@
 			<li class="mt-auto">
 				<Link
 					:href="route('help.index')"
-					class="group flex gap-x-3 rounded-md py-2 px-6 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
+					class="group flex gap-x-3 border-l-4 border-transparent py-2 px-6 text-sm font-medium leading-6 text-gray-700 transition-colors hover:bg-gray-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white"
 				>
 					<QuestionMarkCircleIcon
-						class="h-6 w-6 shrink-0 text-gray-400 dark:text-green-50 group-hover:text-green-600 dark:group-hover:text-gray-700"
+						class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-gray-200"
 						aria-hidden="true"
 					/>
 					Help
@@ -95,10 +97,10 @@
 			<li v-if="permissions?.includes('view admin settings')">
 				<Link
 					:href="route('settings.index')"
-					class="group flex gap-x-3 rounded-md py-2 px-6 text-sm font-semibold leading-6 text-gray-800 dark:text-gray-50 hover:bg-green-50 hover:text-green-600 dark:hover:text-gray-800"
+					class="group flex gap-x-3 border-l-4 border-transparent py-2 px-6 text-sm font-medium leading-6 text-gray-700 transition-colors hover:bg-gray-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white"
 				>
 					<Cog6ToothIcon
-						class="h-6 w-6 shrink-0 text-gray-400 dark:text-green-50 group-hover:text-green-600 dark:group-hover:text-gray-700"
+						class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-gray-200"
 						aria-hidden="true"
 					/>
 					Settings

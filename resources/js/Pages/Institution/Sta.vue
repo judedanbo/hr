@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import Tab from "@/Components/Tab.vue";
 import { differenceInYears } from "date-fns";
@@ -55,18 +55,17 @@ let BreadcrumbLinks = [
 	<Head :title="staff.name + ' - ' + institution.name" />
 
 	<MainLayout>
-		<template #header>
-			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-				{{ staff.name }}
-			</h2>
-		</template>
-
-		<div class="py-12">
+		<div class="py-6">
 			<div class="max-w-7xl mx-auto md:px-6 lg:px-8">
-				<div class="bg-white shadow-sm md:rounded-lg">
+				<BreadCrumpVue :links="BreadcrumbLinks" />
+				<h2
+					class="mt-4 mb-6 text-xl font-semibold leading-tight text-gray-900 dark:text-gray-50"
+				>
+					{{ staff.name }}
+				</h2>
+				<div class="bg-white dark:bg-gray-800 shadow-sm md:rounded-lg">
 					<div
-						class="px-4 md:px-0 bg-white border-b border-gray-200 md:flex justify-around md:justify-start mt-14 md:mt-0"
+						class="px-4 md:px-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 md:flex justify-around md:justify-start mt-14 md:mt-0"
 					>
 						<div
 							class="flex flex-col md:flex-row items-center justify-center \"
@@ -82,7 +81,7 @@ let BreadcrumbLinks = [
 							</div>
 							<div class="pt-8 w-full md:p-8">
 								<h1
-									class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wider text-gray-700"
+									class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wider text-gray-700 dark:text-gray-100"
 								>
 									{{ person.name }}
 								</h1>
@@ -90,7 +89,9 @@ let BreadcrumbLinks = [
 								<p class="text-sm md:text-lg font-bold">
 									{{ staff.unit.name }}
 								</p>
-								<p class="text-lg md:text-xl text-gray-500 py-4">
+								<p
+									class="text-lg md:text-xl text-gray-500 dark:text-gray-400 py-4"
+								>
 									{{ staff.current_job }}
 								</p>
 								<div class="lg:flex space-y-8 lg:space-y-0 justify-between">

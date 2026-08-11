@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import BreezeInput from "@/Components/Input.vue";
 import { ref, watch } from "vue";
@@ -54,17 +54,20 @@ let BreadCrumpLinks = [
 	<Head :title="institution.name + ' Staff'" />
 
 	<MainLayout>
-		<template #header>
-			<BreadCrumpVue :links="BreadCrumpLinks" />
-			<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-				{{ institution.name }}
-			</h2>
-		</template>
-
-		<div class="py-12">
+		<div class="py-6">
 			<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-				<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-					<div class="p-6 bg-white border-b border-gray-200">
+				<BreadCrumpVue :links="BreadCrumpLinks" />
+				<h2
+					class="mt-4 mb-6 text-xl font-semibold leading-tight text-gray-900 dark:text-gray-50"
+				>
+					{{ institution.name }}
+				</h2>
+				<div
+					class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
+				>
+					<div
+						class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+					>
 						<div class="sm:flex justify-between my-6">
 							<h3 class="mb-4 text-xl">
 								Staff ({{ institution.staff.toLocaleString() }})
@@ -92,7 +95,9 @@ let BreadCrumpLinks = [
 								<div
 									class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"
 								>
-									<div class="border-b border-gray-200 rounded-md shadow-md">
+									<div
+										class="border-b border-gray-200 dark:border-gray-700 rounded-md shadow-md"
+									>
 										<div v-if="staff" class="min-w-full flex flex-wrap py-4">
 											<div
 												v-for="stf in staff"
@@ -100,7 +105,7 @@ let BreadCrumpLinks = [
 												class="w-full mx-auto right-0 mt-2 sm:w-60"
 											>
 												<div
-													class="bg-white sm:rounded-lg overflow-hidden shadow-lg"
+													class="bg-white dark:bg-gray-800 sm:rounded-lg overflow-hidden shadow-lg"
 												>
 													<div class="text-center p-6 bg-gray-600 border-b">
 														<div
@@ -139,13 +144,15 @@ let BreadCrumpLinks = [
 																})
 															"
 														>
-															<a class="px-4 py-2 hover:bg-gray-100 flex">
+															<a
+																class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex"
+															>
 																<div class="text-green-600 flex items-center">
 																	<BuildingOffice2Icon class="w-5 h-5" />
 																</div>
 																<div class="pl-3">
 																	<p
-																		class="text-sm font-medium text-gray-800 leading-none"
+																		class="text-sm font-medium text-gray-800 dark:text-gray-100 leading-none"
 																	>
 																		Unit
 																	</p>
@@ -162,13 +169,15 @@ let BreadCrumpLinks = [
 																})
 															"
 														>
-															<a class="px-4 py-2 hover:bg-gray-100 flex">
+															<a
+																class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex"
+															>
 																<div class="text-gray-600">
 																	<BriefcaseIcon class="h-5 w-5" />
 																</div>
 																<div class="pl-3">
 																	<p
-																		class="text-sm font-medium text-gray-800 leading-none"
+																		class="text-sm font-medium text-gray-800 dark:text-gray-100 leading-none"
 																	>
 																		Job
 																	</p>
@@ -185,7 +194,7 @@ let BreadCrumpLinks = [
 
 										<!-- <template> -->
 										<div
-											class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+											class="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 sm:px-6"
 										>
 											<div class="flex flex-1 justify-between">
 												<Link
@@ -195,7 +204,7 @@ let BreadCrumpLinks = [
 															page: parseInt(filters.page) + 1,
 														})
 													"
-													class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+													class="relative inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
 													>Previous
 												</Link>
 												<div
@@ -234,7 +243,7 @@ let BreadCrumpLinks = [
 																: 1,
 														})
 													"
-													class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+													class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
 													>Next
 												</Link>
 											</div>

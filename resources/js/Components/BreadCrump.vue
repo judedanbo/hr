@@ -11,7 +11,10 @@ defineProps({
 });
 </script>
 <template>
-	<nav aria-label="Breadcrumb" class="rounded-md w-full flex bg-white dark:bg-gray-700 pl-8">
+	<nav
+		aria-label="Breadcrumb"
+		class="rounded-md w-full flex bg-white dark:bg-gray-700 pl-8"
+	>
 		<ol class="list-reset flex flex-wrap items-center">
 			<li>
 				<Link

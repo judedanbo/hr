@@ -390,7 +390,7 @@ const closeAlert = (index) => {
 		>
 			<!-- Sidebar component, swap this element with another sidebar if you like -->
 			<div
-				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-900 dark:bg-gray-800"
+				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
 			>
 				<Link
 					:href="route('dashboard')"
@@ -428,7 +428,7 @@ const closeAlert = (index) => {
 				<TopMenu :user-navigation="userNavigation" />
 			</div>
 
-			<main class="pb-6 bg-gray-100 dark:bg-gray-600 min-h-screen">
+			<main class="pb-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
 				<div
 					v-if="leavePlanning?.open && !leavePlanning?.submitted"
 					class="bg-amber-50 border-b border-amber-200 px-6 py-3 text-sm text-amber-900"
@@ -442,10 +442,7 @@ const closeAlert = (index) => {
 						Go to My Leave Plan
 					</Link>
 				</div>
-				<div class="">
-					<!-- permissions: {{ permissions }} -->
-					<slot />
-				</div>
+				<slot />
 			</main>
 		</div>
 	</div>

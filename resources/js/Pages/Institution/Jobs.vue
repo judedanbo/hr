@@ -1,5 +1,5 @@
 <script setup>
-import MainLayout from "@/Layouts/HrAuthenticated.vue";
+import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
@@ -41,16 +41,15 @@ debouncedWatch(
 	<Head title="Dashboard" />
 
 	<MainLayout>
-		<template #header>
-			<BreadCrumpVue :links="BreadcrumbLinks" />
-			<h2 class="font-semibold text-xl text-gray-800 leading-tight pt-2">
-				{{ institution.name }}
-			</h2>
-		</template>
-
-		<div class="py-2">
+		<div class="py-6">
 			<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-				<div class="bg-white overflow-hidden shadow-sm">
+				<BreadCrumpVue :links="BreadcrumbLinks" />
+				<h2
+					class="mt-4 mb-6 text-xl font-semibold leading-tight text-gray-900 dark:text-gray-50"
+				>
+					{{ institution.name }}
+				</h2>
+				<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
 					<div class="p-4 md:flex justify-around">
 						<div class="flex flex-col md:flex-row items-center">
 							<h1 class="text-2xl font-bold tracking-wider text-gray-700">
