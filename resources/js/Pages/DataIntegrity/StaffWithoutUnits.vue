@@ -68,7 +68,7 @@ const breadcrumbLinks = [
 						<div
 							v-for="member in staff"
 							:key="member.id"
-							class="rounded-lg border border-red-200 dark:border-red-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+							class="rounded-lg border border-red-200 dark:border-red-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 						>
 							<div class="flex items-center gap-4">
 								<div

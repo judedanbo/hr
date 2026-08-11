@@ -24,6 +24,14 @@ const props = defineProps({
 		type: String,
 		default: "",
 	},
+	showAction: {
+		type: Boolean,
+		default: true,
+	},
+	showSearch: {
+		type: Boolean,
+		default: true,
+	},
 });
 const search = ref(props.search);
 debouncedWatch(
@@ -37,6 +45,7 @@ debouncedWatch(
 <template>
 	<section class="sm:flex items-center justify-between my-2">
 		<FormKit
+			v-if="showSearch"
 			v-model="search"
 			prefix-icon="search"
 			type="search"
@@ -46,6 +55,7 @@ debouncedWatch(
 		<InfoCard :title="title" :value="total" link="#" />
 
 		<a
+			v-if="showAction"
 			class="ml-auto flex items-center gap-x-1 rounded-md bg-green-600 dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
 			href="#"
 			@click.prevent="emit('actionClicked')"

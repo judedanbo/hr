@@ -50,7 +50,7 @@ const tableCols = ["Roles", "Permissions", "Users"];
 				</MainTable>
 				<slot name="pagination" />
 			</div>
-			<NoItem v-else name="Staff" />
+			<NoItem v-else name="Roles" />
 		</div>
 	</section>
 </template>

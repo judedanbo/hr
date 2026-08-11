@@ -246,7 +246,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 									<tr
 										v-for="dept in summaryStats.departmentBreakdown"
 										:key="dept.name"
-										class="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+										class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 									>
 										<td
 											class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100"
@@ -394,7 +394,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 										<div
 											v-for="member in unitGroup"
 											:key="member.id"
-											class="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+											class="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 										>
 											<div class="flex items-center gap-4">
 												<div

@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onUpdated, computed } from "vue";
-import MainNav from "../Components/MainNav.vue";
 import NewNav from "../Components/NewNav.vue";
 import TopMenu from "@/Components/TopMenu.vue";
 import { Link, usePage } from "@inertiajs/vue3";
@@ -24,6 +23,7 @@ import {
 	UserGroupIcon,
 	ShieldCheckIcon,
 	PhotoIcon,
+	ClipboardDocumentListIcon,
 } from "@heroicons/vue/24/outline";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 
@@ -280,14 +280,14 @@ const navigation = [
 		href: route("role.index"),
 		icon: UserGroupIcon,
 		current: route().current("role.*"),
-		visible: permissions.value?.includes("view all roles"),
+		visible: permissions.value?.includes("view roles"),
 	},
 	{
 		name: "Audit Logs",
 		href: route("audit-log.index"),
-		icon: UsersIcon,
-		current: route().current("logs.*"),
-		visible: permissions.value?.includes("view all audit logs"),
+		icon: ClipboardDocumentListIcon,
+		current: route().current("audit-log.*"),
+		visible: permissions.value?.includes("view user activity"),
 	},
 	{
 		name: "Photo Approvals",
@@ -301,7 +301,7 @@ const navigation = [
 		href: route("data-integrity.index"),
 		icon: ShieldCheckIcon,
 		current: route().current("data-integrity.*"),
-		visible: page.props?.auth?.roles?.includes("super-administrator"),
+		visible: permissions.value?.includes("data-integrity.view"),
 	},
 ];
 const userNavigation = [
@@ -376,8 +376,7 @@ const closeAlert = (index) => {
 								<div class="flex h-16 shrink-0 items-center">
 									<BreezeApplicationLogo class="block h-9 w-auto" />
 								</div>
-								<MainNav :navigation="navigation" />
-								<!-- <NewNav :navigation="navigation" /> -->
+								<NewNav :navigation="navigation" />
 							</div>
 						</DialogPanel>
 					</TransitionChild>
@@ -407,7 +406,6 @@ const closeAlert = (index) => {
 					</div>
 				</Link>
 				<NewNav :navigation="navigation" />
-				<!-- <MainNav :navigation="navigation" :teams="teams" /> -->
 			</div>
 		</div>
 

@@ -14,7 +14,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        if (Gate::denies('view all roles')) {
+        if (Gate::denies('view roles')) {
             activity()
                 ->causedBy(auth()->user())
                 ->event('view role')

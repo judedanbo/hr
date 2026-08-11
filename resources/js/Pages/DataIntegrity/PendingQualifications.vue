@@ -146,7 +146,7 @@ const rejectQualification = (qualification) => {
 						<div
 							v-for="qualification in qualifications"
 							:key="qualification.id"
-							class="rounded-lg border border-amber-200 dark:border-amber-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+							class="rounded-lg border border-amber-200 dark:border-amber-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 						>
 							<div class="flex items-start gap-4">
 								<div
