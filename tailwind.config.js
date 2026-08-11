@@ -3,13 +3,14 @@ const formKitTailwind = require("@formkit/themes/tailwindcss");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	mode: "jit",
 	darkMode: "class",
 	content: [
 		"./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
 		"./storage/framework/views/*.php",
 		"./resources/views/**/*.blade.php",
-		"./resources/js/**/*.vue",
+		// The FormKit theme lives in app.js, so .js must be scanned or most of
+		// its classes are purged before they reach the browser.
+		"./resources/js/**/*.{js,vue}",
 	],
 
 	theme: {
