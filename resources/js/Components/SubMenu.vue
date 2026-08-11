@@ -23,11 +23,11 @@ const emit = defineEmits(["itemClicked"]);
 <template>
 	<Menu as="div" class="relative">
 		<MenuButton
-			class="ml-3 block py-3 rounded-lg hover:bg-green-50 dark:hover:bg-gray-50 group"
+			class="ml-3 block py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
 		>
 			<span class="sr-only">Menu</span>
 			<EllipsisVerticalIcon
-				class="h-5 w-5 text-gray-500 dark:text-gray-300 group-hover:text-green-500 dark:group-hover:text-gray-700"
+				class="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-gray-200"
 				aria-hidden="true"
 			/>
 		</MenuButton>
@@ -41,7 +41,7 @@ const emit = defineEmits(["itemClicked"]);
 			leave-to-class="transform opacity-0 scale-95"
 		>
 			<MenuItems
-				class="absolute right-5 -top-3 z-50 mt-0.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-500 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+				class="absolute right-0 top-full z-50 mt-1 w-40 origin-top-right rounded-lg bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 focus:outline-none"
 			>
 				<template v-for="item in items" :key="item">
 					<MenuItem
@@ -62,8 +62,8 @@ const emit = defineEmits(["itemClicked"]);
 						<button
 							type="button"
 							:class="[
-								active ? 'bg-gray-50' : '',
-								'block w-full py-1 px-4 text-left text-sm leading-6 text-gray-900 dark:text-white dark:hover:text-gray-900',
+								active ? 'bg-gray-100 dark:bg-gray-700' : '',
+								'block w-full py-1.5 px-4 text-left text-sm leading-6 text-gray-700 dark:text-gray-200',
 							]"
 						>
 							{{ item }}

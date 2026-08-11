@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Buttons appear as raw <a>/<button> elements in well over a hundred places.
+ * A component layer keeps them consistent without rewriting every call site.
+ *
+ * green-600 on white is 3.3:1, below the 4.5:1 AA threshold for the white
+ * label, so the primary surface is green-700 (5.0:1).
+ */
+@layer components {
+	.btn {
+		@apply inline-flex items-center justify-center gap-x-1.5 rounded-lg px-3 py-2 text-sm font-semibold
+			shadow-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+			disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+	}
+
+	.btn-primary {
+		@apply bg-green-700 text-white hover:bg-green-800 focus-visible:outline-green-700 dark:hover:bg-green-600;
+	}
+
+	.btn-secondary {
+		@apply bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-gray-400
+			dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-600 dark:hover:bg-gray-700;
+	}
+
+	.btn-danger {
+		@apply bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600;
+	}
+
+	.btn-ghost {
+		@apply text-gray-600 shadow-none hover:bg-gray-100 hover:text-gray-900
+			dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white;
+	}
+
+	.btn-sm {
+		@apply px-2.5 py-1.5 text-xs;
+	}
+}

@@ -18,46 +18,40 @@ defineProps({
 <template>
 	<footer
 		v-if="navigation.total > 0"
-		class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+		class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6"
 	>
 		<div class="flex-1 flex justify-between sm:hidden">
-			<div
-				class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
-				:class="
-					navigation.prev_page_url
-						? 'cursor-pointer hover:bg-gray-50'
-						: 'opacity-50 cursor-not-allowed'
-				"
+			<button
+				type="button"
+				class="btn btn-secondary btn-sm"
+				:disabled="!navigation.prev_page_url"
 				@click="pageClicked(navigation.prev_page_url)"
 			>
 				Previous
-			</div>
-			<div
-				class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
-				:class="
-					navigation.next_page_url
-						? 'cursor-pointer hover:bg-gray-50'
-						: 'opacity-50 cursor-not-allowed'
-				"
+			</button>
+			<button
+				type="button"
+				class="btn btn-secondary btn-sm ml-3"
+				:disabled="!navigation.next_page_url"
 				@click="pageClicked(navigation.next_page_url)"
 			>
 				Next
-			</div>
+			</button>
 		</div>
 		<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
 			<div>
-				<p class="text-sm text-gray-700 dark:text-gray-50">
+				<p class="text-sm text-gray-700 dark:text-gray-300">
 					Showing
 					{{ " " }}
-					<span class="font-medium">{{ navigation.from }}</span>
+					<span class="font-medium tabular-nums">{{ navigation.from }}</span>
 					{{ " " }}
 					to
 					{{ " " }}
-					<span class="font-medium">{{ navigation.to }}</span>
+					<span class="font-medium tabular-nums">{{ navigation.to }}</span>
 					{{ " " }}
 					of
 					{{ " " }}
-					<span class="font-medium">{{ navigation.total }}</span>
+					<span class="font-medium tabular-nums">{{ navigation.total }}</span>
 					{{ " " }}
 					results
 				</p>
@@ -67,34 +61,39 @@ defineProps({
 					class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
 					aria-label="Pagination"
 				>
-					<div
-						class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-50 hover:bg-gray-50"
+					<button
+						type="button"
+						class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+						:disabled="!navigation.prev_page_url"
 						@click="pageClicked(navigation.prev_page_url)"
 					>
 						<span class="sr-only">Previous</span>
 						<ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
-					</div>
-					<div
+					</button>
+					<button
 						v-for="(link, index) in navigation.links.slice(1, -1)"
 						:key="index"
-						class="z-10 relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer"
+						type="button"
+						class="relative inline-flex items-center px-4 py-2 border text-sm font-medium tabular-nums"
 						:class="
 							link.active
-								? 'bg-green-100 dark:bg-gray-800 border-green-500 dark:border-gray-400 text-green-600 dark:text-gray-50'
-								: 'bg-white dark:bg-gray-500  border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300'
+								? 'z-10 bg-green-50 dark:bg-green-500/10 border-green-600 dark:border-green-500 text-green-700 dark:text-green-300'
+								: 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
 						"
+						:aria-current="link.active ? 'page' : undefined"
 						@click="pageClicked(link.url)"
 					>
 						{{ link.label }}
-					</div>
-					<div
-						preserve-scroll
-						class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-50 hover:bg-gray-50 cursor-pointer"
+					</button>
+					<button
+						type="button"
+						class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+						:disabled="!navigation.next_page_url"
 						@click="pageClicked(navigation.next_page_url)"
 					>
 						<span class="sr-only">Next</span>
 						<ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
-					</div>
+					</button>
 				</nav>
 			</div>
 		</div>
