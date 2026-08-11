@@ -106,11 +106,13 @@ const isUnitCollapsed = (departmentName, unitName) => {
 		<Head title="Active Staff with Expired Status" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6">
-						<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+						<h1
+							class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
+						>
 							Active Staff with Expired Status
 						</h1>
 						<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -127,30 +129,30 @@ const isUnitCollapsed = (departmentName, unitName) => {
 					>
 						<!-- Total Staff Card -->
 						<div
-							class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-800"
+							class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4"
 						>
 							<div class="flex items-center justify-between">
 								<div>
 									<p
-										class="text-sm font-medium text-yellow-700 dark:text-yellow-300"
+										class="text-sm font-medium text-amber-700 dark:text-amber-300"
 									>
 										Total Staff
 									</p>
 									<p
-										class="mt-1 text-3xl font-bold text-yellow-900 dark:text-yellow-100"
+										class="mt-1 text-2xl font-semibold text-amber-900 dark:text-amber-100"
 									>
 										{{ totalCount }}
 									</p>
 								</div>
 								<ClockIcon
-									class="h-12 w-12 text-yellow-400 dark:text-yellow-600"
+									class="h-12 w-12 text-amber-400 dark:text-amber-600"
 								/>
 							</div>
 						</div>
 
 						<!-- Departments Card -->
 						<div
-							class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800"
+							class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800"
 						>
 							<div class="flex items-center justify-between">
 								<div>
@@ -160,7 +162,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 										Departments
 									</p>
 									<p
-										class="mt-1 text-3xl font-bold text-blue-900 dark:text-blue-100"
+										class="mt-1 text-2xl font-semibold text-blue-900 dark:text-blue-100"
 									>
 										{{ summaryStats.departments }}
 									</p>
@@ -173,7 +175,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 
 						<!-- Units Card -->
 						<div
-							class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-800"
+							class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800"
 						>
 							<div class="flex items-center justify-between">
 								<div>
@@ -183,7 +185,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 										Units
 									</p>
 									<p
-										class="mt-1 text-3xl font-bold text-purple-900 dark:text-purple-100"
+										class="mt-1 text-2xl font-semibold text-purple-900 dark:text-purple-100"
 									>
 										{{ summaryStats.units }}
 									</p>
@@ -263,7 +265,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 											class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
 										>
 											<span
-												class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200"
+												class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
 											>
 												{{ dept.staff }}
 											</span>
@@ -308,7 +310,7 @@ const isUnitCollapsed = (departmentName, unitName) => {
 							<!-- Department Header (Clickable) -->
 							<button
 								type="button"
-								class="w-full flex items-center gap-3 pb-2 border-b-2 border-yellow-300 dark:border-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors cursor-pointer"
+								class="w-full flex items-center gap-3 pb-2 border-b-2 border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors cursor-pointer"
 								@click="toggleDepartment(departmentName)"
 							>
 								<component
@@ -317,18 +319,18 @@ const isUnitCollapsed = (departmentName, unitName) => {
 											? ChevronRightIcon
 											: ChevronDownIcon
 									"
-									class="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0"
+									class="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0"
 								/>
 								<BuildingOfficeIcon
-									class="h-6 w-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0"
+									class="h-6 w-6 text-amber-600 dark:text-amber-400 flex-shrink-0"
 								/>
 								<h2
-									class="text-xl font-bold text-yellow-900 dark:text-yellow-100 text-left"
+									class="text-xl font-bold text-amber-900 dark:text-amber-100 text-left"
 								>
 									{{ departmentName }}
 								</h2>
 								<span
-									class="ml-auto px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200"
+									class="ml-auto px-3 py-1 text-sm font-semibold rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
 								>
 									{{
 										Object.values(departmentGroup).reduce(
@@ -388,14 +390,14 @@ const isUnitCollapsed = (departmentName, unitName) => {
 										<div
 											v-for="member in unitGroup"
 											:key="member.id"
-											class="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+											class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
 										>
 											<div class="flex items-start gap-4">
 												<div
-													class="flex-shrink-0 h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center"
+													class="flex-shrink-0 h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center"
 												>
 													<ExclamationTriangleIcon
-														class="h-7 w-7 text-yellow-600 dark:text-yellow-400"
+														class="h-7 w-7 text-amber-600 dark:text-amber-400"
 													/>
 												</div>
 												<div class="flex-1">

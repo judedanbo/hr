@@ -27,20 +27,18 @@ const breadcrumbLinks = [
 		<Head title="Staff without Gender" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6">
 						<h1
-							class="text-3xl font-bold text-gray-900 dark:text-gray-100"
+							class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
 						>
 							Staff without Gender
 						</h1>
 						<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
 							{{ staff.length }} active staff
-							{{
-								staff.length === 1 ? "member has" : "members have"
-							}}
+							{{ staff.length === 1 ? "member has" : "members have" }}
 							missing gender information
 						</p>
 					</div>
@@ -69,14 +67,14 @@ const breadcrumbLinks = [
 							v-for="member in staff"
 							:key="member.id"
 							:href="route('staff.show', member.id)"
-							class="block rounded-lg border border-yellow-200 dark:border-yellow-800 bg-white dark:bg-gray-800 p-4 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors cursor-pointer"
+							class="block rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors cursor-pointer"
 						>
 							<div class="flex items-center gap-4">
 								<div
-									class="flex-shrink-0 h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center"
+									class="flex-shrink-0 h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center"
 								>
 									<UserIcon
-										class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
+										class="h-6 w-6 text-amber-600 dark:text-amber-400"
 									/>
 								</div>
 								<div class="flex-1">
@@ -112,9 +110,9 @@ const breadcrumbLinks = [
 						class="mt-6 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4"
 					>
 						<p class="text-sm text-blue-700 dark:text-blue-300">
-							<strong>Note:</strong> Gender information needs to be
-							updated manually through the staff management
-							interface. This cannot be automatically fixed.
+							<strong>Note:</strong> Gender information needs to be updated
+							manually through the staff management interface. This cannot be
+							automatically fixed.
 						</p>
 					</div>
 				</div>

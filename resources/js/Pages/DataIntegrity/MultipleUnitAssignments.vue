@@ -31,20 +31,18 @@ const breadcrumbLinks = [
 		<Head title="Staff with Multiple Unit Assignments" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6">
 						<h1
-							class="text-3xl font-bold text-gray-900 dark:text-gray-100"
+							class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
 						>
 							Staff with Multiple Unit Assignments
 						</h1>
 						<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
 							{{ staff.length }} staff
-							{{
-								staff.length === 1 ? "member is" : "members are"
-							}}
+							{{ staff.length === 1 ? "member is" : "members are" }}
 							assigned to multiple units simultaneously
 						</p>
 					</div>
@@ -72,34 +70,32 @@ const breadcrumbLinks = [
 						<div
 							v-for="member in staff"
 							:key="member.id"
-							class="rounded-lg border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 p-6"
+							class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6"
 						>
 							<div class="flex items-start gap-4">
 								<div class="flex-1">
 									<div class="flex items-start gap-3">
 										<ExclamationTriangleIcon
-											class="h-6 w-6 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+											class="h-6 w-6 flex-shrink-0 text-amber-600 dark:text-amber-400"
 										/>
 										<div class="flex-1">
 											<Link
 												:href="route('staff.show', member.id)"
-												class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 hover:underline"
+												class="text-lg font-semibold text-amber-900 dark:text-amber-100 hover:underline"
 											>
 												{{ member.name }}
 											</Link>
-											<p
-												class="text-sm text-yellow-700 dark:text-yellow-300"
-											>
+											<p class="text-sm text-amber-700 dark:text-amber-300">
 												Staff #{{ member.staff_number }}
 												<span v-if="member.file_number">
 													| File #{{ member.file_number }}
 												</span>
 											</p>
 											<p
-												class="mt-1 text-sm font-medium text-yellow-800 dark:text-yellow-200"
+												class="mt-1 text-sm font-medium text-amber-800 dark:text-amber-200"
 											>
-												{{ member.active_units_count }} active unit
-												assignments found
+												{{ member.active_units_count }} active unit assignments
+												found
 											</p>
 										</div>
 									</div>
@@ -111,13 +107,9 @@ const breadcrumbLinks = [
 											:key="unit.pivot_id"
 											class="rounded-md bg-white dark:bg-gray-800 p-3 shadow-sm"
 										>
-											<div
-												class="flex items-center justify-between"
-											>
+											<div class="flex items-center justify-between">
 												<div class="flex items-center gap-3">
-													<BuildingOfficeIcon
-														class="h-5 w-5 text-gray-400"
-													/>
+													<BuildingOfficeIcon class="h-5 w-5 text-gray-400" />
 													<div>
 														<p
 															class="font-medium text-gray-900 dark:text-gray-100"
@@ -130,13 +122,8 @@ const breadcrumbLinks = [
 																Most Recent
 															</span>
 														</p>
-														<p
-															class="text-sm text-gray-500 dark:text-gray-400"
-														>
-															<span
-																v-if="unit.type"
-																class="capitalize"
-															>
+														<p class="text-sm text-gray-500 dark:text-gray-400">
+															<span v-if="unit.type" class="capitalize">
 																{{ unit.type }} •
 															</span>
 															Started:
@@ -157,11 +144,10 @@ const breadcrumbLinks = [
 						class="mt-6 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4"
 					>
 						<p class="text-sm text-blue-700 dark:text-blue-300">
-							<strong>Note:</strong> Staff with multiple unit
-							assignments may indicate a data entry error or a
-							legitimate secondary assignment. Review each case and
-							manually update unit assignments through the staff
-							management interface if needed.
+							<strong>Note:</strong> Staff with multiple unit assignments may
+							indicate a data entry error or a legitimate secondary assignment.
+							Review each case and manually update unit assignments through the
+							staff management interface if needed.
 						</p>
 					</div>
 				</div>

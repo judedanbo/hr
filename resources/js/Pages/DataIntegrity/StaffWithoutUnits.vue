@@ -27,20 +27,18 @@ const breadcrumbLinks = [
 		<Head title="Staff without Units" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6">
 						<h1
-							class="text-3xl font-bold text-gray-900 dark:text-gray-100"
+							class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
 						>
 							Staff without Units
 						</h1>
 						<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
 							{{ staff.length }} active staff
-							{{
-								staff.length === 1 ? "member has" : "members have"
-							}}
+							{{ staff.length === 1 ? "member has" : "members have" }}
 							no current unit assignment
 						</p>
 					</div>
@@ -68,15 +66,13 @@ const breadcrumbLinks = [
 						<div
 							v-for="member in staff"
 							:key="member.id"
-							class="rounded-lg border border-red-200 dark:border-red-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+							class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
 						>
 							<div class="flex items-center gap-4">
 								<div
 									class="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"
 								>
-									<UserIcon
-										class="h-6 w-6 text-red-600 dark:text-red-400"
-									/>
+									<UserIcon class="h-6 w-6 text-red-600 dark:text-red-400" />
 								</div>
 								<div class="flex-1">
 									<h3
@@ -105,9 +101,9 @@ const breadcrumbLinks = [
 						class="mt-6 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4"
 					>
 						<p class="text-sm text-blue-700 dark:text-blue-300">
-							<strong>Note:</strong> These staff members need to be
-							manually assigned to units through the staff management
-							interface. This cannot be automatically fixed.
+							<strong>Note:</strong> These staff members need to be manually
+							assigned to units through the staff management interface. This
+							cannot be automatically fixed.
 						</p>
 					</div>
 				</div>

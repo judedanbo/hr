@@ -5,113 +5,76 @@ import {
 	CheckCircleIcon,
 	ChevronRightIcon,
 } from "@heroicons/vue/24/outline";
+import Badge from "@/Components/UI/Badge.vue";
 import { computed } from "vue";
 
 const props = defineProps({
-	title: {
-		type: String,
-		required: true,
-	},
-	description: {
-		type: String,
-		required: true,
-	},
-	count: {
-		type: Number,
-		required: true,
-	},
+	title: { type: String, required: true },
+	description: { type: String, required: true },
+	count: { type: Number, required: true },
 	severity: {
 		type: String,
 		default: "success",
 		validator: (value) => ["success", "warning", "error"].includes(value),
 	},
-	href: {
-		type: String,
-		required: true,
-	},
+	href: { type: String, required: true },
 });
 
-const severityClasses = computed(() => {
-	const classes = {
-		success: {
-			bg: "bg-green-50 dark:bg-green-900/20",
-			border: "border-green-200 dark:border-green-800",
-			icon: "text-green-600 dark:text-green-400",
-			count: "text-green-900 dark:text-green-100",
-			text: "text-green-700 dark:text-green-300",
-		},
-		warning: {
-			bg: "bg-yellow-50 dark:bg-yellow-900/20",
-			border: "border-yellow-200 dark:border-yellow-800",
-			icon: "text-yellow-600 dark:text-yellow-400",
-			count: "text-yellow-900 dark:text-yellow-100",
-			text: "text-yellow-700 dark:text-yellow-300",
-		},
-		error: {
-			bg: "bg-red-50 dark:bg-red-900/20",
-			border: "border-red-200 dark:border-red-800",
-			icon: "text-red-600 dark:text-red-400",
-			count: "text-red-900 dark:text-red-100",
-			text: "text-red-700 dark:text-red-300",
-		},
-	};
-	return classes[props.severity];
-});
+// The card sits on the standard surface; severity is carried by the icon and
+// a badge rather than a full-bleed tint, so a page of these does not read as
+// a wall of colour.
+const accents = {
+	success: { icon: "text-green-600 dark:text-green-400", variant: "success" },
+	warning: { icon: "text-amber-600 dark:text-amber-400", variant: "warning" },
+	error: { icon: "text-red-600 dark:text-red-400", variant: "danger" },
+};
+
+const accent = computed(() => accents[props.severity] ?? accents.success);
 </script>
 
 <template>
 	<Link
 		:href="href"
-		class="block rounded-lg border-2 p-6 transition-all hover:shadow-lg"
-		:class="[severityClasses.bg, severityClasses.border]"
+		class="group flex items-start gap-4 rounded-2xl border border-green-200/60 bg-white p-5 shadow-sm transition hover:border-green-400 hover:shadow dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-500"
 	>
-		<div class="flex items-start justify-between">
-			<div class="flex items-start space-x-4">
-				<div class="flex-shrink-0">
-					<CheckCircleIcon
-						v-if="severity === 'success'"
-						class="h-8 w-8"
-						:class="severityClasses.icon"
-					/>
-					<ExclamationTriangleIcon
-						v-else
-						class="h-8 w-8"
-						:class="severityClasses.icon"
-					/>
-				</div>
-				<div class="flex-1">
-					<h3
-						class="text-lg font-semibold"
-						:class="severityClasses.count"
-					>
-						{{ title }}
-					</h3>
-					<p class="mt-1 text-sm" :class="severityClasses.text">
-						{{ description }}
-					</p>
-					<div class="mt-3">
-						<span
-							class="text-3xl font-bold"
-							:class="severityClasses.count"
-						>
-							{{ count.toLocaleString() }}
-						</span>
-						<span class="ml-2 text-sm" :class="severityClasses.text">
-							{{
-								count === 1
-									? "issue found"
-									: count === 0
-										? "issues found"
-										: "issues found"
-							}}
-						</span>
-					</div>
-				</div>
+		<CheckCircleIcon
+			v-if="severity === 'success'"
+			class="h-6 w-6 flex-shrink-0"
+			:class="accent.icon"
+			aria-hidden="true"
+		/>
+		<ExclamationTriangleIcon
+			v-else
+			class="h-6 w-6 flex-shrink-0"
+			:class="accent.icon"
+			aria-hidden="true"
+		/>
+
+		<div class="min-w-0 flex-1">
+			<div class="flex items-center gap-2">
+				<h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+					{{ title }}
+				</h3>
+				<Badge :variant="accent.variant">
+					{{ severity === "success" ? "Clear" : "Needs attention" }}
+				</Badge>
 			</div>
-			<ChevronRightIcon
-				class="h-6 w-6 flex-shrink-0"
-				:class="severityClasses.icon"
-			/>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+				{{ description }}
+			</p>
+			<p
+				class="mt-3 text-2xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-gray-50"
+			>
+				{{ count.toLocaleString() }}
+				<span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+					{{ count === 1 ? "issue" : "issues" }}
+				</span>
+			</p>
 		</div>
+
+		<ChevronRightIcon
+			class="h-5 w-5 flex-shrink-0 text-gray-300 transition-colors group-hover:text-green-600 dark:text-gray-500"
+			aria-hidden="true"
+		/>
 	</Link>
 </template>

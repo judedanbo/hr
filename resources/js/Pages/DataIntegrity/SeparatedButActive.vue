@@ -30,20 +30,18 @@ const breadcrumbLinks = [
 		<Head title="Separated but Active" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6">
 						<h1
-							class="text-3xl font-bold text-gray-900 dark:text-gray-100"
+							class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
 						>
 							Separated but Active
 						</h1>
 						<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
 							{{ staff.length }} staff
-							{{
-								staff.length === 1 ? "member is" : "members are"
-							}}
+							{{ staff.length === 1 ? "member is" : "members are" }}
 							marked as active but have separation status recorded
 						</p>
 					</div>
@@ -71,24 +69,24 @@ const breadcrumbLinks = [
 						<div
 							v-for="member in staff"
 							:key="member.id"
-							class="rounded-lg border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 p-5"
+							class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5"
 						>
 							<div class="flex items-start gap-4">
 								<div
-									class="flex-shrink-0 h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center"
+									class="flex-shrink-0 h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center"
 								>
 									<ExclamationTriangleIcon
-										class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
+										class="h-6 w-6 text-amber-600 dark:text-amber-400"
 									/>
 								</div>
 								<div class="flex-1">
 									<h3
-										class="text-lg font-semibold text-yellow-900 dark:text-yellow-100"
+										class="text-lg font-semibold text-amber-900 dark:text-amber-100"
 									>
 										{{ member.name }}
 									</h3>
 									<div
-										class="mt-1 flex flex-wrap gap-x-4 text-sm text-yellow-700 dark:text-yellow-300"
+										class="mt-1 flex flex-wrap gap-x-4 text-sm text-amber-700 dark:text-amber-300"
 									>
 										<span>Staff #{{ member.staff_number }}</span>
 										<span v-if="member.file_number">
@@ -101,11 +99,14 @@ const breadcrumbLinks = [
 
 									<!-- Separation Details -->
 									<div
-										v-if="member.separation_statuses && member.separation_statuses.length > 0"
+										v-if="
+											member.separation_statuses &&
+											member.separation_statuses.length > 0
+										"
 										class="mt-4 space-y-2"
 									>
 										<p
-											class="text-sm font-medium text-yellow-800 dark:text-yellow-200"
+											class="text-sm font-medium text-amber-800 dark:text-amber-200"
 										>
 											Separation Status:
 										</p>
@@ -147,7 +148,7 @@ const breadcrumbLinks = [
 									</div>
 
 									<!-- Current Status -->
-									<div class="mt-3 text-sm text-yellow-700 dark:text-yellow-300">
+									<div class="mt-3 text-sm text-amber-700 dark:text-amber-300">
 										<span class="font-medium">Current Status:</span>
 										<span
 											class="ml-2 px-2 py-1 rounded-md bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
@@ -165,11 +166,10 @@ const breadcrumbLinks = [
 						class="mt-6 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4"
 					>
 						<p class="text-sm text-blue-700 dark:text-blue-300">
-							<strong>Note:</strong> These discrepancies require manual
-							review. Staff marked as active should not have separation
-							status, or separated staff should not be marked as active.
-							Please review each case individually through the staff
-							management interface.
+							<strong>Note:</strong> These discrepancies require manual review.
+							Staff marked as active should not have separation status, or
+							separated staff should not be marked as active. Please review each
+							case individually through the staff management interface.
 						</p>
 					</div>
 				</div>

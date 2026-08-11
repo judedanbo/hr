@@ -102,23 +102,19 @@ const canFix = computed(() =>
 		<Head title="Staff with Multiple Active Ranks" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Header -->
 					<div class="mb-6 flex items-center justify-between">
 						<div>
 							<h1
-								class="text-3xl font-bold text-gray-900 dark:text-gray-100"
+								class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
 							>
 								Staff with Multiple Active Ranks
 							</h1>
-							<p
-								class="mt-2 text-sm text-gray-600 dark:text-gray-400"
-							>
+							<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
 								{{ staff.length }} staff
-								{{
-									staff.length === 1 ? "member has" : "members have"
-								}}
+								{{ staff.length === 1 ? "member has" : "members have" }}
 								multiple ranks with no end date
 							</p>
 						</div>
@@ -129,11 +125,7 @@ const canFix = computed(() =>
 							class="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-green-700 dark:hover:bg-green-600"
 							@click="openBulkFixModal"
 						>
-							{{
-								processing
-									? "Fixing All..."
-									: `Fix All (${staff.length})`
-							}}
+							{{ processing ? "Fixing All..." : `Fix All (${staff.length})` }}
 						</button>
 					</div>
 
@@ -160,36 +152,30 @@ const canFix = computed(() =>
 						<div
 							v-for="member in staff"
 							:key="member.id"
-							class="rounded-lg border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 p-6"
+							class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6"
 						>
-							<div
-								class="flex items-start justify-between gap-4"
-							>
+							<div class="flex items-start justify-between gap-4">
 								<div class="flex-1">
 									<div class="flex items-start gap-3">
 										<ExclamationTriangleIcon
-											class="h-6 w-6 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+											class="h-6 w-6 flex-shrink-0 text-amber-600 dark:text-amber-400"
 										/>
 										<div class="flex-1">
 											<h3
-												class="text-lg font-semibold text-yellow-900 dark:text-yellow-100"
+												class="text-lg font-semibold text-amber-900 dark:text-amber-100"
 											>
 												{{ member.name }}
 											</h3>
-											<p
-												class="text-sm text-yellow-700 dark:text-yellow-300"
-											>
+											<p class="text-sm text-amber-700 dark:text-amber-300">
 												Staff #{{ member.staff_number }}
 												<span v-if="member.file_number">
 													| File #{{ member.file_number }}
 												</span>
 											</p>
 											<p
-												class="mt-1 text-sm font-medium text-yellow-800 dark:text-yellow-200"
+												class="mt-1 text-sm font-medium text-amber-800 dark:text-amber-200"
 											>
-												{{
-													member.active_ranks_count
-												}}
+												{{ member.active_ranks_count }}
 												active ranks found
 											</p>
 										</div>
@@ -198,15 +184,11 @@ const canFix = computed(() =>
 									<!-- Ranks List -->
 									<div class="mt-4 space-y-2 pl-9">
 										<div
-											v-for="(
-												rank, index
-											) in member.ranks"
+											v-for="(rank, index) in member.ranks"
 											:key="rank.pivot_id"
 											class="rounded-md bg-white dark:bg-gray-800 p-3 shadow-sm"
 										>
-											<div
-												class="flex items-center justify-between"
-											>
+											<div class="flex items-center justify-between">
 												<div>
 													<p
 														class="font-medium text-gray-900 dark:text-gray-100"
@@ -219,13 +201,9 @@ const canFix = computed(() =>
 															Most Recent
 														</span>
 													</p>
-													<p
-														class="text-sm text-gray-500 dark:text-gray-400"
-													>
+													<p class="text-sm text-gray-500 dark:text-gray-400">
 														Started:
-														{{
-															rank.start_date_formatted
-														}}
+														{{ rank.start_date_formatted }}
 													</p>
 												</div>
 											</div>
@@ -237,16 +215,12 @@ const canFix = computed(() =>
 								<button
 									v-if="canFix"
 									type="button"
-									:disabled="
-										processing &&
-										processingStaffId === member.id
-									"
+									:disabled="processing && processingStaffId === member.id"
 									class="flex-shrink-0 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-green-700 dark:hover:bg-green-600"
 									@click="openFixModal(member)"
 								>
 									{{
-										processing &&
-										processingStaffId === member.id
+										processing && processingStaffId === member.id
 											? "Fixing..."
 											: "Fix"
 									}}
@@ -262,10 +236,10 @@ const canFix = computed(() =>
 		<Modal :show="showFixModal" @close="closeFixModal">
 			<div class="sm:flex sm:items-start">
 				<div
-					class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 sm:mx-0 sm:h-10 sm:w-10"
+					class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30 sm:mx-0 sm:h-10 sm:w-10"
 				>
 					<ExclamationTriangleIcon
-						class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
+						class="h-6 w-6 text-amber-600 dark:text-amber-400"
 						aria-hidden="true"
 					/>
 				</div>
@@ -294,27 +268,22 @@ const canFix = computed(() =>
 							</p>
 							<ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
 								<li>
-									• {{ selectedStaff.active_ranks_count }} active ranks
-									found
+									• {{ selectedStaff.active_ranks_count }} active ranks found
 								</li>
 								<li>
 									• Most recent:
-									<strong>{{
-										selectedStaff.ranks[0]?.name
-									}}</strong>
+									<strong>{{ selectedStaff.ranks[0]?.name }}</strong>
 									will remain active
 								</li>
 								<li>
-									• {{ selectedStaff.active_ranks_count - 1 }} older
-									rank(s) will have end dates set
+									• {{ selectedStaff.active_ranks_count - 1 }} older rank(s)
+									will have end dates set
 								</li>
 							</ul>
 						</div>
-						<p
-							class="mt-3 text-sm text-yellow-700 dark:text-yellow-300"
-						>
-							This action will set the end date for older ranks to one
-							day before the most recent promotion.
+						<p class="mt-3 text-sm text-amber-700 dark:text-amber-300">
+							This action will set the end date for older ranks to one day
+							before the most recent promotion.
 						</p>
 					</div>
 				</div>
@@ -342,10 +311,10 @@ const canFix = computed(() =>
 		<Modal :show="showBulkFixModal" @close="closeBulkFixModal">
 			<div class="sm:flex sm:items-start">
 				<div
-					class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 sm:mx-0 sm:h-10 sm:w-10"
+					class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30 sm:mx-0 sm:h-10 sm:w-10"
 				>
 					<ExclamationTriangleIcon
-						class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
+						class="h-6 w-6 text-amber-600 dark:text-amber-400"
 						aria-hidden="true"
 					/>
 				</div>
@@ -372,17 +341,14 @@ const canFix = computed(() =>
 							<ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
 								<li>• Process {{ staff.length }} staff members</li>
 								<li>• Keep only the most recent rank active for each</li>
-								<li>
-									• Set end dates for all older rank assignments
-								</li>
+								<li>• Set end dates for all older rank assignments</li>
 								<li>• Cannot be undone automatically</li>
 							</ul>
 						</div>
 						<p
-							class="mt-3 text-sm text-yellow-700 dark:text-yellow-300 font-medium"
+							class="mt-3 text-sm text-amber-700 dark:text-amber-300 font-medium"
 						>
-							⚠️ This is a bulk operation that affects multiple
-							records.
+							⚠️ This is a bulk operation that affects multiple records.
 						</p>
 					</div>
 				</div>

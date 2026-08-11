@@ -52,8 +52,8 @@ const openDocumentPreview = (qualification) => {
 	togglePreviewDocumentModal();
 };
 
-const currentDocument = computed(() =>
-	selectedDocuments.value[currentDocumentIndex.value] || null,
+const currentDocument = computed(
+	() => selectedDocuments.value[currentDocumentIndex.value] || null,
 );
 
 const nextDocument = () => {
@@ -94,7 +94,7 @@ const rejectQualification = (qualification) => {
 		<Head title="Pending Qualifications" />
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="breadcrumbLinks" />
-			<div class="overflow-hidden shadow-sm sm:rounded-lg px-6">
+			<div class="">
 				<div class="py-6">
 					<!-- Pending Approvals Widget -->
 					<div v-if="pendingStats" class="mb-6 max-w-md">
@@ -108,7 +108,7 @@ const rejectQualification = (qualification) => {
 					<!-- Header -->
 					<div class="mb-6">
 						<h1
-							class="text-3xl font-bold text-gray-900 dark:text-gray-100"
+							class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
 						>
 							Qualifications Pending Approval
 						</h1>
@@ -146,7 +146,7 @@ const rejectQualification = (qualification) => {
 						<div
 							v-for="qualification in qualifications"
 							:key="qualification.id"
-							class="rounded-lg border border-amber-200 dark:border-amber-800 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+							class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
 						>
 							<div class="flex items-start gap-4">
 								<div
@@ -177,20 +177,11 @@ const rejectQualification = (qualification) => {
 										/>
 									</div>
 									<div class="mt-2 space-y-1">
-										<p
-											class="text-sm text-gray-700 dark:text-gray-300"
-										>
-											<span class="font-medium"
-												>Qualification:</span
-											>
-											{{
-												qualification.qualification ||
-												qualification.course
-											}}
+										<p class="text-sm text-gray-700 dark:text-gray-300">
+											<span class="font-medium">Qualification:</span>
+											{{ qualification.qualification || qualification.course }}
 										</p>
-										<p
-											class="text-sm text-gray-500 dark:text-gray-400"
-										>
+										<p class="text-sm text-gray-500 dark:text-gray-400">
 											{{ qualification.institution }}
 											<span v-if="qualification.level">
 												- {{ qualification.level }}
@@ -199,24 +190,17 @@ const rejectQualification = (qualification) => {
 												({{ qualification.year }})
 											</span>
 										</p>
-										<p
-											class="text-xs text-gray-400 dark:text-gray-500"
-										>
+										<p class="text-xs text-gray-400 dark:text-gray-500">
 											Submitted:
 											{{ qualification.created_at }}
 										</p>
 									</div>
 								</div>
-								<div
-									v-if="can.approve"
-									class="flex-shrink-0 flex gap-2"
-								>
+								<div v-if="can.approve" class="flex-shrink-0 flex gap-2">
 									<button
 										type="button"
 										class="inline-flex items-center gap-1 rounded-md bg-green-50 dark:bg-green-900/30 px-3 py-2 text-sm font-semibold text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
-										@click="
-											approveQualification(qualification)
-										"
+										@click="approveQualification(qualification)"
 									>
 										<CheckIcon class="h-4 w-4" />
 										Approve
@@ -224,9 +208,7 @@ const rejectQualification = (qualification) => {
 									<button
 										type="button"
 										class="inline-flex items-center gap-1 rounded-md bg-red-50 dark:bg-red-900/30 px-3 py-2 text-sm font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-										@click="
-											rejectQualification(qualification)
-										"
+										@click="rejectQualification(qualification)"
 									>
 										<XMarkIcon class="h-4 w-4" />
 										Reject
@@ -241,9 +223,9 @@ const rejectQualification = (qualification) => {
 						class="mt-6 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4"
 					>
 						<p class="text-sm text-blue-700 dark:text-blue-300">
-							<strong>Note:</strong> You do not have permission to
-							approve qualifications. Please contact an
-							administrator if you need to review these.
+							<strong>Note:</strong> You do not have permission to approve
+							qualifications. Please contact an administrator if you need to
+							review these.
 						</p>
 					</div>
 				</div>
