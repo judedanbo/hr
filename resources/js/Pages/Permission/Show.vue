@@ -56,14 +56,11 @@ const deletePermission = () => {
 
 	<MainLayout>
 		<PageShell>
-			<PageHeader title="Permission" :breadcrumbs="breadcrumbLinks">
-				<template #meta>
-					<p
-						class="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
-					>
-						{{ permission.display_name }}
-					</p>
-				</template>
+			<PageHeader
+				:title="permission.display_name"
+				description="Roles and users that hold this permission."
+				:breadcrumbs="breadcrumbLinks"
+			>
 				<template #actions>
 					<button
 						type="button"

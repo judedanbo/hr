@@ -12,7 +12,7 @@ export const formKitTheme = {
 		inner:
 			"formkit-disabled:bg-gray-200 formkit-disabled:cursor-not-allowed formkit-disabled:pointer-events-none",
 		input:
-			"w-full rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-400 dark:focus:ring-green-400",
+			"w-full text-gray-900 placeholder-gray-400 dark:text-gray-100 dark:placeholder-gray-500",
 		label: "block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-200",
 		legend: " text-sm",
 		loaderIcon: "inline-flex items-center w-4 text-gray-600 animate-spin",
@@ -50,7 +50,7 @@ export const formKitTheme = {
 		emptyMessageInner:
 			"flex items-center justify-center text-sm p-2 text-center w-full text-gray-500 [&>span]:mr-3 [&>span]:ml-0",
 		inner:
-			"w-full relative flex focus-within:ring-green-500 dark:focus-within:ring-green-400 focus-within:ring-2 rounded mb-1 formkit-disabled:focus-within:ring-gray-400 formkit-disabled:focus-within:ring-1 [&>span:first-child]:focus-within:text-green-500",
+			"relative flex w-full mb-1 rounded-lg border border-gray-300 bg-white shadow-sm dark:border-gray-600 dark:bg-gray-900 focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 dark:focus-within:border-green-400 dark:focus-within:ring-green-400",
 		input: "w-full px-3 py-2",
 		listbox: "bg-white drop-shadow-lg rounded overflow-hidden",
 		listboxButton: "flex w-12 self-stretch justify-center mx-auto",
@@ -68,15 +68,15 @@ export const formKitTheme = {
 	},
 	"family:text": {
 		inner:
-			"flex items-center w-full focus-within:ring-green-500 dark:focus-within:ring-green-400 focus-within:ring-2 [&>label:first-child]:focus-within:text-green-500 rounded mb-1",
+			"flex items-center w-full mb-1 rounded-lg border border-gray-300 bg-white shadow-sm dark:border-gray-600 dark:bg-gray-900 focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 dark:focus-within:border-green-400 dark:focus-within:ring-green-400",
 		input:
-			"w-full px-3 py-2 border-none text-base text-gray-700 dark:text-gray-50 placeholder-gray-400",
+			"w-full px-3 py-2 border-none bg-transparent text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-0",
 	},
 	"family:date": {
 		inner:
-			"flex items-center w-full focus-within:ring-green-500 dark:focus-within:ring-green-400 focus-within:ring-2 [&>label:first-child]:focus-within:text-green-500 rounded mb-1",
+			"flex items-center w-full mb-1 rounded-lg border border-gray-300 bg-white shadow-sm dark:border-gray-600 dark:bg-gray-900 focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 dark:focus-within:border-green-400 dark:focus-within:ring-green-400",
 		input:
-			"w-full px-3 py-2 border-none text-gray-700 dark:text-gray-50 placeholder-gray-400",
+			"w-full px-3 py-2 border-none bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-0",
 	},
 
 	// Specific styles apply only to a given input type
@@ -117,9 +117,9 @@ export const formKitTheme = {
 	},
 	select: {
 		inner:
-			"flex relative w-full items-center rounded mb-1 focus-within:ring-green-500 dark:focus-within:ring-green-400 focus-within:ring-2 [&>span:first-child]:focus-within:text-green-500",
+			"flex relative w-full items-center mb-1 rounded-lg border border-gray-300 bg-white shadow-sm dark:border-gray-600 dark:bg-gray-900 focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 dark:focus-within:border-green-400 dark:focus-within:ring-green-400",
 		input:
-			'w-full pl-3 pr-8 py-2 border-none text-base text-gray-700 dark:text-gray-50 placeholder-gray-400 formkit-multiple:p-0 data-[placeholder="true"]:text-gray-400 formkit-multiple:data-[placeholder="true"]:text-inherit',
+			'w-full pl-3 pr-8 py-2 border-none bg-transparent text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-0 formkit-multiple:p-0 data-[placeholder="true"]:text-gray-400 formkit-multiple:data-[placeholder="true"]:text-inherit',
 		selectIcon:
 			"flex p-[3px] shrink-0 w-5 mr-2 -ml-[1.5em] h-full pointer-events-none",
 		option:
@@ -127,9 +127,9 @@ export const formKitTheme = {
 	},
 	textarea: {
 		inner:
-			"flex w-full rounded mb-1 focus-within:ring-green-500 dark:focus-within:ring-green-400 [&>label:first-child]:focus-within:text-green-500",
+			"flex w-full mb-1 rounded-lg border border-gray-300 bg-white shadow-sm dark:border-gray-600 dark:bg-gray-900 focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500 dark:focus-within:border-green-400 dark:focus-within:ring-green-400",
 		input:
-			"block w-full h-32 px-3 py-3 border-none text-base text-gray-700 dark:text-gray-50 placeholder-gray-400 focus:shadow-outline",
+			"block w-full h-32 px-3 py-3 border-none bg-transparent text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-0",
 	},
 
 	// PRO input styles

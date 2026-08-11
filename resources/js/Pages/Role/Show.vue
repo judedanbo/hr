@@ -52,14 +52,11 @@ const breadcrumbLinks = [
 
 	<MainLayout>
 		<PageShell>
-			<PageHeader title="Role" :breadcrumbs="breadcrumbLinks">
-				<template #meta>
-					<p
-						class="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
-					>
-						{{ role.display_name }}
-					</p>
-				</template>
+			<PageHeader
+				:title="role.display_name"
+				description="Users assigned to this role, and the permissions it grants."
+				:breadcrumbs="breadcrumbLinks"
+			>
 				<template #actions>
 					<button
 						type="button"
