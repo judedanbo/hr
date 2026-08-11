@@ -41,7 +41,7 @@ const tableCols = ["Type", "Start", "End", "Days", "Status", "Action"];
 		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<BreadCrumpVue :links="links" />
 			<div
-				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
+				class="px-6 py-4"
 			>
 				<div class="flex items-center justify-between my-4">
 					<h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100">

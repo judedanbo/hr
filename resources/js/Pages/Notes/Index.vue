@@ -102,7 +102,7 @@ const BreadCrumpLinks = [{ name: "Notes", url: "" }];
         >
             <BreadCrumpVue :links="BreadCrumpLinks" />
             <div
-                class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200 dark:border-gray-700"
+                class="px-6 py-4 dark:border-gray-700"
             >
                 <TableHeader
                     title="Notes"

@@ -137,7 +137,7 @@ onMounted(() => {
 				</template>
 			</PageHeading>
 			<div
-				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
+				class="px-6 py-4"
 			>
 				<div
 					v-if="permissions?.includes('download separated staff data')"

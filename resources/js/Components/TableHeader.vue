@@ -1,10 +1,9 @@
 <script setup>
 /**
  * Retained as a thin wrapper so its existing consumers keep working.
- * New pages should use Components/UI/ListToolbar.vue directly.
+ * New pages should use Components/UI/PageHeader.vue + Components/UI/ListToolbar.vue.
  */
 import ListToolbar from "@/Components/UI/ListToolbar.vue";
-import InfoCard from "@/Components/InfoCard.vue";
 
 const emit = defineEmits(["actionClicked", "searchEntered"]);
 
@@ -18,8 +17,20 @@ defineProps({
 });
 </script>
 <template>
-	<section class="my-2 flex flex-col gap-4">
-		<InfoCard :title="title" :value="total" link="#" />
+	<section class="flex flex-col gap-4">
+		<div class="flex items-center gap-2">
+			<h1
+				class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50"
+			>
+				{{ title }}
+			</h1>
+			<span
+				class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium tabular-nums text-gray-600 ring-1 ring-inset ring-gray-500/10 dark:bg-gray-700/50 dark:text-gray-300 dark:ring-gray-400/20"
+			>
+				{{ total.toLocaleString() }}
+			</span>
+		</div>
+
 		<ListToolbar
 			:title="title"
 			:action-text="actionText"
