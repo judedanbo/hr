@@ -113,12 +113,12 @@ let showPerson = (id) => {
 				:address="addressToDelete"
 				:person="person.id"
 				:is-visible="showDeleteAddressModal"
-				@closeModal="showDeleteAddressModal = false"
+				@close-modal="showDeleteAddressModal = false"
 			/>
 			<AddAddressModal
 				:person_id="person.id"
 				:is-visible="showAddAddressModal"
-				@closeModal="showAddAddressModal = false"
+				@close-modal="showAddAddressModal = false"
 			/>
 		</div>
 	</div>

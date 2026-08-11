@@ -19,7 +19,7 @@ const submitHandler = (data, node) => {
 <template>
     <main class="px-8 py-8 bg-gray-100 dark:bg-gray-700">
         <h1 class="text-2xl pb-4 dark:text-gray-100">Upload Document</h1>
-        <FormKit type="form" submit-label="Upload" @submit="submitHandler" :config="{ classes: { outer: 'mb-4' } }">
+        <FormKit type="form" submit-label="Upload" :config="{ classes: { outer: 'mb-4' } }" @submit="submitHandler">
             <FormKit
                 id="document_type"
                 type="select"

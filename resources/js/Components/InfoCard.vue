@@ -1,10 +1,10 @@
 <script setup>
 defineProps({
-	title: String,
+	title: { type: String, default: "" },
 	value: { type: Number, default: null },
 	// Retained because every call site passes it; the card has never been
 	// clickable and the handler it once had was dead code.
-	link: String,
+	link: { type: String, default: "#" },
 });
 </script>
 <template>

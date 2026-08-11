@@ -55,15 +55,18 @@ onMounted(async () => {
 			</h2>
 			<Link
 				:href="route('qualifications.reports.index')"
-				class="text-sm text-indigo-600 hover:underline"
+				class="text-sm text-green-700 hover:underline dark:text-green-300"
 			>
 				Full Reports &rarr;
 			</Link>
 		</div>
 
 		<div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-			<div v-for="n in 4" :key="n"
-				class="h-72 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"></div>
+			<div
+				v-for="n in 4"
+				:key="n"
+				class="h-72 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"
+			></div>
 		</div>
 
 		<div v-else-if="data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,7 +121,10 @@ onMounted(async () => {
 			</ExpandableChart>
 			<ExpandableChart title="Qualifications Acquired Over Time">
 				<template #default="{ labelMode }">
-					<AcquiredOverTimeChart :trend="data.trendByYear" :label-mode="labelMode" />
+					<AcquiredOverTimeChart
+						:trend="data.trendByYear"
+						:label-mode="labelMode"
+					/>
 				</template>
 				<template #expanded="{ labelMode }">
 					<AcquiredOverTimeChart
@@ -132,7 +138,9 @@ onMounted(async () => {
 				:count="data.pendingApprovals.count"
 				:sparkline="data.pendingApprovals.sparkline"
 			/>
-			<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 p-4 flex flex-col">
+			<div
+				class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10 p-4 flex flex-col"
+			>
 				<h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">
 					Staff Without Qualifications
 				</h3>
@@ -141,7 +149,7 @@ onMounted(async () => {
 				</div>
 				<Link
 					:href="route('qualifications.reports.index')"
-					class="mt-auto text-xs text-indigo-600 hover:underline"
+					class="mt-auto text-xs text-green-700 hover:underline dark:text-green-300"
 				>
 					View list &rarr;
 				</Link>

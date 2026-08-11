@@ -63,17 +63,17 @@ const openUser = (userId) => {
 					<TableBody>
 						<template v-for="user in users.data" :key="user.id">
 							<TableRow>
-								<TableData @click="openUser(user.id)" class="cursor-pointer">
+								<TableData class="cursor-pointer" @click="openUser(user.id)">
 									{{ user.name }}
 								</TableData>
-								<TableData @click="openUser(user.id)" class="cursor-pointer">
+								<TableData class="cursor-pointer" @click="openUser(user.id)">
 									{{ user.permissions_count }}
 								</TableData>
 								<TableData>
 									<button
-										@click.stop="removeUser(user.id, user.name)"
 										class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
 										title="Remove user from role"
+										@click.stop="removeUser(user.id, user.name)"
 									>
 										<TrashIcon class="h-5 w-5" />
 									</button>

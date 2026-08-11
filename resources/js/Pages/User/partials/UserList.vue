@@ -96,7 +96,7 @@ const tableCols = [
 							permissions?.includes('reset user password')
 						"
 						:items="['Open', 'Reset Password', 'Edit', 'Delete']"
-						@itemClicked="(action) => subMenuClicked(action, user)"
+						@item-clicked="(action) => subMenuClicked(action, user)"
 					/>
 				</TableData>
 			</TableRow>

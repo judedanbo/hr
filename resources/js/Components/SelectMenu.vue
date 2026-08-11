@@ -41,7 +41,7 @@ const label = computed(() => {
 		<Listbox
 			:multiple="props.multiple"
 			:model-value="props.modelValue"
-			@update:modelValue="(name) => emit('update:modelValue', name)"
+			@update:model-value="(name) => emit('update:modelValue', name)"
 		>
 			<div class="relative mt-1">
 				<ListboxButton

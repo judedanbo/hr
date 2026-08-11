@@ -61,7 +61,7 @@ const subMenuClicked = (action, model) => {
 							:can-edit="permissions?.includes('update staff')"
 							:can-delete="permissions?.includes('delete staff')"
 							:items="['Edit', 'Delete']"
-							@itemClicked="(action) => subMenuClicked(action, status)"
+							@item-clicked="(action) => subMenuClicked(action, status)"
 						/>
 					</td>
 				</tr>

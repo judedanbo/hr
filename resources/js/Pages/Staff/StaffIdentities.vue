@@ -153,7 +153,7 @@ const deleteModalIdentity = () => {
 			/>
 		</Modal>
 		<Modal :show="openDeleteModal" @close="toggleDeleteModal()">
-			<DeleteIdentity @deleteConfirmed="deleteModalIdentity()" />
+			<DeleteIdentity @delete-confirmed="deleteModalIdentity()" />
 		</Modal>
 	</main>
 </template>

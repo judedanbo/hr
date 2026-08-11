@@ -27,11 +27,9 @@ function handleChartClick(data) {
 				@bar-click="handleChartClick"
 			/>
 			<div
-				class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 p-4"
+				class="bg-white dark:bg-gray-800 rounded-lg shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10 p-4"
 			>
-				<h3
-					class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4"
-				>
+				<h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
 					Rank Details
 				</h3>
 				<div class="space-y-3">
@@ -54,9 +52,7 @@ function handleChartClick(data) {
 								{{ index + 1 }}
 							</span>
 							<div>
-								<p
-									class="text-sm font-medium text-gray-900 dark:text-gray-100"
-								>
+								<p class="text-sm font-medium text-gray-900 dark:text-gray-100">
 									{{ rank.name }}
 								</p>
 								<p

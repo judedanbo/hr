@@ -94,7 +94,7 @@ const deletePosition = () => {
 			<PageHeading
 				:name="position.name"
 				:search="search"
-				@searchStaff="(searchValue) => startSearch(searchValue)"
+				@search-staff="(searchValue) => startSearch(searchValue)"
 			/>
 			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<button
@@ -122,11 +122,11 @@ const deletePosition = () => {
 				:is="components[currentTab.component]"
 				v-bind="{ staff: position.staff, search, staffList: selectedStaff }"
 				class="mt-4"
-				@updateStaffList="(staffList) => updateStaffList(staffList)"
+				@update-staff-list="(staffList) => updateStaffList(staffList)"
 			/>
 		</main>
 		<Modal :show="openEditDialog" @close="toggleEditModal()">
-			<EditRank :position="position" @formSubmitted="toggleEditModal()" />
+			<EditRank :position="position" @form-submitted="toggleEditModal()" />
 		</Modal>
 		<Modal :show="openConfirmDeleteDialog" @close="toggleDeleteModal()">
 			<DeletePosition

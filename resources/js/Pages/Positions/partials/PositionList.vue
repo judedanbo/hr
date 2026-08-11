@@ -74,7 +74,7 @@ const tableCols = ["Name", "current occupants", "Contact", "Action"];
 											:can-edit="permissions?.includes('update staff')"
 											:can-delete="permissions?.includes('delete staff')"
 											:items="['Edit', 'Delete']"
-											@itemClicked="
+											@item-clicked="
 												(action) => subMenuClicked(action, position)
 											"
 										/>

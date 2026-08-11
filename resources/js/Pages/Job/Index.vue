@@ -96,7 +96,7 @@ const searchJobs = (value) => {
 		</main>
 		<NoPermission v-else />
 		<Modal :show="openAddDialog" @close="toggle()">
-			<AddRank @formSubmitted="toggle()" />
+			<AddRank @form-submitted="toggle()" />
 		</Modal>
 	</MainLayout>
 </template>

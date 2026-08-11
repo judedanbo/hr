@@ -97,7 +97,7 @@ const deleteJob = () => {
 			<PageHeading
 				:name="job.name"
 				:search="search"
-				@searchStaff="(searchValue) => startSearch(searchValue)"
+				@search-staff="(searchValue) => startSearch(searchValue)"
 			/>
 			<div class="flex gap-4 justify-end pt-4 sm:ml-16 sm:mt-0 sm:flex-none">
 				<a
@@ -136,12 +136,12 @@ const deleteJob = () => {
 			<component
 				:is="components[currentTab.component]"
 				v-bind="{ rank: job.id, search, staffList: selectedStaff }"
-				@updateStaffList="(staffList) => updateStaffList(staffList)"
+				@update-staff-list="(staffList) => updateStaffList(staffList)"
 			/>
 		</main>
 		<!-- <NoPermission v-else /> -->
 		<Modal :show="openEditDialog" @close="toggleEditModal()">
-			<EditRank :job="job" @formSubmitted="toggleEditModal()" />
+			<EditRank :job="job" @form-submitted="toggleEditModal()" />
 		</Modal>
 		<Modal :show="openConfirmDeleteDialog" @close="toggleDeleteModal()">
 			<DeleteJob

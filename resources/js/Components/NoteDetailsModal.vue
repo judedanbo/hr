@@ -132,8 +132,8 @@ watch(
 										</div>
 									</div>
 									<button
-										@click="emit('close')"
 										class="rounded-md text-gray-400 hover:text-gray-500"
+										@click="emit('close')"
 									>
 										<XMarkIcon class="h-6 w-6" />
 									</button>
@@ -167,24 +167,24 @@ watch(
 									<div class="flex items-center gap-2">
 										<button
 											v-if="hasMultipleDocuments"
-											@click="previousDocument"
 											:disabled="currentDocumentIndex === 0"
 											class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+											@click="previousDocument"
 										>
 											<ChevronLeftIcon class="h-5 w-5" />
 										</button>
 										<button
-											@click="downloadDocument"
 											class="inline-flex items-center gap-1 px-3 py-2 text-sm rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+											@click="downloadDocument"
 										>
 											<ArrowDownTrayIcon class="h-4 w-4" />
 											Download
 										</button>
 										<button
 											v-if="hasMultipleDocuments"
-											@click="nextDocument"
 											:disabled="currentDocumentIndex === note.url.length - 1"
 											class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+											@click="nextDocument"
 										>
 											<ChevronRightIcon class="h-5 w-5" />
 										</button>
@@ -244,8 +244,8 @@ watch(
 												{{ currentDocument.document_title }}
 											</p>
 											<button
-												@click="downloadDocument"
 												class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+												@click="downloadDocument"
 											>
 												<ArrowDownTrayIcon class="h-5 w-5" />
 												Download to view

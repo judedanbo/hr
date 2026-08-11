@@ -51,9 +51,9 @@ function closeModal() {
 						>{{ note.note_date }}</time
 					>
 					<button
-						@click="viewNote(note)"
 						class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
 						title="View note details"
+						@click="viewNote(note)"
 					>
 						<EyeIcon class="h-5 w-5 text-gray-500 dark:text-gray-400" />
 					</button>

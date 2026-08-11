@@ -126,7 +126,7 @@ onMounted(() => {
 			<PageHeading
 				name="Separation"
 				:search="search"
-				@searchStaff="(search) => searchUnits(search)"
+				@search-staff="(search) => searchUnits(search)"
 			>
 				<template #breadcrumb>
 					<NewBreadcrumb :links="breadCrumbLinks" />

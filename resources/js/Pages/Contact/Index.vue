@@ -71,7 +71,7 @@ const BreadCrumpLinks = [{ name: "Contacts", url: "" }];
 
                 <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contact Type</label>
-                    <select v-model="selectedContactType" @change="applyFilters" class="w-full md:w-1/4 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm sm:text-sm">
+                    <select v-model="selectedContactType" class="w-full md:w-1/4 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm sm:text-sm" @change="applyFilters">
                         <option value="">All Types</option>
                         <option v-for="ct in contactTypes" :key="ct.value" :value="ct.value">{{ ct.label }}</option>
                     </select>

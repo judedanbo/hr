@@ -87,14 +87,14 @@ const BreadCrumpLinks = [{ name: "Documents", url: "" }];
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Document Type</label>
-                            <select v-model="selectedDocumentType" @change="applyFilters" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm sm:text-sm">
+                            <select v-model="selectedDocumentType" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm sm:text-sm" @change="applyFilters">
                                 <option value="">All Types</option>
                                 <option v-for="dt in documentTypes" :key="dt.value" :value="dt.value">{{ dt.label }}</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                            <select v-model="selectedDocumentStatus" @change="applyFilters" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm sm:text-sm">
+                            <select v-model="selectedDocumentStatus" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm sm:text-sm" @change="applyFilters">
                                 <option value="">All Statuses</option>
                                 <option v-for="ds in documentStatuses" :key="ds.value" :value="ds.value">{{ ds.label }}</option>
                             </select>

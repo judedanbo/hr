@@ -57,7 +57,7 @@ const stats = computed(() => [
 			props.overview.new_hires_this_year,
 			props.overview.new_hires_last_year,
 		),
-		color: "bg-emerald-600 dark:bg-emerald-700",
+		color: "bg-teal-600 dark:bg-teal-700",
 	},
 	{
 		id: "departments",
@@ -114,18 +114,14 @@ function handleClick(stat) {
 
 <template>
 	<section>
-		<h2
-			class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4"
-		>
+		<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
 			Overview
 		</h2>
-		<dl
-			class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-		>
+		<dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 			<div
 				v-for="stat in stats"
 				:key="stat.id"
-				class="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 sm:px-6 transition-all duration-200"
+				class="relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 px-4 py-5 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10 sm:px-6 transition-all duration-200"
 				:class="[
 					stat.clickable !== false
 						? 'cursor-pointer hover:shadow-md hover:ring-green-500 dark:hover:ring-green-400'
@@ -134,10 +130,7 @@ function handleClick(stat) {
 				@click="handleClick(stat)"
 			>
 				<dt>
-					<div
-						class="absolute rounded-md p-3"
-						:class="stat.color"
-					>
+					<div class="absolute rounded-md p-3" :class="stat.color">
 						<component
 							:is="stat.icon"
 							class="h-6 w-6 text-white"
@@ -151,9 +144,7 @@ function handleClick(stat) {
 					</p>
 				</dt>
 				<dd class="ml-16 flex items-baseline">
-					<p
-						class="text-2xl font-semibold text-gray-900 dark:text-white"
-					>
+					<p class="text-2xl font-semibold text-gray-900 dark:text-white">
 						{{ stat.value?.toLocaleString() ?? "0" }}
 					</p>
 					<p

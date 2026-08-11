@@ -2,7 +2,7 @@
 import { InboxIcon } from "@heroicons/vue/24/outline";
 
 defineProps({
-	name: String,
+	name: { type: String, default: "items" },
 });
 </script>
 <template>

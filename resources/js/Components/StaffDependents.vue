@@ -207,12 +207,12 @@ let showPerson = (id) => {
 			<DeleteDependentModal
 				:dependent="dependentToDelete"
 				:is-visible="showDeleteDepModal"
-				@closeModal="showDeleteDepModal = false"
+				@close-modal="showDeleteDepModal = false"
 			/>
 			<AddDependentModal
 				:staff="staff"
 				:is-visible="showAddDepModal"
-				@closeModal="showAddDepModal = false"
+				@close-modal="showAddDepModal = false"
 			/>
 		</div>
 	</div>

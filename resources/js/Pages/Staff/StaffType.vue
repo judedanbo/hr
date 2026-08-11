@@ -121,7 +121,7 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 										:can-edit="permissions?.includes('update staff')"
 										:can-delete="permissions?.includes('delete staff')"
 										:items="['Edit', 'Delete']"
-										@itemClicked="(action) => subMenuClicked(action, type)"
+										@item-clicked="(action) => subMenuClicked(action, type)"
 									/>
 								</td>
 							</tr>
@@ -141,7 +141,7 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 				:staff="staff"
 				:staff-type="staffType"
 				:institution="institution"
-				@formSubmitted="toggleStaffTypeModal()"
+				@form-submitted="toggleStaffTypeModal()"
 			/>
 		</Modal>
 		<Modal :show="openEditStaffTypeModal" @close="toggleEditStaffTypeModal()">
@@ -149,7 +149,7 @@ const toggleDeleteStaffTypeModal = useToggle(openDeleteStaffTypeModal);
 				:staff="staff"
 				:institution="institution"
 				:staff-type="staffType"
-				@formSubmitted="toggleEditStaffTypeModal()"
+				@form-submitted="toggleEditStaffTypeModal()"
 			/>
 		</Modal>
 

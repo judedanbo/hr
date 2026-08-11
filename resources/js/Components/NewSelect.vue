@@ -41,7 +41,7 @@ const label = computed(() => {
 		as="div"
 		model-value="props.modelValue"
 		class="w-full"
-		@update:modelValue="(value) => emit('update:modelValue', value)"
+		@update:model-value="(value) => emit('update:modelValue', value)"
 	>
 		<ListboxLabel
 			v-if="listLabel"

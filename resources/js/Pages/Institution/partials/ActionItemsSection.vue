@@ -64,9 +64,9 @@ function handleClick(item) {
 		</h2>
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			<component
+				:is="item.route ? Link : 'div'"
 				v-for="item in items"
 				:key="item.id"
-				:is="item.route ? Link : 'div'"
 				:href="item.route ? route(item.route) : undefined"
 				class="relative rounded-lg border p-4 transition-all duration-200 hover:shadow-md cursor-pointer"
 				:class="[

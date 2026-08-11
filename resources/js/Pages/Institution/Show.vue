@@ -206,7 +206,7 @@ function closeStaffModal() {
 				:institution-name="institution?.name"
 				:institution-id="institution?.id"
 				:unit="selectedUnit"
-				@formSubmitted="toggleEditForm()"
+				@form-submitted="toggleEditForm()"
 			/>
 		</Modal>
 

@@ -62,7 +62,7 @@ const openPromotion = (
 			<CurrentPromotions
 				:promotions="promotions"
 				@update:model-value="searchStaff"
-				@openPromotion="
+				@open-promotion="
 					(jobId, batch, year) => openPromotion(jobId, batch, year)
 				"
 			>

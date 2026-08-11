@@ -44,8 +44,8 @@ const submitHandler = () => {
 		<div class="mt-6 flex gap-2">
 			<button
 				type="button"
-				@click="submitHandler"
 				class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-gray-700 dark:hover:bg-gray-600"
+				@click="submitHandler"
 			>
 				Assign Users
 			</button>

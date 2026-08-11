@@ -318,6 +318,6 @@ watch(searchValue, async () => {
 });
 
 watch(selectedStaff, () => {
-	emit("updateStaffList", selectedStaff);
+	emit("updateStaffList", selectedStaff.value);
 });
 </script>

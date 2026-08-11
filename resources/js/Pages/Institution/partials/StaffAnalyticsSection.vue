@@ -19,9 +19,7 @@ function handleChartClick(data) {
 
 <template>
 	<section>
-		<h2
-			class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4"
-		>
+		<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
 			Staff Analytics
 		</h2>
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">

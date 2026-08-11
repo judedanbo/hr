@@ -131,7 +131,7 @@ let showPerson = (id) => {
 				:types="types"
 				:person_id="person.id"
 				:is-visible="showAddContactModal"
-				@closeModal="showAddContactModal = false"
+				@close-modal="showAddContactModal = false"
 			/>
 		</div>
 	</div>

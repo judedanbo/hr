@@ -230,10 +230,10 @@ let BreadCrumpLinks = [
 														name="edit"
 														path="institution"
 														:route_id="institution.id"
-														@editItem="
+														@edit-item="
 															($event, id) => displayEditModal($event, id)
 														"
-														@deleteItem="
+														@delete-item="
 															($event, id) => displayDeleteModal($event, id)
 														"
 													/>
@@ -250,19 +250,19 @@ let BreadCrumpLinks = [
 				</div>
 			</div>
 			<Modal :show="openCreateModal" @close="toggleCreateModal()">
-				<Create @formSubmitted="toggleCreateModal()" />
+				<Create @form-submitted="toggleCreateModal()" />
 			</Modal>
 			<Modal :show="openEditModal" @close="toggleEditModal()">
 				<Edit
 					:selected-model="selectedModel[0]"
-					@formSubmitted="toggleEditModal()"
+					@form-submitted="toggleEditModal()"
 				/>
 			</Modal>
 			<Modal :show="openDeleteModal" @close="toggleDeleteModal()">
 				<Delete
 					:selected-model="selectedModel[0]"
-					@institutionDeleted="toggleDeleteModal()"
-					@cancelDelete="toggleDeleteModal()"
+					@institution-deleted="toggleDeleteModal()"
+					@cancel-delete="toggleDeleteModal()"
 				/>
 			</Modal>
 		</div>

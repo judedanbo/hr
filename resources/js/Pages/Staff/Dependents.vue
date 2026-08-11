@@ -96,7 +96,7 @@ let toggleAddDependantFrom = useToggle(showAddDependantForm);
 		<Modal :show="showAddDependantForm" @close="toggleAddDependantFrom()">
 			<AddDependant
 				:staff_id="staff_id"
-				@formSubmitted="toggleAddDependantFrom()"
+				@form-submitted="toggleAddDependantFrom()"
 			/>
 		</Modal>
 	</main>

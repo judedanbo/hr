@@ -159,10 +159,10 @@ let getAge = (dateString) => {
 			</dl>
 		</div>
 		<Modal :show="openAddressModal" @close="toggleAddressModal()">
-			<AddAddress :person="person" @formSubmitted="toggleAddressModal()" />
+			<AddAddress :person="person" @form-submitted="toggleAddressModal()" />
 		</Modal>
 		<Modal :show="openContactModal" @close="toggleContactModal()">
-			<AddContact :person="person" @formSubmitted="toggleContactModal()" />
+			<AddContact :person="person" @form-submitted="toggleContactModal()" />
 		</Modal>
 	</main>
 </template>

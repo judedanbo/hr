@@ -138,7 +138,7 @@ const attachDocument = (model) => {
 		>
 			<AddQualification
 				:person="person.id"
-				:qualificationLevels="page.props.qualificationLevels"
+				:qualification-levels="page.props.qualificationLevels"
 				@form-submitted="toggleQualificationModal()"
 			/>
 		</NewModal>

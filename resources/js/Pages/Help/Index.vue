@@ -179,8 +179,8 @@ function clearSearch() {
                 />
                 <button
                     v-if="searchQuery"
-                    @click="clearSearch"
                     class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    @click="clearSearch"
                 >
                     <XMarkIcon class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                 </button>
@@ -192,13 +192,13 @@ function clearSearch() {
                     <button
                         v-for="section in filteredSections"
                         :key="section.slug"
-                        @click="selectTab(section.slug)"
                         :class="[
                             'whitespace-nowrap px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors',
                             activeSlug === section.slug
                                 ? 'bg-white dark:bg-gray-800 text-green-600 dark:text-green-400 border border-b-0 border-gray-200 dark:border-gray-700 -mb-px'
                                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50',
                         ]"
+                        @click="selectTab(section.slug)"
                     >
                         {{ section.title }}
                         <span
@@ -220,8 +220,8 @@ function clearSearch() {
                     No help topics match "<strong>{{ debouncedQuery }}</strong>"
                 </p>
                 <button
-                    @click="clearSearch"
                     class="mt-4 text-green-600 dark:text-green-400 hover:underline text-sm"
+                    @click="clearSearch"
                 >
                     Clear search
                 </button>

@@ -172,7 +172,7 @@ const today = computed(() => getTodayDate());
 			<p class="mt-2 text-gray-500 dark:text-gray-400">Loading...</p>
 		</div>
 
-		<TabGroup v-else as="div" :selectedIndex="selectedTab" @change="selectedTab = $event">
+		<TabGroup v-else as="div" :selected-index="selectedTab" @change="selectedTab = $event">
 			<TabList class="flex space-x-1 rounded-xl bg-gray-200 dark:bg-gray-600 p-1 mb-6">
 				<Tab
 					v-slot="{ selected }"

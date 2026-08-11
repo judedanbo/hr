@@ -87,8 +87,8 @@ defineExpose({
 							:id="`user-${user.id}`"
 							type="checkbox"
 							:checked="isSelected(user.id)"
-							@change="toggleUser(user.id)"
 							class="peer h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700"
+							@change="toggleUser(user.id)"
 						/>
 						<div
 							class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 peer-checked:opacity-100"
@@ -116,8 +116,8 @@ defineExpose({
 			<button
 				type="button"
 				:disabled="users.current_page === 1"
-				@click="prevPage"
 				class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+				@click="prevPage"
 			>
 				<ChevronLeftIcon class="h-5 w-5 mr-1" />
 				Previous
@@ -128,8 +128,8 @@ defineExpose({
 			<button
 				type="button"
 				:disabled="users.current_page === users.last_page"
-				@click="nextPage"
 				class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+				@click="nextPage"
 			>
 				Next
 				<ChevronRightIcon class="h-5 w-5 ml-1" />

@@ -107,7 +107,7 @@ let showPerson = (id) => {
 			<AddContactsModal
 				:staff="staff"
 				:is-visible="showAddContactModal"
-				@closeModal="showAddContactModal = false"
+				@close-modal="showAddContactModal = false"
 			/>
 		</div>
 	</div>

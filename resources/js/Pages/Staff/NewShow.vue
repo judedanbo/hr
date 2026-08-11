@@ -351,7 +351,7 @@ const editContactModal = () => {
 						image: person.image,
 						person_id: person.id,
 					}"
-					@imageUpdated="toggleAvatarModal()"
+					@image-updated="toggleAvatarModal()"
 				/>
 			</NewModal>
 			<NewModal

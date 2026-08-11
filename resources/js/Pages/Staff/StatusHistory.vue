@@ -132,7 +132,7 @@ const deleteStaffHistory = () => {
 										:can-edit="permissions?.includes('update staff')"
 										:can-delete="permissions?.includes('delete staff')"
 										:items="['Edit', 'Delete']"
-										@itemClicked="(action) => subMenuClicked(action, status)"
+										@item-clicked="(action) => subMenuClicked(action, status)"
 									/>
 								</td>
 							</tr>
@@ -152,7 +152,7 @@ const deleteStaffHistory = () => {
 				:staff="staff"
 				:institution="institution"
 				:statuses="statuses"
-				@formSubmitted="toggleStatusModal()"
+				@form-submitted="toggleStatusModal()"
 			/>
 		</Modal>
 		<!-- Edit staff History Modal -->
@@ -164,7 +164,7 @@ const deleteStaffHistory = () => {
 				:staff="staff"
 				:institution="institution"
 				:staff-history="staffHistory"
-				@formSubmitted="toggleEditStaffHistoryModal()"
+				@form-submitted="toggleEditStaffHistoryModal()"
 			/>
 		</Modal>
 
@@ -175,7 +175,7 @@ const deleteStaffHistory = () => {
 		>
 			<DeleteStaffHistory
 				@close="toggleDeleteStaffHistoryModal()"
-				@deleteConfirmed="deleteStaffHistory()"
+				@delete-confirmed="deleteStaffHistory()"
 			/>
 		</Modal>
 	</main>
