@@ -112,6 +112,7 @@ class AllPermissionsSeeder extends Seeder
             'restore staff transfers',
             'destroy staff transfers',
             'transfer staff',
+            'approve transfer',
 
             // ============================================
             // Staff Promotions (10)
@@ -172,6 +173,7 @@ class AllPermissionsSeeder extends Seeder
             'restore staff qualification',
             'destroy staff qualification',
             'download staff qualification data',
+            'approve staff qualification',
 
             // ============================================
             // Staff Notes (3)
@@ -262,6 +264,12 @@ class AllPermissionsSeeder extends Seeder
             // Dashboard (1)
             // ============================================
             'view dashboard',
+
+            // ============================================
+            // Geographic exports (2)
+            // ============================================
+            'download office summary',
+            'download regions',
 
             // ============================================
             // Data Integrity (2)

@@ -46,7 +46,7 @@ const props = defineProps({
 			v-if="
 				size !== 'sm' &&
 				(permissions?.includes('upload avatar') ||
-					permissions?.includes('update avatar'))
+					permissions?.includes('edit avatar'))
 			"
 			href="#"
 			class="absolute w-full h-full top-0 left-0 bg-white opacity-0 z-10 transition-opacity duration-300 hover:opacity-80 rounded-full flex justify-center items-center text-xl text-gray-900 text-bold"

@@ -327,6 +327,35 @@ class AuthorizationTest extends TestCase
         $response = $this->actingAs($this->adminUser)
             ->get(route('data-integrity.index'));
 
-        $response->assertRedirect();
+        $response->assertForbidden();
+    }
+
+    public function test_data_integrity_sub_pages_are_gated_not_just_the_index(): void
+    {
+        $response = $this->actingAs($this->adminUser)
+            ->get(route('data-integrity.multiple-ranks'));
+
+        $response->assertForbidden();
+    }
+
+    public function test_user_with_view_roles_but_not_view_all_roles_can_view_roles(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->givePermissionTo('view roles');
+
+        $response = $this->actingAs($user)->get(route('role.index'));
+
+        $response->assertStatus(200);
+    }
+
+    public function test_user_with_only_legacy_view_all_roles_permission_is_not_locked_out(): void
+    {
+        $user = User::factory()->create(['password_change_at' => now()]);
+        $user->givePermissionTo('view all roles');
+        $user->givePermissionTo('view roles');
+
+        $response = $this->actingAs($user)->get(route('role.index'));
+
+        $response->assertStatus(200);
     }
 }

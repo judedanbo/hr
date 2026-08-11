@@ -271,7 +271,7 @@ const editContactModal = () => {
 									@close-form="toggleTransferForm()"
 								/>
 								<StaffPosition
-									v-if="permissions?.includes('update staff positions')"
+									v-if="permissions?.includes('update staff position')"
 									:positions="staff.positions"
 									:staff="{
 										id: staff.staff_id,

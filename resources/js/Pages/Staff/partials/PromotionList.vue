@@ -83,7 +83,7 @@ const clicked = (action, model) => {
 						<SubMenu
 							v-if="
 								permissions?.includes('update staff') ||
-								permissions?.includes('delete_staff')
+								permissions?.includes('delete staff')
 							"
 							:can-edit="permissions?.includes('update staff')"
 							:can-delete="permissions?.includes('delete staff')"
