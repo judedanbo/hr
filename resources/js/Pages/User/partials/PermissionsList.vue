@@ -35,10 +35,7 @@ const canRevoke = computed(() =>
 			</button>
 		</li>
 	</ul>
-	<p
-		v-else
-		class="py-4 text-sm font-medium text-gray-400 dark:text-gray-300"
-	>
+	<p v-else class="py-4 text-sm font-medium text-gray-400 dark:text-gray-300">
 		No direct permissions.
 	</p>
 </template>

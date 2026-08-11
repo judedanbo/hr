@@ -1,5 +1,9 @@
 <script setup>
-import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+import {
+	CheckIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon,
+} from "@heroicons/vue/20/solid";
 import { onMounted, ref } from "vue";
 
 const props = defineProps({
@@ -61,13 +65,18 @@ defineExpose({
 <template>
 	<div>
 		<div class="mb-4">
-			<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+			<label
+				class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+			>
 				Select Users ({{ selectedUsers.length }} selected)
 			</label>
 			<div v-if="isLoading" class="text-center py-4">
 				<span class="text-gray-500 dark:text-gray-400">Loading users...</span>
 			</div>
-			<div v-else class="space-y-2 max-h-96 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-3">
+			<div
+				v-else
+				class="space-y-2 max-h-96 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-3"
+			>
 				<label
 					v-for="user in users.data"
 					:key="user.id"
@@ -100,7 +109,10 @@ defineExpose({
 		</div>
 
 		<!-- Pagination Controls -->
-		<div v-if="users.last_page > 1" class="flex items-center justify-between mt-4">
+		<div
+			v-if="users.last_page > 1"
+			class="flex items-center justify-between mt-4"
+		>
 			<button
 				type="button"
 				:disabled="users.current_page === 1"

@@ -2,16 +2,16 @@
 import MainLayout from "@/Layouts/NewAuthenticated.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
-import Pagination from "../../Components/Pagination.vue";
-import BreadCrumpVue from "@/Components/BreadCrump.vue";
+import Pagination from "@/Components/Pagination.vue";
+import PageShell from "@/Components/UI/PageShell.vue";
+import PageHeader from "@/Components/UI/PageHeader.vue";
+import ListToolbar from "@/Components/UI/ListToolbar.vue";
 import Modal from "@/Components/NewModal.vue";
 import AddUserForm from "./partials/AddUserForm.vue";
 import { useToggle } from "@vueuse/core";
-import TableHeader from "@/Components/TableHeader.vue";
 import UserList from "./partials/UserList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import EditUserForm from "./partials/EditUserForm.vue";
 import Delete from "./partials/Delete.vue";
 import AssociateStaff from "./partials/AssociateStaff.vue";
@@ -65,12 +65,7 @@ let openUser = (user) => {
 	router.visit(route("user.show", { user: user }));
 };
 
-let BreadCrumpLinks = [
-	{
-		name: "Users",
-		url: "",
-	},
-];
+const breadcrumbLinks = [{ name: "Users", url: null }];
 const page = usePage();
 const permissions = computed(() => {
 	return page.props?.auth.permissions;
@@ -87,36 +82,36 @@ const openAssociate = (id) => {
 <template>
 	<MainLayout>
 		<Head title="Users" />
-		<main class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-			<BreadCrumpVue :links="BreadCrumpLinks" />
-			<div
-				class="overflow-hidden shadow-sm sm:rounded-lg px-6 border-b border-gray-200"
-			>
-				<TableHeader
-					title="Users"
-					:total="users.total"
-					:search="filters.search"
-					class="w-full lg:w-4/6"
-					action-text="Create User"
-					@action-clicked="toggle()"
-					@search-entered="(value) => searchUser(value)"
-				/>
+		<PageShell>
+			<PageHeader
+				title="Users"
+				description="Accounts that can sign in, and what they are allowed to do."
+				:breadcrumbs="breadcrumbLinks"
+				:count="users.total"
+			/>
 
-				<UserList
-					:users="users.data"
-					:can-associate-staff="permissions?.includes('associate user staff')"
-					@open-user="(userId) => openUser(userId)"
-					@edit-user="(user) => editUser(user)"
-					@delete-user="(user) => deleteUser(user)"
-					@reset-password="(user) => resetPassword(user)"
-					@associate-staff="(id) => openAssociate(id)"
-				>
-					<template #pagination>
-						<Pagination :navigation="navigation" />
-					</template>
-				</UserList>
-			</div>
-		</main>
+			<ListToolbar
+				title="Users"
+				action-text="Create User"
+				:search="filters.search"
+				@action-clicked="toggle()"
+				@search-entered="(value) => searchUser(value)"
+			/>
+
+			<UserList
+				:users="users.data"
+				:can-associate-staff="permissions?.includes('associate user staff')"
+				@open-user="(userId) => openUser(userId)"
+				@edit-user="(user) => editUser(user)"
+				@delete-user="(user) => deleteUser(user)"
+				@reset-password="(user) => resetPassword(user)"
+				@associate-staff="(id) => openAssociate(id)"
+			>
+				<template #pagination>
+					<Pagination :navigation="navigation" />
+				</template>
+			</UserList>
+		</PageShell>
 		<Modal :show="openDialog" @close="toggle()">
 			<AddUserForm @form-submitted="toggle()" />
 		</Modal>
@@ -129,8 +124,18 @@ const openAssociate = (id) => {
 			@close="toggleDeleteModal"
 			@delete-confirmed="deleteConfirmed()"
 		/>
-		<Modal v-if="associateUserId" :show="openAssociateModal" @close="openAssociateModal = false; associateUserId = null">
-			<AssociateStaff :user="associateUserId" @form-submitted="openAssociateModal = false" />
+		<Modal
+			v-if="associateUserId"
+			:show="openAssociateModal"
+			@close="
+				openAssociateModal = false;
+				associateUserId = null;
+			"
+		>
+			<AssociateStaff
+				:user="associateUserId"
+				@form-submitted="openAssociateModal = false"
+			/>
 		</Modal>
 	</MainLayout>
 </template>

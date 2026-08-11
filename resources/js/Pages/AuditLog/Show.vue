@@ -23,7 +23,7 @@ const getEventBadgeClass = (event) => {
 			return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
 		case "authorization_success":
 		case "success":
-			return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300";
+			return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
 		default:
 			return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
 	}
@@ -182,7 +182,7 @@ const BreadCrumpLinks = [
 				>
 					<Link
 						:href="route('audit-log.index')"
-						class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+						class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
 					>
 						&larr; Back to Audit Log
 					</Link>

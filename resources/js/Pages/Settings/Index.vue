@@ -1,7 +1,8 @@
 <script setup>
 import NewAuthenticated from "@/Layouts/NewAuthenticated.vue";
 import { Head, usePage } from "@inertiajs/vue3";
-import BreadCrump from "@/Components/BreadCrump.vue";
+import PageShell from "@/Components/UI/PageShell.vue";
+import PageHeader from "@/Components/UI/PageHeader.vue";
 import SettingCard from "@/Components/Settings/SettingCard.vue";
 import RecentActivityCard from "@/Components/Settings/RecentActivityCard.vue";
 import { computed } from "vue";
@@ -12,6 +13,7 @@ import {
 	ClipboardDocumentListIcon,
 	BuildingOffice2Icon,
 	Cog6ToothIcon,
+	ShieldExclamationIcon,
 } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
@@ -23,10 +25,7 @@ const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
 const can = (permission) => permissions.value?.includes(permission);
 
-const breadcrumbLinks = [
-	{ name: "Home", url: "/dashboard" },
-	{ name: "Settings", url: null },
-];
+const breadcrumbLinks = [{ name: "Settings", url: null }];
 
 const cards = computed(() =>
 	[
@@ -72,8 +71,15 @@ const cards = computed(() =>
 			gate: "view admin settings",
 		},
 		{
+			title: "Data Integrity",
+			secondary: "Find and fix inconsistent records",
+			href: route("data-integrity.index"),
+			linkLabel: "Review",
+			icon: ShieldExclamationIcon,
+			gate: "data-integrity.view",
+		},
+		{
 			title: "Application",
-			count: null,
 			secondary: "Name, email, display, security",
 			href: route("app-settings.edit"),
 			linkLabel: "Configure",
@@ -87,26 +93,19 @@ const cards = computed(() =>
 <template>
 	<Head title="Settings" />
 	<NewAuthenticated>
-		<main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-			<BreadCrump :links="breadcrumbLinks" />
+		<PageShell>
+			<PageHeader
+				title="Settings"
+				description="Manage users, roles, permissions, and related administration."
+				:breadcrumbs="breadcrumbLinks"
+			/>
 
-			<div class="mt-4">
-				<h1
-					class="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-50"
-				>
-					Settings
-				</h1>
-				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-					Manage users, roles, permissions, and related administration.
-				</p>
-			</div>
-
-			<div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+			<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				<SettingCard
 					v-for="card in cards"
 					:key="card.title"
 					:title="card.title"
-					:count="card.count"
+					:count="card.count ?? null"
 					:secondary="card.secondary"
 					:href="card.href"
 					:link-label="card.linkLabel"
@@ -117,8 +116,7 @@ const cards = computed(() =>
 			<RecentActivityCard
 				v-if="can('view user activity')"
 				:activities="recentActivity"
-				class="mt-6"
 			/>
-		</main>
+		</PageShell>
 	</NewAuthenticated>
 </template>

@@ -30,7 +30,7 @@ const submitHandler = () => {
 			onError: (errors) => {
 				console.error("Error assigning users:", errors);
 			},
-		}
+		},
 	);
 };
 </script>

@@ -37,7 +37,7 @@ const removeUser = (userId, userName) => {
 				onError: (errors) => {
 					console.error("Error removing user:", errors);
 				},
-			}
+			},
 		);
 	}
 };

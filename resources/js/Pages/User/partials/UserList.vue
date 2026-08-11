@@ -1,10 +1,7 @@
 <script setup>
 import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
-import NoItem from "@/Components/NoItem.vue";
-import MainTable from "@/Components/MainTable.vue";
-import TableHead from "@/Components/TableHead.vue";
-import TableBody from "@/Components/TableBody.vue";
+import DataTable from "@/Components/UI/DataTable.vue";
 import RowHeader from "@/Components/RowHeader.vue";
 import TableData from "@/Components/TableData.vue";
 import TableRow from "@/Components/TableRow.vue";
@@ -56,67 +53,56 @@ const tableCols = [
 </script>
 
 <template>
-	<section class="flex flex-col mt-6 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-		<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-			<div
-				v-if="users.length > 0"
-				class="overflow-x-auto border-b border-gray-200 rounded-md shadow-md"
+	<DataTable :has-items="users.length > 0" name="Users">
+		<template #head>
+			<RowHeader
+				v-for="(column, id) in tableCols"
+				:key="id"
+				:align="column === 'Action' ? 'right' : 'left'"
 			>
-				<MainTable>
-					<TableHead>
-						<template v-for="(column, id) in tableCols" :key="id">
-							<RowHeader>{{ column }}</RowHeader>
-						</template>
-					</TableHead>
-					<TableBody>
-						<template v-for="user in users" :key="user.id">
-							<TableRow clickable @click="emit('openUser', user.id)">
-								<TableData>
-									{{ user.name }}
-								</TableData>
-								<TableData>
-									{{ user.email }}
-								</TableData>
-								<TableData>
-									{{ user.verified }}
-								</TableData>
-								<TableData>
-									{{ user.roles_count }}
-								</TableData>
-								<TableData>
-									{{ user.permissions_count }}
-								</TableData>
-								<TableData class="flex justify-end items-center gap-2" @click.stop>
-									<button
-										v-if="canAssociateStaff"
-										type="button"
-										class="text-xs font-medium text-green-700 dark:text-gray-100"
-										@click="emit('associateStaff', user.id)"
-									>
-										{{ user.person_id ? "Change staff" : "Associate staff" }}
-									</button>
-									<SubMenu
-										v-if="
-											permissions?.includes('update staff') ||
-											permissions?.includes('delete staff')
-										"
-										:can-edit="permissions?.includes('update staff')"
-										:can-delete="permissions?.includes('delete staff')"
-										:can-view="permissions?.includes('view staff')"
-										:can-change-user-password="
-											permissions?.includes('reset user password')
-										"
-										:items="['Open', 'Reset Password', 'Edit', 'Delete']"
-										@itemClicked="(action) => subMenuClicked(action, user)"
-									/>
-								</TableData>
-							</TableRow>
-						</template>
-					</TableBody>
-				</MainTable>
-				<slot name="pagination" />
-			</div>
-			<NoItem v-else name="User" />
-		</div>
-	</section>
+				{{ column }}
+			</RowHeader>
+		</template>
+		<template #body>
+			<TableRow
+				v-for="user in users"
+				:key="user.id"
+				clickable
+				@click="emit('openUser', user.id)"
+			>
+				<TableData primary>{{ user.name }}</TableData>
+				<TableData>{{ user.email }}</TableData>
+				<TableData>{{ user.verified }}</TableData>
+				<TableData>{{ user.roles_count }}</TableData>
+				<TableData>{{ user.permissions_count }}</TableData>
+				<TableData class="flex items-center justify-end gap-2" @click.stop>
+					<button
+						v-if="canAssociateStaff"
+						type="button"
+						class="text-xs font-medium text-green-700 hover:underline dark:text-green-300"
+						@click="emit('associateStaff', user.id)"
+					>
+						{{ user.person_id ? "Change staff" : "Associate staff" }}
+					</button>
+					<SubMenu
+						v-if="
+							permissions?.includes('update staff') ||
+							permissions?.includes('delete staff')
+						"
+						:can-edit="permissions?.includes('update staff')"
+						:can-delete="permissions?.includes('delete staff')"
+						:can-view="permissions?.includes('view staff')"
+						:can-change-user-password="
+							permissions?.includes('reset user password')
+						"
+						:items="['Open', 'Reset Password', 'Edit', 'Delete']"
+						@itemClicked="(action) => subMenuClicked(action, user)"
+					/>
+				</TableData>
+			</TableRow>
+		</template>
+		<template #footer>
+			<slot name="pagination" />
+		</template>
+	</DataTable>
 </template>

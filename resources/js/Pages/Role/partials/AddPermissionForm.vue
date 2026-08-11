@@ -31,9 +31,7 @@ onMounted(async () => {
 const filteredPermissions = computed(() => {
 	if (!search.value) return allPermissions.value;
 	const q = search.value.toLowerCase();
-	return allPermissions.value.filter((name) =>
-		name.toLowerCase().includes(q),
-	);
+	return allPermissions.value.filter((name) => name.toLowerCase().includes(q));
 });
 
 const permissionState = (name) => {
@@ -110,10 +108,7 @@ const cancel = () => {
 			</p>
 		</div>
 
-		<div
-			v-if="isLoading"
-			class="flex items-center justify-center py-16"
-		>
+		<div v-if="isLoading" class="flex items-center justify-center py-16">
 			<p class="text-gray-500 dark:text-gray-300">Loading permissions...</p>
 		</div>
 
@@ -145,7 +140,7 @@ const cancel = () => {
 					</span>
 					<span
 						v-if="counts.added > 0"
-						class="inline-flex items-center gap-x-1 rounded-md bg-indigo-100 dark:bg-indigo-900/40 px-2 py-1 font-medium text-indigo-800 dark:text-indigo-200"
+						class="inline-flex items-center gap-x-1 rounded-md bg-green-100 dark:bg-green-900/40 px-2 py-1 font-medium text-green-800 dark:text-green-200"
 					>
 						<PlusIcon class="h-3.5 w-3.5" />
 						{{ counts.added }} to add
@@ -172,7 +167,7 @@ const cancel = () => {
 							{
 								'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30':
 									permissionState(name) === 'assigned',
-								'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30':
+								'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30':
 									permissionState(name) === 'added',
 								'bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 line-through':
 									permissionState(name) === 'removed',
@@ -188,7 +183,7 @@ const cancel = () => {
 								{
 									'text-green-900 dark:text-green-100':
 										permissionState(name) === 'assigned',
-									'text-indigo-900 dark:text-indigo-100':
+									'text-green-900 dark:text-green-100':
 										permissionState(name) === 'added',
 									'text-red-900 dark:text-red-200':
 										permissionState(name) === 'removed',
@@ -209,7 +204,7 @@ const cancel = () => {
 							</span>
 							<span
 								v-else-if="permissionState(name) === 'added'"
-								class="inline-flex items-center gap-x-1 rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-medium text-white"
+								class="inline-flex items-center gap-x-1 rounded-full bg-green-600 px-2 py-0.5 text-xs font-medium text-white"
 							>
 								<PlusIcon class="h-3.5 w-3.5" />
 								New

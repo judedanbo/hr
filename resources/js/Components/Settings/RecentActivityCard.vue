@@ -6,9 +6,9 @@ defineProps({
 
 <template>
 	<div
-		class="rounded-2xl border border-green-200/60 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-5"
+		class="rounded-2xl border border-green-200/60 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 	>
-		<h2 class="text-sm font-semibold text-green-900 dark:text-gray-100">
+		<h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
 			Recent admin activity
 		</h2>
 		<ul
@@ -26,12 +26,12 @@ defineProps({
 					}}</span>
 					{{ activity.description }}
 				</span>
-				<span class="flex-shrink-0 text-xs text-gray-400 dark:text-gray-400">
+				<span class="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
 					{{ activity.created_at }}
 				</span>
 			</li>
 		</ul>
-		<p v-else class="mt-3 text-sm text-gray-400 dark:text-gray-300">
+		<p v-else class="mt-3 text-sm text-gray-500 dark:text-gray-400">
 			No recent activity.
 		</p>
 	</div>

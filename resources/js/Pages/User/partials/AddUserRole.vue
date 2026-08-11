@@ -37,7 +37,10 @@ const submitHandler = (data, node) => {
 			Roles
 		</h1>
 		<FormKit type="form" submit-label="Save" @submit="submitHandler">
-			<UserRoleForm :user-roles="userRoles.roles" :has-staff-record="props.hasStaffRecord" />
+			<UserRoleForm
+				:user-roles="userRoles.roles"
+				:has-staff-record="props.hasStaffRecord"
+			/>
 		</FormKit>
 	</main>
 </template>

@@ -27,7 +27,7 @@ const submit = () => {
 			onError: (errors) => {
 				console.error(errors);
 			},
-		}
+		},
 	);
 };
 </script>
