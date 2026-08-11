@@ -1,11 +1,7 @@
-<script setup>
-import TableHead from "@/Components/TableHead.vue";
-import TableBody from "@/Components/TableBody.vue";
-</script>
 <template>
-	<table class="min-w-full overflow-x-scroll divide-y divide-gray-200">
+	<table
+		class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+	>
 		<slot />
-		<!-- <TableHead />
-		<TableBody :data="" /> -->
 	</table>
 </template>

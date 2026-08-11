@@ -38,7 +38,7 @@ const openUser = (userId) => {
 					</TableHead>
 					<TableBody>
 						<template v-for="user in users.data" :key="user.id">
-							<TableRow @click="openUser(user.id)">
+							<TableRow clickable @click="openUser(user.id)">
 								<TableData>
 									{{ user.name }}
 								</TableData>

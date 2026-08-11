@@ -44,7 +44,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="currentStaff in staff" :key="currentStaff.id">
-							<TableRow @click="emit('openStaff', currentStaff.id)">
+							<TableRow clickable @click="emit('openStaff', currentStaff.id)">
 								<TableData>
 									<StaffNameCard :staff="currentStaff" />
 								</TableData>

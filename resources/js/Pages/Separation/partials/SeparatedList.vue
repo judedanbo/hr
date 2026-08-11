@@ -38,7 +38,7 @@ const tableCols = ["Name", "Ghana Card", "Contact", "Separation"];
 					<TableBody>
 						<template v-for="staff in separated" :key="staff.id">
 							<!-- {{ separated }} -->
-							<TableRow @click="emit('openSeparation', staff.id)">
+							<TableRow clickable @click="emit('openSeparation', staff.id)">
 								<!-- {{ unit }} -->
 								<TableData>
 									<StaffNameCard :staff="staff" />

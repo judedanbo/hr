@@ -29,7 +29,7 @@ const tableCols = ["Name", "Units", "Male", "Female", "Total staff"];
 					</TableHead>
 					<TableBody>
 						<template v-for="unit in units" :key="unit.id">
-							<TableRow @click="emit('openUnit', unit.id)">
+							<TableRow clickable @click="emit('openUnit', unit.id)">
 								<TableData>
 									<UnitNameCard :unit="unit" />
 								</TableData>

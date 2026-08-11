@@ -33,7 +33,7 @@ const tableCols = ["Roles", "Permissions", "Users"];
 					</TableHead>
 					<TableBody>
 						<template v-for="role in roles" :key="role.id">
-							<TableRow @click="emit('openRole', role.id)">
+							<TableRow clickable @click="emit('openRole', role.id)">
 								<TableData>
 									{{ role.display_name }}
 									<!-- <RoleNameCard :role="role" /> -->

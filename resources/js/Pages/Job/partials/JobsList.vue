@@ -37,7 +37,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="job in jobs" :key="job.id">
-							<TableRow @click="emit('openJob', job.id)">
+							<TableRow clickable @click="emit('openJob', job.id)">
 								<TableData>
 									<JobName :job="job" />
 								</TableData>

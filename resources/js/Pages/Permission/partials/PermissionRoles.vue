@@ -38,7 +38,7 @@ const openRole = (roleId) => {
 					</TableHead>
 					<TableBody>
 						<template v-for="role in roles.data" :key="role.id">
-							<TableRow @click="openRole(role.id)">
+							<TableRow clickable @click="openRole(role.id)">
 								<TableData>
 									{{ role.name }}
 								</TableData>

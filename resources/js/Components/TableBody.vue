@@ -1,10 +1,5 @@
-<script setup>
-import TableHead from "@/Components/TableHead.vue";
-</script>
 <template>
-	<tbody
-		class="bg-white dark:bg-gray-500 divide-y divide-gray-200 dark:divide-gray-400"
-	>
+	<tbody class="divide-y divide-gray-100 dark:divide-gray-700">
 		<slot />
 	</tbody>
 </template>

@@ -27,7 +27,7 @@ const openRank = (id) => {
 		</TableHead>
 		<TableBody>
 			<template v-for="rank in ranks" :key="rank.id">
-				<TableRow @row-clicked="openRank(rank.id)">
+				<TableRow clickable @row-clicked="openRank(rank.id)">
 					<TableData>
 						{{ rank.name }}
 					</TableData>

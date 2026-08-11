@@ -57,11 +57,9 @@ const getEventBadgeClass = (event) => {
 				</TableHead>
 				<TableBody>
 					<template v-for="activity in activities" :key="activity.id">
-						<TableRow @click="emit('viewActivity', activity)">
+						<TableRow clickable @click="emit('viewActivity', activity)">
 							<TableData>
-								<span class="text-sm text-gray-600 dark:text-gray-400">
-									{{ activity.created_at }}
-								</span>
+								{{ activity.created_at }}
 							</TableData>
 							<TableData>
 								<span
@@ -73,25 +71,20 @@ const getEventBadgeClass = (event) => {
 									{{ activity.event || "N/A" }}
 								</span>
 							</TableData>
-							<TableData>
-								<span class="text-sm dark:text-gray-300">
-									{{ activity.description }}
-								</span>
+							<TableData :nowrap="false" primary>
+								{{ activity.description }}
 							</TableData>
 							<TableData>
-								<span class="text-sm dark:text-gray-300">
-									{{ activity.causer_name }}
-								</span>
+								{{ activity.causer_name }}
 							</TableData>
 							<TableData>
-								<span
-									v-if="activity.subject_type"
-									class="text-sm dark:text-gray-300"
-								>
+								<template v-if="activity.subject_type">
 									{{ activity.subject_type }}
-									<span class="text-gray-500">#{{ activity.subject_id }}</span>
-								</span>
-								<span v-else class="text-sm text-gray-400">-</span>
+									<span class="text-gray-500 dark:text-gray-400"
+										>#{{ activity.subject_id }}</span
+									>
+								</template>
+								<span v-else class="text-gray-400 dark:text-gray-500">-</span>
 							</TableData>
 							<TableData @click.stop>
 								<SubMenu

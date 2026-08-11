@@ -70,7 +70,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="user in users" :key="user.id">
-							<TableRow @click="emit('openUser', user.id)">
+							<TableRow clickable @click="emit('openUser', user.id)">
 								<TableData>
 									{{ user.name }}
 								</TableData>

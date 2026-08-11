@@ -35,7 +35,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="region in regions" :key="region.id">
-							<TableRow @click="emit('openRegion', region.id)">
+							<TableRow clickable @click="emit('openRegion', region.id)">
 								<TableData>
 									<RegionName :region="region" />
 								</TableData>

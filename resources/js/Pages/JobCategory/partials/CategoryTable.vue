@@ -36,7 +36,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="category in categories" :key="category.id">
-							<TableRow @click="emit('openCategory', category.id)">
+							<TableRow clickable @click="emit('openCategory', category.id)">
 								<TableData>
 									<CategoryName :category="category" />
 								</TableData>

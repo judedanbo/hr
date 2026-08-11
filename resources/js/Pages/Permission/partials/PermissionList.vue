@@ -33,7 +33,7 @@ const tableCols = ["Permissions", "Roles", "Users"];
 					</TableHead>
 					<TableBody>
 						<template v-for="permission in permissions" :key="permission.id">
-							<TableRow @click="emit('openPermission', permission.id)">
+							<TableRow clickable @click="emit('openPermission', permission.id)">
 								<TableData>
 									{{ permission.display_name }}
 								</TableData>

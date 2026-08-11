@@ -34,7 +34,7 @@ const tableCols = [
 					</TableHead>
 					<TableBody>
 						<template v-for="office in offices" :key="office.id">
-							<TableRow @click="emit('openOffice', office.id)">
+							<TableRow clickable @click="emit('openOffice', office.id)">
 								<TableData>
 									<OfficeName :office="office" />
 								</TableData>
