@@ -1,0 +1,190 @@
+name: Deploy to environment
+
+# Reusable deploy used by both staging and production so the two paths cannot
+# drift. Production differs only in its GitHub Environment protection rule.
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: GitHub Environment to deploy to (gates production on approval)
+        required: true
+        type: string
+      overlay:
+        description: Path to the kustomize overlay
+        required: true
+        type: string
+      name_prefix:
+        description: Resource name prefix used by the overlay, e.g. hrmis-production-
+        required: true
+        type: string
+      secret_name:
+        description: Name of the out-of-band Secret holding credentials
+        required: true
+        type: string
+      health_url:
+        description: Public URL smoke-tested after the rollout
+        required: true
+        type: string
+      php_image:
+        description: Fully qualified php-fpm image reference, pinned by digest
+        required: true
+        type: string
+      nginx_image:
+        description: Fully qualified nginx image reference, pinned by digest
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AKS_RESOURCE_GROUP: infosys
+  AKS_CLUSTER: infosys
+  NAMESPACE: hr
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: v1.30.5
+
+      - name: Install kustomize
+        run: |
+          curl -sSfL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+          kustomize version
+
+      - name: Authenticate to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            --resource-group "$AKS_RESOURCE_GROUP" \
+            --name "$AKS_CLUSTER" \
+            --overwrite-existing
+
+      - name: Render manifests
+        env:
+          OVERLAY: ${{ inputs.overlay }}
+          PHP_IMAGE: ${{ inputs.php_image }}
+          NGINX_IMAGE: ${{ inputs.nginx_image }}
+        run: |
+          set -euo pipefail
+          cd "$OVERLAY"
+          kustomize edit set image "hrmis/php-fpm=$PHP_IMAGE"
+          kustomize edit set image "hrmis/nginx=$NGINX_IMAGE"
+          cd "$GITHUB_WORKSPACE"
+          kustomize build "$OVERLAY" > rendered.yaml
+          echo "Rendered $(grep -c '^kind:' rendered.yaml) objects"
+
+          # If the image override silently failed, the placeholder name survives
+          # and we would deploy hrmis/php-fpm:latest from nowhere. Fail loudly.
+          if grep -qE 'image: hrmis/(php-fpm|nginx)' rendered.yaml; then
+            echo "::error::Image substitution did not take effect; rendered manifest still references the placeholder"
+            grep -nE 'image: hrmis/' rendered.yaml
+            exit 1
+          fi
+
+      # The ConfigMap must exist before the migration Job references it, and the
+      # Job must finish before the Deployments roll, so new code never starts
+      # against an old schema.
+      - name: Apply configuration
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' > configmaps.yaml
+          import yaml
+          docs = [d for d in yaml.safe_load_all(open('rendered.yaml')) if d]
+          cms = [d for d in docs if d.get('kind') == 'ConfigMap']
+          if not cms:
+              raise SystemExit('::error::No ConfigMap found in the rendered manifest')
+          print(yaml.safe_dump_all(cms))
+          PY
+          kubectl apply -n "$NAMESPACE" -f configmaps.yaml
+
+      - name: Run database migrations
+        env:
+          NAME_PREFIX: ${{ inputs.name_prefix }}
+          SECRET_NAME: ${{ inputs.secret_name }}
+          PHP_IMAGE: ${{ inputs.php_image }}
+        run: |
+          set -euo pipefail
+          CONFIG_MAP="$(grep -oE "${NAME_PREFIX}app-config-[a-z0-9]+" rendered.yaml | head -1)"
+          if [ -z "$CONFIG_MAP" ]; then
+            echo "::error::Could not determine the generated ConfigMap name"
+            exit 1
+          fi
+          JOB_NAME="${NAME_PREFIX}migrate-${GITHUB_SHA::12}"
+          echo "JOB_NAME=$JOB_NAME" >> "$GITHUB_ENV"
+
+          export JOB_NAME CONFIG_MAP SECRET_NAME APP_IMAGE="$PHP_IMAGE"
+          envsubst < k8s/migrate-job.yaml > migrate.yaml
+
+          kubectl delete job -n "$NAMESPACE" "$JOB_NAME" --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f migrate.yaml
+          if ! kubectl wait -n "$NAMESPACE" --for=condition=complete \
+                 --timeout=10m "job/$JOB_NAME"; then
+            echo "::error::Migrations failed — deployment aborted, nothing was rolled"
+            kubectl logs -n "$NAMESPACE" "job/$JOB_NAME" --tail=200 || true
+            exit 1
+          fi
+          kubectl logs -n "$NAMESPACE" "job/$JOB_NAME" --tail=50 || true
+
+      - name: Apply workloads
+        run: kubectl apply -n "$NAMESPACE" -f rendered.yaml
+
+      - name: Wait for rollout
+        id: rollout
+        env:
+          NAME_PREFIX: ${{ inputs.name_prefix }}
+        run: |
+          set -euo pipefail
+          for component in app web queue scheduler redis; do
+            deployment="${NAME_PREFIX}${component}"
+            echo "::group::rollout $deployment"
+            kubectl rollout status -n "$NAMESPACE" \
+              "deployment/$deployment" --timeout=5m
+            echo "::endgroup::"
+          done
+
+      - name: Smoke test
+        env:
+          HEALTH_URL: ${{ inputs.health_url }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 10); do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "$HEALTH_URL" || echo 000)"
+            if [ "$code" = "200" ]; then
+              echo "Health check passed on attempt $attempt"
+              exit 0
+            fi
+            echo "Attempt $attempt: HTTP $code — retrying"
+            sleep 10
+          done
+          echo "::error::Health check never returned 200 at $HEALTH_URL"
+          exit 1
+
+      # Only rolls back the workloads. Migrations are deliberately NOT reverted:
+      # automatic down-migrations lose data. A failed release that already
+      # migrated needs a human decision.
+      - name: Roll back on failure
+        if: failure() && steps.rollout.outcome != 'skipped'
+        env:
+          NAME_PREFIX: ${{ inputs.name_prefix }}
+        run: |
+          for component in app web queue scheduler; do
+            deployment="${NAME_PREFIX}${component}"
+            echo "Rolling back $deployment"
+            kubectl rollout undo -n "$NAMESPACE" "deployment/$deployment" || true
+          done
+          echo "::warning::Workloads rolled back. Any migrations that ran were NOT reverted."

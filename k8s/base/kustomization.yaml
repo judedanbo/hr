@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: hr
+
+resources:
+  - app-deployment.yaml
+  - web-deployment.yaml
+  - services.yaml
+  - redis.yaml
+  - queue-deployment.yaml
+  - scheduler-deployment.yaml
+
+# The deploy workflow rewrites these with `kustomize edit set image` so both
+# images always carry the same git sha and can never serve mismatched assets.
+images:
+  - name: hrmis/php-fpm
+    newTag: latest
+  - name: hrmis/nginx
+    newTag: latest
+
+labels:
+  - includeSelectors: false
+    pairs:
+      app.kubernetes.io/name: hrmis
+      app.kubernetes.io/managed-by: kustomize

@@ -1,0 +1,47 @@
+# Carries the existing production upload volumes forward verbatim.
+#
+# NOTE: this preserves the current, incomplete mounting. `prod-avatars-pvc` covers
+# storage/app/public/avatars only, while the application also writes to
+# storage/app/public/qualifications, storage/app/public/leave-documents and
+# storage/app/documents — all of which remain on ephemeral container storage and
+# are destroyed on every redeploy. Fixing that is deliberately out of scope here;
+# changing the mounts as a side effect of the CI/CD work would be a silent,
+# untested data migration.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: php-fpm
+          volumeMounts:
+            - name: avatars
+              mountPath: /var/www/html/storage/app/public/avatars
+      volumes:
+        - name: avatars
+          persistentVolumeClaim:
+            claimName: prod-avatars-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+          env:
+            - name: FASTCGI_PASS
+              value: hrmis-production-app:9000
+            - name: NGINX_CLIENT_MAX_BODY_SIZE
+              value: 100m
+          volumeMounts:
+            - name: avatars
+              mountPath: /var/www/html/public/storage/avatars
+      volumes:
+        - name: avatars
+          persistentVolumeClaim:
+            claimName: prod-avatars-pvc

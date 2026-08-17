@@ -83,16 +83,32 @@ php artisan telescope:prune          # Clean old Telescope entries
 
 ## Architecture
 
-### Laravel 11 Hybrid Structure
-**IMPORTANT**: This project runs Laravel 11 but uses the legacy Laravel 10 structure (recommended by Laravel for upgraded projects).
+### Laravel 11 Structure
 
-- **Middleware**: Registered in `app/Http/Kernel.php` (not bootstrap/app.php)
-- **Exception Handling**: In `app/Exceptions/Handler.php`
-- **Console Commands**: Auto-discovered from `app/Console/Commands`
-- **Service Providers**: Located in `app/Providers/`
-- **Rate Limiting**: Configured in `RouteServiceProvider` or `app/Http/Kernel.php`
+**IMPORTANT**: This project uses the **Laravel 11 structure**. `bootstrap/app.php`
+calls `Application::configure()->withRouting(...)->withMiddleware(...)`, and that
+file is the single source of truth for routing, middleware, the schedule, and
+exception handling.
 
-This structure is perfectly valid and recommended when upgrading from Laravel 10 to 11.
+- **Middleware**: Registered in `bootstrap/app.php` via `withMiddleware()` — global
+  middleware, group appends, and the route-middleware aliases (`auth`,
+  `password_changed`, `can`, ...) all live there
+- **Routing & health check**: `withRouting()`, including `health: '/up'`, which
+  registers the `/up` endpoint used by the Kubernetes probes
+- **Schedule**: `withSchedule()` in `bootstrap/app.php`
+- **Exception Handling**: `withExceptions()` in `bootstrap/app.php`
+- **Console Commands**: loaded via `withCommands([app/Console/Commands])`
+- **Service Providers**: `app/Providers/`, registered through `config/app.php`
+
+> **`app/Http/Kernel.php` and `app/Console/Kernel.php` are dead code.** They are
+> leftovers from the Laravel 10 layout and are *not* loaded — the container binds
+> `Illuminate\Foundation\Http\Kernel` and `Illuminate\Foundation\Console\Kernel`.
+> Editing them has no effect. This already caused one real bug: the
+> `notifications:prune` schedule was defined in `app/Console/Kernel.php` and
+> therefore never ran (`php artisan schedule:list` reported no tasks) until it was
+> moved into `withSchedule()`. Verify any change to routing, middleware or the
+> schedule with `php artisan route:list` / `schedule:list`, not by reading the
+> Kernel files.
 
 ### Domain Model
 
@@ -547,6 +563,25 @@ gh pr create --title "Feature: Model Management" --body "Description"
 | Routes not working | Clear cache: `php artisan optimize:clear` |
 | Vue component not updating | Check Vite is running, hard refresh browser |
 | 403 Forbidden | Check permissions and Gate policies |
+
+## Deployment
+
+Deployed to AKS (cluster `infosys`, resource group `infosys`, namespace `hr`).
+Manifests live in `k8s/`; **read `k8s/README.md` before changing anything there.**
+
+- `main` → staging (`test-hr.audit.gov.gh`) automatically; production
+  (`hr.audit.gov.gh`) requires approval on the `production` GitHub Environment and
+  deploys the identical image digest staging ran.
+- Images: one `docker/production/Dockerfile` with `--target php-fpm` and
+  `--target nginx`, pushed to `regisry.azurecr.io` (the registry name really is
+  misspelled) and tagged `git-<sha>`.
+- **Never bake a `.env` into an image** — configuration comes from the ConfigMap
+  (`k8s/overlays/*/app.env`) and an out-of-band Secret. `.env` is in
+  `.dockerignore` for this reason.
+- Adding a disk to `config/filesystems.php` does **not** make it persistent. Only
+  `storage/app/public/avatars` is on a PVC; everything else under `storage/app`
+  is ephemeral and is lost on redeploy. See the deferred-risk section of
+  `k8s/README.md`.
 
 ## Environment Variables
 

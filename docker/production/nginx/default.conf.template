@@ -1,0 +1,47 @@
+# Rendered by the nginx image entrypoint via envsubst.
+#
+#   FASTCGI_PASS                 host:port of the php-fpm Service for this environment
+#   NGINX_CLIENT_MAX_BODY_SIZE   upload ceiling; must be >= PHP's post_max_size
+
+server {
+    listen 80;
+    server_name _;
+
+    root  /var/www/html/public;
+    index index.php index.html;
+
+    charset utf-8;
+
+    # The live config never set this, so nginx's 1m default silently rejected
+    # qualification and leave-evidence uploads larger than 1 MB.
+    client_max_body_size ${NGINX_CLIENT_MAX_BODY_SIZE};
+
+    access_log /dev/stdout main;
+    error_log  /dev/stderr warn;
+
+    # Liveness target. Deliberately static: it must stay green while php-fpm is
+    # unhealthy, otherwise an application fault would restart nginx too.
+    location = /healthz {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 'ok';
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass  ${FASTCGI_PASS};
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+        fastcgi_read_timeout 300;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}

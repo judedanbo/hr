@@ -1,0 +1,107 @@
+name: Validate manifests
+
+# Cheap guard: a broken overlay or a Dockerfile typo should fail on the pull
+# request, not halfway through a production deploy.
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "k8s/**"
+      - "docker/**"
+      - ".github/workflows/**"
+  pull_request:
+    paths:
+      - "k8s/**"
+      - "docker/**"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  kustomize:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        overlay: [staging, production]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kustomize
+        run: |
+          curl -sSfL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Render overlay
+        env:
+          OVERLAY: ${{ matrix.overlay }}
+        run: kustomize build "k8s/overlays/$OVERLAY" > "rendered-$OVERLAY.yaml"
+
+      - name: Validate against the cluster's API schemas
+        env:
+          OVERLAY: ${{ matrix.overlay }}
+        run: |
+          curl -sSfLo kubeconform.tar.gz \
+            https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
+          tar xf kubeconform.tar.gz kubeconform
+          ./kubeconform -strict -summary -kubernetes-version 1.30.0 \
+            -schema-location default \
+            "rendered-$OVERLAY.yaml"
+
+      # Guards the two invariants that are easy to break and expensive to debug:
+      # cross-environment selector leakage, and a missing environment discriminator.
+      - name: Assert environment isolation
+        env:
+          OVERLAY: ${{ matrix.overlay }}
+        run: |
+          set -euo pipefail
+          python3 - "$OVERLAY" <<'PY'
+          import sys, yaml
+          overlay = sys.argv[1]
+          instance = {"staging": "hrmis-test", "production": "hrmis-production"}[overlay]
+          docs = [d for d in yaml.safe_load_all(open(f"rendered-{overlay}.yaml")) if d]
+
+          failures = []
+          for d in docs:
+              kind, name = d["kind"], d["metadata"]["name"]
+              if kind == "Service":
+                  sel = d["spec"].get("selector", {})
+                  if sel.get("app.kubernetes.io/instance") != instance:
+                      failures.append(f"Service {name} selector lacks instance={instance}: {sel}")
+              if kind == "Deployment":
+                  sel = d["spec"]["selector"]["matchLabels"]
+                  if sel.get("app.kubernetes.io/instance") != instance:
+                      failures.append(f"Deployment {name} selector lacks instance={instance}: {sel}")
+
+          if failures:
+              print("\n".join(f"::error::{f}" for f in failures))
+              sys.exit(1)
+          print(f"{overlay}: all {len(docs)} objects correctly scoped to {instance}")
+          PY
+
+  dockerfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      # Build without pushing, so a broken image fails review rather than deploy.
+      - name: Build php-fpm target
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          target: php-fpm
+          push: false
+          cache-from: type=gha,scope=hrmis-php
+          cache-to: type=gha,mode=max,scope=hrmis-php
+
+      - name: Build nginx target
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          target: nginx
+          push: false
+          cache-from: type=gha,scope=hrmis-nginx
+          cache-to: type=gha,mode=max,scope=hrmis-nginx
