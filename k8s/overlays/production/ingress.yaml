@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    # Deliberately still the namespaced Issuer that currently serves production,
+    # with its existing, working certificate secret. Migrating production to the
+    # `infosys-issuer` ClusterIssuer is a separate change, made only after
+    # staging has proven that issuer works.
+    cert-manager.io/issuer: hrmis-test-letsencrypt-nginx
+    # The ingress controller enforces its own 1m body limit, so raising
+    # client_max_body_size in nginx alone is not enough for document uploads.
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: hr.audit.gov.gh
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - hr.audit.gov.gh
+      secretName: hrmis-test-letsencrypt-nginx

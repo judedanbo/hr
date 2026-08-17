@@ -1,7 +1,15 @@
 /node_modules
 /vendor
-.env.backup
+
+# Never bake environment files into an image. The production image previously
+# shipped a .env containing APP_KEY, DB_PASSWORD, MAIL_PASSWORD, PUSHER_APP_SECRET
+# and AWS_SECRET_ACCESS_KEY — readable by anyone who could pull from the registry.
+.env
+.env.*
+!.env.example
+
 .phpunit.result.cache
+/.phpunit.cache
 Homestead.json
 Homestead.yaml
 auth.json
@@ -9,5 +17,28 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/.git
 /kube
 *.sql
+
+# Build artefacts and material with no place in a runtime image.
+#
+# bootstrap/cache in particular: the local package-discovery cache lists dev
+# providers (e.g. Laravel\Boost\BoostServiceProvider) that --no-dev does not
+# install, so baking it in makes every artisan command fatal with
+# "Class ... not found". The image regenerates it with `artisan package:discover`.
+/bootstrap/cache
+# The Dockerfile creates every storage/ subdirectory it needs. Excluding the
+# host's copy keeps local runtime litter (logs, cached views, test disks) out of
+# the image and out of the build context.
+/storage
+/public/build
+/public/hot
+/storage/logs/*
+/tests
+/docs
+/.github
+/node_modules
+tests/Browser/screenshots
+tests/Browser/console
+tests/Browser/source

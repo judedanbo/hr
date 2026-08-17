@@ -10,6 +10,9 @@ use App\Services\Staff\PromotionService;
 use App\Services\Staff\SeparationService;
 use App\Services\Staff\StaffManagementService;
 use App\Services\Staff\TransferService;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -37,10 +40,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (env('APP_ENV') !== 'local') {
+        if (! $this->app->environment('local')) {
             $this->app['request']->server->set('HTTPS', 'on');
             URL::forceScheme('https');
         }
+
+        Event::listen(DiagnosingHealth::class, function (): void {
+            DB::connection()->getPdo();
+        });
 
         Gate::policy('App\Models\User', 'App\Policies\UserPolicy');
         Gate::policy('App\Models\InstitutionPerson', 'App\Policies\InstitutionPersonPolicy');

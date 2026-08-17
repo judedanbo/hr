@@ -1,0 +1,50 @@
+# Rendered by the deploy workflow with envsubst.
+#
+#   JOB_NAME     unique per release, e.g. hrmis-production-migrate-<sha>
+#   APP_IMAGE    the exact php-fpm image being deployed
+#   CONFIG_MAP   the hashed ConfigMap name from the rendered overlay
+#   SECRET_NAME  hrmis-production-app-secret | hrmis-test-app-secret
+#
+# Migrations run to completion before the Deployments are rolled, so new code
+# never starts against an old schema.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  namespace: hr
+  labels:
+    app.kubernetes.io/name: hrmis
+    app.kubernetes.io/component: migrate
+spec:
+  backoffLimit: 2
+  # Completed Jobs clean themselves up rather than accumulating one per release.
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hrmis
+        app.kubernetes.io/component: migrate
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: ${APP_IMAGE}
+          # args, not command: the image entrypoint warms the config cache first,
+          # and without it artisan would run against uncached config.
+          args:
+            - php
+            - artisan
+            - migrate
+            - --force
+          envFrom:
+            - configMapRef:
+                name: ${CONFIG_MAP}
+            - secretRef:
+                name: ${SECRET_NAME}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi

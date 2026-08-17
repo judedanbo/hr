@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: hr
+namePrefix: hrmis-production-
+
+resources:
+  - ../../base
+  - ingress.yaml
+
+# includeSelectors is essential here: staging and production share the `hr`
+# namespace, so without an instance label in the selector the production
+# Service would happily route traffic to staging pods.
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/instance: hrmis-production
+
+configMapGenerator:
+  - name: app-config
+    envs:
+      - app.env
+
+patches:
+  # The Secret is created out of band and is not managed by kustomize, so its
+  # name is not rewritten by namePrefix and has to be set explicitly.
+  - target:
+      kind: Deployment
+      labelSelector: hrmis.audit.gov.gh/app-env=true
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/envFrom/1/secretRef/name
+        value: hrmis-production-app-secret
+
+  - path: patch-storage.yaml

@@ -1,0 +1,113 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+# Serialises deploys so two runs cannot migrate the same database at once.
+# cancel-in-progress stays false: cancelling a run mid-migration is worse than
+# waiting for it.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  REGISTRY: regisry.azurecr.io
+  ACR_NAME: regisry
+
+jobs:
+  # Nothing is built, let alone deployed, unless the existing suite passes.
+  test:
+    uses: ./.github/workflows/laravel.yml
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      php_image: ${{ steps.refs.outputs.php_image }}
+      nginx_image: ${{ steps.refs.outputs.nginx_image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Authenticate to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to ACR
+        run: az acr login --name "$ACR_NAME"
+
+      # Both images come from one Dockerfile and share the vendor and assets
+      # stages, so they can never carry mismatched application code.
+      - name: Build and push php-fpm
+        id: php
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          target: php-fpm
+          push: true
+          tags: ${{ env.REGISTRY }}/hrmis/php-fpm:git-${{ github.sha }}
+          cache-from: type=gha,scope=hrmis-php
+          cache-to: type=gha,mode=max,scope=hrmis-php
+
+      - name: Build and push nginx
+        id: nginx
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          target: nginx
+          push: true
+          tags: ${{ env.REGISTRY }}/hrmis/nginx:git-${{ github.sha }}
+          cache-from: type=gha,scope=hrmis-nginx
+          cache-to: type=gha,mode=max,scope=hrmis-nginx
+
+      # Pin by digest, not tag, so production provably runs the identical bytes
+      # staging exercised even if a tag were later moved.
+      - name: Resolve image digests
+        id: refs
+        env:
+          PHP_DIGEST: ${{ steps.php.outputs.digest }}
+          NGINX_DIGEST: ${{ steps.nginx.outputs.digest }}
+        run: |
+          set -euo pipefail
+          echo "php_image=${REGISTRY}/hrmis/php-fpm@${PHP_DIGEST}" >> "$GITHUB_OUTPUT"
+          echo "nginx_image=${REGISTRY}/hrmis/nginx@${NGINX_DIGEST}" >> "$GITHUB_OUTPUT"
+
+  deploy-staging:
+    needs: build
+    uses: ./.github/workflows/deploy-env.yml
+    secrets: inherit
+    with:
+      environment: staging
+      overlay: k8s/overlays/staging
+      name_prefix: hrmis-test-
+      secret_name: hrmis-test-app-secret
+      health_url: https://test-hr.audit.gov.gh/up
+      php_image: ${{ needs.build.outputs.php_image }}
+      nginx_image: ${{ needs.build.outputs.nginx_image }}
+
+  # Gated by the `production` GitHub Environment's required reviewers, and only
+  # reachable once the same digests are live and healthy on staging.
+  deploy-production:
+    needs: [build, deploy-staging]
+    uses: ./.github/workflows/deploy-env.yml
+    secrets: inherit
+    with:
+      environment: production
+      overlay: k8s/overlays/production
+      name_prefix: hrmis-production-
+      secret_name: hrmis-production-app-secret
+      health_url: https://hr.audit.gov.gh/up
+      php_image: ${{ needs.build.outputs.php_image }}
+      nginx_image: ${{ needs.build.outputs.nginx_image }}

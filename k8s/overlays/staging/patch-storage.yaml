@@ -1,0 +1,44 @@
+# Carries the existing staging upload volumes forward.
+#
+# NOTE: the live staging pod also mounts `documents-pvc` at
+# storage/app/qualifications-documents, a path that matches no disk root in
+# config/filesystems.php — it is a dead mount and is not reproduced here. The
+# avatars mount is real and is preserved.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: php-fpm
+          volumeMounts:
+            - name: avatars
+              mountPath: /var/www/html/storage/app/public/avatars
+      volumes:
+        - name: avatars
+          persistentVolumeClaim:
+            claimName: avatars-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+          env:
+            - name: FASTCGI_PASS
+              value: hrmis-test-app:9000
+            - name: NGINX_CLIENT_MAX_BODY_SIZE
+              value: 100m
+          volumeMounts:
+            - name: avatars
+              mountPath: /var/www/html/public/storage/avatars
+      volumes:
+        - name: avatars
+          persistentVolumeClaim:
+            claimName: avatars-pvc
