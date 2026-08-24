@@ -103,7 +103,9 @@ transcriptions of it, and each is commented in place:
 2. Grant it `AcrPush` on the `regisry` registry and
    `Azure Kubernetes Service Cluster User Role` on the `infosys` cluster.
 3. Add repository secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
-   `AZURE_SUBSCRIPTION_ID`.
+   `AZURE_SUBSCRIPTION_ID` — `k8s/set-repo-secrets.sh` does this,
+   taking the tenant and subscription from the logged-in Azure CLI and prompting
+   for whatever it cannot derive (`--dry-run` shows what it would write).
 4. Create GitHub Environments `staging` (unprotected) and `production` (required
    reviewers — this is the production gate).
 
