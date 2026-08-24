@@ -1,26 +1,61 @@
 <script setup>
 import Create from "./Create.vue";
 import Modal from "@/Components/NewModal.vue";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useToggle } from "@vueuse/core";
 import SubMenu from "@/Components/SubMenu.vue";
 import EditStaffPosition from "./Edit.vue";
 import DeleteStaffPosition from "./Delete.vue";
-import { router } from "@inertiajs/vue3";
+import { router, Link } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 const permissions = computed(() => page.props?.auth.permissions);
 
+const canAssign = computed(() =>
+	permissions.value?.includes("create staff position"),
+);
+const canUpdate = computed(() =>
+	permissions.value?.includes("update staff position"),
+);
+const canDelete = computed(() =>
+	permissions.value?.includes("delete staff position"),
+);
+const canViewPosition = computed(() =>
+	permissions.value?.includes("view position"),
+);
+const subMenuItems = computed(() =>
+	[canUpdate.value ? "Edit" : null, canDelete.value ? "Delete" : null].filter(
+		Boolean,
+	),
+);
+
 const emit = defineEmits(["closeForm", "editPosition", "deletePosition"]);
 let props = defineProps({
-	positions: { position: Array, required: true },
-	staff: { position: Object, required: true },
-	institution: { position: Number, required: true },
+	positions: { type: Array, default: () => [] },
+	staff: { type: Object, required: true },
+	institution: { type: Number, required: true },
+	showPositionForm: { type: Boolean, default: false },
 });
 
-let openStaffPositionModal = ref(false);
-const toggleStaffPositionModal = useToggle(openStaffPositionModal);
+let openStaffPositionModal = ref(props.showPositionForm);
+const openStaffPositionForm = () => {
+	openStaffPositionModal.value = true;
+};
+const toggleStaffPositionModal = () => {
+	openStaffPositionModal.value = false;
+	emit("closeForm");
+};
+
+watch(
+	() => props.showPositionForm,
+	(value) => {
+		if (value) {
+			openStaffPositionModal.value = true;
+		}
+	},
+);
+
 const staffPosition = ref(null);
 const subMenuClicked = (action, model) => {
 	if (action == "Edit") {
@@ -72,12 +107,9 @@ const deleteStaffPosition = () => {
 				</div>
 				<div class="flex-none self-end px-6 pt-4">
 					<button
-						v-if="
-							permissions?.includes('update staff') ||
-							permissions?.includes('delete staff')
-						"
+						v-if="canAssign"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
-						@click="toggleStaffPositionModal()"
+						@click="openStaffPositionForm()"
 					>
 						{{ "Change" }}
 					</button>
@@ -109,7 +141,16 @@ const deleteStaffPosition = () => {
 									<div
 										class="font-medium text-gray-900 dark:text-gray-50 w-3/5"
 									>
-										{{ position.name }}
+										<Link
+											v-if="canViewPosition"
+											:href="
+												route('position.show', { position: position.position_id })
+											"
+											class="hover:text-green-600 dark:hover:text-green-300 hover:underline"
+										>
+											{{ position.name }}
+										</Link>
+										<template v-else>{{ position.name }}</template>
 									</div>
 									<div
 										class="mt-1 truncate text-gray-500 dark:text-gray-100 text-xs"
@@ -124,11 +165,8 @@ const deleteStaffPosition = () => {
 								</td>
 								<td class="flex justify-end">
 									<SubMenu
-										v-if="
-											permissions?.includes('update staff') ||
-											permissions?.includes('delete staff')
-										"
-										:items="['Edit', 'Delete']"
+										v-if="subMenuItems.length > 0"
+										:items="subMenuItems"
 										@item-clicked="(action) => subMenuClicked(action, position)"
 									/>
 								</td>

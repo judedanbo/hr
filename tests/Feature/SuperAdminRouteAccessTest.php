@@ -127,8 +127,8 @@ class SuperAdminRouteAccessTest extends TestCase
             'password_change_at' => now(),
         ]);
 
-        // Position (created directly - factory is empty)
-        $this->position = Position::create(['name' => 'Test Position']);
+        // Position
+        $this->position = Position::factory()->create(['name' => 'Test Position']);
 
         // Contact
         $this->contact = Contact::factory()->create(['person_id' => $this->person->id]);
