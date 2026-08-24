@@ -6,6 +6,7 @@ use App\Enums\ContactTypeEnum;
 use App\Enums\Identity;
 use App\Models\InstitutionPerson;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -45,10 +46,12 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             'Appointment Date',
             'Years served',
             'Current Rank',
+            'Current Rank Start Date',
+            'Duration at Current Rank',
             'Current Unit',
+            'Current Unit Start Date',
+            'Duration at Current Unit',
             'Retirement Date',
-            'current rank Start Date',
-            'current Unit Start Date',
             'Rank Level',
         ];
     }
@@ -66,12 +69,25 @@ class StaffDetailsExport implements FromQuery, ShouldAutoSize, ShouldQueue, With
             $staff->hire_date?->format('d F, Y'),
             $staff->years_served . ' years',
             $staff->currentRank?->job?->name,
-            $staff->currentUnit?->unit?->name,
-            $staff->retirement_date_formatted,
             $staff->currentRank?->start_date?->format('d F, Y'),
+            $this->formatDuration($staff->currentRank?->start_date),
+            $staff->currentUnit?->unit?->name,
             $staff->currentUnit?->start_date?->format('d F, Y'),
-            $staff->currentRank?->job?->category->level ?? null,
+            $this->formatDuration($staff->currentUnit?->start_date),
+            $staff->retirement_date_formatted,
+            $staff->currentRank?->job?->category?->name,
         ];
+    }
+
+    /**
+     * Human readable tenure between the given start date and today, e.g. "5 years 5 months".
+     */
+    private function formatDuration(?Carbon $startDate): ?string
+    {
+        return $startDate?->diffForHumans([
+            'syntax' => Carbon::DIFF_ABSOLUTE,
+            'parts' => 2,
+        ]);
     }
 
     public function styles(Worksheet $sheet)
