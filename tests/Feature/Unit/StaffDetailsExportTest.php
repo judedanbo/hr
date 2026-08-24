@@ -11,7 +11,6 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
 class StaffDetailsExportTest extends TestCase
@@ -135,12 +134,13 @@ class StaffDetailsExportTest extends TestCase
 
     public function test_route_downloads_the_export(): void
     {
-        Excel::fake();
+        $unit = Unit::factory()->create(['unit_id' => null]);
+        $this->makeActiveStaff($unit, $this->makeRank('Director', JobCategory::factory()->create(['name' => 'Managerial'])));
 
-        $this->actingAs(User::factory()->create())
-            ->get(route('report.staff-details'))
-            ->assertOk();
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('report.staff-details'));
 
-        Excel::assertDownloaded('staff-details.xlsx');
+        $response->assertOk();
+        $this->assertStringContainsString('staff-details.xlsx', $response->headers->get('content-disposition'));
     }
 }
