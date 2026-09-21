@@ -564,6 +564,42 @@ gh pr create --title "Feature: Model Management" --body "Description"
 | Vue component not updating | Check Vite is running, hard refresh browser |
 | 403 Forbidden | Check permissions and Gate policies |
 
+### 11. Reconciling an External Staff List
+
+Promotion lists, training rolls and similar spreadsheets arrive with a single
+"Full Name" column and no staff number. `app:match-staff-list` reconciles such a
+list against `institution_person` and writes a CSV carrying the staff number plus
+the `surname` / `first_name` / `other_names` breakdown for every row:
+
+```bash
+php artisan app:match-staff-list storage/app/ELIGIBLE_5YR_PROM_LIST.xlsx
+php artisan app:match-staff-list list.xlsx --output=matched.csv --institution=1
+```
+
+- Reads `.xlsx` and `.csv`. Column positions are detected from the header row;
+  override with `--name-column=B --email-column=G` when detection fails.
+- Sheets grouped under rank headings (a row with one filled cell) are supported —
+  the heading is carried into the `list_rank_group` column, and repeated header
+  rows are skipped.
+- Matching runs strongest signal first and every row is reported with its
+  `match_method`, `match_candidates` and `confidence`:
+  1. `email` — the list email equals a stored `EMAIL` contact (high)
+  2. `full_name` — name words match a person's names in any order, including a
+     match on `maiden_name` (high)
+  3. `surname_and_first_name` — surname and first name agree, other names differ (medium)
+- A row hitting more than one staff member is reported as `ambiguous_<method>`
+  with **no** staff number, and `review_note` lists the competing candidates. Rows
+  that match nothing get `review_note` listing staff who share the surname.
+- **Names are split from the database whenever a row matches** (`name_source=database`).
+  Only unmatched rows fall back to a derived split (`name_source=derived`), which
+  uses the email local part to find the surname boundary — needed because surnames
+  are not always one word ("Gloria Owusu Afram" → `Owusu Afram`) and some addresses
+  are issued surname-first (`tetteh.seth` → `Tetteh`). Hyphenated surnames keep
+  their spelling. `split_strategy` records which rule was used.
+- Logic lives in `app/Services/Staff/StaffNameSplitter.php` (pure, no DB) and
+  `app/Services/Staff/StaffListMatcher.php` (indexes all staff once, then resolves
+  each row in memory).
+
 ## Deployment
 
 Deployed to AKS (cluster `infosys`, resource group `infosys`, namespace `hr`).
