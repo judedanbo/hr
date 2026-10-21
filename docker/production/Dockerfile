@@ -15,7 +15,10 @@
 # against exactly the PHP version and extension set that will run them. Using
 # the stock composer image instead would resolve against its own PHP (currently
 # 8.5), which several of this project's dependencies reject.
-FROM php:8.3-fpm-alpine AS base
+#
+# Pinned to a patch release: 8.3.36 is the minimum that fixes PHP2Shell
+# (CVE-2026-109618 / CVE-2026-109619). Bump deliberately; never go below it.
+FROM php:8.3.36-fpm-alpine AS base
 
 # fcgi supplies cgi-fcgi, used by the Kubernetes readiness probe against ping.path.
 RUN set -eux; \
