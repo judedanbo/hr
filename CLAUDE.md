@@ -431,6 +431,7 @@ php artisan app:revoke-api-token <id>                       # prompts to confirm
 php artisan app:revoke-api-token --all-for=user@example.test --force
 ```
 
+- Abilities in use: `staff-statistics:read` (`GET /api/staff-statistics`), `staff-search:read` (`GET /api/staff-search/*`), `staff:read` (`GET /api/staff/{staffNumber}` — one **active** staff member's employment, personal and email/phone details; 404 for unknown or non-active staff), `user:read` (`GET /api/user`). Grant `staff:read` only to consumers that need personal data.
 - The `personal_access_tokens.token` column stores only a SHA-256 hash, so a token can be listed/revoked but never re-displayed. Rotate by revoking + re-issuing (there is no rotation endpoint).
 - Design/operational details: `docs/superpowers/specs/2026-06-01-audit-service-api-access-design.md`.
 

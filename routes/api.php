@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StaffLookupController;
 use App\Http\Controllers\StaffSearchOptionsController;
 use App\Http\Controllers\StaffStatisticsController;
 use Illuminate\Http\Request;
@@ -22,3 +23,8 @@ Route::middleware(['auth:sanctum', 'abilities:staff-search:read'])->prefix('staf
 Route::middleware(['auth:sanctum', 'abilities:staff-statistics:read'])
     ->get('/staff-statistics', [StaffStatisticsController::class, 'index'])
     ->name('api.staff-statistics');
+
+// Individual staff lookup
+Route::middleware(['auth:sanctum', 'abilities:staff:read'])
+    ->get('/staff/{staffNumber}', [StaffLookupController::class, 'show'])
+    ->name('api.staff.show');
