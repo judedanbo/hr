@@ -133,10 +133,11 @@ its own ability requirement:
 | `GET /api/staff-statistics` | `staff-statistics:read` |
 | `GET /api/user` | `user:read` |
 | `GET /api/staff-search/*` | `staff-search:read` |
+| `GET /api/staff/{staffNumber}` | `staff:read` (added 2026-10-24, see §5) |
 
 The Audit token is issued with only `staff-statistics:read`, so it receives
-**403** from `/api/user` and `/api/staff-search/*`. A regression test asserts
-this.
+**403** from `/api/user`, `/api/staff-search/*` and `/api/staff/{staffNumber}`.
+A regression test asserts this.
 
 > Note: the existing session-based SPA (guard `web`) is unaffected — Sanctum
 > assigns web-guard requests a `TransientToken` whose `can()` always returns
@@ -189,6 +190,37 @@ with null `user_id`).
 > The middleware must guard against this (use `name` only when the token is a
 > `PersonalAccessToken`) to avoid errors on SPA traffic.
 
+### 5. Individual staff lookup (added 2026-10-24)
+
+`GET /api/staff/{staffNumber}` → `StaffLookupController@show`, route name
+`api.staff.show`, ability `staff:read`. It returns one staff member, looked up
+by `staff_number`, as a flat JSON object:
+
+| Group | Fields |
+|-------|--------|
+| Identity | `staff_number`, `file_number`, `title`, `first_name`, `other_names`, `surname` |
+| Personal | `gender`, `date_of_birth`, `age`, `retirement_date`, `marital_status`, `nationality` |
+| Employment | `hire_date`, `status`, `staff_type`, `rank`, `job_category`, `unit`, `department` |
+| Contacts | `emails`, `phones` (arrays) |
+
+- **Active staff only.** The `active()` scope is applied, so an unknown staff
+  number and a retired, separated or otherwise non-active staff member both
+  return **404** `{"message": "Staff not found."}`. The 404 does not say which.
+- **Current records only.** `rank`/`job_category` come from the `job_staff` row
+  with no `end_date`, `unit`/`department` from the open `staff_unit` row (the
+  department is the unit's parent), and `staff_type` from the unended
+  `staff_type` row. Any that are missing are returned as `null`.
+- **Contacts are limited to email and phone** whose `valid_end` is unset or
+  not in the past. Addresses, GhanaPost GPS and emergency contacts are never
+  returned.
+- Enum values are returned as their labels (e.g. `"Male"`, `"Field Staff"`).
+- The response holds personal data. Grant `staff:read` only to consumers that
+  need it. Lookups are recorded in `api_logs` like every other API request, and
+  the path includes the staff number, which gives an audit trail of who looked
+  up whom.
+
+Tests: `tests/Feature/StaffLookupApiTest.php`.
+
 ## Data flow
 
 ```
@@ -233,6 +265,13 @@ External Audit app
 9. Revokes by id (with `--force` and via confirmation); declining keeps the token;
    `--all-for` revokes one user's tokens without touching another's; unknown id /
    unknown email / ambiguous (both) / missing (neither) target all fail.
+
+`tests/Feature/StaffLookupApiTest.php`:
+10. Active staff → 200 with the full payload, current rank/unit only, and only
+    unexpired email/phone contacts.
+11. Active staff without rank/unit/type/contacts → nulls and empty arrays.
+12. Unknown, retired, and ended-status staff → 404.
+13. Token without `staff:read` → 403; no token → 401; lookups are logged.
 
 Tests rely on the existing per-test reseed and model factories.
 
