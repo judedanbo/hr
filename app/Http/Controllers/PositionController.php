@@ -20,7 +20,7 @@ class PositionController extends Controller
     {
         return Inertia::render('Positions/Index', [
             'positions' => Position::query()
-                ->with(['staff' => function ($query) {
+                ->with(['roles', 'staff' => function ($query) {
                     $query->with(['person' => function ($query) {
                         $query->with(['contacts' => function ($query) {
                             $query->where('contact_type', ContactTypeEnum::PHONE);
@@ -28,13 +28,22 @@ class PositionController extends Controller
                     }]);
                     $query->wherePivotNull('end_date');
                 }])
+                ->when(
+                    request('search'),
+                    fn ($query, $search) => $query->where('name', 'like', '%' . $search . '%')
+                )
+                ->when(
+                    request('trashed') === 'only',
+                    fn ($query) => $query->onlyTrashed(),
+                    fn ($query) => $query->when(request('trashed') === 'with', fn ($query) => $query->withTrashed())
+                )
                 ->orderBy('name')
-                ->withTrashed()
                 ->paginate(per_page())
                 ->withQueryString()
-                ->through(fn($position) => [
+                ->through(fn ($position) => [
                     'id' => $position->id,
                     'name' => $position->name,
+                    'roles' => $position->roles->pluck('name')->values(),
                     'staff' => $position->staff->map(function ($staff) {
                         return [
                             'staff_id' => $staff->id,
@@ -90,7 +99,7 @@ class PositionController extends Controller
      */
     public function show(Position $position)
     {
-        $position = $position->load(['staff' => function ($query) {
+        $position = $position->load(['roles', 'staff' => function ($query) {
             $query->with([
                 'ranks' => function ($query) {
                     $query->wherePivotNull('end_date');
@@ -111,6 +120,11 @@ class PositionController extends Controller
             'position' => [
                 'id' => $position->id,
                 'name' => $position->name,
+                'roles' => $position->roles->map(fn ($role) => [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ])->values(),
+                'role_names' => $position->roles->pluck('name')->values(),
                 'staff' => $position->staff->map(function ($staff) {
                     return [
                         'id' => $staff->id,
@@ -169,11 +183,18 @@ class PositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Soft-delete only. A force delete cascades through the position_staff
+     * foreign key and would destroy the employment history of everyone who
+     * ever held the position.
+     */
     public function delete(Position $position)
     {
-        $position->forceDelete();
+        $position->delete();
 
-        return redirect()->back()->with('success', 'Position deleted.');
+        // Not back(): deleting from the position's own page would return to a
+        // URL whose binding no longer resolves.
+        return redirect()->route('position.index')->with('success', 'Position deleted.');
     }
 
     public function list()

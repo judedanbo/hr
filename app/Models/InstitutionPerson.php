@@ -94,10 +94,41 @@ class InstitutionPerson extends Pivot
     public function positions(): BelongsToMany
     {
         return $this->belongsToMany(Position::class, 'position_staff', 'staff_id', 'position_id')
-            ->withPivot('start_date', 'end_date')
+            ->withPivot('id', 'start_date', 'end_date')
             ->withTimestamps()
+            ->using(PositionStaff::class)
+            ->wherePivotNull('deleted_at')
             ->orderByPivot('start_date', 'desc')
             ->latest();
+    }
+
+    /**
+     * Position assignment rows, including closed ones. This is the mutation
+     * surface for the position service; `positions()` stays read-only.
+     */
+    public function positionAssignments(): HasMany
+    {
+        return $this->hasMany(PositionStaff::class, 'staff_id')
+            ->latest('start_date');
+    }
+
+    public function currentPosition(): BelongsTo
+    {
+        return $this->belongsTo(PositionStaff::class);
+    }
+
+    public function scopeCurrentPosition($query)
+    {
+        $query->addSelect([
+            'current_position_id' => PositionStaff::select('id')
+                ->whereColumn('institution_person.id', 'position_staff.staff_id')
+                ->whereNull('position_staff.end_date')
+                ->whereNull('position_staff.deleted_at')
+                ->latest('position_staff.start_date')
+                ->take(1),
+        ])->with(['currentPosition' => function ($query) {
+            $query->with('position:id,name');
+        }]);
     }
 
     /**

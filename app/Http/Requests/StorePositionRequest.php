@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class StorePositionRequest extends FormRequest
 {
@@ -25,7 +26,12 @@ class StorePositionRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:positions,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('positions', 'name')->whereNull('deleted_at'),
+            ],
         ];
     }
 }

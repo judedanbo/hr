@@ -54,6 +54,7 @@ use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PersonRolesController;
 use App\Http\Controllers\PhotoApprovalController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\PositionRoleController;
 use App\Http\Controllers\PromoteAllStaffController;
 use App\Http\Controllers\PromoteStaffController;
 use App\Http\Controllers\PromotionBatchController;
@@ -71,6 +72,7 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SeparationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffListController;
+use App\Http\Controllers\StaffPositionController;
 use App\Http\Controllers\StaffReportController;
 use App\Http\Controllers\StaffSearchOptionsController;
 use App\Http\Controllers\StaffStatusController;
@@ -324,9 +326,13 @@ Route::controller(InstitutionPersonController::class)->middleware(['auth', 'pass
     Route::post('/staff/{staff}/dependent', 'createDependent')->middleware('can:update staff')->name('staff.dependent.create');
     Route::delete('/staff/{staff}/dependent/{dependent}', 'deleteDependent')->middleware('can:update staff')->name('staff.dependent.delete');
     Route::post('/staff/{staff}/write-note', 'writeNote')->middleware('can:create staff notes')->name('staff.write-note');
-    Route::post('/staff/{staff}/position', 'assignPosition')->middleware('can:create staff position')->name('staff.position.store');
-    Route::patch('/staff/{staff}/position', 'updatePosition')->middleware('can:update staff position')->name('staff.position.update');
-    Route::delete('/staff/{staff}/position', 'deletePosition')->withTrashed()->middleware('can:delete staff position')->name('staff.position.delete');
+});
+
+// staff position
+Route::controller(StaffPositionController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::post('/staff/{staff}/position', 'store')->middleware('can:create staff position')->name('staff.position.store');
+    Route::patch('/staff/{staff}/position/{staffPosition}', 'update')->middleware('can:update staff position')->name('staff.position.update');
+    Route::delete('/staff/{staff}/position/{staffPosition}', 'destroy')->middleware('can:delete staff position')->name('staff.position.delete');
 });
 
 // separation
@@ -607,6 +613,12 @@ Route::controller(PositionController::class)->middleware(['auth', 'password_chan
     Route::delete('/position/{position}', 'delete')->withTrashed()->middleware('can:delete position')->name('position.delete');
     Route::get('/position-list', 'list')->middleware('can:view all positions')->name('position.list');
     Route::get('/position/{position}/stat', 'stat')->middleware('can:view position')->name('position.stat');
+});
+
+// roles conferred by a position
+Route::controller(PositionRoleController::class)->middleware(['auth', 'password_changed'])->group(function () {
+    Route::get('/position/{position}/roles', 'index')->middleware('can:view position roles')->name('position.roles.index');
+    Route::put('/position/{position}/roles', 'sync')->middleware('can:manage position roles')->name('position.roles.sync');
 });
 
 Route::controller(LeaveYearController::class)->middleware(['auth', 'password_changed'])->group(function () {

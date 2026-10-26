@@ -32,6 +32,7 @@ const { formatDate } = useDateFormat();
 
 let showPromotionForm = ref(false);
 let showTransferForm = ref(false);
+let showPositionForm = ref(false);
 let openEditModal = ref(false);
 
 const deleteAvatar = () => {
@@ -194,6 +195,14 @@ const editContactModal = () => {
 									>
 										Transfer
 									</button>
+									<button
+										v-if="permissions?.includes('create staff position')"
+										type="button"
+										class="text-sm font-semibold leading-6 text-green-900 dark:text-white sm:block"
+										@click="showPositionForm = true"
+									>
+										Change position
+									</button>
 									<a
 										v-if="permissions?.includes('update staff')"
 										href="#"
@@ -271,15 +280,16 @@ const editContactModal = () => {
 									@close-form="toggleTransferForm()"
 								/>
 								<StaffPosition
-									v-if="permissions?.includes('update staff positions')"
+									v-if="permissions?.includes('view all staff positions')"
 									:positions="staff.positions"
 									:staff="{
 										id: staff.staff_id,
 										hire_date: staff.hire_date,
 									}"
 									:institution="staff.institution_id"
+									:show-position-form="showPositionForm"
 									class=""
-									@close-form="toggleTransferForm()"
+									@close-form="showPositionForm = false"
 								/>
 							</div>
 							<!-- statutes history -->

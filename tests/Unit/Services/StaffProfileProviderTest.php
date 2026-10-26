@@ -6,6 +6,7 @@ use App\Enums\ContactTypeEnum;
 use App\Models\InstitutionPerson;
 use App\Models\Job;
 use App\Models\Person;
+use App\Models\Position;
 use App\Models\Qualification;
 use App\Models\Unit;
 use App\Models\User;
@@ -156,5 +157,48 @@ class StaffProfileProviderTest extends TestCase
         $this->assertNotEmpty($payload['staff']['dependents']);
         $depFullName = $payload['staff']['dependents'][0]['name'];
         $this->assertStringContainsString('Doe', $depFullName);
+    }
+
+    /**
+     * `id` addresses the assignment row (edit/delete routes bind to it) while
+     * `position_id` addresses the position itself (the select value and the
+     * link through to the position page). Conflating them breaks both.
+     */
+    public function test_positions_expose_the_assignment_id_and_the_position_id_separately(): void
+    {
+        $staff = $this->createActiveStaff();
+        $position = Position::factory()->create(['name' => 'Director of Audit']);
+
+        $assignment = $staff->positionAssignments()->create([
+            'position_id' => $position->id,
+            'start_date' => '2024-03-04',
+        ]);
+
+        $payload = (new StaffProfileProvider)->forPerson($staff->person_id);
+        $row = $payload['staff']['positions'][0];
+
+        $this->assertSame($assignment->id, $row['id']);
+        $this->assertSame($position->id, $row['position_id']);
+        $this->assertSame('Director of Audit', $row['name']);
+        $this->assertSame('2024-03-04', $row['start_date']);
+        $this->assertSame('04 Mar 2024', $row['start_date_display']);
+        $this->assertNull($row['end_date']);
+        $this->assertTrue($row['is_current']);
+    }
+
+    public function test_soft_deleted_position_assignments_are_excluded(): void
+    {
+        $staff = $this->createActiveStaff();
+        $position = Position::factory()->create();
+
+        $assignment = $staff->positionAssignments()->create([
+            'position_id' => $position->id,
+            'start_date' => now()->subYear(),
+        ]);
+        $assignment->delete();
+
+        $payload = (new StaffProfileProvider)->forPerson($staff->person_id);
+
+        $this->assertSame([], $payload['staff']['positions']);
     }
 }
