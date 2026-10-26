@@ -28,3 +28,5 @@ tests/Browser/source/
 # Local tooling artifacts
 cookies.txt
 .playwright-mcp/
+/.claude/*
+.claude/settings.local.json

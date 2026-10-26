@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/component: app
     hrmis.audit.gov.gh/app-env: "true"
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
