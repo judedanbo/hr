@@ -380,9 +380,9 @@ Route::get('/rank/{rank}/staff', [RankStaffController::class, 'index'])->middlew
 Route::get('/rank/{rank}/promote', [RankStaffController::class, 'promote'])->middleware(['auth', 'password_changed'])->name('rank-staff.promote');
 Route::get('/rank/{rank}/active', [RankStaffController::class, 'active'])->middleware(['auth', 'password_changed'])->name('rank-staff.active');
 Route::get('/rank/{rank}/all', [RankStaffController::class, 'all'])->middleware(['auth', 'password_changed'])->name('rank-staff.all');
-Route::get('/rank/{rank}/export', [RankStaffController::class, 'exportRank'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank');
+Route::get('/rank/{rank}/export', [RankStaffController::class, 'exportRank'])->middleware(['auth', 'password_changed', 'can:download rank staff data'])->name('rank-staff.export-rank');
 Route::get('/rank/{rank}/export/promotion-list', [RankStaffController::class, 'exportPromotion'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank-promote');
-Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank-all');
+Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth', 'password_changed', 'can:download rank staff data'])->name('rank-staff.export-rank-all');
 
 Route::controller(JobController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/rank', 'index')->middleware('can:view all jobs')->name('job.index');
@@ -464,31 +464,31 @@ Route::get('/report/recruitment/chart', [RecruitmentController::class, 'recruitm
 Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth', 'password_changed'])->name('report.recruitment.details');
 
 // staff
-Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth', 'password_changed'])->name('report.staff');
-Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth', 'password_changed'])->name('report.staff-details');
-Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth', 'password_changed'])->name('report.staff-retirement');
-Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth', 'password_changed'])->name('report.staff-pending-transfer');
-Route::get('/report-staff-positions/', [StaffReportController::class, 'positions'])->middleware(['auth', 'password_changed'])->name('report.staff-positions');
+Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('report.staff');
+Route::get('/report-staff-details/', [StaffReportController::class, 'details'])->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('report.staff-details');
+Route::get('/report-staff-retirement/', [StaffReportController::class, 'retirement'])->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('report.staff-retirement');
+Route::get('/report-staff-pending-transfer/', [StaffReportController::class, 'pending'])->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('report.staff-pending-transfer');
+Route::get('/report-staff-positions/', [StaffReportController::class, 'positions'])->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('report.staff-positions');
 
 // retires exports
 
-Route::get('/report-retirements/', [StaffReportController::class, 'retirements'])->middleware(['auth', 'password_changed'])->name('report.retirements');
-Route::get('/report-all-retirements/', [StaffReportController::class, 'allRetirements'])->middleware(['auth', 'password_changed'])->name('report.retirements-all');
-Route::get('/report-deceased-retirements/', [StaffReportController::class, 'deceased'])->middleware(['auth', 'password_changed'])->name('report.retirements-deceased');
-Route::get('/report-terminated-retirements/', [StaffReportController::class, 'terminated'])->middleware(['auth', 'password_changed'])->name('report.retirements-terminated');
-Route::get('/report-resignation/', [StaffReportController::class, 'resignation'])->middleware(['auth', 'password_changed'])->name('report.resignation');
-Route::get('/report-suspended/', [StaffReportController::class, 'suspended'])->middleware(['auth', 'password_changed'])->name('report.suspended');
-Route::get('/report-vol-retirement/', [StaffReportController::class, 'volRetirement'])->middleware(['auth', 'password_changed'])->name('report.vol-retirement');
-Route::get('/report-dismissed/', [StaffReportController::class, 'dismissed'])->middleware(['auth', 'password_changed'])->name('report.dismissed');
-Route::get('/report-vacation-of-post/', [StaffReportController::class, 'vacatedPost'])->middleware(['auth', 'password_changed'])->name('report.vacation-of-post');
-Route::get('/report-leave-with-pay/', [StaffReportController::class, 'leaveWithPay'])->middleware(['auth', 'password_changed'])->name('report.leave-pay');
-Route::get('/report-leave-without-pay/', [StaffReportController::class, 'leaveWithoutPay'])->middleware(['auth', 'password_changed'])->name('report.leave-without-pay');
-Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth', 'password_changed'])->name('report.recruitment.export-data');
-Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth', 'password_changed'])->name('report.recruitment.export-summary');
+Route::get('/report-retirements/', [StaffReportController::class, 'retirements'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.retirements');
+Route::get('/report-all-retirements/', [StaffReportController::class, 'allRetirements'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.retirements-all');
+Route::get('/report-deceased-retirements/', [StaffReportController::class, 'deceased'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.retirements-deceased');
+Route::get('/report-terminated-retirements/', [StaffReportController::class, 'terminated'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.retirements-terminated');
+Route::get('/report-resignation/', [StaffReportController::class, 'resignation'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.resignation');
+Route::get('/report-suspended/', [StaffReportController::class, 'suspended'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.suspended');
+Route::get('/report-vol-retirement/', [StaffReportController::class, 'volRetirement'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.vol-retirement');
+Route::get('/report-dismissed/', [StaffReportController::class, 'dismissed'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.dismissed');
+Route::get('/report-vacation-of-post/', [StaffReportController::class, 'vacatedPost'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.vacation-of-post');
+Route::get('/report-leave-with-pay/', [StaffReportController::class, 'leaveWithPay'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.leave-pay');
+Route::get('/report-leave-without-pay/', [StaffReportController::class, 'leaveWithoutPay'])->middleware(['auth', 'password_changed', 'can:download separated staff data'])->name('report.leave-without-pay');
+Route::get('report/recruitment/export/all', [RecruitmentController::class, 'exportAll'])->middleware(['auth', 'password_changed', 'can:download recruitment data'])->name('report.recruitment.export-data');
+Route::get('report/recruitment/export/summary', [RecruitmentController::class, 'exportSummary'])->middleware(['auth', 'password_changed', 'can:download recruitment data'])->name('report.recruitment.export-summary');
 
 // promotion report
-Route::get('/export/promotion', [PromotionExportController::class, 'show'])->middleware(['auth', 'password_changed'])->name('export.promotion');
-Route::get('/export/promotion/list', [PromotionExportController::class, 'list'])->middleware(['auth', 'password_changed'])->name('export.promotion-list');
+Route::get('/export/promotion', [PromotionExportController::class, 'show'])->middleware(['auth', 'password_changed', 'can:download promotion data'])->name('export.promotion');
+Route::get('/export/promotion/list', [PromotionExportController::class, 'list'])->middleware(['auth', 'password_changed', 'can:download promotion data'])->name('export.promotion-list');
 
 Route::get('/report/promotion', [PromotionController::class, 'index'])->middleware(['auth', 'password_changed'])->name('report.promotion');
 Route::get('/report/promotion/{year}', [PromotionBatchController::class, 'index'])->middleware(['auth', 'password_changed'])->name('report.promotion.year');
@@ -497,7 +497,7 @@ Route::controller(PromotionController::class)->middleware(['auth', 'password_cha
     Route::get('/past-promotion', 'index')->name('promotion.index');
     Route::get('/past-promotion/{year}', 'show')->name('promotion.show');
     Route::get('/past-promotion/{year}/rank', 'byRanks')->name('promotion.ranks');
-    Route::get('/past-promotion/{promotion}/export', 'export')->name('promotion.export');
+    Route::get('/past-promotion/{promotion}/export', 'export')->middleware('can:download promotion data')->name('promotion.export');
 });
 
 Route::controller(PromotionBatchController::class)->middleware(['auth', 'password_changed'])->group(function () {
@@ -721,7 +721,7 @@ Route::controller(LeaveBalanceAdjustmentController::class)->middleware(['auth', 
     Route::delete('/leave-balance-adjustment/{leaveBalanceAdjustment}', 'delete')->middleware('can:adjust leave balance')->name('leave-balance-adjustment.delete');
 });
 
-Route::get('staff-list', StaffListController::class)->middleware(['auth'])->name('staff-list');
+Route::get('staff-list', StaffListController::class)->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('staff-list');
 // Route::get('/test', [AgeController::class, 'staffAgeDistribution']);
 Route::get('/settings', SettingsController::class)->middleware(['auth', 'password_changed'])->name('settings.index');
 Route::get('/settings/app', [AppSettingsController::class, 'edit'])->middleware(['auth', 'password_changed', 'can:update app settings'])->name('app-settings.edit');
