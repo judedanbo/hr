@@ -119,4 +119,18 @@ class Qualification extends Model
     {
         return $this->canBeEditedBy($user);
     }
+
+    /**
+     * Check if the given user can attach, replace or remove the documents of
+     * this qualification: its owner while it is still pending, or anyone
+     * allowed to approve qualifications.
+     */
+    public function documentsCanBeManagedBy(?User $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->canBeEditedBy($user) || $user->can('approve staff qualification');
+    }
 }
