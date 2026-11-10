@@ -70,6 +70,7 @@ class ExportAuthorizationTest extends TestCase
     public static function exports(): array
     {
         return [
+            'staff position' => ['report.staff', self::ACTIVE, 'staff-position.xlsx'],
             'staff details' => ['report.staff-details', self::ACTIVE, 'staff-details.xlsx'],
             'staff to retire' => ['report.staff-retirement', self::ACTIVE, 'staff-to-retire.xlsx'],
             'pending transfers' => ['report.staff-pending-transfer', self::ACTIVE, 'staff-pending-transfer.xlsx'],
@@ -135,7 +136,8 @@ class ExportAuthorizationTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Staff position export: the one action that already checked a permission
+    // Staff position export: it used to ask for view staff position in the
+    // controller, which no holder of the download permission had
     // -----------------------------------------------------------------------
 
     public function test_staff_role_is_forbidden_from_the_staff_position_export(): void
@@ -152,23 +154,69 @@ class ExportAuthorizationTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_staff_position_export_still_applies_its_own_view_staff_position_check(): void
-    {
-        $this->actingAs($this->userWithPermissions([self::ACTIVE]))
-            ->from(route('dashboard'))
-            ->get(route('report.staff'))
-            ->assertRedirect(route('dashboard'))
-            ->assertSessionHas('error', 'You are not authorized to download this file');
-    }
-
-    public function test_user_with_both_permissions_downloads_the_staff_position_export(): void
+    public function test_the_download_permission_alone_downloads_the_staff_position_export(): void
     {
         $this->createStaffToExport();
+        $user = $this->userWithPermissions([self::ACTIVE]);
 
-        $this->actingAs($this->userWithPermissions([self::ACTIVE, 'view staff position']))
+        $this->assertFalse($user->can('view staff position'));
+
+        $this->actingAs($user)
             ->get(route('report.staff'))
             ->assertOk()
             ->assertDownload('staff-position.xlsx');
+    }
+
+    public function test_staff_position_export_still_records_the_download(): void
+    {
+        $user = $this->userWithPermissions([self::ACTIVE]);
+
+        $this->actingAs($user)
+            ->get(route('report.staff', ['gender' => 'F']))
+            ->assertOk();
+
+        $this->assertDatabaseHas('activity_log', [
+            'description' => 'downloaded staff position',
+            'event' => 'download',
+            'causer_id' => $user->id,
+        ]);
+    }
+
+    // -----------------------------------------------------------------------
+    // The hr-user role
+    // -----------------------------------------------------------------------
+
+    public function test_hr_user_downloads_the_active_and_separated_staff_exports(): void
+    {
+        $this->createStaffToExport();
+        $hr = User::factory()->create();
+        $hr->assignRole('hr-user');
+
+        $exports = [
+            'report.staff' => 'staff-position.xlsx',
+            'report.staff-details' => 'staff-details.xlsx',
+            'staff-list' => 'staff-list.xlsx',
+            'report.retirements-all' => 'all-retired-staff.xlsx',
+        ];
+
+        foreach ($exports as $route => $filename) {
+            $this->actingAs($hr)
+                ->get(route($route))
+                ->assertOk()
+                ->assertDownload($filename);
+        }
+    }
+
+    public function test_hr_user_is_refused_the_recruitment_promotion_and_rank_exports(): void
+    {
+        $hr = User::factory()->create();
+        $hr->assignRole('hr-user');
+
+        foreach (['report.recruitment.export-data', 'export.promotion-list', 'rank-staff.export-rank'] as $route) {
+            $this->actingAs($hr)
+                ->get($this->urlFor($route))
+                ->assertForbidden();
+        }
     }
 
     // -----------------------------------------------------------------------

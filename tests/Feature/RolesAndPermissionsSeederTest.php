@@ -154,6 +154,20 @@ class RolesAndPermissionsSeederTest extends TestCase
         $this->assertNotContains('view separated staff', $permissions);
     }
 
+    public function test_hr_user_can_download_staff_data_but_not_the_other_exports(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $permissions = Role::findByName('hr-user')->permissions->pluck('name')->toArray();
+
+        $this->assertContains('download active staff data', $permissions);
+        $this->assertContains('download separated staff data', $permissions);
+
+        $this->assertNotContains('download recruitment data', $permissions);
+        $this->assertNotContains('download promotion data', $permissions);
+        $this->assertNotContains('download rank staff data', $permissions);
+    }
+
     public function test_general_admin_user_has_active_staff_view_only(): void
     {
         $this->seed(RolesAndPermissionsSeeder::class);

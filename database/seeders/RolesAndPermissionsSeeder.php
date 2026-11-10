@@ -132,6 +132,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit staff qualification',
             'view all reports',
             'view report',
+            'download active staff data',
+            'download separated staff data',
             'download staff qualification data',
             'qualifications.reports.view',
             'qualifications.reports.export',
