@@ -217,9 +217,9 @@ Route::controller(InstitutionController::class)->middleware(['auth', 'password_c
     Route::get('/institution/create', 'create')->name('institution.create');
     Route::get('/institution/{institution}', 'show')->middleware('can:view dashboard')->name('institution.show');
     Route::get('/institution/{institution}/staff-filter', 'staffFilter')->name('institution.staff-filter');
-    Route::post('/institution', 'store')->name('institution.store');
-    Route::patch('/institution/{institution}', 'update')->name('institution.update');
-    Route::delete('/institution/{institution}', 'delete')->name('institution.delete');
+    Route::post('/institution', 'store')->middleware('can:create institution')->name('institution.store');
+    Route::patch('/institution/{institution}', 'update')->middleware('can:edit institution')->name('institution.update');
+    Route::delete('/institution/{institution}', 'delete')->middleware('can:delete institution')->name('institution.delete');
     Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
     Route::get('/institution/{institution}/staff/{staff}', 'staff')->name('institution.staff');
     Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');

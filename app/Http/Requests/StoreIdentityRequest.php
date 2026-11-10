@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Identity;
+use App\Models\Person;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -11,11 +12,14 @@ class StoreIdentityRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      *
-     * @return bool
+     * Identities belong to the person in the route, so adding or changing one
+     * needs the update ability on that person.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        $person = $this->route('person');
+
+        return $person instanceof Person && $this->user()->can('update', $person);
     }
 
     /**

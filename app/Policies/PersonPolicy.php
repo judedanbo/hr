@@ -36,10 +36,15 @@ class PersonPolicy
 
     /**
      * Determine whether the user can update the model.
+     *
+     * Also governs the records that hang off a person and have no policy of
+     * their own to ask: identities, and adding or removing an address.
      */
     public function update(User $user, Person $person): bool
     {
-        return $user->can('view update person') || $user->person_id === $person->id;
+        return $user->can('update staff')
+            || $user->can('view update person')
+            || $this->isOwnRecord($user, $person);
     }
 
     /**
@@ -64,5 +69,15 @@ class PersonPolicy
     public function forceDelete(User $user, Person $person): bool
     {
         return $user->can('view destroy person');
+    }
+
+    /**
+     * A user with no linked person owns nothing, so a missing link must never
+     * compare equal to anything.
+     */
+    private function isOwnRecord(User $user, Person $person): bool
+    {
+        return $user->person_id !== null
+            && (int) $user->person_id === (int) $person->getKey();
     }
 }

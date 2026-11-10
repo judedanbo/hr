@@ -2,16 +2,22 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Person;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAddressRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * The address is added to the person in the route, so it needs the update
+     * ability on that person.
      */
     public function authorize(): bool
     {
-        return true; // Authorization handled in the controller
+        $person = $this->route('person');
+
+        return $person instanceof Person && $this->user()->can('update', $person);
     }
 
     /**

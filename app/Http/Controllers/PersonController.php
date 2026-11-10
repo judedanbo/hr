@@ -357,6 +357,8 @@ class PersonController extends Controller
 
     public function deleteIdentity(Person $person, $identity)
     {
+        $this->authorize('update', $person);
+
         $person->identities()->where('id', $identity)->forceDelete();
 
         return redirect()->back();
@@ -411,9 +413,11 @@ class PersonController extends Controller
         return redirect()->back()->with('success', 'Address updated. Previous address kept in history.');
     }
 
-    public function deleteAddress(Person $person, $address)
+    public function deleteAddress(Person $person, $address): RedirectResponse
     {
-        $person->address()->delete($address);
+        $this->authorize('update', $person);
+
+        $person->address()->findOrFail($address)->delete();
 
         return redirect()->back();
     }
