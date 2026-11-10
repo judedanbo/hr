@@ -17,6 +17,9 @@ use Tests\TestCase;
  *
  * Which signed-in users may read them is covered by
  * PersonReadAuthorizationTest and StaffListAuthorizationTest.
+ *
+ * The fixed lists that fill the status and staff type forms hold no staff
+ * details, so any signed-in user may load them, but they are not public.
  */
 class SignedOutLookupAccessTest extends TestCase
 {
@@ -122,6 +125,33 @@ class SignedOutLookupAccessTest extends TestCase
         $user->givePermissionTo(['view all staff', 'view job']);
 
         return $user;
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function fixedLists(): array
+    {
+        return [
+            'employment statuses' => ['institution.statuses'],
+            'staff types' => ['institution.staff-types'],
+        ];
+    }
+
+    #[DataProvider('fixedLists')]
+    public function test_guest_is_sent_to_login_for_the_fixed_lists(string $route): void
+    {
+        $this->get(route($route, ['institution' => $this->staff->institution_id]))
+            ->assertRedirect(route('login'));
+    }
+
+    #[DataProvider('fixedLists')]
+    public function test_any_signed_in_user_still_gets_the_fixed_lists(string $route): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route($route, ['institution' => $this->staff->institution_id]))
+            ->assertOk()
+            ->assertJsonStructure([['value', 'label']]);
     }
 
     private function urlFor(string $route): string

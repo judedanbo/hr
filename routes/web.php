@@ -248,7 +248,7 @@ Route::get('/institution/{institution}/statuses', function (Institution $institu
     }
 
     return $statuses;
-})->name('institution.statuses');
+})->middleware(['auth', 'password_changed'])->name('institution.statuses');
 
 Route::get('/institution/{institution}/staff-types', function (Institution $institution) {
     $types = null;
@@ -260,7 +260,7 @@ Route::get('/institution/{institution}/staff-types', function (Institution $inst
     }
 
     return $types;
-})->name('institution.staff-types');
+})->middleware(['auth', 'password_changed'])->name('institution.staff-types');
 
 Route::controller(UnitController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/unit', 'index')->middleware('can:view all units')->name('unit.index');
