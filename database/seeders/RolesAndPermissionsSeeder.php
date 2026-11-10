@@ -123,6 +123,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view all staff',
             'view staff',
             'view contacts',
+            'create contacts',
             'view staff notes',
             'create staff notes',
             'edit staff notes',

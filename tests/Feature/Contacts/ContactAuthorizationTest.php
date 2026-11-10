@@ -13,6 +13,67 @@ class ContactAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_hr_user_can_record_an_official_email_on_another_persons_record(): void
+    {
+        $hr = $this->userWithRole('hr-user');
+        $colleague = Person::factory()->create();
+
+        $this->actingAs($hr)
+            ->post(route('person.contact.create', ['person' => $colleague->id]), [
+                'contact_type' => ContactTypeEnum::EMAIL->value,
+                'contact' => 'ama.mensah@audit.gov.gh',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('contacts', [
+            'person_id' => $colleague->id,
+            'contact_type' => ContactTypeEnum::EMAIL->value,
+            'contact' => 'ama.mensah@audit.gov.gh',
+        ]);
+    }
+
+    public function test_hr_user_cannot_change_or_remove_another_persons_contact(): void
+    {
+        $hr = $this->userWithRole('hr-user');
+        $colleague = Person::factory()->create();
+        $contact = Contact::factory()->create([
+            'person_id' => $colleague->id,
+            'contact_type' => ContactTypeEnum::EMAIL->value,
+            'contact' => 'theirs@example.org',
+        ]);
+
+        $this->actingAs($hr)
+            ->post(route('person.contact.update', ['person' => $colleague->id, 'contact' => $contact->id]), [
+                'contact_type' => ContactTypeEnum::EMAIL->value,
+                'contact' => 'changed@example.org',
+            ])
+            ->assertForbidden();
+
+        $this->actingAs($hr)
+            ->delete(route('person.contact.delete', ['person' => $colleague->id, 'contact' => $contact->id]))
+            ->assertForbidden();
+
+        $this->assertSame('theirs@example.org', $contact->fresh()->contact);
+    }
+
+    public function test_staff_role_cannot_add_a_contact_to_another_persons_record(): void
+    {
+        $staff = $this->userWithRole('staff');
+        $colleague = Person::factory()->create();
+
+        $this->assertFalse($staff->can('create contacts'));
+
+        $this->actingAs($staff)
+            ->post(route('person.contact.create', ['person' => $colleague->id]), [
+                'contact_type' => ContactTypeEnum::EMAIL->value,
+                'contact' => 'intruder@audit.gov.gh',
+            ])
+            ->assertForbidden();
+
+        $this->assertSame(0, Contact::where('person_id', $colleague->id)->count());
+    }
+
     public function test_user_can_update_own_contact(): void
     {
         $person = Person::factory()->create();
@@ -153,5 +214,13 @@ class ContactAuthorizationTest extends TestCase
             ->assertSessionHasErrors(['contact']);
 
         $this->assertSame('staff@audit.gov.gh', $contact->fresh()->contact);
+    }
+
+    private function userWithRole(string $role): User
+    {
+        $user = User::factory()->create(['person_id' => Person::factory()->create()->id]);
+        $user->assignRole($role);
+
+        return $user;
     }
 }

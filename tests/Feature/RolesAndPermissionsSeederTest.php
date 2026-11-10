@@ -168,6 +168,14 @@ class RolesAndPermissionsSeederTest extends TestCase
         $this->assertNotContains('download rank staff data', $permissions);
     }
 
+    public function test_hr_user_can_add_contacts_and_staff_cannot(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $this->assertContains('create contacts', Role::findByName('hr-user')->permissions->pluck('name')->toArray());
+        $this->assertNotContains('create contacts', Role::findByName('staff')->permissions->pluck('name')->toArray());
+    }
+
     public function test_general_admin_user_has_active_staff_view_only(): void
     {
         $this->seed(RolesAndPermissionsSeeder::class);

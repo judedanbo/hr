@@ -265,7 +265,8 @@ class PersonController extends Controller
     {
         abort_unless(
             $request->user()->person_id === $person->id
-                || $request->user()->can('update staff'),
+                || $request->user()->can('update staff')
+                || $request->user()->can('create contacts'),
             403,
         );
 

@@ -126,7 +126,8 @@ const deleteContact = (model) => {
 					<button
 						v-if="
 							permissions?.includes('update staff') ||
-							permissions?.includes('delete staff')
+							permissions?.includes('delete staff') ||
+							permissions?.includes('create contacts')
 						"
 						class="rounded-md bg-green-50 dark:bg-gray-400 px-2 py-1 text-xs font-medium text-green-600 dark:text-gray-50 ring-1 ring-inset ring-green-600/20 dark:ring-gray-500"
 						@click="toggleContactModal()"
