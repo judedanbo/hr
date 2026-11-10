@@ -216,12 +216,12 @@ Route::controller(InstitutionController::class)->middleware(['auth', 'password_c
     Route::get('/institution', 'index')->name('institution.index');
     Route::get('/institution/create', 'create')->name('institution.create');
     Route::get('/institution/{institution}', 'show')->middleware('can:view dashboard')->name('institution.show');
-    Route::get('/institution/{institution}/staff-filter', 'staffFilter')->name('institution.staff-filter');
+    Route::get('/institution/{institution}/staff-filter', 'staffFilter')->middleware('can:view dashboard')->name('institution.staff-filter');
     Route::post('/institution', 'store')->middleware('can:create institution')->name('institution.store');
     Route::patch('/institution/{institution}', 'update')->middleware('can:edit institution')->name('institution.update');
     Route::delete('/institution/{institution}', 'delete')->middleware('can:delete institution')->name('institution.delete');
-    Route::get('/institution/{institution}/staff', 'staffs')->name('institution.staffs');
-    Route::get('/institution/{institution}/staff/{staff}', 'staff')->name('institution.staff');
+    Route::get('/institution/{institution}/staff', 'staffs')->middleware('can:view all staff')->name('institution.staffs');
+    Route::get('/institution/{institution}/staff/{staff}', 'staff')->middleware('can:view all staff')->name('institution.staff');
     Route::get('/institution/{institution}/ranks', 'jobs')->name('institution.jobs');
 });
 // InstitutionRankController::class;
@@ -307,7 +307,7 @@ Route::get('/unit-list', function () {
 // //   $stats =  DB::table()
 // })->middleware(['auth','password_changed'])->name('units.stats');
 
-Route::controller(InstitutionStatusController::class)->middleware(['auth', 'password_changed'])->group(function () {
+Route::controller(InstitutionStatusController::class)->middleware(['auth', 'password_changed', 'can:view staff status'])->group(function () {
     Route::get('/institution/{institution}/status', 'index')->name('institution-status.index');
     Route::get('/institution/{institution}/status/{status}', 'show')->name('institution-status.show');
 });
@@ -376,10 +376,10 @@ Route::controller(CategoryRanksController::class)->middleware(['auth', 'password
     Route::get('/category/{category}/ranks', 'show')->name('category-ranks.show');
 });
 
-Route::get('/rank/{rank}/staff', [RankStaffController::class, 'index'])->middleware(['auth', 'password_changed'])->name('rank-staff.index');
-Route::get('/rank/{rank}/promote', [RankStaffController::class, 'promote'])->middleware(['auth', 'password_changed'])->name('rank-staff.promote');
-Route::get('/rank/{rank}/active', [RankStaffController::class, 'active'])->middleware(['auth', 'password_changed'])->name('rank-staff.active');
-Route::get('/rank/{rank}/all', [RankStaffController::class, 'all'])->middleware(['auth', 'password_changed'])->name('rank-staff.all');
+Route::get('/rank/{rank}/staff', [RankStaffController::class, 'index'])->middleware(['auth', 'password_changed', 'can:view job'])->name('rank-staff.index');
+Route::get('/rank/{rank}/promote', [RankStaffController::class, 'promote'])->middleware(['auth', 'password_changed', 'can:view job'])->name('rank-staff.promote');
+Route::get('/rank/{rank}/active', [RankStaffController::class, 'active'])->middleware(['auth', 'password_changed', 'can:view job'])->name('rank-staff.active');
+Route::get('/rank/{rank}/all', [RankStaffController::class, 'all'])->middleware(['auth', 'password_changed', 'can:view job'])->name('rank-staff.all');
 Route::get('/rank/{rank}/export', [RankStaffController::class, 'exportRank'])->middleware(['auth', 'password_changed', 'can:download rank staff data'])->name('rank-staff.export-rank');
 Route::get('/rank/{rank}/export/promotion-list', [RankStaffController::class, 'exportPromotion'])->middleware(['auth', 'password_changed'])->name('rank-staff.export-rank-promote');
 Route::get('/rank/{rank}/export/all-time', [RankStaffController::class, 'exportAll'])->middleware(['auth', 'password_changed', 'can:download rank staff data'])->name('rank-staff.export-rank-all');
@@ -461,7 +461,7 @@ Route::controller(QualificationDocumentController::class)->middleware(['auth', '
 Route::get('/report', [RecruitmentController::class, 'index'])->middleware(['auth', 'password_changed'])->name('report.index');
 Route::get('/report/recruitment', [RecruitmentController::class, 'recruitment'])->middleware(['auth', 'password_changed'])->name('report.recruitment');
 Route::get('/report/recruitment/chart', [RecruitmentController::class, 'recruitmentChart'])->middleware(['auth', 'password_changed'])->name('report.recruitment.chart');
-Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth', 'password_changed'])->name('report.recruitment.details');
+Route::get('/report/recruitment/details', [RecruitmentController::class, 'detail'])->middleware(['auth', 'password_changed', 'can:view all staff'])->name('report.recruitment.details');
 
 // staff
 Route::get('/report-staff/', [StaffReportController::class, 'export'])->middleware(['auth', 'password_changed', 'can:download active staff data'])->name('report.staff');
@@ -759,7 +759,7 @@ Route::controller(DocumentController::class)->middleware(['auth', 'password_chan
     Route::delete('/document/{document}', 'destroy')->middleware('can:delete documents')->name('document.destroy');
 });
 
-Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->middleware(['auth', 'password_changed'])->name('rank-staff-stats');
+Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->middleware(['auth', 'password_changed', 'can:view job'])->name('rank-staff-stats');
 
 Route::controller(RegionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/region', 'index')->name('region.index');

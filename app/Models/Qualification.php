@@ -95,6 +95,19 @@ class Qualification extends Model
     }
 
     /**
+     * Scope to the qualifications on the given user's own record. A user with
+     * no linked person owns none.
+     */
+    public function scopeOwnedBy(Builder $query, User $user): Builder
+    {
+        if ($user->person_id === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('person_id', $user->person_id);
+    }
+
+    /**
      * Check if the qualification can be edited by the given user.
      */
     public function canBeEditedBy($user): bool

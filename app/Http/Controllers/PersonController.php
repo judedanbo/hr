@@ -26,6 +26,8 @@ class PersonController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Person::class);
+
         return Inertia::render('Person/Index', [
             'people' => Person::query()
                 ->search(request()->search)
@@ -98,7 +100,8 @@ class PersonController extends Controller
         ])
             ->whereId($person)->firstOrFail();
 
-        // dd($selectedPerson);
+        $this->authorize('view', $selectedPerson);
+
         return Inertia::render('Person/NewShow', [
             'person' => [
                 'id' => $selectedPerson->id,
@@ -230,6 +233,8 @@ class PersonController extends Controller
 
     public function edit(Person $person)
     {
+        $this->authorize('update', $person);
+
         return [
             'id' => $person->id,
             'title' => $person->title,

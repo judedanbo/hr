@@ -37,7 +37,7 @@ class InstitutionDashboardTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('Institution/Show')
                 ->has('institution')
                 ->has('overview')
@@ -56,7 +56,7 @@ class InstitutionDashboardTest extends TestCase
             ->get(route('institution.show', $this->institution));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->has('overview.active_staff')
                 ->has('overview.male_count')
                 ->has('overview.female_count')
@@ -76,7 +76,7 @@ class InstitutionDashboardTest extends TestCase
             ->get(route('institution.show', $this->institution));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->has('analytics.gender')
                 ->has('analytics.age_distribution')
                 ->has('analytics.status')
@@ -91,7 +91,7 @@ class InstitutionDashboardTest extends TestCase
             ->get(route('institution.show', $this->institution));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->has('trends.recruitment')
                 ->has('trends.separations')
         );
@@ -104,7 +104,7 @@ class InstitutionDashboardTest extends TestCase
             ->get(route('institution.show', $this->institution));
 
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->has('action_items', 7) // 7 action items: promotion, retirement, units, pictures, ranks, multiple-units, without-gender
                 ->where('action_items.0.id', 'due-promotion')
                 ->where('action_items.1.id', 'nearing-retirement')
@@ -113,6 +113,8 @@ class InstitutionDashboardTest extends TestCase
 
     public function test_staff_filter_endpoint_returns_active_staff(): void
     {
+        $this->user->givePermissionTo('view dashboard');
+
         // Create some staff
         $person = Person::factory()->create(['gender' => 'M']);
         $staff = InstitutionPerson::factory()->create([
@@ -143,6 +145,8 @@ class InstitutionDashboardTest extends TestCase
 
     public function test_staff_filter_endpoint_filters_by_gender(): void
     {
+        $this->user->givePermissionTo('view dashboard');
+
         // Create male staff
         $malePerson = Person::factory()->create(['gender' => 'M']);
         $maleStaff = InstitutionPerson::factory()->create([
@@ -235,7 +239,7 @@ class InstitutionDashboardTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->where('overview.active_staff', 0)
                 ->where('overview.male_count', 0)
                 ->where('overview.female_count', 0)

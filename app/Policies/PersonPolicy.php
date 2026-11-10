@@ -2,28 +2,40 @@
 
 namespace App\Policies;
 
+use App\Models\Dependent;
 use App\Models\Person;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Database\Eloquent\Builder;
 
 class PersonPolicy
 {
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any models.
+     * Determine whether the user can list people.
+     *
+     * The same permission that opens the Staff list, since the people list
+     * names the same individuals.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view all people');
+        return $user->can('view all staff') || $user->can('view all people');
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determine whether the user can read a person's record.
+     *
+     * The rule of the Staff page: anyone's with view all staff, otherwise
+     * only your own. A dependant's record belongs to the member of staff it
+     * is attached to, so they may read it too.
      */
     public function view(User $user, Person $person): bool
     {
-        return $user->can('view person') || $user->person_id === $person->id;
+        return $user->can('view all staff')
+            || $user->can('view person')
+            || $this->isOwnRecord($user, $person)
+            || $this->isOwnDependant($user, $person);
     }
 
     /**
@@ -89,5 +101,21 @@ class PersonPolicy
     {
         return $user->person_id !== null
             && (int) $user->person_id === (int) $person->getKey();
+    }
+
+    /**
+     * Whether the person is recorded as a dependant of the user's own staff
+     * record.
+     */
+    private function isOwnDependant(User $user, Person $person): bool
+    {
+        if ($user->person_id === null) {
+            return false;
+        }
+
+        return Dependent::query()
+            ->where('person_id', $person->getKey())
+            ->whereHas('staff', fn (Builder $staff) => $staff->where('person_id', $user->person_id))
+            ->exists();
     }
 }

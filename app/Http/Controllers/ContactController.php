@@ -117,6 +117,8 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact)
     {
+        $this->authorize('update', $contact);
+
         $contactTypes = collect(ContactTypeEnum::cases())->map(fn ($type) => [
             'value' => $type->value,
             'label' => $type->label(),

@@ -14,6 +14,8 @@ class PersonAvatarController extends Controller
 {
     public function index(Person $person)
     {
+        $this->authorize('view', $person);
+
         return [
             'image' => $person->only(['image']),
             'initials' => $person->initials,

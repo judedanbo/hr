@@ -14,6 +14,9 @@ use Tests\TestCase;
 /**
  * These JSON lookups return staff details (names, staff and file numbers,
  * photos) and are only called from signed-in pages, so they need a session.
+ *
+ * Which signed-in users may read them is covered by
+ * PersonReadAuthorizationTest and StaffListAuthorizationTest.
  */
 class SignedOutLookupAccessTest extends TestCase
 {
@@ -77,9 +80,9 @@ class SignedOutLookupAccessTest extends TestCase
     }
 
     #[DataProvider('lookups')]
-    public function test_signed_in_user_still_gets_the_lookup(string $route): void
+    public function test_a_user_allowed_to_see_the_record_still_gets_the_lookup(string $route): void
     {
-        $this->actingAs(User::factory()->create())
+        $this->actingAs($this->userAllowedToSeeTheRecords())
             ->get($this->urlFor($route))
             ->assertOk();
     }
@@ -95,7 +98,7 @@ class SignedOutLookupAccessTest extends TestCase
 
     public function test_signed_in_lookups_return_the_same_data_as_before(): void
     {
-        $user = User::factory()->create();
+        $user = $this->userAllowedToSeeTheRecords();
 
         $this->actingAs($user)
             ->get($this->urlFor('rank-staff-stats'))
@@ -107,6 +110,18 @@ class SignedOutLookupAccessTest extends TestCase
             ->get($this->urlFor('person-roles.dependent'))
             ->assertOk()
             ->assertJsonPath('staff_number.0', $this->staff->staff_number);
+    }
+
+    /**
+     * The person lookups follow view all staff; the rank lookup follows the
+     * Ranks screen it is shown on.
+     */
+    private function userAllowedToSeeTheRecords(): User
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(['view all staff', 'view job']);
+
+        return $user;
     }
 
     private function urlFor(string $route): string
