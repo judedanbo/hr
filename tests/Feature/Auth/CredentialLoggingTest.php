@@ -26,7 +26,7 @@ class CredentialLoggingTest extends TestCase
         $activity = $this->failedLogins()->sole();
         $this->assertSame($user->email, $activity->properties->get('attributes')['email']);
         $this->assertArrayNotHasKey('password', $activity->properties->get('attributes'));
-        $this->assertStringNotContainsString('almost-my-real-password', $activity->getRawOriginal('properties'));
+        $this->assertStringNotContainsString('almost-my-real-password', $this->recorded($activity));
     }
 
     public function test_a_failed_login_for_an_unknown_address_is_logged_without_the_password(): void
@@ -40,7 +40,7 @@ class CredentialLoggingTest extends TestCase
 
         $activity = $this->failedLogins()->sole();
         $this->assertSame(['email' => 'nobody@audit.gov.gh'], $activity->properties->get('attributes'));
-        $this->assertStringNotContainsString('typed-into-the-wrong-site', $activity->getRawOriginal('properties'));
+        $this->assertStringNotContainsString('typed-into-the-wrong-site', $this->recorded($activity));
     }
 
     public function test_creating_a_user_does_not_log_the_password_hash(): void
@@ -51,7 +51,7 @@ class CredentialLoggingTest extends TestCase
 
         $this->assertSame($user->email, $activity->properties->get('attributes')['email']);
         $this->assertArrayNotHasKey('password', $activity->properties->get('attributes'));
-        $this->assertStringNotContainsString($user->password, $activity->getRawOriginal('properties'));
+        $this->assertStringNotContainsString($user->password, $this->recorded($activity));
     }
 
     public function test_changing_a_password_logs_neither_the_old_nor_the_new_hash(): void
@@ -76,8 +76,8 @@ class CredentialLoggingTest extends TestCase
         foreach ($activities as $activity) {
             $this->assertArrayNotHasKey('password', $activity->properties->get('attributes', []));
             $this->assertArrayNotHasKey('password', $activity->properties->get('old', []));
-            $this->assertStringNotContainsString($oldHash, $activity->getRawOriginal('properties'));
-            $this->assertStringNotContainsString($user->password, $activity->getRawOriginal('properties'));
+            $this->assertStringNotContainsString($oldHash, $this->recorded($activity));
+            $this->assertStringNotContainsString($user->password, $this->recorded($activity));
         }
     }
 
@@ -91,6 +91,16 @@ class CredentialLoggingTest extends TestCase
 
         $this->assertSame('Ama Mensah-Boateng', $activity->properties->get('attributes')['name']);
         $this->assertSame('Ama Mensah', $activity->properties->get('old')['name']);
+    }
+
+    /**
+     * Everything the entry recorded, as text. Slashes are left unescaped,
+     * because a bcrypt hash usually contains one and the stored JSON escapes
+     * it, which would hide the hash from a plain search.
+     */
+    private function recorded(Activity $activity): string
+    {
+        return json_encode($activity->properties, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
     }
 
     private function failedLogins(): \Illuminate\Database\Eloquent\Builder
