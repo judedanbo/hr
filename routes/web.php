@@ -180,9 +180,9 @@ Route::controller(PersonController::class)->middleware(['auth', 'password_change
     Route::delete('/person/{person}/address/{address}', 'deleteAddress')->name('person.address.delete');
     // Route::get('/person/avatar', 'avatar')->name('person.ava');
 });
-Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->name('person.avatar');
-Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->name('person-roles.show');
-Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->name('person-roles.dependent');
+Route::get('person/{person}/avatar', [PersonAvatarController::class, 'index'])->middleware(['auth', 'password_changed'])->name('person.avatar');
+Route::get('person/{person}/roles', [PersonRolesController::class, 'show'])->middleware(['auth', 'password_changed'])->name('person-roles.show');
+Route::get('person/{person}/dependent', [PersonRolesController::class, 'dependent'])->middleware(['auth', 'password_changed'])->name('person-roles.dependent');
 Route::post('person/{person}/avatar', [PersonAvatarController::class, 'update'])->middleware(['auth', 'password_changed'])->name('person.avatar.update');
 Route::delete('person/{person}/avatar/delete', [PersonAvatarController::class, 'delete'])->middleware(['auth', 'password_changed'])->name('person.avatar.delete');
 
@@ -759,7 +759,7 @@ Route::controller(DocumentController::class)->middleware(['auth', 'password_chan
     Route::delete('/document/{document}', 'destroy')->middleware('can:delete documents')->name('document.destroy');
 });
 
-Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->name('rank-staff-stats');
+Route::get('/rank-staff-stats/{job}', RankStaffStatsController::class)->middleware(['auth', 'password_changed'])->name('rank-staff-stats');
 
 Route::controller(RegionController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/region', 'index')->name('region.index');
