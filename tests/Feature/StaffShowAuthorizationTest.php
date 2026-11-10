@@ -100,4 +100,26 @@ class StaffShowAuthorizationTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_a_staff_record_that_is_not_active_leads_to_that_persons_own_page(): void
+    {
+        $viewer = $this->userFor($this->makeActiveStaff(), ['view staff', 'view all staff']);
+
+        Person::factory()->count(3)->create();
+        $separated = InstitutionPerson::factory()->create(['institution_id' => $this->institution->id]);
+        $this->assertNotEquals($separated->id, $separated->person_id);
+
+        $this->actingAs($viewer)
+            ->get(route('staff.show', ['staff' => $separated->id]))
+            ->assertRedirect(route('person.show', ['person' => $separated->person_id]));
+    }
+
+    public function test_a_staff_record_that_does_not_exist_is_not_found(): void
+    {
+        $viewer = $this->userFor($this->makeActiveStaff(), ['view staff', 'view all staff']);
+
+        $this->actingAs($viewer)
+            ->get(route('staff.show', ['staff' => 999999]))
+            ->assertNotFound();
+    }
 }
