@@ -20,9 +20,19 @@ class AdminUserSeederTest extends TestCase
         $admin = $this->admin();
         $this->assertTrue($admin->hasRole('super-administrator'));
 
-        $password = $this->passwordPrintedIn($output);
-        $this->assertGreaterThanOrEqual(24, strlen($password));
-        $this->assertTrue(Hash::check($password, $admin->password));
+        $this->assertTrue(Hash::check($this->passwordPrintedIn($output), $admin->password));
+    }
+
+    /**
+     * The console formatter reads a backslash or an angle bracket as markup,
+     * so a password containing one could be printed differently from the one
+     * that was stored, and the new account could never sign in.
+     */
+    public function test_the_password_uses_only_characters_the_console_prints_unchanged(): void
+    {
+        $password = $this->passwordPrintedIn($this->runSeeder());
+
+        $this->assertMatchesRegularExpression('/^[A-Za-z0-9]{24}$/', $password);
     }
 
     public function test_every_run_on_a_new_database_produces_a_different_password(): void
