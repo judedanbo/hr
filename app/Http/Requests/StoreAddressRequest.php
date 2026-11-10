@@ -10,14 +10,14 @@ class StoreAddressRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      *
-     * The address is added to the person in the route, so it needs the update
-     * ability on that person.
+     * The address is added to the person in the route, so it needs the right
+     * to manage that person's addresses.
      */
     public function authorize(): bool
     {
         $person = $this->route('person');
 
-        return $person instanceof Person && $this->user()->can('update', $person);
+        return $person instanceof Person && $this->user()->can('manageAddresses', $person);
     }
 
     /**

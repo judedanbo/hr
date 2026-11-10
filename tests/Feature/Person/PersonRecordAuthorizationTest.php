@@ -12,9 +12,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * A person's record (core details, identities, addresses) may be changed by
- * its owner or by someone holding the update staff permission, and by nobody
- * else who merely happens to be signed in.
+ * Core details and identity numbers are managed by HR: only a holder of
+ * update staff may change them, even on their own record. Addresses are
+ * self-service, so the owner may change those too. Nobody else may change
+ * any of them merely because they are signed in.
  */
 class PersonRecordAuthorizationTest extends TestCase
 {
@@ -35,9 +36,26 @@ class PersonRecordAuthorizationTest extends TestCase
         $this->assertSame('Original', $colleague->fresh()->surname);
     }
 
-    public function test_staff_can_update_their_own_record(): void
+    public function test_staff_cannot_update_their_own_core_details(): void
     {
         $user = $this->staffUser();
+        $person = Person::findOrFail($user->person_id);
+        $person->update(['surname' => 'Original', 'date_of_birth' => '1970-01-01']);
+
+        $this->actingAs($user)
+            ->patch(route('person.update', ['person' => $person->id]), $this->personPayload([
+                'surname' => 'Renamed',
+                'date_of_birth' => '1985-06-15',
+            ]))
+            ->assertForbidden();
+
+        $this->assertSame('Original', $person->fresh()->surname);
+        $this->assertSame('1970-01-01', $person->fresh()->date_of_birth->toDateString());
+    }
+
+    public function test_user_with_update_staff_can_update_their_own_record(): void
+    {
+        $user = $this->userWithPermissions(['update staff']);
 
         $this->actingAs($user)
             ->patch(route('person.update', ['person' => $user->person_id]), $this->personPayload(['surname' => 'Renamed']))
@@ -152,23 +170,52 @@ class PersonRecordAuthorizationTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_staff_can_manage_their_own_identities(): void
+    public function test_staff_cannot_change_their_own_identity_numbers(): void
     {
         $user = $this->staffUser();
+        $person = Person::findOrFail($user->person_id);
+        $identity = $this->identityFor($person, 'P1111111');
 
         $this->actingAs($user)
-            ->post(route('person.identity.create', ['person' => $user->person_id]), [
+            ->post(route('person.identity.create', ['person' => $person->id]), [
+                'id_type' => Identity::GhanaCard->value,
+                'id_number' => 'GHA-123456789-0',
+            ])
+            ->assertForbidden();
+
+        $this->actingAs($user)
+            ->post(route('person.identity.update', ['person' => $person->id, 'identity' => $identity->id]), [
                 'id_type' => Identity::Passport->value,
-                'id_number' => 'P1111111',
+                'id_number' => 'P2222222',
+            ])
+            ->assertForbidden();
+
+        $this->actingAs($user)
+            ->delete(route('person.identity.delete', ['person' => $person->id, 'identity' => $identity->id]))
+            ->assertForbidden();
+
+        $this->assertSame(1, $person->identities()->count());
+        $this->assertSame('P1111111', $identity->fresh()->id_number);
+    }
+
+    public function test_user_with_update_staff_can_manage_another_persons_identities(): void
+    {
+        $admin = $this->userWithPermissions(['update staff']);
+        $colleague = $this->colleague();
+
+        $this->actingAs($admin)
+            ->post(route('person.identity.create', ['person' => $colleague->id]), [
+                'id_type' => Identity::Passport->value,
+                'id_number' => 'P7654321',
             ])
             ->assertRedirect()
             ->assertSessionHasNoErrors();
 
-        $identity = PersonIdentity::where('person_id', $user->person_id)->firstOrFail();
-        $this->assertSame('P1111111', $identity->id_number);
+        $identity = PersonIdentity::where('person_id', $colleague->id)->firstOrFail();
+        $this->assertSame('P7654321', $identity->id_number);
 
-        $this->actingAs($user)
-            ->post(route('person.identity.update', ['person' => $user->person_id, 'identity' => $identity->id]), [
+        $this->actingAs($admin)
+            ->post(route('person.identity.update', ['person' => $colleague->id, 'identity' => $identity->id]), [
                 'id_type' => Identity::Passport->value,
                 'id_number' => 'P2222222',
             ])
@@ -177,40 +224,23 @@ class PersonRecordAuthorizationTest extends TestCase
 
         $this->assertSame('P2222222', $identity->fresh()->id_number);
 
-        $this->actingAs($user)
-            ->delete(route('person.identity.delete', ['person' => $user->person_id, 'identity' => $identity->id]))
+        $this->actingAs($admin)
+            ->delete(route('person.identity.delete', ['person' => $colleague->id, 'identity' => $identity->id]))
             ->assertRedirect();
 
         $this->assertNull(PersonIdentity::withTrashed()->find($identity->id));
     }
 
-    public function test_staff_cannot_delete_another_persons_identity_through_their_own_person_route(): void
+    public function test_an_identity_is_only_deleted_through_the_person_it_belongs_to(): void
     {
-        $user = $this->staffUser();
+        $admin = $this->userWithPermissions(['update staff']);
         $identity = $this->identityFor($this->colleague(), 'P0000001');
 
-        $this->actingAs($user)
-            ->delete(route('person.identity.delete', ['person' => $user->person_id, 'identity' => $identity->id]));
+        $this->actingAs($admin)
+            ->delete(route('person.identity.delete', ['person' => $admin->person_id, 'identity' => $identity->id]))
+            ->assertRedirect();
 
         $this->assertNotNull(PersonIdentity::find($identity->id));
-    }
-
-    public function test_user_with_update_staff_can_add_an_identity_to_another_person(): void
-    {
-        $colleague = $this->colleague();
-
-        $this->actingAs($this->userWithPermissions(['update staff']))
-            ->post(route('person.identity.create', ['person' => $colleague->id]), [
-                'id_type' => Identity::Passport->value,
-                'id_number' => 'P7654321',
-            ])
-            ->assertRedirect()
-            ->assertSessionHasNoErrors();
-
-        $this->assertDatabaseHas('person_identities', [
-            'person_id' => $colleague->id,
-            'id_number' => 'P7654321',
-        ]);
     }
 
     // -----------------------------------------------------------------------

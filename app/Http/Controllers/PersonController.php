@@ -415,7 +415,7 @@ class PersonController extends Controller
 
     public function deleteAddress(Person $person, $address): RedirectResponse
     {
-        $this->authorize('update', $person);
+        $this->authorize('manageAddresses', $person);
 
         $person->address()->findOrFail($address)->delete();
 

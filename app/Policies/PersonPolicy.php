@@ -37,14 +37,24 @@ class PersonPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * Also governs the records that hang off a person and have no policy of
-     * their own to ask: identities, and adding or removing an address.
+     * Covers a person's core details and identity numbers. Both are managed
+     * by HR, so owning the record is not enough: a date of birth sets the
+     * retirement date, and My Profile shows these read-only.
      */
     public function update(User $user, Person $person): bool
     {
-        return $user->can('update staff')
-            || $user->can('view update person')
-            || $this->isOwnRecord($user, $person);
+        return $user->can('update staff') || $user->can('view update person');
+    }
+
+    /**
+     * Determine whether the user can add or remove the person's addresses.
+     *
+     * Unlike core details, an address is self-service: staff keep their own
+     * up to date from My Profile.
+     */
+    public function manageAddresses(User $user, Person $person): bool
+    {
+        return $this->update($user, $person) || $this->isOwnRecord($user, $person);
     }
 
     /**
