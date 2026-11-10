@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class UpdatePositionRequest extends FormRequest
 {
@@ -22,11 +23,22 @@ class UpdatePositionRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
+    /**
+     * The position being edited must be excluded from the uniqueness check,
+     * otherwise saving without renaming fails. Soft-deleted names are free to
+     * reuse.
+     */
     public function rules()
     {
         return [
-            'id' => ['required', 'integer', 'exists:positions,id'], // 'exists' rule is used to check if the value exists in the database table 'positions' under the column 'id
-            'name' => ['required', 'string', 'max:255', 'unique:positions,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('positions', 'name')
+                    ->ignore($this->route('position'))
+                    ->whereNull('deleted_at'),
+            ],
         ];
     }
 }

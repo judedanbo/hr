@@ -54,6 +54,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.export',
             'qualifications.reports.view.all',
             'approve staff photo',
+            'view position roles',
+            'manage position roles',
 
             // Leave Management configuration
             'view all leave years',
@@ -137,6 +139,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'qualifications.reports.export',
             'qualifications.reports.view.all',
             'approve staff photo',
+            'view position roles',
+            'manage position roles',
 
             // Leave Management configuration
             'view all leave years',
@@ -194,6 +198,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view staff notes',
             'view all staff positions',
             'view staff position',
+            'view position roles',
             'view all staff promotions',
             'view staff promotion',
             'view all staff transfers',

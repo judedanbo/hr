@@ -3,7 +3,6 @@
 namespace App\Transformers\Staff;
 
 use App\Models\InstitutionPerson;
-use Carbon\Carbon;
 
 class StaffDetailTransformer
 {
@@ -238,23 +237,21 @@ class StaffDetailTransformer
     /**
      * Transform positions collection.
      */
-    protected function transformPositions($positions): ?array
+    protected function transformPositions($positions): array
     {
         if (! $positions || $positions->isEmpty()) {
-            return null;
+            return [];
         }
 
         return $positions->map(fn ($position) => [
-            'id' => $position->id,
+            'id' => $position->pivot->id,
+            'position_id' => $position->id,
             'name' => $position->name,
-            'start_date' => $position->pivot->start_date,
-            'end_date' => $position->pivot->end_date,
-            'start_date_display' => $position->pivot->start_date
-                ? Carbon::parse($position->pivot->start_date)->format('d M Y')
-                : null,
-            'end_date_display' => $position->pivot->end_date
-                ? Carbon::parse($position->pivot->end_date)->format('d M Y')
-                : null,
+            'start_date' => $position->pivot->start_date?->format('Y-m-d'),
+            'end_date' => $position->pivot->end_date?->format('Y-m-d'),
+            'start_date_display' => $position->pivot->start_date?->format('d M Y'),
+            'end_date_display' => $position->pivot->end_date?->format('d M Y'),
+            'is_current' => $position->pivot->end_date === null,
         ])->toArray();
     }
 

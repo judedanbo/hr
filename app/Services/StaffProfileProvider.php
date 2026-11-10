@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\QualificationLevelEnum;
 use App\Models\InstitutionPerson;
 use App\Models\Qualification;
-use Carbon\Carbon;
 
 final class StaffProfileProvider
 {
@@ -174,13 +173,15 @@ final class StaffProfileProvider
                 'end_date_display' => $t->end_date?->format('d M Y'),
             ])->all(),
             'positions' => $staff->positions?->map(fn ($p) => [
-                'id' => $p->id,
+                'id' => $p->pivot->id,
+                'position_id' => $p->id,
                 'name' => $p->name,
-                'start_date' => $p->pivot->start_date,
-                'end_date' => $p->pivot->end_date,
-                'start_date_display' => $p->pivot->start_date ? Carbon::parse($p->pivot->start_date)->format('d M Y') : null,
-                'end_date_display' => $p->pivot->end_date ? Carbon::parse($p->pivot->end_date)->format('d M Y') : null,
-            ])->all(),
+                'start_date' => $p->pivot->start_date?->format('Y-m-d'),
+                'end_date' => $p->pivot->end_date?->format('Y-m-d'),
+                'start_date_display' => $p->pivot->start_date?->format('d M Y'),
+                'end_date_display' => $p->pivot->end_date?->format('d M Y'),
+                'is_current' => $p->pivot->end_date === null,
+            ])->all() ?? [],
             'ranks' => $staff->ranks->map(fn ($r) => [
                 'id' => $r->id,
                 'name' => $r->name,

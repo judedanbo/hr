@@ -13,7 +13,7 @@ const props = defineProps({
 const submitHandler = (data, node) => {
 	router.patch(
 		route("staff.position.update", {
-			staff: data.staff_id,
+			staff: props.staff.id,
 			staffPosition: props.staffPosition.id,
 		}),
 		data,
@@ -38,20 +38,12 @@ const submitHandler = (data, node) => {
 			type="form"
 			submit-label="Save"
 			:value="{
-				position_id: staffPosition.id,
+				position_id: staffPosition.position_id,
 				start_date: staffPosition.start_date,
 				end_date: staffPosition.end_date,
 			}"
 			@submit="submitHandler"
 		>
-			<FormKit id="staff_id" type="hidden" name="staff_id" :value="staff.id" />
-			<FormKit
-				id="institution_id"
-				type="hidden"
-				name="institution_id"
-				:value="institution"
-			/>
-
 			<StaffPositionForm :institution="institution" />
 		</FormKit>
 	</main>

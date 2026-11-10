@@ -408,11 +408,15 @@ v-if="$page.props.can.model.create"
 
 ```bash
 php artisan db:seed --class=UserPermissionsSeeder --force
-php artisan db:seed --class=AllPermissionsSeeder --force   # syncs all permissions to super-administrator
+php artisan db:seed --class=PermissionSeeder --force
+php artisan db:seed --class=AllPermissionsSeeder --force        # syncs all permissions to super-administrator
+php artisan db:seed --class=RolesAndPermissionsSeeder --force   # grants permissions to admin-user / hr-user / etc.
 ```
 
 - Tests pass without this because the test database re-seeds before every test (`$seed = true`), masking the gap.
 - The `super-administrator` `Gate::before` override (`app/Providers/AuthServiceProvider.php`) makes `can()` return `true` for any ability, so backend checks can appear to work even when the permission row is missing. **UI that gates on `$page.props.auth.permissions` (the explicit assigned list) will still be hidden** until the permission is actually seeded and assigned — so the feature looks broken/invisible in the browser even for super admins.
+- A real instance of this: the staff-position card on the staff page gated on `update staff positions` (plural), a name no seeder ever created, so the card was invisible to everyone including super admins. Verify permission-gated UI in the browser **as a non-super-admin**.
+- **Position → role mappings start empty.** No roles are granted through a position until an admin sets a mapping at `/position/{id}` → *Edit roles* (needs `manage position roles`). Saving a mapping reconciles the people currently holding that position; it does not touch past holders.
 
 #### E. External API Access Tokens (Sanctum)
 

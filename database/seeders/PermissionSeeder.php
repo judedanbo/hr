@@ -71,6 +71,8 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'delete position']);
         Permission::firstOrCreate(['name' => 'restore position']);
         Permission::firstOrCreate(['name' => 'destroy position']);
+        Permission::firstOrCreate(['name' => 'view position roles']);
+        Permission::firstOrCreate(['name' => 'manage position roles']);
 
         // Staff Position Permission
         Permission::firstOrCreate(['name' => 'view all staff positions']);
