@@ -50,7 +50,7 @@ class LoginRequest extends FormRequest
             activity()
                 ->causedBy(Auth::user())
                 // ->performedOn(Auth::user())
-                ->withProperties(['attributes' => $this->only('email', 'password')])
+                ->withProperties(['attributes' => $this->only('email')])
                 ->event('login')
                 ->log('Failed login');
             RateLimiter::hit($this->throttleKey());
