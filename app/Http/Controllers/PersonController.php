@@ -307,6 +307,7 @@ class PersonController extends Controller
     public function deleteContact(Request $request, Person $person, $contact)
     {
         $contactModel = Contact::findOrFail($contact);
+        abort_unless((int) $contactModel->person_id === (int) $person->getKey(), 404);
         $this->authorize('delete', $contactModel);
 
         if ($contactModel->contact_type === ContactTypeEnum::PHONE) {
@@ -325,9 +326,15 @@ class PersonController extends Controller
         }
 
         if ($contactModel->isProtectedOrgEmail()) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'contact' => 'This Audit Service email address cannot be deleted.',
-            ]);
+            if ($request->user()->cannot('deleteOfficialEmail', $contactModel)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'contact' => 'This Audit Service email address can only be removed by HR.',
+                ]);
+            }
+
+            $contactModel->delete();
+
+            return redirect()->back()->with('success', 'Official email removed');
         }
 
         $person->contacts()->where('id', $contact)->forceDelete();

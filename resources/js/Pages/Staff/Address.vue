@@ -21,6 +21,15 @@ const props = defineProps({
 
 const emit = defineEmits(["editContact", "deleteDependent"]);
 const contactModel = ref(null);
+
+// An official email is locked: nobody edits one, and removing one takes the
+// delete contacts permission rather than the one for ordinary contacts.
+const canEditContact = (contact) =>
+	!contact.is_official_email && permissions.value?.includes("update staff");
+const canDeleteContact = (contact) =>
+	contact.is_official_email
+		? permissions.value?.includes("delete contacts")
+		: permissions.value?.includes("delete staff");
 const subMenuClicked = (action, model) => {
 	contactModel.value = model;
 	if (action == "Edit") {
@@ -196,11 +205,10 @@ const deleteContact = (model) => {
 										</div>
 										<SubMenu
 											v-if="
-												permissions?.includes('update staff') ||
-												permissions?.includes('delete staff')
+												canEditContact(contact) || canDeleteContact(contact)
 											"
-											:can-edit="permissions?.includes('update staff')"
-											:can-delete="permissions?.includes('delete staff')"
+											:can-edit="canEditContact(contact)"
+											:can-delete="canDeleteContact(contact)"
 											:items="['Edit', 'Delete']"
 											@item-clicked="
 												(action) => subMenuClicked(action, contact)

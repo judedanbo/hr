@@ -22,6 +22,9 @@ class ContactController extends Controller
     {
         $this->logSuccess('viewed all contacts');
 
+        $user = $request->user();
+        $canDeleteContacts = $user->can('delete contacts');
+
         $contacts = Contact::query()
             ->with('person')
             ->when($request->contact_type, fn ($q, $type) => $q->where('contact_type', $type))
@@ -45,6 +48,7 @@ class ContactController extends Controller
                 'person_name' => $contact->person?->full_name,
                 'is_active' => $contact->valid_end === null || $contact->valid_end->isFuture(),
                 'created_at' => $contact->created_at?->displayDate(),
+                'can_delete' => $canDeleteContacts && $user->can('delete', $contact),
             ]);
 
         // Get contact types for filters
@@ -178,9 +182,9 @@ class ContactController extends Controller
             }
         }
 
-        if ($contact->isProtectedOrgEmail()) {
+        if ($contact->isProtectedOrgEmail() && request()->user()->cannot('deleteOfficialEmail', $contact)) {
             throw \Illuminate\Validation\ValidationException::withMessages([
-                'contact' => 'This Audit Service email address cannot be deleted.',
+                'contact' => 'This Audit Service email address can only be removed by HR.',
             ]);
         }
 

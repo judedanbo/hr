@@ -164,6 +164,21 @@ class RolesAndPermissionsSeederTest extends TestCase
         $this->assertContains('download separated staff data', $permissions);
     }
 
+    public function test_only_hr_user_holds_the_permission_that_removes_official_emails(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $this->assertContains('delete contacts', Role::findByName('hr-user')->permissions->pluck('name')->toArray());
+
+        foreach (['staff', 'admin-user', 'aag-admin', 'personel-user', 'general-admin-user', 'internal-audit-user'] as $roleName) {
+            $this->assertNotContains(
+                'delete contacts',
+                Role::findByName($roleName)->permissions->pluck('name')->toArray(),
+                "{$roleName} should not be able to remove official emails"
+            );
+        }
+    }
+
     public function test_hr_user_can_download_staff_data_but_not_the_other_exports(): void
     {
         $this->seed(RolesAndPermissionsSeeder::class);
