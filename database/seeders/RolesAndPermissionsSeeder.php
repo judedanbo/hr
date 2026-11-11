@@ -122,6 +122,8 @@ class RolesAndPermissionsSeeder extends Seeder
         'hr-user' => [
             'view all staff',
             'view staff',
+            'view separated staff',
+            'view all separations',
             'view contacts',
             'create contacts',
             'view staff notes',
