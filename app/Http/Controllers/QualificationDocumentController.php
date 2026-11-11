@@ -15,11 +15,7 @@ class QualificationDocumentController extends Controller
 {
     public function store(Request $request, Qualification $qualification): mixed
     {
-        abort_unless(
-            $qualification->canBeEditedBy($request->user())
-                || $request->user()?->can('approve staff qualification'),
-            403,
-        );
+        abort_unless($qualification->documentsCanBeManagedBy($request->user()), 403);
 
         $validated = $request->validate([
             'file_name' => 'required|array|min:1',
@@ -80,8 +76,10 @@ class QualificationDocumentController extends Controller
         return back()->with('success', 'Qualification Document has been uploaded.');
     }
 
-    public function delete(Qualification $qualification)
+    public function delete(Request $request, Qualification $qualification)
     {
+        abort_unless($qualification->documentsCanBeManagedBy($request->user()), 403);
+
         $qualification->documents()->delete();
 
         return back()->with('success', 'Qualification Document has been deleted.');
@@ -95,11 +93,7 @@ class QualificationDocumentController extends Controller
             404,
         );
 
-        abort_unless(
-            $qualification->canBeEditedBy($request->user())
-                || $request->user()?->can('approve staff qualification'),
-            403,
-        );
+        abort_unless($qualification->documentsCanBeManagedBy($request->user()), 403);
 
         if ($document->file_name && Storage::disk('qualifications-documents')->exists($document->file_name)) {
             Storage::disk('qualifications-documents')->delete($document->file_name);

@@ -43,11 +43,29 @@ class ContactPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Determine whether the user can ask to delete the model.
+     *
+     * An official email passes here for its owner and for update staff as
+     * any contact does, so that they are told why it stays; whether it is
+     * actually removed is decided by deleteOfficialEmail.
      */
     public function delete(User $user, Contact $contact): bool
     {
-        return $user->can('update staff') || $user->person_id === $contact->person_id;
+        return $user->can('update staff')
+            || $user->person_id === $contact->person_id
+            || ($contact->isProtectedOrgEmail() && $this->deleteOfficialEmail($user, $contact));
+    }
+
+    /**
+     * Determine whether the user can remove an official Audit Service email.
+     *
+     * That address decides where a person's first password is sent, so it is
+     * not the owner's to remove, and update staff is not enough. It takes the
+     * delete contacts permission, which the seeders give to hr-user.
+     */
+    public function deleteOfficialEmail(User $user, Contact $contact): bool
+    {
+        return $user->can('delete contacts');
     }
 
     /**

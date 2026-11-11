@@ -66,35 +66,35 @@ class InstitutionPersonController extends Controller
             ->with('person')
             ->currentUnit()
             ->currentRank()
-            ->when($request->rank_id, fn($q, $rankId) => $q->filterByRank($rankId))
-            ->when($request->job_category_id, fn($q, $categoryId) => $q->filterByJobCategory($categoryId))
-            ->when($request->unit_id, fn($q, $unitId) => $q->filterByUnit($unitId))
-            ->when($request->department_id, fn($q, $deptId) => $q->filterByDepartment($deptId))
-            ->when($request->gender, fn($q, $gender) => $q->filterByGender($gender))
-            ->when($request->status, fn($q, $status) => $q->filterByStatus($status))
+            ->when($request->rank_id, fn ($q, $rankId) => $q->filterByRank($rankId))
+            ->when($request->job_category_id, fn ($q, $categoryId) => $q->filterByJobCategory($categoryId))
+            ->when($request->unit_id, fn ($q, $unitId) => $q->filterByUnit($unitId))
+            ->when($request->department_id, fn ($q, $deptId) => $q->filterByDepartment($deptId))
+            ->when($request->gender, fn ($q, $gender) => $q->filterByGender($gender))
+            ->when($request->status, fn ($q, $status) => $q->filterByStatus($status))
             ->when(
                 $request->hire_date_from && $request->hire_date_to,
-                fn($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to)
+                fn ($q) => $q->filterByHireDateRange($request->hire_date_from, $request->hire_date_to)
             )
             ->when(
                 $request->hire_date_from && ! $request->hire_date_to,
-                fn($q) => $q->filterByHireDateFrom($request->hire_date_from)
+                fn ($q) => $q->filterByHireDateFrom($request->hire_date_from)
             )
             ->when(
                 $request->hire_date_to && ! $request->hire_date_from,
-                fn($q) => $q->filterByHireDateTo($request->hire_date_to)
+                fn ($q) => $q->filterByHireDateTo($request->hire_date_to)
             )
             ->when(
                 $request->age_from && $request->age_to,
-                fn($q) => $q->filterByAgeRange($request->age_from, $request->age_to)
+                fn ($q) => $q->filterByAgeRange($request->age_from, $request->age_to)
             )
             ->when(
                 $request->age_from && ! $request->age_to,
-                fn($q) => $q->filterByAgeFrom($request->age_from)
+                fn ($q) => $q->filterByAgeFrom($request->age_from)
             )
             ->when(
                 $request->age_to && ! $request->age_from,
-                fn($q) => $q->filterByAgeTo($request->age_to)
+                fn ($q) => $q->filterByAgeTo($request->age_to)
             )
             ->search($request->search)
             ->paginate(per_page())
@@ -181,7 +181,10 @@ class InstitutionPersonController extends Controller
 
         $staff = InstitutionPerson::query()->active()->whereId($staffId)->first();
         if (! $staff) {
-            return redirect()->route('person.show', ['person' => $staffId])->with('error', 'Staff not found');
+            $personId = InstitutionPerson::query()->whereKey($staffId)->value('person_id');
+            abort_if($personId === null, 404);
+
+            return redirect()->route('person.show', ['person' => $personId])->with('error', 'Staff not found');
         }
 
         $payload = $this->staffProfileProvider->forPerson($staff->person_id);
@@ -234,7 +237,7 @@ class InstitutionPersonController extends Controller
             'hire_date' => $staff->hire_date?->displayDate(),
             'retirement_date' => $staff->retirement_date_formatted,
             'start_date' => $staff->start_date,
-            'promotions' => $staff->ranks ? $staff->ranks->map(fn($rank) => [
+            'promotions' => $staff->ranks ? $staff->ranks->map(fn ($rank) => [
                 'id' => $rank->id,
                 'name' => $rank->name,
                 'start_date' => $rank->pivot->start_date?->displayDate(),

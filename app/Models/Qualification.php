@@ -95,6 +95,19 @@ class Qualification extends Model
     }
 
     /**
+     * Scope to the qualifications on the given user's own record. A user with
+     * no linked person owns none.
+     */
+    public function scopeOwnedBy(Builder $query, User $user): Builder
+    {
+        if ($user->person_id === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('person_id', $user->person_id);
+    }
+
+    /**
      * Check if the qualification can be edited by the given user.
      */
     public function canBeEditedBy($user): bool
@@ -118,5 +131,19 @@ class Qualification extends Model
     public function canBeDeletedBy($user): bool
     {
         return $this->canBeEditedBy($user);
+    }
+
+    /**
+     * Check if the given user can attach, replace or remove the documents of
+     * this qualification: its owner while it is still pending, or anyone
+     * allowed to approve qualifications.
+     */
+    public function documentsCanBeManagedBy(?User $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->canBeEditedBy($user) || $user->can('approve staff qualification');
     }
 }

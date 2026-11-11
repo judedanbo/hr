@@ -46,7 +46,7 @@ const subMenuClicked = (action, contact) => {
                             </span>
                         </TableData>
                         <TableData>
-                            <SubMenu :items="['Edit', 'Delete']" :can-edit="permissions?.includes('update contacts')" :can-delete="permissions?.includes('delete contacts')" @item-clicked="(action) => subMenuClicked(action, contact)" />
+                            <SubMenu :items="['Edit', 'Delete']" :can-edit="permissions?.includes('update contacts')" :can-delete="contact.can_delete" @item-clicked="(action) => subMenuClicked(action, contact)" />
                         </TableData>
                     </TableRow>
                 </TableBody>

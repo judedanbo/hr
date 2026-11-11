@@ -15,11 +15,26 @@ use App\Notifications\PhotoPendingApprovalNotification;
 use App\Notifications\PhotoRejectedNotification;
 use App\Notifications\QualificationPendingApprovalNotification;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
+/**
+ * Sample data for the help-page screenshots.
+ *
+ * For local use only. It creates a super-administrator and attaches sample
+ * qualifications, contacts and an address to an existing member of staff, so
+ * it refuses to run in production. The account's password is random and never
+ * shown: the screenshot run signs in without it.
+ */
 class HelpScreenshotSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            $this->command?->error('HelpScreenshotSeeder is for local screenshot runs and does not run in production.');
+
+            return;
+        }
+
         $user = $this->createScreenshotUser();
         $person = $user->person;
 
@@ -47,7 +62,7 @@ class HelpScreenshotSeeder extends Seeder
             [
                 'name' => $person->full_name ?? 'Screenshot User',
                 'person_id' => $person->id,
-                'password' => bcrypt('screenshot-password'),
+                'password' => bcrypt(Str::random(40)),
                 'email_verified_at' => now(),
                 'password_change_at' => now(),
             ]

@@ -180,6 +180,7 @@ use App\Notifications\PhotoPendingApprovalNotification;
 use App\Notifications\PhotoRejectedNotification;
 use App\Notifications\QualificationPendingApprovalNotification;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class HelpScreenshotSeeder extends Seeder
 {
@@ -211,7 +212,7 @@ class HelpScreenshotSeeder extends Seeder
             [
                 'name' => $person->full_name ?? 'Screenshot User',
                 'person_id' => $person->id,
-                'password' => bcrypt('screenshot-password'),
+                'password' => bcrypt(Str::random(40)),
                 'email_verified_at' => now(),
                 'password_change_at' => now(),
             ]

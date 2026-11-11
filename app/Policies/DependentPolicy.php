@@ -3,9 +3,21 @@
 namespace App\Policies;
 
 use App\Models\Dependent;
+use App\Models\InstitutionPerson;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * A dependent hangs off a member of staff, so changing one follows the same
+ * rule as that person's contacts and addresses: the member of staff it belongs
+ * to, or a holder of update staff.
+ *
+ * The create/edit/update/delete dependent permissions are deliberately not
+ * accepted here for other people's dependents. StaffUserSeeder and
+ * DependentSeeder hand them to the staff role as self-service permissions, so
+ * treating them as a licence over anyone's dependents would open these actions
+ * to every member of staff in a database those seeders have touched.
+ */
 class DependentPolicy
 {
     use HandlesAuthorization;
@@ -24,15 +36,16 @@ class DependentPolicy
     public function view(User $user, Dependent $dependent): bool
     {
         return $user->can('view dependent')
-            || $user->person?->id === $dependent->staff?->person_id;
+            || $this->isOwnStaffRecord($user, $dependent->staff);
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determine whether the user can create a dependent for the given staff member.
      */
-    public function create(User $user): bool
+    public function create(User $user, ?InstitutionPerson $staff = null): bool
     {
-        return $user->can('create dependent');
+        return $user->can('update staff')
+            || $this->isOwnStaffRecord($user, $staff);
     }
 
     /**
@@ -40,8 +53,8 @@ class DependentPolicy
      */
     public function update(User $user, Dependent $dependent): bool
     {
-        return $user->can('update dependent') || $user->can('edit dependent')
-            || $user->person?->id === $dependent->staff?->person_id;
+        return $user->can('update staff')
+            || $this->isOwnStaffRecord($user, $dependent->staff);
     }
 
     /**
@@ -49,7 +62,8 @@ class DependentPolicy
      */
     public function delete(User $user, Dependent $dependent): bool
     {
-        return $user->can('delete dependent');
+        return $user->can('update staff')
+            || $this->isOwnStaffRecord($user, $dependent->staff);
     }
 
     /**
@@ -66,5 +80,18 @@ class DependentPolicy
     public function forceDelete(User $user, Dependent $dependent): bool
     {
         return $user->can('destroy dependent');
+    }
+
+    /**
+     * Whether the staff record belongs to the user's own person.
+     *
+     * A user with no linked person owns nothing, so a missing link on either
+     * side must never compare equal.
+     */
+    private function isOwnStaffRecord(User $user, ?InstitutionPerson $staff): bool
+    {
+        return $user->person_id !== null
+            && $staff !== null
+            && (int) $user->person_id === (int) $staff->person_id;
     }
 }

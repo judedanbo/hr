@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Contracts\Role as RoleContract;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
@@ -54,6 +55,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'is_service' => 'boolean',
     ];
+
+    /**
+     * Log changes to a user without the password.
+     *
+     * A hash in the audit trail could be attacked offline by anyone allowed to
+     * read the log, and it would outlive the password it belonged to.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logExcept(['password'])
+            ->logOnlyDirty();
+    }
 
     /**
      * Get the person that owns the User

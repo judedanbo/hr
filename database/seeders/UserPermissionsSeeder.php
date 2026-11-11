@@ -11,6 +11,10 @@ class UserPermissionsSeeder extends Seeder
     /**
      * Run the database seeds.
      *
+     * Only the super-administrator is given user management here. Whoever
+     * creates a user also chooses its roles, so these permissions must not
+     * reach the staff role; RolesAndPermissionsSeeder holds every role's map.
+     *
      * @return void
      */
     public function run()
@@ -38,12 +42,6 @@ class UserPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'view user profile']);
         Permission::firstOrCreate(['name' => 'update user profile']);
         Permission::firstOrCreate(['name' => 'associate user staff']);
-        Role::findByName('staff')
-            ->givePermissionTo([
-                'view user',
-                'create user',
-                'update user',
-            ]);
         Role::findByName('super-administrator')
             ->givePermissionTo([
                 'view all users',
