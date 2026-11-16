@@ -155,6 +155,33 @@ The deploy workflow runs `kubectl rollout undo` automatically when a rollout or
 smoke test fails. **Migrations are not reverted** — automatic down-migrations
 lose data, so a release that failed after migrating needs a human decision.
 
+## Production database: pinned MySQL image
+
+`hrmis-production-database` is not managed by these manifests. It is a
+hand-applied Deployment, and no workflow redeploys it. Its image is pinned:
+
+```
+mysql:26.10.0@sha256:3819b2b23835c4a73c8b022fafc33c8095c0f81c929a8b7a84613d2fba6c52f5
+imagePullPolicy: IfNotPresent
+```
+
+It used to be the bare `mysql` tag (that is, `latest`) with
+`imagePullPolicy: Always`. On 2026-11-16 the pod was rescheduled during the AKS
+node-pool migration. It pulled the newest `latest` and **upgraded the data
+directory in place from MySQL 26.07 to 26.10** (about 3 minutes, completed
+without errors). MySQL can't be downgraded, so that data now needs 26.10 or
+later. The pin was applied straight afterwards on the identical image. The
+spec from before the pin is kept outside git.
+
+- **Change the version only on purpose.** First take a fresh dump (the
+  `hrmis-production-backup` CronJob writes to the `hrmis-production-backup-storage`
+  volume), then set the new tag and digest. Expect a one-way data upgrade and a
+  few minutes of downtime.
+- The backup CronJob dumps with a `mysql:8.0` client. It works against 26.10 (the
+  2026-11-16 22:05 dump was 3.8 MB, the same as previous runs). Re-check the dump
+  size after any server upgrade, because `mysqldump | gzip` still exits 0 when the
+  dump itself fails.
+
 ## Known deferred risk: uploads are not persisted
 
 `patch-storage.yaml` reproduces the current volume mounts exactly, including
