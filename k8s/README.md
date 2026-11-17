@@ -165,6 +165,13 @@ mysql:26.10.0@sha256:3819b2b23835c4a73c8b022fafc33c8095c0f81c929a8b7a84613d2fba6
 imagePullPolicy: IfNotPresent
 ```
 
+It also has resource **requests** of `cpu: 100m, memory: 896Mi`, applied live
+on 2026-11-17 (cost item #10). Before that it requested nothing, which made
+it invisible to the cluster autoscaler and first in line for eviction under
+memory pressure. These figures come from 10–17 Nov 2026: CPU max 17m, memory
+max 710Mi. There is no memory limit, because an OOMKill would take the
+database down.
+
 It used to be the bare `mysql` tag (that is, `latest`) with
 `imagePullPolicy: Always`. On 2026-11-16 the pod was rescheduled during the AKS
 node-pool migration. It pulled the newest `latest` and **upgraded the data
