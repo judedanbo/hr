@@ -59,10 +59,12 @@ spec:
               port: fastcgi
             periodSeconds: 5
             failureThreshold: 30
+          # Production, 10-17 Nov 2026 (managed Prometheus): CPU p95 2m, max 13m; memory max 89Mi.
+          # Requests cut to match (infosys cluster cost item #10); limits unchanged.
           resources:
             requests:
-              cpu: 250m
-              memory: 512Mi
+              cpu: 50m
+              memory: 256Mi
             limits:
               cpu: "1"
               memory: 1Gi

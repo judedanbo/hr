@@ -48,9 +48,11 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+          # Production, 10-17 Nov 2026 (managed Prometheus): CPU max under 1m; memory max 9Mi.
+          # Requests cut to match (infosys cluster cost item #10); limits unchanged.
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
               memory: 64Mi
             limits:
               cpu: 200m
