@@ -47,7 +47,7 @@ const tableCols = ["Unit", "Type", "Approving head"];
 					title="Unit Heads"
 					:total="units.total"
 					:search="filters.search"
-					action-text=""
+					:show-action="false"
 					@search-entered="(value) => search(value)"
 				/>
 				<section

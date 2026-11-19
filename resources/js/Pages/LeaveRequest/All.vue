@@ -41,7 +41,7 @@ const tableCols = ["Staff", "Type", "Start", "End", "Days", "Status", "Action"];
 					title="All Leave Requests"
 					:total="requests.total"
 					:search="filters.search"
-					action-text=""
+					:show-action="false"
 					@search-entered="(value) => search(value)"
 				/>
 				<section

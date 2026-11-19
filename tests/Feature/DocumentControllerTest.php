@@ -86,6 +86,45 @@ class DocumentControllerTest extends TestCase
         Storage::disk('public')->assertExists('documents/' . $file->hashName());
     }
 
+    /**
+     * The Documents page offers its upload button only to holders of create
+     * documents. That is a courtesy: this refusal is what stops everyone else.
+     */
+    public function test_document_store_is_refused_without_the_create_documents_permission(): void
+    {
+        $viewer = User::factory()->create(['password_change_at' => now()]);
+        $viewer->givePermissionTo('view documents');
+
+        $response = $this->actingAs($viewer)->post(route('document.store'), [
+            'document_type' => DocumentTypeEnum::AcademicCertificate->value,
+            'document_title' => 'Refused Document',
+            'document_file' => UploadedFile::fake()->create('refused-document.pdf', 1024),
+            'document_status' => DocumentStatusEnum::Approved->value,
+        ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('documents', ['document_title' => 'Refused Document']);
+        $this->assertSame([], Storage::disk('public')->allFiles());
+    }
+
+    public function test_document_store_is_allowed_with_the_create_documents_permission(): void
+    {
+        $uploader = User::factory()->create(['password_change_at' => now()]);
+        $uploader->givePermissionTo(['view documents', 'create documents']);
+        $file = UploadedFile::fake()->create('permitted-document.pdf', 1024);
+
+        $response = $this->actingAs($uploader)->post(route('document.store'), [
+            'document_type' => DocumentTypeEnum::AcademicCertificate->value,
+            'document_title' => 'Permitted Document',
+            'document_file' => $file,
+            'document_status' => DocumentStatusEnum::Approved->value,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('documents', ['document_title' => 'Permitted Document']);
+        Storage::disk('public')->assertExists('documents/' . $file->hashName());
+    }
+
     public function test_document_store_validates_file_type(): void
     {
         $file = UploadedFile::fake()->create('test-document.exe', 1024);
