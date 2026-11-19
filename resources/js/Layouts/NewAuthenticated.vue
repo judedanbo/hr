@@ -286,8 +286,8 @@ const navigation = [
 		name: "Audit Logs",
 		href: route("audit-log.index"),
 		icon: UsersIcon,
-		current: route().current("logs.*"),
-		visible: permissions.value?.includes("view all audit logs"),
+		current: route().current("audit-log.*"),
+		visible: permissions.value?.includes("view user activity"),
 	},
 	{
 		name: "Photo Approvals",
