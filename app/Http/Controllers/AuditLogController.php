@@ -8,6 +8,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Activitylog\Models\Activity;
 
+/**
+ * Read-only view of the activity log.
+ *
+ * There is deliberately no action that deletes or edits an entry: the people
+ * the log is about must not be able to change it from the application.
+ */
 class AuditLogController extends Controller
 {
     use LogsAuthorization;
@@ -91,17 +97,5 @@ class AuditLogController extends Controller
                 'updated_at' => $auditLog->updated_at->format('d M Y H:i:s'),
             ],
         ]);
-    }
-
-    /**
-     * Remove the specified activity log.
-     */
-    public function delete(Activity $auditLog)
-    {
-        $this->logSuccess('deleted audit log entry', $auditLog);
-
-        $auditLog->delete();
-
-        return redirect()->route('audit-log.index')->with('success', 'Audit log entry deleted successfully');
     }
 }

@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from "vue";
-import { usePage, Link } from "@inertiajs/vue3";
 import MainTable from "@/Components/Table/MainTable.vue";
 import TableHead from "@/Components/Table/TableHead.vue";
 import TableBody from "@/Components/Table/TableBody.vue";
@@ -8,21 +6,12 @@ import TableRow from "@/Components/Table/TableRow.vue";
 import TableData from "@/Components/Table/TableData.vue";
 import RowHeader from "@/Components/Table/RowHeader.vue";
 import NoItem from "@/Components/NoItem.vue";
-import SubMenu from "@/Components/SubMenu.vue";
 
-const emit = defineEmits(["viewActivity", "deleteActivity"]);
+const emit = defineEmits(["viewActivity"]);
 
 const props = defineProps({
 	activities: { type: Array, required: true },
 });
-
-const page = usePage();
-const permissions = computed(() => page.props?.auth.permissions);
-
-const subMenuClicked = (action, activity) => {
-	if (action === "View") emit("viewActivity", activity);
-	if (action === "Delete") emit("deleteActivity", activity);
-};
 
 const getEventBadgeClass = (event) => {
 	switch (event) {
@@ -53,7 +42,6 @@ const getEventBadgeClass = (event) => {
 					<RowHeader>Description</RowHeader>
 					<RowHeader>User</RowHeader>
 					<RowHeader>Subject</RowHeader>
-					<RowHeader>Actions</RowHeader>
 				</TableHead>
 				<TableBody>
 					<template v-for="activity in activities" :key="activity.id">
@@ -92,14 +80,6 @@ const getEventBadgeClass = (event) => {
 									<span class="text-gray-500">#{{ activity.subject_id }}</span>
 								</span>
 								<span v-else class="text-sm text-gray-400">-</span>
-							</TableData>
-							<TableData @click.stop>
-								<SubMenu
-									:items="['View', 'Delete']"
-									:can-edit="permissions?.includes('view user activity')"
-									:can-delete="permissions?.includes('view user activity')"
-									@item-clicked="(action) => subMenuClicked(action, activity)"
-								/>
 							</TableData>
 						</TableRow>
 					</template>
