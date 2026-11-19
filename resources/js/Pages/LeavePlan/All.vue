@@ -39,7 +39,7 @@ const tableCols = ["Staff", "Year", "Items", "Submitted", "Action"];
 					title="All Leave Plans"
 					:total="plans.total"
 					:search="filters.search"
-					action-text=""
+					:show-action="false"
 					@search-entered="(value) => search(value)"
 				/>
 				<section
