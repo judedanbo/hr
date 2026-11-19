@@ -9,8 +9,6 @@ import TableHeader from "@/Components/TableHeader.vue";
 import ActivityList from "./partials/ActivityList.vue";
 import { useNavigation } from "@/Composables/navigation";
 import { useSearch } from "@/Composables/search";
-import { useToggle } from "@vueuse/core";
-import Delete from "@/Components/Delete.vue";
 
 const navigation = computed(() => useNavigation(props.activities));
 
@@ -28,11 +26,6 @@ const selectedLogName = ref(props.filters.log_name || "");
 const selectedEvent = ref(props.filters.event || "");
 const dateFrom = ref(props.filters.date_from || "");
 const dateTo = ref(props.filters.date_to || "");
-
-// Delete modal state
-const openDeleteModal = ref(false);
-const toggleDeleteModal = useToggle(openDeleteModal);
-const selectedActivity = ref(null);
 
 const searchActivity = (value) => {
     useSearch(value, route("audit-log.index"));
@@ -62,19 +55,6 @@ const clearFilters = () => {
 
 const viewActivity = (activity) => {
     router.visit(route("audit-log.show", { auditLog: activity.id }));
-};
-
-const deleteActivity = (activity) => {
-    selectedActivity.value = activity;
-    toggleDeleteModal();
-};
-
-const deleteConfirmed = () => {
-    router.delete(route("audit-log.delete", { auditLog: selectedActivity.value.id }), {
-        onSuccess: () => {
-            toggleDeleteModal();
-        },
-    });
 };
 
 const BreadCrumpLinks = [{ name: "Audit Log", url: "" }];
@@ -190,7 +170,6 @@ const BreadCrumpLinks = [{ name: "Audit Log", url: "" }];
                 <ActivityList
                     :activities="activities.data"
                     @view-activity="viewActivity"
-                    @delete-activity="deleteActivity"
                 >
                     <template #pagination>
                         <Pagination :navigation="navigation" />
@@ -205,13 +184,5 @@ const BreadCrumpLinks = [{ name: "Audit Log", url: "" }];
                 </p>
             </div>
         </div>
-
-        <Delete
-            :show="openDeleteModal"
-            :model="selectedActivity"
-            model-name="activity log entry"
-            @close="toggleDeleteModal"
-            @delete-confirmed="deleteConfirmed"
-        />
     </MainLayout>
 </template>

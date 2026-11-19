@@ -732,10 +732,11 @@ Route::post('/role', [RoleController::class, 'store'])->middleware(['auth', 'pas
 Route::post('/role/{role}/add-permission', [RoleController::class, 'addPermission'])->middleware(['auth', 'password_changed', 'can:assign permissions to role'])->name('role.add.permissions');
 Route::patch('/role/{role}/remove-permission', [RoleController::class, 'removePermission'])->middleware(['auth', 'password_changed', 'can:assign permissions to role'])->name('role.remove.permission');
 Route::get('/role/{role}/permissions', RolePermissionController::class)->middleware(['auth', 'password_changed', 'can:view roles'])->name('role.permissions');
+
+// Audit log: read only. Entries are not deleted through the application.
 Route::controller(AuditLogController::class)->middleware(['auth', 'password_changed'])->group(function () {
     Route::get('/audit-log', 'index')->middleware('can:view user activity')->name('audit-log.index');
     Route::get('/audit-log/{auditLog}', 'show')->middleware('can:view user activity')->name('audit-log.show');
-    Route::delete('/audit-log/{auditLog}', 'delete')->middleware('can:view user activity')->name('audit-log.delete');
 });
 
 Route::controller(ContactController::class)->middleware(['auth', 'password_changed'])->group(function () {
