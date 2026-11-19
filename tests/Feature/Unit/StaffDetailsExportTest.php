@@ -137,7 +137,10 @@ class StaffDetailsExportTest extends TestCase
         $unit = Unit::factory()->create(['unit_id' => null]);
         $this->makeActiveStaff($unit, $this->makeRank('Director', JobCategory::factory()->create(['name' => 'Managerial'])));
 
-        $response = $this->actingAs(User::factory()->create())
+        $user = User::factory()->create();
+        $user->givePermissionTo('download active staff data');
+
+        $response = $this->actingAs($user)
             ->get(route('report.staff-details'));
 
         $response->assertOk();

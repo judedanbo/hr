@@ -121,7 +121,7 @@ class RankDistributionExportTest extends TestCase
     {
         $alpha = Unit::factory()->department()->create(['name' => 'Alpha Department']);
         $beta = Unit::factory()->department()->create(['name' => 'Beta Department']);
-        $alphaSub = Unit::factory()->create(['unit_id' => $alpha->id, 'institution_id' => $alpha->institution_id, 'name' => 'Alpha Division']);
+        $alphaSub = Unit::factory()->division()->create(['unit_id' => $alpha->id, 'institution_id' => $alpha->institution_id, 'name' => 'Alpha Division']);
 
         $officer = $this->makeRank('Officer', 1);
 

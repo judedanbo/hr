@@ -123,6 +123,8 @@ class DependentController extends Controller
      */
     public function destroy(Dependent $dependent)
     {
+        $this->authorize('delete', $dependent);
+
         $dependent->delete();
 
         return redirect()->back();

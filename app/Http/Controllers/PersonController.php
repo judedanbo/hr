@@ -26,6 +26,8 @@ class PersonController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Person::class);
+
         return Inertia::render('Person/Index', [
             'people' => Person::query()
                 ->search(request()->search)
@@ -98,7 +100,8 @@ class PersonController extends Controller
         ])
             ->whereId($person)->firstOrFail();
 
-        // dd($selectedPerson);
+        $this->authorize('view', $selectedPerson);
+
         return Inertia::render('Person/NewShow', [
             'person' => [
                 'id' => $selectedPerson->id,
@@ -230,6 +233,8 @@ class PersonController extends Controller
 
     public function edit(Person $person)
     {
+        $this->authorize('update', $person);
+
         return [
             'id' => $person->id,
             'title' => $person->title,
@@ -265,7 +270,8 @@ class PersonController extends Controller
     {
         abort_unless(
             $request->user()->person_id === $person->id
-                || $request->user()->can('update staff'),
+                || $request->user()->can('update staff')
+                || $request->user()->can('create contacts'),
             403,
         );
 
@@ -301,6 +307,7 @@ class PersonController extends Controller
     public function deleteContact(Request $request, Person $person, $contact)
     {
         $contactModel = Contact::findOrFail($contact);
+        abort_unless((int) $contactModel->person_id === (int) $person->getKey(), 404);
         $this->authorize('delete', $contactModel);
 
         if ($contactModel->contact_type === ContactTypeEnum::PHONE) {
@@ -319,9 +326,15 @@ class PersonController extends Controller
         }
 
         if ($contactModel->isProtectedOrgEmail()) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'contact' => 'This Audit Service email address cannot be deleted.',
-            ]);
+            if ($request->user()->cannot('deleteOfficialEmail', $contactModel)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'contact' => 'This Audit Service email address can only be removed by HR.',
+                ]);
+            }
+
+            $contactModel->delete();
+
+            return redirect()->back()->with('success', 'Official email removed');
         }
 
         $person->contacts()->where('id', $contact)->forceDelete();
@@ -357,6 +370,8 @@ class PersonController extends Controller
 
     public function deleteIdentity(Person $person, $identity)
     {
+        $this->authorize('update', $person);
+
         $person->identities()->where('id', $identity)->forceDelete();
 
         return redirect()->back();
@@ -411,9 +426,11 @@ class PersonController extends Controller
         return redirect()->back()->with('success', 'Address updated. Previous address kept in history.');
     }
 
-    public function deleteAddress(Person $person, $address)
+    public function deleteAddress(Person $person, $address): RedirectResponse
     {
-        $person->address()->delete($address);
+        $this->authorize('manageAddresses', $person);
+
+        $person->address()->findOrFail($address)->delete();
 
         return redirect()->back();
     }

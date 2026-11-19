@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
+use App\Models\Qualification;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -11,12 +12,13 @@ class UpdateQualificationDocumentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        $qualification = $this->route('qualification');
+
+        return $qualification instanceof Qualification
+            && $qualification->documentsCanBeManagedBy($this->user());
     }
 
     /**

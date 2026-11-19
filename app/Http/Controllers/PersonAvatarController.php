@@ -14,6 +14,8 @@ class PersonAvatarController extends Controller
 {
     public function index(Person $person)
     {
+        $this->authorize('view', $person);
+
         return [
             'image' => $person->only(['image']),
             'initials' => $person->initials,
@@ -82,15 +84,20 @@ class PersonAvatarController extends Controller
     }
 
     /**
-     * Users may modify their own avatar. Others require the upload avatar permission.
+     * Users may modify their own avatar. Changing someone else's needs the
+     * update staff permission.
+     *
+     * The upload avatar permission is not enough for that: every member of the
+     * staff role holds it for their own photo, so it would let any member of
+     * staff replace or remove a colleague's.
      */
     protected function authorizeAvatarAction(User $user, Person $person): void
     {
-        if ($user->person?->id === $person->id) {
+        if ($user->person_id !== null && (int) $user->person_id === (int) $person->getKey()) {
             return;
         }
 
-        if (! $user->can('upload avatar')) {
+        if (! $user->can('update staff')) {
             abort(Response::HTTP_FORBIDDEN, 'You can only modify your own avatar.');
         }
     }

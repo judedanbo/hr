@@ -30,6 +30,7 @@ class QualificationController extends Controller
             'qualifications' => Qualification::query()
                 ->with(['person.institution', 'documents'])
                 ->visibleTo($user)
+                ->when(! $this->seesEveryonesQualifications($user), fn ($query) => $query->ownedBy($user))
                 ->orderBy('created_at', 'desc')
                 ->whereHas('person', function ($query) {
                     $query->whereHas('institution');
@@ -64,6 +65,18 @@ class QualificationController extends Controller
                 'approve' => $user->can('approve staff qualification'),
             ],
         ]);
+    }
+
+    /**
+     * Whether the list shows qualifications other than the user's own: the
+     * list's own permission, the permission that already opens every staff
+     * record, or the right to approve qualifications.
+     */
+    private function seesEveryonesQualifications(User $user): bool
+    {
+        return $user->can('view all staff qualifications')
+            || $user->can('view all staff')
+            || $user->can('approve staff qualification');
     }
 
     /**

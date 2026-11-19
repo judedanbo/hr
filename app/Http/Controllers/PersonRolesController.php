@@ -8,7 +8,8 @@ class PersonRolesController extends Controller
 {
     public function show(Person $person)
     {
-        // return $person?->user;
+        $this->authorize('view', $person);
+
         $person->load([
             'institution',
             'dependent',
@@ -35,6 +36,8 @@ class PersonRolesController extends Controller
 
     public function dependent(Person $person)
     {
+        $this->authorize('view', $person);
+
         $person->load([
             'dependent.staff.person',
         ]);

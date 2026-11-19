@@ -119,6 +119,7 @@ final class StaffProfileProvider
             'contact_type' => $c->contact_type,
             'contact_type_dis' => $c->contact_type->label(),
             'valid_end' => $c->valid_end,
+            'is_official_email' => $c->isProtectedOrgEmail(),
         ])->all();
     }
 

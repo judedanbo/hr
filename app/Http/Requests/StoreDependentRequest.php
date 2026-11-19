@@ -6,6 +6,8 @@ use App\Enums\ContactTypeEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
 use App\Enums\Nationality;
+use App\Models\Dependent;
+use App\Models\InstitutionPerson;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -13,13 +15,34 @@ use Illuminate\Validation\Rules\Enum;
 class StoreDependentRequest extends FormRequest
 {
     /**
+     * Read the staff id the way the integer rule and the database will.
+     *
+     * A JSON true, for one, passes the integer rule and is stored as 1. Turning
+     * every acceptable form into the same integer here means authorization
+     * and the eventual write cannot disagree about which staff member is meant.
+     */
+    protected function prepareForValidation(): void
+    {
+        $staffId = filter_var($this->input('staff_id'), FILTER_VALIDATE_INT);
+
+        if ($staffId !== false) {
+            $this->merge(['staff_id' => $staffId]);
+        }
+    }
+
+    /**
      * Determine if the user is authorized to make this request.
      *
-     * @return bool
+     * A dependent is created against the staff member named in the payload,
+     * so the create ability is checked for that staff member. A staff id that
+     * cannot be read names nobody's record.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        $staffId = $this->input('staff_id');
+        $staff = is_int($staffId) ? InstitutionPerson::find($staffId) : null;
+
+        return $this->user()->can('create', [Dependent::class, $staff]);
     }
 
     /**
@@ -45,7 +68,7 @@ class StoreDependentRequest extends FormRequest
             'marital_status' => [new Enum(MaritalStatusEnum::class), 'nullable'],
             'religion' => 'string|max:40|nullable',
             'image' => 'file|image|nullable',
-            'staff_id' => 'required|integer',
+            'staff_id' => 'required|integer|exists:institution_person,id',
             'relation' => 'required|string|max:40',
             'contacts' => 'array|nullable',
             'contacts.*.contact_type' => ['required', new Enum(ContactTypeEnum::class)],

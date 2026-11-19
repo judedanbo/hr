@@ -151,7 +151,54 @@ class RolesAndPermissionsSeederTest extends TestCase
         $this->assertContains('edit staff notes', $permissions);
 
         $this->assertNotContains('create staff transfers', $permissions);
-        $this->assertNotContains('view separated staff', $permissions);
+    }
+
+    public function test_hr_user_can_open_the_separations_screen_and_use_its_exports(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $permissions = Role::findByName('hr-user')->permissions->pluck('name')->toArray();
+
+        $this->assertContains('view separated staff', $permissions);
+        $this->assertContains('view all separations', $permissions);
+        $this->assertContains('download separated staff data', $permissions);
+    }
+
+    public function test_only_hr_user_holds_the_permission_that_removes_official_emails(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $this->assertContains('delete contacts', Role::findByName('hr-user')->permissions->pluck('name')->toArray());
+
+        foreach (['staff', 'admin-user', 'aag-admin', 'personel-user', 'general-admin-user', 'internal-audit-user'] as $roleName) {
+            $this->assertNotContains(
+                'delete contacts',
+                Role::findByName($roleName)->permissions->pluck('name')->toArray(),
+                "{$roleName} should not be able to remove official emails"
+            );
+        }
+    }
+
+    public function test_hr_user_can_download_staff_data_but_not_the_other_exports(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $permissions = Role::findByName('hr-user')->permissions->pluck('name')->toArray();
+
+        $this->assertContains('download active staff data', $permissions);
+        $this->assertContains('download separated staff data', $permissions);
+
+        $this->assertNotContains('download recruitment data', $permissions);
+        $this->assertNotContains('download promotion data', $permissions);
+        $this->assertNotContains('download rank staff data', $permissions);
+    }
+
+    public function test_hr_user_can_add_contacts_and_staff_cannot(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $this->assertContains('create contacts', Role::findByName('hr-user')->permissions->pluck('name')->toArray());
+        $this->assertNotContains('create contacts', Role::findByName('staff')->permissions->pluck('name')->toArray());
     }
 
     public function test_general_admin_user_has_active_staff_view_only(): void

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\CountryEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
+use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -14,11 +15,19 @@ class UpdatePersonRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      *
-     * @return bool
+     * The request is shared by the person update and store actions: updating
+     * needs the update ability on the person in the route, creating a person
+     * needs the create ability.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        $person = $this->route('person');
+
+        if ($person === null) {
+            return $this->user()->can('create', Person::class);
+        }
+
+        return $person instanceof Person && $this->user()->can('update', $person);
     }
 
     /**
